@@ -1,7 +1,8 @@
 <?php
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
 class HTML {
-	public $Content;
+	public		$Content;
+	protected	$unit_atributes = array('async', 'defer', 'formnovalidate', 'autofocus', 'checked', 'selected', 'readonly', 'required', 'disabled', 'multiple');
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
 		if ($level < 1) {
@@ -32,7 +33,7 @@ class HTML {
 			unset($data['in']);
 		}	
 		if (isset($data['data-title']) && $data['data-title']) {
-			$data_title = $data['data-title'];
+			$data['data-title'] = str_replace(array('&lt;br&gt;', '&'), array('<br>', '&amp;'), filter($data['data-title']));
 			if (isset($data['class'])) {
 				$data['class'] .= ' info';
 			} else {
@@ -50,8 +51,7 @@ class HTML {
 			$add = ' '.$data['add'];
 			unset($data['add']);
 		}
-		$unit_atributes = array('async', 'defer', 'formnovalidate', 'autofocus', 'checked', 'selected', 'readonly', 'required', 'disabled', 'multiple');
-		foreach ($unit_atributes as $attr) {
+		foreach ($this->unit_atributes as $attr) {
 			if (isset($data[$attr])) {
 				$add .= ' '.$attr;
 				unset($data[$attr]);
@@ -129,8 +129,7 @@ class HTML {
 			$add = $data['add'];
 			unset($data['add']);
 		}
-		$unit_atributes = array('async', 'defer', 'formnovalidate', 'autofocus', 'checked', 'selected', 'readonly', 'required', 'disabled', 'multiple');
-		foreach ($unit_atributes as $attr) {
+		foreach ($this->unit_atributes as $attr) {
 			if (isset($data[$attr])) {
 				$add .= ' '.$attr;
 				unset($data[$attr]);

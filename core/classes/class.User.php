@@ -117,21 +117,47 @@ class User {
 	}
 	function get_header_info () {
 		global $Config, $Page, $L;
-		$Page->user_avatar_image = '1.jpg';
-		//$Page->user_avatar_text = '?';
+		//$Page->user_avatar_image = '1.jpg';
+		$Page->user_avatar_text = '?';
 		//$Page->user_info = '<b>Приветствую, nazar-pc!</b>';
 		$Page->user_info = $Page->input(
 			array(
 				'type'			=> 'text',
 				'id'			=> 'user_login',
-				'placeholder'	=> $L->login
+				'placeholder'	=> $L->login_or_email
 			)
 		).
 		$Page->input(
 			array(
-				'type'			=> 'text',
+				'type'			=> 'password',
 				'id'			=> 'user_password',
 				'placeholder'	=> $L->password
+			)
+		).
+		$Page->icon(
+			'locked',
+			array(
+				'onClick'		=> 'if ($(\'#user_password\').prop(\'type\') == \'password\') {'.
+										'$(\'#user_password\').prop(\'type\', \'text\');'.
+										'$(this).addClass(\'ui-icon-unlocked\');'.
+										'$(this).removeClass(\'ui-icon-locked\');'.
+									'} else {'.
+										'$(\'#user_password\').prop(\'type\', \'password\');'.
+										'$(this).addClass(\'ui-icon-locked\');'.
+										'$(this).removeClass(\'ui-icon-unlocked\');'.
+									'}'
+			)
+		).
+		$Page->button(
+			$Page->icon('check').$L->log_in,
+			array(
+				'id'	=> 'log_in'
+			)
+		).
+		$Page->button(
+			$Page->icon('triangle-1-s'),
+			array(
+				'style'	=> 'float: right;'
 			)
 		);
 	}

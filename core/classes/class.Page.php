@@ -298,12 +298,11 @@ class Page extends HTML {
 			return;
 		}
 		if ($Config->core['cache_compress_js_css']) {
-			global $Cache;
 			//Проверка текущего кеша
-			if (!(file_exists(PCACHE.DS.$this->cache_list[0].'css') || file_exists(PCACHE.DS.$this->cache_list[0].'js') || file_exists(PCACHE.DS.$this->cache_list[1].'css') || file_exists(PCACHE.DS.$this->cache_list[1].'js') || file_exists(PCACHE.DS.$this->cache_list[2].'css') || file_exists(PCACHE.DS.$this->cache_list[2].'js')) || !$Cache->pcache_key) {
+			if (!(file_exists(PCACHE.DS.$this->cache_list[0].'css') || file_exists(PCACHE.DS.$this->cache_list[0].'js') || file_exists(PCACHE.DS.$this->cache_list[1].'css') || file_exists(PCACHE.DS.$this->cache_list[1].'js') || file_exists(PCACHE.DS.$this->cache_list[2].'css') || file_exists(PCACHE.DS.$this->cache_list[2].'js')) || !file_exists(PCACHE.DS.'pcache_key')) {
 				$this->rebuild_cache();
 			}
-			$key = $Cache->pcache_key;
+			$key = file_get_contents(PCACHE.DS.'pcache_key');
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
 				file_exists(realpath('storages/pcache/'.$file.'css')) && $this->css('storages/pcache/'.$file.'css?'.$key, 'file', true);
@@ -326,7 +325,6 @@ class Page extends HTML {
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {
-		global $Cache;
 		$this->get_list();
 		$key = '';
 		foreach ($this->get_list as $part => &$array) {
@@ -349,17 +347,15 @@ class Page extends HTML {
 				if (file_exists($file)) {
 					unlink($file);
 				}
-				$temp_cache = $this->filter($temp_cache, $part);
-				$file = PCACHE.DS.$this->cache_list[$i].$part;
 				if (file_exists($file)) {
 					unlink($file);
 				}
-				file_put_contents($file, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
+				file_put_contents($file, gzencode($this->filter($temp_cache, $part), 9), LOCK_EX|FILE_BINARY);
 				$key .= md5($temp_cache);
 				unset($temp_cache, $cache);
 			}
 		}
-		$Cache->pcache_key = mb_substr(md5($key), 0, 5);
+		file_put_contents(PCACHE.DS.'pcache_key', mb_substr(md5($key), 0, 5), LOCK_EX|FILE_BINARY);
 	}
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {

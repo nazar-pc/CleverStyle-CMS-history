@@ -26,12 +26,15 @@ if (isset($_POST['edit_settings'])) {
 		unset($part);
 	}
 	if ($_POST['edit_settings'] == 'apply' && $Cache->cache) {
-		if ($Index->apply() && ($_POST['subpart'] == 'visual_style' || $_POST['subpart'] == 'caching')) {
+		if ($Index->apply() && !$Config->core['cache_compress_js_css']) {
 			flush_pcache();
 		}
 	} elseif ($_POST['edit_settings'] == 'save' && isset($update)) {
-		if ($Index->save($update) && ($_POST['subpart'] == 'visual_style' || $_POST['subpart'] == 'caching')) {
+		if ($Index->save() && !$Config->core['cache_compress_js_css']) {
 			flush_pcache();
+		}
+		if (!$Cache->cache) {
+			flush_cache();
 		}
 	} elseif ($_POST['edit_settings'] == 'cancel' && $Cache->cache) {
 		$Index->cancel();

@@ -50,18 +50,20 @@
 	position: fixed;
 	width: 157px;
 }
-#user_info_header > input[type=text] {
-	background: none;
+#user_info_header > input[type=text], #user_info_header > input[type=password] {
+	background: #ddd;
 	border: #fff solid 1px;
-	margin-bottom: 5px;
+	float: left;
+	margin: 0px 0px 5px 3px;
 	width: 150px;
-	text-align: center;
-	background-image: -ms-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);
-	background-image: -moz-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);
-	/*background-image: -o-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);*/
-	background-color: #BEBEBE;
-	background-image: -webkit-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);
-	background-image: radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);}
+}
+#user_info_header > .ui-icon {
+	margin: 26px 0px 0px -20px;
+}
+#user_info_header > button {
+	margin-left: 3px;
+	float: left;
+}
 #main-menu, #main-submenu, #menu-more {
 	height: 40px;
 	left: 0px;
