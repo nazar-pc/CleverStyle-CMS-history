@@ -176,100 +176,79 @@ if (isset($Config->routing['current'][2])) {
 		);
 	}
 } else {
-	$db_list =	$a->tr(
-					$a->td(
-						array(
-							$L->action,
-							$L->dbhost,
-							$L->dbtype,
-							$L->dbprefix,
-							$L->dbname,
-							$L->dbuser,
-							$L->dbcodepage
-						),
-						array(
-							'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
-							'class'	=> 'greybg1 white'
-						)
-					)
-				).
-				$a->tr(
-					$a->td(
-						array(
-							'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/0" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
-							$DB_HOST,
-							$DB_TYPE,
-							$DB_PREFIX,
-							$DB_NAME,
-							'*****',
-							$DB_CODEPAGE
-						),
-						array(
-							'style'	=> 'text-align: center; vertical-align: middle;',
-							'class'	=> 'greybg2 green'
-						)
-					)
-				);
-	foreach ($Config->db[0]['mirrors'] as $m => $mirror) {
-		if (is_array($mirror) && !empty($mirror)) {
-			$db_list .=	$a->tr(
-							$a->td(
-								array(
-									'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/0/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/0/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
-									$mirror['host'],
-									$mirror['type'],
-									$mirror['prefix'],
-									$mirror['name'],
-									$mirror['user'],
-									$mirror['codepage']
-								),
-								array(
-									'style'	=> 'text-align: center; vertical-align: middle;',
-									'class'	=> 'greybg3'
-								)
-							)
-						);
-		}
-	}
+	$db_list = $a->tr(
+		$a->td(
+			array(
+				$L->action,
+				$L->dbhost,
+				$L->dbtype,
+				$L->dbprefix,
+				$L->dbname,
+				$L->dbuser,
+				$L->dbcodepage
+			),
+			array(
+				'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
+				'class'	=> 'greybg1 white'
+			)
+		)
+	).
+	$a->tr(
+		$a->td(
+			array(
+				'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/0" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
+				$DB_HOST,
+				$DB_TYPE,
+				$DB_PREFIX,
+				$DB_NAME,
+				'*****',
+				$DB_CODEPAGE
+			),
+			array(
+				'style'	=> 'text-align: center; vertical-align: middle;',
+				'class'	=> 'greybg2 green'
+			)
+		)
+	);
 	foreach ($Config->db as $i => $db) {
 		if (is_array($db) && !empty($db) && $i) {
 			$db_list .=	$a->tr(
-							$a->td(
-								array(
-									'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'" class="black">'.$L->edit.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'" class="black">'.$L->delete.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i.'" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
-									$db['host'],
-									$db['type'],
-									$db['prefix'],
-									$db['name'],
-									$db['user'],
-									$db['codepage']
-								),
-								array(
-									'style'	=> 'text-align: center; vertical-align: middle;',
-									'class'	=> 'greybg2'
-								)
-							)
-						);
-			foreach ($Config->db[$i]['mirrors'] as $m => $mirror) {
-				if (is_array($mirror) && !empty($mirror)) {
-					$db_list .=	$a->tr(
-									$a->td(
-										array(
-											'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
-											$mirror['host'],
-											$mirror['type'],
-											$mirror['prefix'],
-											$mirror['name'],
-											$mirror['user'],
-											$mirror['codepage']
-										),
-										array(
-											'style'	=> 'text-align: center; vertical-align: middle;',
-											'class'	=> 'greybg3'
-										)
-									)
-								);
-				}
+				$a->td(
+					array(
+						'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'" class="black">'.$L->edit.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'" class="black">'.$L->delete.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i.'" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
+						$db['host'],
+						$db['type'],
+						$db['prefix'],
+						$db['name'],
+						$db['user'],
+						$db['codepage']
+					),
+					array(
+						'style'	=> 'text-align: center; vertical-align: middle;',
+						'class'	=> 'greybg2'
+					)
+				)
+			);
+		}
+		foreach ($Config->db[$i]['mirrors'] as $m => $mirror) {
+			if (is_array($mirror) && !empty($mirror)) {
+				$db_list .=	$a->tr(
+					$a->td(
+						array(
+							'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
+							$mirror['host'],
+							$mirror['type'],
+							$mirror['prefix'],
+							$mirror['name'],
+							$mirror['user'],
+							$mirror['codepage']
+						),
+						array(
+							'style'	=> 'text-align: center; vertical-align: middle;',
+							'class'	=> 'greybg3'
+						)
+					)
+				);
 			}
 		}
 	}

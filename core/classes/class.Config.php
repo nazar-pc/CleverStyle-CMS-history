@@ -2,12 +2,11 @@
 class Config {
 	public	$cache_file,
 			$admin_parts,
-			$array_list;
+			$mirror_index = -1;
 	//Инициализация параметров системы
 	function __construct () {
 		global $Page, $Cache, $db, $L;
 		$this->admin_parts = array('db', 'core', 'components', 'replace', 'routing');
-		$this->array_list = array('mirrors', 'themes_list');
 		//Считывание настроек с кеша и определение недостающих данных
 		$config = $Cache->get('config');
 		if (isset($config) && is_array($config)) {
@@ -44,16 +43,24 @@ class Config {
 		global $ADMIN, $API;
 		$this->server['url'] = urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$this->server['protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-		if (preg_match('/^('.str_replace('//', '\/\/', $this->core['url']).')/', $this->server['protocol'].'://'.$this->server['url'])) {
+		if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $this->core['url']) === 0) {
 			$uri_replace = explode('//', $this->core['url'], 2);
-			$this->server['base_url'] = $this->core['url'];
-		} elseif (is_array($this->core['mirrors'])) {
-			foreach ($this->core['mirrors'] as $mirror) {
-				if (preg_match('/^('.str_replace('//', '\/\/', $mirror).')/', $this->server['protocol'].'://'.$this->server['url'])) {
+			$this->server['base_url'] = &$this->core['url'];
+		} elseif (!empty($this->core['mirrors_url'])) {
+			$mirrors_url = explode("\n", $this->core['mirrors_url']);
+			foreach ($mirrors_url as $i => $mirror) {
+				if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $mirror) === 0) {
 					$uri_replace = explode('//', $mirror, 2);
-					$this->server['base_url'] = $mirror;
+					$this->server['base_url'] = &$mirror;
+					$this->mirror_index = $i;
+					unset($i, $mirror, $mirrors_url);
 					break;
 				}
+			}
+			if ($this->mirror_index == -1) {
+				global $Error, $L;
+				$this->server['base_url'] = '';
+				$Error->show($L->mirror_not_allowed, 'stop');
 			}
 		} else {
 			global $Error, $L;
@@ -62,7 +69,7 @@ class Config {
 		}
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
-		$r['current'] = explode('/', str_replace($r['in'], $r['out'], $this->server['url']));
+		$r['current'] = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
 		if (mb_strtolower($r['current'][0]) == mb_strtolower($API)) {
 			if (!defined('API')) {
 				define('API', $API);

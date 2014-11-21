@@ -194,7 +194,7 @@ function formatfilesize($size, $round = false) {
 	}
 }
 //Фильтрация с функцией рекурсивной обработки массивов
-function filter($text, $mode = '', $data = false, $data2 = 'null') {
+function filter($text, $mode = '', $data = false, $data2 = NULL) {
 	if (is_array($text)) {
 		foreach ($text as $item => $val) {
 			$text[$item] = filter($val, $mode, $data, $data2);
@@ -214,7 +214,7 @@ function filter($text, $mode = '', $data = false, $data2 = 'null') {
 		} elseif ($mode == 'htmlentities') {
 			return htmlentities($text);
 		} elseif ($mode == 'substr') {
-			if ($data2 != 'null') {
+			if ($data2 !== NULL) {
 				return mb_substr($text, $data, $data2);
 			} else {
 				return mb_substr($text, $data);

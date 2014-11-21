@@ -5,119 +5,192 @@ $a = &$Admin;
 $a->content(
 	$a->table(
 		$a->tr(
-			$a->td($a->info('name2', array('for' => 'core[name]'))).
+			$a->td($a->info('name2')).
 			$a->td(
-				$a->input(
-					'text',
-					'core[name]',
-					$Config->core['name'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'text',
+						'name'	=> 'core[name]',
+						'value' => $Config->core['name'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('url', array('for' => 'core[url]'))).
+			$a->td($a->info('url')).
 			$a->td(
-				$a->input(
-					'url',
-					'core[url]',
-					$Config->core['url'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'url',
+						'name'	=> 'core[url]',
+						'value' => $Config->core['url'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
+				)
+			)
+		).
+		$a->tr(
+			$a->td($a->info('cookie_domain')).
+			$a->td(
+				$a->inputx(
+					array(
+						'type'	=> 'text',
+						'name'	=> 'core[cookie_domain]',
+						'value' => $Config->core['cookie_domain'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
+				)
+			)
+		).
+		$a->tr(
+			$a->td($a->info('cookie_path')).
+			$a->td(
+				$a->inputx(
+					array(
+						'type'	=> 'text',
+						'name'	=> 'core[cookie_path]',
+						'value' => $Config->core['cookie_path'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
 				)
 			)
 		).
 		$a->tr(
 			$a->td($a->info('mirrors')).
 			$a->td(
-				$a->textarea(
-					$Config->core['mirrors'],
-					array(
-						'name' => 'core[mirrors]',
-						'style' => 'height: 5em; white-space: nowrap;width: 98%; ',
-						'class' => 'form_element'
+				$a->table(
+					$a->tr(
+						$a->td(
+							array(
+								$a->info('mirrors_url'),
+								$a->info('mirrors_cookie_domain'),
+								$a->info('mirrors_cookie_path')
+							)
+						)
+					).
+					$a->tr(
+						$a->td(
+							array(
+								$a->textarea(
+									$Config->core['mirrors_url'],
+									array(
+										'name'	=> 'core[mirrors_url]',
+										'style'	=> 'height: 4em; white-space: nowrap; margin-right: 2%;',
+										'class'	=> 'form_element',
+										'cols'	=> 25
+									)
+								),
+								$a->textarea(
+									$Config->core['mirrors_cookie_domain'],
+									array(
+										'name'	=> 'core[mirrors_cookie_domain]',
+										'style'	=> 'height: 4em; white-space: nowrap; margin-right: 2%;',
+										'class'	=> 'form_element',
+										'cols'	=> 15
+									)
+								),
+								$a->textarea(
+									$Config->core['mirrors_cookie_path'],
+									array(
+										'name'	=> 'core[mirrors_cookie_path]',
+										'style'	=> 'height: 4em; white-space: nowrap;',
+										'class'	=> 'form_element',
+										'cols'	=> 15
+									)
+								)
+							)
+						)
 					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('keywords', array('for' => 'core[keywords]'))).
+			$a->td($a->info('keywords')).
 			$a->td(
-				$a->input(
-					'text',
-					'core[keywords]',
-					$Config->core['keywords'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'text',
+						'name'	=> 'core[keywords]',
+						'value' => $Config->core['keywords'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('description', array('for' => 'core[description]'))).
+			$a->td($a->info('description')).
 			$a->td(
-				$a->input(
-					'text',
-					'core[description]',
-					$Config->core['description'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'text',
+						'name'	=> 'core[description]',
+						'value' => $Config->core['description'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('admin_mail', array('for' => 'core[admin_mail]'))).
+			$a->td($a->info('admin_mail')).
 			$a->td(
-				$a->input(
-					'email',
-					'core[admin_mail]',
-					$Config->core['admin_mail'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'email',
+						'name'	=> 'core[admin_mail]',
+						'value' => $Config->core['admin_mail'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('admin_phone', array('for' => 'core[admin_phone]'))).
+			$a->td($a->info('admin_phone')).
 			$a->td(
-				$a->input(
-					'tel',
-					'core[admin_phone]',
-					$Config->core['admin_phone'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'tel',
+						'name'	=> 'core[admin_phone]',
+						'value' => $Config->core['admin_phone'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('start_date', array('for' => 'core[start_date]'))).
+			$a->td($a->info('start_date')).
 			$a->td(
-				$a->input(
-					'date',
-					'core[start_date]',
-					$Config->core['start_date'],
-					true,
-					'',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'date',
+						'name'	=> 'core[start_date]',
+						'value' => $Config->core['start_date'],
+						'class'	=> 'form_element'
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('time_of_site', array('for' => 'core[time_of_site]'))).
+			$a->td($a->info('time_of_site')).
 			$a->td(
-				$a->input(
-					'number',
-					'core[time_of_site]',
-					intval($Config->core['time_of_site']),
-					true,
-					' min="-12" max="12" style="width: 50px;"',
-					'form_element'
+				$a->inputx(
+					array(
+						'type'	=> 'number',
+						'name'	=> 'core[time_of_site]',
+						'value' => intval($Config->core['time_of_site']),
+						'class'	=> 'form_element',
+						'style'	=> 'width: 50px;',
+						'min'	=> -12,
+						'max'	=> 12
+					)
 				)
 			)
 		),

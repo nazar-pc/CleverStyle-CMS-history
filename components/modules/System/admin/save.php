@@ -2,37 +2,26 @@
 if (isset($_POST['edit_settings'])) {
 	global $Config, $db, $Page, $L;
 	$apply_error = false;
-	foreach ($Config->admin_parts as $part) {
-		if (isset($_POST[$part])) {
-			$temp = &$Config->$part;
-			foreach ($_POST[$part] as $var => $val) {
-				$temp[$var] = function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($val, 'stripslashes') : $val;
-			}
-			if ($part == 'core') {
-				foreach ($Config->array_list as $v) {
-					if (!is_array($temp[$v])) {
-						$temp[$v] = explode("\n", $temp[$v]);
-					}
-					foreach ($temp[$v] as $i => $val) {
-						if (empty($temp[$v][$i])) {
-							unset($temp[$v][$i]);
+	if (strval($_POST['edit_settings']) == 'apply' || strval($_POST['edit_settings']) == 'save') {
+		foreach ($Config->admin_parts as $part) {
+			if (isset($_POST[$part])) {
+				$temp = &$Config->$part;
+				foreach ($_POST[$part] as $var => $val) {
+					$temp[$var] = function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($val, 'stripslashes') : $val;
+				}
+				if ($part == 'routing' || $part == 'replace') {
+					$temp['in'] = explode("\n", $temp['in']);
+					$temp['out'] = explode("\n", $temp['out']);
+					foreach ($temp['in'] as $i => $val) {
+						if (empty($val)) {
+							unset($temp['in'][$i]);
+							unset($temp['out'][$i]);
 						}
 					}
-					$temp[$v] = implode("\n", $temp[$v]);
 				}
+				$update[] = '`'.$part.'` = '.sip(serialize($temp));
+				unset($temp);
 			}
-			if ($part == 'routing' || $part == 'replace') {
-				$temp['in'] = explode("\n", $temp['in']);
-				$temp['out'] = explode("\n", $temp['out']);
-				foreach ($temp['in'] as $i => $val) {
-					if (empty($val)) {
-						unset($temp['in'][$i]);
-						unset($temp['out'][$i]);
-					}
-				}
-			}
-			$update[] = '`'.$part.'` = '.sip(serialize($temp));
-			unset($temp);
 		}
 	}
 	if (strval($_POST['edit_settings']) == 'apply') {

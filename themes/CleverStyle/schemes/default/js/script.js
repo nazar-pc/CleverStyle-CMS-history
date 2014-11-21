@@ -42,50 +42,65 @@ function background() {
 }
 $(document).ready(
 	function(){
-		background();
-		$('#loading > div').css('opacity', '1');
-		$('#loading').addClass('active');
-		var header_visible = true;
+		var header_visible = $.cookie('header_visible'), header_elements = $('header > *');
+		if (header_visible == 'hide') {
+			$.cookie('header_visible', header_visible, {path: '/'});
+			header_elements.hide();
+			$('#body').animate({'marginTop': '-=120px'}, 0);
+		} else {
+			header_visible = 'show';
+		}
+		$.cookie('header_visible', header_visible, {path: '/'});
 		$('#header_zone').mouseover(
 			function () {
-				if (header_visible === false) {
-					header_visible = true;
-					$('header > *').show(250);
+				if (header_visible == 'hide') {
+					header_visible = 'show';
+					$.cookie('header_visible', header_visible, {path: '/'});
+					header_elements.show(250);
 					$('#body').animate({'marginTop': '+=120px'}, 250);
 				}
 			}
 		);
 		$('#header_black').mouseout(
 			function () {
-				if (header_visible === true) {
-					header_visible = false;
-					$('header > *').hide(250, function () {$('#header_zone').show();});
+				if (header_visible == 'show') {
+					header_visible = 'hide';
+					$.cookie('header_visible', header_visible, {path: '/'});
+					header_elements.hide(250);
 					$('#body').animate({'marginTop': '-=120px'}, 500);
 				}
 			}
 		);
 		$('#body').mousemove(
 			function () {
-				if (header_visible === true) {
-					header_visible = false;
-					$('header > *').hide(250, function () {$('#header_zone').show();});
+				if (header_visible == 'show') {
+					header_visible = 'hide';
+					$.cookie('header_visible', header_visible, {path: '/'});
+					header_elements.hide(250);
 					$('#body').animate({'marginTop': '-=120px'}, 500);
 				}
 			}
 		);
+		if (!$.browser.msie) {
+			$('#loading > div').css('opacity', 1);		
+			$('#loading').addClass('active');
+		}
+		background();
 	}
 );
 $(
 	function(){
-		setTimeout(
-			function(){
-				$('#loading > div').css('opacity', '0');
-				setTimeout(
-					function(){
-						$('#loading').remove();
-					}, 1000
-				);
-			}, 1000
-		);
+		if (!$.browser.msie) {
+			setTimeout(
+				function(){
+					$('#loading > div').css('opacity', 0);
+					setTimeout(
+						function(){
+							$('#loading').remove();
+						}, 1000
+					);
+				}, 1000
+			);
+		}
 	}
 );

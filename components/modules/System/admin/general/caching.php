@@ -17,7 +17,6 @@ if (isset($Config->routing['current'][2])) {
 		}
 	}
 } else {
-	$themes_list = get_list(THEMES, false, 'd');
 	$a = &$Admin;
 	$a->content(
 		$a->table(

@@ -117,7 +117,9 @@ class Page extends XForm {
 		//Загрузка стилей и скриптов
 		$this->get_js_css();
 		//Загрузка данных о пользователе
-		$User->get_header_info();
+		if (is_object($User)) {
+			$User->get_header_info();
+		}
 		//Формирование заголовка
 		if (!$stop) {
 			foreach ($this->Title as $i => $v) {
@@ -365,16 +367,18 @@ class Page extends XForm {
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
 		preg_match_all('/url\((.*?)\)/', $data, $images);
-		chdir(strtr(mb_substr($file, 0, mb_strrpos($file, '/')), '/', DS));
-		unset($format, $images[0]);
+		chdir(realpath(dirname($file)));
+		unset($images[0]);
 		foreach ($images[1] as $image) {
 			$format = mb_substr($image, -3);
-			if ($format == 'peg') {
-				$format = 'jpg';
-			} elseif (!($format == 'jpg' || $format == 'png' || $format == 'gif')) {
-				continue;
+			if ($format != 'jpg' && $format != 'png' && $format != 'gif') {
+				if (mb_substr($image, -4) == 'jpeg') {
+					$format = 'jpg';
+				} else {
+					continue;
+				}
 			}
-			$data = str_replace($image, 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(strtr($image, '/', DS))), $data);
+			$data = str_replace($image, 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(realpath($image))), $data);
 		}
 		unset($format, $images);
 		chdir(DIR);
@@ -382,8 +386,9 @@ class Page extends XForm {
 	//Фильтр лиших данных в CSS и JavaScript файлах
 	function filter ($content, $mode = 'css') {
 		if ($mode == 'js') {
-			$content = preg_replace('/\/\*[\!\s\n\r].*?\*\//s', ' ', $content);
+			$content = preg_replace('/\/\*[\!\s\n\r\*].*?\*\//s', ' ', $content);
 			$content = preg_replace('/[\s]*([\-])[\s]*/', '\1', $content);
+			$content = preg_replace('/([^:]\/\/\s)[^\n]*/s', ' ', $content);
 			$content = preg_replace('/[\s\n\r]+/', ' ', $content);
 		} elseif ($mode == 'css') {
 			$content = preg_replace('/(\/\*.*?\*\/)|(^\s+)|([\r]+)|(\/\*.*?\*\/)/', '', $content);

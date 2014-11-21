@@ -198,6 +198,9 @@ class XForm {
 						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
 					}
 					$item['tag'] = 'input';
+					if (isset($item['value'])) {
+						$item['value'] = filter($item['value']);
+					}
 					$temp .= $this->iwrap($item);
 				}
 				unset($items, $item);
@@ -208,6 +211,9 @@ class XForm {
 				}
 				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
 				$in['tag'] = 'input';
+				if (isset($in['value'])) {
+					$in['value'] = filter($in['value']);
+				}
 				return $this->iwrap($in);
 			}
 		} else {
@@ -222,6 +228,9 @@ class XForm {
 						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
 					}
 					$item['tag'] = 'input';
+					if (isset($item['value'])) {
+						$item['value'] = filter($item['value']);
+					}
 					$temp .= $this->iwrap($item);
 				}
 				unset($items, $item);
@@ -232,6 +241,9 @@ class XForm {
 				}
 				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
 				$in['tag'] = 'input';
+				if (isset($in['value'])) {
+					$in['value'] = filter($in['value']);
+				}
 				return $this->iwrap($in);
 			}
 		}
