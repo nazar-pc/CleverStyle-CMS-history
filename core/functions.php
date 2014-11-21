@@ -128,70 +128,90 @@ function interface_off() {
 	}
 }
 //Функция для получения списка содержимого директории (и поддиректорий при необходимости)
-function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $DS = false) {
+function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
 	if (!is_dir($dir)) {
 		return false;
 	}
+	if ($sort !== false) {
+		$sort == mb_strtolower($sort);
+	}
+	if ($sort !== false && mb_strstr($sort, 'date') == 0) {
+		$prepare = function (&$list, &$tmp, $link) {
+			$list[filectime($link)] = $tmp;
+		};
+	} else {
+		$prepare = function (&$list, &$tmp, $link) {
+			$list[] = $tmp;
+		};
+	}
 	$list = array();
 	$l = 0;
-	$dirc[$l] = opendir($dir);
+	$dirc = opendir($dir);
 	if (mb_substr($dir, -1, 1) != DS) {
 		$dir .= DS;
 	}
-	if ($with_path != 1 && $with_path) {
-		if (mb_substr($with_path, -1, 1) != $DS) {
-			$with_path .= $DS;
-		}
+	if ($with_path != 1 && $with_path && mb_substr($with_path, -1, 1) != DS) {
+		$with_path .= DS;
 	}
-	while ($file = readdir($dirc[$l])) {
+	while ($file = readdir($dirc)) {
 		if ((!$mask || preg_match($mask, $file) || ($subfolders && is_dir($dir.$file))) && $file != '.' && $file != '..' && $file != '.htaccess' && $file != '.htpasswd') {
 			if (is_file($dir.$file) && ($mode == 'f' || $mode == 'fd')) {
 				if ($with_path == 1) {
-					$list[] = $dir.$file;
+					$tmp = $dir.$file;
 				} elseif ($with_path) {
-					$list[] = $with_path.$file;
+					$tmp = $with_path.$file;
 				} else {
-					$list[] = $file;
+					$tmp = $file;
 				}
+				$prepare($list, $tmp, $dir.$file);
+				unset($tmp);
 			} elseif (is_dir($dir.$file) && ($mode == 'd' || $mode == 'fd')) {
 				if ($with_path == 1) {
-					$list[] = $dir.$file;
+					$tmp = $dir.$file;
 				} elseif ($with_path) {
-					$list[] = $with_path.$file;
+					$tmp = $with_path.$file;
 				} else {
-					$list[] = $file;
+					$tmp = $file;
 				}
-			} elseif (is_dir($dir.$file) && $subfolders) {
-				if ($with_path == 1 || !$with_path) {
-					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $DS);
+				$prepare($list, $tmp, $dir.$file);
+				unset($tmp);
+			} else {
+				if ($with_path == true) {
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort);
 					if (is_array($get_list)) {
-						foreach ($get_list as $v) {
-							$list[] = $v;
-						}
+						array_merge($list, $get_list);
 					}
 					unset($get_list);
-					if ($mode == 'd' || $mode == 'fd') {
-						$list[] = $dir.$file;
-					}
 				} elseif ($with_path) {
-					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $DS);
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $sort);
 					if (is_array($get_list)) {
-						foreach ($get_list as $v) {
-							$list[] = $v;
-						}
+						array_merge($list, $get_list);
 					}
 					unset($get_list);
-					if ($mode == 'd' || $mode == 'fd') {
-						$list[] = $with_path.$file;
-					}
 				}
 			}
 		}
 	}
-	closedir($dirc[$l]);
+	closedir($dirc);
 	if (empty($list)) {
 		return array();
 	} else {
+		if ($sort !== false) {
+			if ($sort[0] == 'name') {
+				if (isset($sort_x[1]) && $sort_x[1] == 'desc') {
+					natcasesort($list);
+				} else {
+					natcasesort($list);
+					array_reverse($list);
+				}
+			} elseif ($sort_x[0] == 'date') {
+				if (isset($sort_x[1]) && $sort_x[1] == 'desc') {
+					krsort($list);
+				} else {
+					ksort($list);
+				}
+			}
+		}
 		return $list;
 	}
 }
@@ -234,7 +254,7 @@ function flush_pcache () {
 	return $ok;
 }
 //Функция форматирования размера файла из байтов в удобночитаемый вид
-function formatfilesize($size, $round = false) {
+function formatfilesize ($size, $round = false) {
 	global $L;
 	if($size >= 1073741824) {
 		$size = $size/1073741824;
@@ -255,14 +275,16 @@ function formatfilesize($size, $round = false) {
 	}
 }
 //Фильтрация и функции для рекурсивной обработки массивов
-function filter($text, $mode = '', $data = false, $data2 = NULL) {
+function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 	if (is_array($text)) {
 		foreach ($text as $item => $val) {
 			$text[$item] = filter($val, $mode, $data, $data2);
 		}
 		return $text;
 	} else {
-		if ($mode == 'stripslashes') {
+		if ($mode == 'str_replace') {
+			return str_replace($data, $data2, $text);
+		} elseif ($mode == 'stripslashes') {
 			return stripslashes($text);
 		} elseif ($mode == 'addslashes') {
 			return addslashes($text);

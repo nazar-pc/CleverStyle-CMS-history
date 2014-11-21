@@ -97,7 +97,7 @@ class Config {
 			array_shift($r['current']);
 		}
 		$this->server['current_url'] = (defined('ADMIN') ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
-		if (isset($_POST['nonterface'])) {
+		if (isset($_POST['nonterface']) || defined('API')) {
 			interface_off();
 		} elseif (isset($r['current'][count($r['current']) - 1]) && mb_strtolower($r['current'][count($r['current']) - 1]) == 'nointerface') {
 			interface_off();

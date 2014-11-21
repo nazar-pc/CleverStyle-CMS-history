@@ -259,16 +259,19 @@ class Page extends HTML {
 	function get_list () {
 		$this->get_list = array(
 				'css' => array (
-					0 => get_list(INCLUDES.DS.'css', '/(.*)\.css$/i', 'f', 'includes/css', true, '/'),
-					1 => get_list(THEMES.DS.$this->theme.DS.'style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', true, '/'),
-					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', true, '/')
+					0 => get_list(INCLUDES.DS.'css', '/(.*)\.css$/i', 'f', 'includes/css', true),
+					1 => get_list(THEMES.DS.$this->theme.DS.'style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', true),
+					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', true)
 				),
 				'js' => array (
-					0 => get_list(INCLUDES.DS.'js', '/(.*)\.js$/i', 'f', 'includes/js', true, '/'),
-					1 => get_list(THEMES.DS.$this->theme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', true, '/'),
-					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', true, '/')
+					0 => get_list(INCLUDES.DS.'js', '/(.*)\.js$/i', 'f', 'includes/js', true),
+					1 => get_list(THEMES.DS.$this->theme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', true),
+					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', true)
 				)
 		);
+		if (DS != '/') {
+			$this->get_list = filter($this->get_list, 'str_replace', DS, '/');
+		}
 		for ($i = 0; $i <= 2; ++$i) {
 			if (is_array($this->get_list['css'][$i])) {
 				sort($this->get_list['css'][$i]);
@@ -347,7 +350,9 @@ class Page extends HTML {
 					unlink($file);
 				}
 				$cache = gzopen($file, 'w9');
+				flock($chache, LOCK_EX);
 				gzwrite($cache, $temp_cache);
+				flock($chache, LOCK_UN);
 				gzclose($cache);
 				$key .= md5($temp_cache);
 				unset($temp_cache, $cache);
