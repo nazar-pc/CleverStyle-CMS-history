@@ -124,11 +124,11 @@ class Index {
 					if (!HOME) {
 						$Page->title($L->$rc[1]);
 					}
-					$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
+					$this->action = ($this->admin ? 'admin/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
 				}
 				_include(MFOLDER.DS.$rc[0].DS.$rc[1].'.php', true, false);
 			} elseif (!$this->api) {
-				$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0];
+				$this->action = ($this->admin ? 'admin/' : '').MODULE.'/'.$rc[0];
 			}
 			unset($rc);
 			if ($this->post_title) {
@@ -147,7 +147,7 @@ class Index {
 		}
 	}
 	protected function mainmenu () {
-		global $Config, $L, $Page, $User, $ADMIN;
+		global $Config, $L, $Page, $User;
 		if ($User->is('admin')) {
 			if ($Config->core['debug']) {
 				$Page->mainmenu .= h::a(
@@ -161,7 +161,7 @@ class Index {
 			$Page->mainmenu .= h::a(
 				mb_substr($L->administration, 0, 1),
 				array(
-					 'href'		=> $ADMIN,
+					 'href'		=> 'admin',
 					 'title'	=> $L->administration
 				)
 			);
@@ -184,7 +184,7 @@ class Index {
 				$L->$part,
 				array(
 					'id'		=> $part.'_a',
-					'href'		=> ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$part,
+					'href'		=> ($this->admin ? 'admin/' : '').MODULE.'/'.$part,
 					'class'		=> isset($Config->routing['current'][0]) && $Config->routing['current'][0] == $part ? 'active' : ''
 				)
 			);
@@ -200,7 +200,7 @@ class Index {
 				$L->$subpart,
 				array(
 					'id'		=> $subpart.'_a',
-					'href'		=> ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
+					'href'		=> ($this->admin ? 'admin/' : '').MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
 					'class'		=> $Config->routing['current'][1] == $subpart ? 'active' : '',
 					'onClick'	=> $this->savecross && $this->form ? 'menuadmin(\''.$subpart.'\', false); return false;' : ''
 				)
@@ -213,12 +213,12 @@ class Index {
 		$this->submenu_auto		&& $this->mainsubmenu();
 		$this->menumore_auto	&& $this->menumore();
 		if (!$this->api) {
-			global $API, $ADMIN, $User;
+			global $User;
 			$Page->js(
 				'var save_before = "'.$L->save_before.'",'.
 					'continue_transfer = "'.$L->continue_transfer.'",'.
 					'base_url = "'.$Config->server['base_url'].'",'.
-					'current_base_url = "'.$Config->server['base_url'].'/'.($this->admin ? ADMIN.'/' : '').MODULE.
+					'current_base_url = "'.$Config->server['base_url'].'/'.($this->admin ? 'admin/' : '').MODULE.
 						(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
 					'yes = "'.$L->yes.'",'.
 					'no = "'.$L->no.'",'.
@@ -245,9 +245,7 @@ class Index {
 					'language_en = "'.$L->clanguage_en.'",'.
 					'lang = "'.$L->clang.'",'.
 					'module = "'.MODULE.'",'.
-					($User->is('admin') ? 'admin = "'.$ADMIN.'",' : '').
 					'in_admin = '.(int)$this->admin.','.
-					'api = "'.$API.'",'.
 					'routing = '._json_encode($Config->routing['current']).';',
 				'code'
 			);

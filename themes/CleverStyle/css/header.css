@@ -6,7 +6,6 @@
 }
 #header_green, #header_black {
 	border-radius: 0 0 10px 10px;
-	-moz-border-radius: 0 0 10px 10px;
 	position: fixed;
 	right: 300px;
 	top: 0;
@@ -22,7 +21,6 @@
 }
 #user_header {
 	border-radius: 7px;
-	-moz-border-radius: 7px;
 	height: 100px;
 	margin: 5px;
 	position: fixed;
@@ -33,7 +31,6 @@
 }
 #avatar_header {
 	border-radius: 5px;
-	-moz-border-radius: 5px;
 	float: left;
 	font-size: 80px;
 	height: 80px;

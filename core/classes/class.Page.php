@@ -33,7 +33,7 @@ class Page {
 				];
 
 	protected	$init = false,										//For single initialization
-				$secret,											//Secret phrase for separating internal
+				$secret,											//Secret random phrase for separating internal
 																	//function calling from external ones
 				$theme, $color_scheme, $pcache_basename, $includes,
 				$user_avatar_image, $user_avatar_text, $user_info,
@@ -434,7 +434,7 @@ class Page {
 		//Объекты
 		if ($Config->core['show_objects_data']) {
 			global $Objects, $timeload, $loader_init_memory;
-			$this->debug_info .= h::{'p#debug_objects_toggle.ui-state-highlight'}(
+			$this->debug_info .= h::{'p#debug_objects_toggle.ui-widget-header.for_state_messages.center'}(
 				$span.$L->objects
 			);
 			$debug_info =	h::p(
@@ -472,7 +472,7 @@ class Page {
 		}
 		//Данные пользователя
 		if ($Config->core['show_user_data']) {
-			$this->debug_info .= h::{'p#debug_user_toggle.ui-state-highlight'}(
+			$this->debug_info .= h::{'p#debug_user_toggle.ui-widget-header.for_state_messages.center'}(
 				$span.$L->user_data
 			);
 			global $loader_init_memory;
@@ -486,7 +486,7 @@ class Page {
 		}
 		//Запросы в БД
 		if ($Config->core['show_queries']) {
-			$this->debug_info .= h::{'p#debug_queries_toggle.ui-state-highlight'}(
+			$this->debug_info .= h::{'p#debug_queries_toggle.ui-widget-header.for_state_messages.center'}(
 				$span.$L->queries
 			);
 			$queries =	h::p(
@@ -516,7 +516,7 @@ class Page {
 						'#'.h::i(format_time(round($database->queries['time'][$i], 5))).
 						($error = (strtolower(substr($text, 0, 6)) == 'select' && !$database->queries['resource'][$i]) ? '('.$L->error.')' : ''),
 						array(
-							'class' => ($database->queries['time'][$i] > 0.1 ? 'red ' : '').($error ? 'ui-state-error ' : '').'code_debug'
+							'class' => ($database->queries['time'][$i] > 0.1 ? 'ui-state-highlight ' : '').($error ? 'ui-state-error ' : '').'code_debug'
 						)
 					);
 				}
@@ -536,7 +536,7 @@ class Page {
 		}
 		//Cookies
 		if ($Config->core['show_cookies']) {
-			$this->debug_info .= h::{'p#debug_cookies_toggle.ui-state-highlight'}(
+			$this->debug_info .= h::{'p#debug_cookies_toggle.ui-widget-header.for_state_messages.center'}(
 				$span.$L->cookies
 			);
 			$debug_info = h::tr(
@@ -569,13 +569,13 @@ class Page {
 	}
 	//Отображение уведомления
 	function notice ($text) {
-		$this->Top .= h::{'div.green.ui-state-highlight'}(
+		$this->Top .= h::{'div.ui-state-highlight.ui-corner-all.ui-priority-primary.center.for_state_messages'}(
 			$text
 		);
 	}
 	//Отображение предупреждения
 	function warning ($text) {
-		$this->Top .= h::{'div.red.ui-state-error'}(
+		$this->Top .= h::{'div.ui-state-error.ui-corner-all.ui-priority-primary.center.for_state_messages'}(
 			$text
 		);
 	}

@@ -63,7 +63,7 @@ class Config {
 	function init() {
 		global $Cache, $L, $Error, $Page;
 		//Инициализация объекта кеша с использованием настроек движка
-		$Cache->init($this->core['disk_cache_size'], $this->core['memcache']);
+		$Cache->init($this->core['disk_cache'] ? $this->core['disk_cache_size'] : false, $this->core['memcache']);
 		//Инициализация объекта языков с использованием настроек движка
 		$L->init($this->core['active_languages'], $this->core['language']);
 		//Инициализация объекта страницы с использованием настроек движка
@@ -75,7 +75,6 @@ class Config {
 	}
 	//Анализ и обработка текущего адреса страницы
 	protected function routing () {
-		global $ADMIN, $API;
 		$this->server['url']		= urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$this->server['host']		= $_SERVER['HTTP_HOST'];
 		null_byte_filter($this->server['url']);
@@ -127,16 +126,18 @@ class Config {
 			$this->server['base_url'] = '';
 			$Error->process($L->mirror_not_allowed, 'stop');
 		}
-		$mirrors_url = explode("\n", $this->core['mirrors_url']);
-		foreach ($mirrors_url as $mirror_url) {
-			$mirror_url									= explode('://', $mirror_url, 2);
-			$this->server['mirrors'][$mirror_url[0]]	= array_merge(
-				$this->server['mirrors'][$mirror_url[0]],
-				explode(';', $mirror_url[1])
-			);
+		if (!empty($this->core['mirrors_url'])) {
+			$mirrors_url = explode("\n", $this->core['mirrors_url']);
+			foreach ($mirrors_url as $mirror_url) {
+				$mirror_url									= explode('://', $mirror_url, 2);
+				$this->server['mirrors'][$mirror_url[0]]	= array_merge(
+					$this->server['mirrors'][$mirror_url[0]],
+					explode(';', $mirror_url[1])
+				);
+			}
+			$this->server['mirrors']['count'] = count($this->server['mirrors']['http'])+count($this->server['mirrors']['https']);
+			unset($mirrors_url, $mirror_url);
 		}
-		$this->server['mirrors']['count'] = count($this->server['mirrors']['http'])+count($this->server['mirrors']['https']);
-		unset($mirrors_url, $mirror_url);
 		//Подготавливаем адрес страницы без базовой части
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace, '', $this->server['url']), ' /\\'));
 		unset($url_replace);
@@ -145,15 +146,15 @@ class Config {
 		//Получаем путь к странице в виде массива
 		$rc = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
 		//Если адрес похож на адрес админки
-		if (isset($rc[0]) && mb_strtolower($rc[0]) == mb_strtolower($ADMIN)) {
+		if (isset($rc[0]) && mb_strtolower($rc[0]) == 'admin') {
 			if (!defined('ADMIN')) {
-				define('ADMIN', $ADMIN);
+				define('ADMIN', true);
 			}
 			array_shift($rc);
 		//Если адрес похож на запрос к API
-		} elseif (isset($rc[0]) && mb_strtolower($rc[0]) == mb_strtolower($API)) {
+		} elseif (isset($rc[0]) && mb_strtolower($rc[0]) == 'api') {
 			if (!defined('API')) {
-				define('API', $API);
+				define('API', true);
 			}
 			array_shift($rc);
 		}
@@ -174,7 +175,7 @@ class Config {
 		}
 		!defined('HOME')	&& define('HOME', false);
 		//Скорректированный полный путь страницы (рекомендуемый к использованию)
-		$this->server['current_url'] = (ADMIN ? ADMIN.'/' : '').MODULE.(API ? $API.'/' : '').'/'.implode('/', $rc);
+		$this->server['current_url'] = (ADMIN ? 'admin/' : '').MODULE.(API ? 'api/' : '').'/'.implode('/', $rc);
 		//Определение необходимости отключить интерфейс
 		if (API) {
 			interface_off();
@@ -250,7 +251,6 @@ class Config {
 			return false;
 		}
 		$this->init();
-		unset($Cache->config);
 		$Config = [];
 		foreach ($this->admin_parts as $part) {
 			$Config[$part] = $this->$part;

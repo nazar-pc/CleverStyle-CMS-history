@@ -8,9 +8,7 @@ global	$DB_HOST,
 		$DB_CODEPAGE,
 		
 		$LANGUAGE,
-		$ADMIN,
-		$API,
-		
+
 		$MEMCACHE_HOST,
 		$MEMCACHE_PORT,
 		
@@ -18,8 +16,6 @@ global	$DB_HOST,
 
 define('DOMAIN', 'cscms.org');
 
-$ADMIN			= 'admin';
-$API			= 'api';
 $DB_HOST		= 'localhost';
 $DB_TYPE		= 'MySQL';
 $DB_NAME		= 'CleverStyle';

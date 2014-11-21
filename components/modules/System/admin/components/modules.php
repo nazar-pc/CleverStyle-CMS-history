@@ -1,5 +1,5 @@
 <?php
-global $Config, $Index, $L, $db, $ADMIN, $API;
+global $Config, $Index, $L, $db;
 $a = &$Index;
 $rc = &$Config->routing['current'];
 $a->buttons = false;
@@ -92,9 +92,9 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 							h::info('system_db')
 						)
 					);
-					$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
+					$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.'admin'.DS.'db.json'));
 					foreach ($db_json as $database) {
-						$db_list[] = h::{'td.ui-state-default.ui-corner-all'}(
+						$db_list[] = h::{'td.ui-widget-content.ui-corner-all'}(
 							[
 								$L->{$rc[3].'_db_'.$database},
 								h::{'select.form_element'}(
@@ -160,10 +160,10 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 							h::info('system_storage')
 						]
 					);
-					$storage_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
+					$storage_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.'admin'.DS.'storage.json'));
 					foreach ($storage_json as $storage) {
 						$storage_translate = $rc[3].'_storage_'.$storage;
-						$storage_list[] = h::{'td.ui-state-default.ui-corner-all'}(
+						$storage_list[] = h::{'td.ui-widget-content.ui-corner-all'}(
 							[
 								$L->$storage_translate,
 								h::{'select.form_element'}(
@@ -254,7 +254,7 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 		$addition_state = $action = '';
 		if ($mdata['active'] == 1 || $mdata['active'] == 0) {
 			//DataBases tettings
-			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
+			if (_file_exists(MODULES.DS.$module.DS.'admin'.DS.'db.json') && count($Config->db) > 1) {
 				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('gear'),
@@ -268,7 +268,7 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				);
 			}
 			//Storages
-			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1) {
+			if (_file_exists(MODULES.DS.$module.DS.'admin'.DS.'storage.json') && count($Config->storage) > 1) {
 				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('disk'),
@@ -282,10 +282,10 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				);
 			}
 			//Notice about API existence
-			if (_is_dir(MODULES.DS.$module.DS.$API)) {
+			if (_is_dir(MODULES.DS.$module.DS.'api')) {
 				if (
-					_file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.txt') ||
-					_file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.html')
+					_file_exists($file = MODULES.DS.$module.DS.'api'.DS.'readme.txt') ||
+					_file_exists($file = MODULES.DS.$module.DS.'api'.DS.'readme.html')
 				) {
 					if (substr($file, -3) == 'txt') {
 						$tag = 'pre';
@@ -298,14 +298,14 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 							'id'			=> $module.'_api',
 							'class'			=> 'dialog',
 							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
-							'title'			=> $module.' -> '.$L->API
+							'title'			=> $module.' -> '.$L->api
 						]
 					);
 				}
 				$addition_state .= h::{'icon.pointer'}(
 					'link',
 					[
-						'data-title'	=> $L->API_exists.h::br().(_file_exists($file) ? $L->click_to_view_details : ''),
+						'data-title'	=> $L->api_exists.h::br().(_file_exists($file) ? $L->click_to_view_details : ''),
 						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
 					]
 				);
@@ -363,10 +363,10 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			unset($tag, $file);
 			if (mb_strtolower($module) != 'system') {
 				if (
-					_is_dir(MODULES.DS.$module.DS.$ADMIN) &&
+					_is_dir(MODULES.DS.$module.DS.'admin') &&
 					(
-						_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.php') ||
-						_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.json')
+						_file_exists(MODULES.DS.$module.DS.'admin'.DS.'index.php') ||
+						_file_exists(MODULES.DS.$module.DS.'admin'.DS.'index.json')
 					)
 				) {
 					$action .= h::a(
@@ -377,7 +377,7 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 							]
 						),
 						[
-							'href'		=> $ADMIN.'/'.$module
+							'href'		=> 'admin/'.$module
 						]
 					);
 				}
@@ -419,8 +419,8 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			);
 		}
 		$modules_list .= h::tr(
-			h::{'td.ui-state-default.ui-corner-all'}($module).
-			h::{'td.ui-state-default.ui-corner-all'}(
+			h::{'td.ui-widget-content.ui-corner-all'}($module).
+			h::{'td.ui-widget-content.ui-corner-all'}(
 				h::icon(
 					$mdata['active'] == 1 ? 'check' : ($mdata['active'] == 2 ? 'minusthick' : 'closethick'),
 					[
@@ -430,7 +430,7 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				).
 				$addition_state
 			).
-			h::{'td.ui-state-default.ui-corner-all.modules_config_buttons'}($action)
+			h::{'td.ui-widget-content.ui-corner-all.modules_config_buttons'}($action)
 		);
 	}
 	$a->content(

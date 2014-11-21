@@ -163,7 +163,7 @@ function getcookie (name) {
  */
 function login (login, password) {
 	$.ajax(
-		base_url+"/"+api+"/user/login",
+		base_url+"/api/user/login",
 		{
 			type: 'post',
 			cache: false,
@@ -173,7 +173,7 @@ function login (login, password) {
 			success: function(random_hash) {
 				if (random_hash.length == 56) {
 					$.ajax(
-						base_url+"/"+api+"/user/login",
+						base_url+"/api/user/login",
 						{
 							type: 'post',
 							cache: false,
@@ -215,7 +215,7 @@ function registration (email) {
 		return;
 	}
 	$.ajax(
-		base_url+"/"+api+"/user/registration",
+		base_url+"/api/user/registration",
 		{
 			type: 'post',
 			cache: false,

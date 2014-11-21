@@ -2,7 +2,7 @@
 if (!isset($_POST['mode'])) {
 	return;
 }
-global $Config, $Page, $L, $Index;
+global $Config, $Index;
 $update = false;
 if ($_POST['mode'] == 'add') {
 	foreach ($_POST['db'] as $item => $value) {

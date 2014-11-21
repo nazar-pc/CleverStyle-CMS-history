@@ -102,4 +102,3 @@ class Error {
 	 */
 	function __clone () {}
 }
-?>

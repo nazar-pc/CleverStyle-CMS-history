@@ -1,7 +1,7 @@
 <?php
 
 class User {
-	protected	$secret,							//Secret phrase for separating internal
+	protected	$secret,							//Secret random phrase for separating internal
 													//function calling from external ones
 				$current				= [
 					'session'		=> false,
@@ -176,6 +176,7 @@ class User {
 				goto getting_user_data;
 			}
 		}
+		unset($data);
 		if ($this->id == 1) {
 			$this->current['is']['guest'] = true;
 		} else {
@@ -203,6 +204,18 @@ class User {
 		$this->init = true;
 		if (($this->users_columns = $Cache->users_columns) === false) {
 			$this->users_columns = $Cache->users_columns = $this->db()->columns('[prefix]users');
+		}
+		if (($this->permissions_table = $Cache->permissions_table) === false) {
+			$permissions_table	= [];
+			$data				= $this->db()->qfa('SELECT `id`, `label`, `group` FROM `[prefix]permissions`');
+			foreach ($data as $item) {
+				if (!isset($permissions_table[$item['group']])) {
+					$permissions_table[$item['group']] = [];
+				}
+				$permissions_table[$item['group']][$item['label']] = $item['id'];
+			}
+			unset($data, $item);
+			$this->permissions_table = $Cache->permissions_table = $permissions_table;
 		}
 	}
 	/**
@@ -484,8 +497,8 @@ class User {
 	 *
 	 * @return bool
 	 */
-	function permission ($group, $label, $user = false) {//TODO permissions
-		/*$user = (int)($user ?: $this->id);
+	function permission ($group, $label, $user = false) {
+		$user = (int)($user ?: $this->id);
 		if (!isset($this->data[$user])) {
 			$data[$user] = [];
 		}
@@ -493,17 +506,21 @@ class User {
 			$groups = $this->get_user_groups($user);
 			$permissions = [];
 			if (is_array($groups)) {
-				foreach ($groups as $group) {
-					$permissions = array_merge($permissions, $this->get_group_permissions($group));
+				foreach ($groups as $group_id) {
+					$permissions = array_merge($permissions, $this->get_group_permissions($group_id));
 				}
 			}
+			unset($groups, $group_id);
 			$this->data[$user]['permissions'] = array_merge($permissions, $this->get_user_permissions($user));
 			unset($permissions);
 		}
-		if (isset($this->data[$user]['permissions'][$permission])) {
-			return (bool)$this->data[$user]['permissions'][$permission];
+		if (isset($this->permissions_table[$group], $this->permissions_table[$group][$label])) {
+			$permission = $this->permissions_table[$group][$label];
+			if (isset($this->data[$user]['permissions'][$permission])) {
+				return (bool)$this->data[$user]['permissions'][$permission];
+			}
 		}
-		return false;*/
+		return false;
 	}
 	/**
 	 * Find the session by id, and return id of owner (user)

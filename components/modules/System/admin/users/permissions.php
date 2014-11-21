@@ -77,7 +77,7 @@ if (isset($rc[2], $rc[3])) {
 	);
 } else {
 	$a->buttons			= false;
-	$permissions		= $u_db->qfa('SELECT `id`, `label`, `group` FROM `[prefix]permissions` ORDER BY `group` ASC, `id` ASC');
+	$permissions		= $u_db->qfa('SELECT `id`, `label`, `group` FROM `[prefix]permissions` ORDER BY `group` ASC, `id` ASC');//TODO Groups collapsing
 	$permissions_list	= h::tr(
 		h::{'th.ui-widget-header.ui-corner-all'}(
 			array(
@@ -90,35 +90,33 @@ if (isset($rc[2], $rc[3])) {
 	);
 	foreach ($permissions as $permission) {
 		$permissions_list .= h::tr(
-			h::{'td.ui-state-default.ui-corner-all'}(
-				array(
-					h::a(
-						h::{'button.compact'}(
-							h::icon('wrench'),
-							array(
-								'data-title'	=> $L->edit
-							)
-						),
+			h::{'td.ui-state-default.ui-corner-all.left_all'}([//TODO Update (clean) cache after editing/deleting of permission
+				h::a(
+					h::{'button.compact'}(
+						h::icon('wrench'),
 						array(
-							'href'	=> $a->action.'/edit/'.$permission['id']
-						)
-					).
-					h::a(
-						h::{'button.compact'}(
-							h::icon('trash'),
-							array(
-								'data-title'	=> $L->delete
-							)
-						),
-						array(
-							'href'	=> $a->action.'/delete/'.$permission['id']
+							'data-title'	=> $L->edit
 						)
 					),
-					$permission['id'],
-					$permission['label'] ?: $L->undefined,
-					$permission['group'] ?: $L->undefined
-				)
-			)
+					array(
+						'href'	=> $a->action.'/edit/'.$permission['id']
+					)
+				).
+				h::a(
+					h::{'button.compact'}(
+						h::icon('trash'),
+						array(
+							'data-title'	=> $L->delete
+						)
+					),
+					array(
+						'href'	=> $a->action.'/delete/'.$permission['id']
+					)
+				),
+				$permission['id'],
+				$permission['label'] ?: $L->undefined,
+				$permission['group'] ?: $L->undefined
+			])
 		);
 	}
 	unset($permissions, $permission);

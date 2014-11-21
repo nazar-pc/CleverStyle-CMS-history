@@ -3,6 +3,8 @@ if (!isset($_POST['edit_settings'])) {
 	return;
 }
 global $Config, $L, $Index, $Cache;
+$disk_cache		= $Config->core['disk_cache'];
+$memcache_cache	= $Config->core['memcache'];
 if ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save') {
 	foreach ($Config->admin_parts as $part) {
 		if (isset($_POST[$part])) {

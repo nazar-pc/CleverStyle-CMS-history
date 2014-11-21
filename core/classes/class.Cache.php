@@ -1,26 +1,19 @@
 <?php
 class Cache {
-	protected	$init = false,				//For single initialization
-				$disk = false,
+	protected	$disk = true,
 				$disk_size = -1,
 				$memcache = false,
 				/*$memcached = false,*/
 				$cache = true,				//Состояние кеша (вкл/выкл)
 				$size = false;				//Размер кеша
 	function init ($disk_cache, $memcache) {
-		if ($this->init) {
-			return;
+		if ($this->disk = (bool)$disk_cache) {
+			$this->disk_size = $disk_cache*1048576;
 		}
-		$this->init = true;
-		global $MEMCACHE_HOST, $MEMCACHE_PORT;
-		$this->disk			= $disk_cache;
-		if (!$this->disk && $this->get('cache')) {
-			flush_cache();
-		}
-		$this->disk_size	= $disk_cache*1048576;
-		$this->memcache		= $memcache;
-		if ($this->memcache) {
+		$this->memcache = $memcache;
+		if ($this->memcache && !is_object($this->memcache)) {
 			$this->memcache = new Memcache;
+			global $MEMCACHE_HOST, $MEMCACHE_PORT;
 			$result = $this->memcache->connect($MEMCACHE_HOST ?: 'localhost', $MEMCACHE_PORT ?: 11211);
 			if ($result === false) {
 				unset($this->memcache);
@@ -29,7 +22,6 @@ class Cache {
 		}
 		//$this->memcached = $Config->core['memcached'];
 		$this->cache = $this->disk || is_object($this->memcache)/* || is_object($this->memcached)*/;
-		unset($GLOBALS['MEMCACHE_HOST'], $GLOBALS['MEMCACHE_PORT']);
 	}
 	function get ($item) {
 		if ($item == 'memcache') {
@@ -39,6 +31,9 @@ class Cache {
 		} elseif ($item == 'cache') {
 			return $this->cache;
 		}
+		if (!$this->cache) {
+			return false;
+		}
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$item)) {
 			if ($cache = @_json_decode($cache)) {
 				return $cache;
@@ -47,7 +42,7 @@ class Cache {
 		if (DS != '/') {
 			$item = str_replace('/', DS, $item);
 		}
-		if (_is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
+		if ($this->disk && _is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
 			if (($cache = @_json_decode($cache)) !== false) {
 				return $cache;
 			} else {
@@ -58,9 +53,7 @@ class Cache {
 		return false;
 	}
 	function set ($item, $data, $time = 0) {
-		if ($data === null) {
-			$this->del($item);
-		}
+		$this->del($item);
 		$data = @_json_encode($data);
 		if (is_object($this->memcache)) {
 			global $Config;
@@ -144,17 +137,20 @@ class Cache {
 		return true;
 	}
 	function del ($item) {
+		if (empty($item) || $item == '/') {
+			return false;
+		}
 		global $Config, $User;
 		if (is_object($User) && !$User->is('system') && $Config->server['mirrors']['count'] > 1) {
-			global $API, $Core;
+			global $Core;
 			foreach ($Config->server['mirrors']['http'] as $url) {
 				if (!($url == $Config->server['host'] && $Config->server['protocol'] == 'http')) {
-					$Core->send('http://'.$url.'/'.$API.'/'.MODULE.'/admin/cache/del', ['item' => $item]);
+					$Core->send('http://'.$url.'/api/'.MODULE.'/admin/cache/del', ['item' => $item]);
 				}
 			}
 			foreach ($Config->server['mirrors']['https'] as $url) {
 				if (!($url != $Config->server['host'] && $Config->server['protocol'] == 'https')) {
-					$Core->send('https://'.$url.'/'.$API.'/'.MODULE.'/admin/cache/del', ['item' => $item]);
+					$Core->send('https://'.$url.'/api/'.MODULE.'/admin/cache/del', ['item' => $item]);
 				}
 			}
 			unset($url);

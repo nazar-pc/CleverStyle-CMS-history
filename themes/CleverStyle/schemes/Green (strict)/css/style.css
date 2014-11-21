@@ -16,24 +16,6 @@ a {
 	background: #fff;
 	border-color: rgb(110, 188, 0);
 }
-.green {
-	border-color: #0f0;
-	box-shadow: 0 0 7px #0f0;
-	-moz-box-shadow: 0 0 7px #0f0;
-	-webkit-box-shadow: 0 0 7px #0f0;
-}
-.red {
-	border-color: #f00;
-	box-shadow: 0 0 7px #f00;
-	-moz-box-shadow: 0 0 7px #f00;
-	-webkit-box-shadow: 0 0 7px #f00;
-}
-.grey {
-	border-color: #999;
-	box-shadow: 0 0 7px #999;
-	-moz-box-shadow: 0 0 7px #999;
-	-webkit-box-shadow: 0 0 7px #999;
-}
 .white, a:hover.white  {
 	border: none;
 	color: #fff;

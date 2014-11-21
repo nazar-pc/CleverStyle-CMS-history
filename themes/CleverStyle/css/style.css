@@ -12,7 +12,6 @@ body {
 
 #body > table {
 	border-radius      : 10px;
-	-moz-border-radius : 10px;
 	padding            : 5px 0;
 	margin-top         : 145px;
 	width              : 100%;
@@ -34,14 +33,12 @@ body {
 
 td#main_content {
 	border-radius      : 7px;
-	-moz-border-radius : 7px;
 	padding            : 10px;
 	vertical-align     : top;
 }
 
 td#main_content > section > article > div {
 	border-radius      : 5px;
-	-moz-border-radius : 5px;
 	padding            : 10px;
 	height             : 100%;
 }
@@ -76,7 +73,6 @@ a[href^="http://"]::after {
 .form_element:focus {
 	border             : solid 2px;
 	border-radius      : 5px;
-	-moz-border-radius : 5px;
 	border-spacing     : 0;
 	padding            : 3px;
 }
@@ -123,26 +119,8 @@ footer {
 	padding    : 0;
 }
 
-.green,
-.red,
-.grey {
-	border             : solid 1px;
-	border-radius      : 5px;
-	-moz-border-radius : 5px;
-	z-index            : 1;
-}
-
-div.ui-state-highlight.red,
-div.ui-state-highlight.green,
-#debug > p.ui-state-highlight,
-div.ui-state-default.red,
-div.ui-state-default.green,
-#debug > p.ui-state-default,
-div.ui-state-error.red {
-	font-size  : 14px;
-	margin     : 10px 10px 20px;
+.for_state_messages {
 	padding    : 5px;
-	text-align : center;
 }
 
 .background {
@@ -177,7 +155,7 @@ a.nul:visited {
 	/*cursor : help;*/
 }
 
-.pointer,
+.storages_config_buttons,
 .modules_config_buttons button,
 .db_config_buttons button,
 .db_config_buttons_ button,
@@ -289,10 +267,6 @@ td.left_all {
 
 .db_config_buttons_ {
 	text-align : right !important;
-}
-
-.db_config_even_lines {
-	border : 1px solid !important;
 }
 
 .test_result {

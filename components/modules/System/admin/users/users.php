@@ -143,12 +143,12 @@ if (isset($rc[2], $rc[3])) {
 						h::{'th.ui-widget-header.ui-corner-all'}(
 							$L->username
 						).
-							h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-								array(
-									'name'	=> 'user[username]',
-									'value'	=> $user_data['username']
-								)
+						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
+							array(
+								'name'	=> 'user[username]',
+								'value'	=> $user_data['username']
 							)
+						)
 					).
 					h::tr(
 						h::{'th.ui-widget-header.ui-corner-all'}(

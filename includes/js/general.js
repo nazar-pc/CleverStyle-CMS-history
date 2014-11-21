@@ -191,7 +191,8 @@ $(function() {
 		$(this).html(add+cookies);
 	});
 	$('#search_users_tabs').tabs({
-		cookie: {}
+		collapsible:	true,
+		cookie:			{}
 	});
 	$('#columns_settings ol').css({
 		'list-style-type'	: 'none',
@@ -205,7 +206,7 @@ $(function() {
 			});
 			$("#columns").val(result.join(';'));
 		}
-	}).children('li').css({//TODO Serialization of selected items and accounting last search
+	}).children('li').css({//TODO Serialization of selected items and accounting last search (page changing)
 		'margin'			: '3px',
 		'padding'			: '5px',
 		'width'				: 'auto'

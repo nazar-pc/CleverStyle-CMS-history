@@ -3,8 +3,9 @@ Options -All -Multiviews +FollowSymLinks
 IndexIgnore *.php *.pl *.cgi *.htaccess *.htpasswd
 
 RewriteEngine On
+RewriteBase /
 
-<Files *.jpg> 
+<Files *.jpg>
 	RewriteEngine Off
 </Files>
 <Files license.txt> 
