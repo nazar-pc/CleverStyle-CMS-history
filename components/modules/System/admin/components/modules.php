@@ -197,13 +197,13 @@ if ($mode && $rc[2] == 'install') {
 		)
 	);
 } else {
-	$db_users_data = $db->core()->columns('[prefix]users', false, MYSQL_ASSOC);
+	$db_users_data = $db->core()->columns('[prefix]users');
 	$db_users_items = array();
 	foreach ($db_users_data as $column) {
 		$db_users_items[] = $column['Field'];
 	}
-	unset($column);
-	$modules_list[] = $a->tr(
+	unset($column, $db_users_data);
+	$modules_list = $a->tr(
 		$a->td(
 			array(
 				$L->module_name,
@@ -211,29 +211,60 @@ if ($mode && $rc[2] == 'install') {
 				$L->action
 			),
 			array(
-				'class'	=> 'ui-widget-header ui-corner-all center_all'
+				'class'	=> 'ui-widget-header ui-corner-all'
 			)
 		)
 	);
 	foreach ($Config->components['modules'] as $module => $mdata) {
-		$addition_state = $action = '';
-		$db_json = array();
-		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
-			$db_json = json_decode_x(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
-			$lost_columns = array();
-			foreach ($db_json['users'] as $db_users_item) {
-				if (!in_array($db_users_item, $db_users_items)) {
-					$lost_columns[] = $db_users_item;
+		//Когда модуль включен или отключен
+		if ($mdata['active'] == 1 || $mdata['active'] == 0) {
+			$addition_state = $action = '';
+			$db_json = array();
+			//Настройки БД
+			if (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
+				$db_json = json_decode_x(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
+				$lost_columns = array();
+				foreach ($db_json['users'] as $db_users_item) {
+					if (!in_array($db_users_item, $db_users_items)) {
+						$lost_columns[] = $db_users_item;
+					}
 				}
-			}
-			unset($db_users_item);
-			if (!empty($lost_columns)) {
-				$addition_state .= $a->a(
-					$a->icon('alert'),
+				if (!empty($lost_columns)) {
+					$addition_state .= $a->a(
+						$a->icon('alert'),
+						array(
+							'data-title'	=> $L->missing_users_columns.':'.$a->br().$a->br().implode(', ', $lost_columns).$a->br().$a->br().$L->click_to_fix,
+							'class'			=> 'nul',
+							'style'			=> 'display: inline-block;'
+						)
+					);
+				}
+				unset($db_users_item, $lost_columns);
+				$action .= $a->a(
+					$a->button(
+						$a->icon('gear'),
+						array(
+							'data-title'	=> $L->databases
+						)
+					),
 					array(
-						'data-title'	=> $L->missing_users_columns.':'.$a->br().$a->br().implode(', ', $lost_columns).$a->br().$a->br().$L->click_to_fix,
-						'class'			=> 'nul',
-						'style'			=> 'display: inline-block;'
+						'href'		=> $a->action.'/db/'.$module,
+						'class'		=> 'nul'
+					)
+				);
+			}
+			//Настройки хранилищ
+			if (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1) {
+				$action .= $a->a(
+					$a->button(
+						$a->icon('disk'),
+						array(
+							'data-title'	=> $L->storages
+						)
+					),
+					array(
+						'href'		=> $a->action.'/storage/'.$module,
+						'class'		=> 'nul'
 					)
 				);
 			}
@@ -277,34 +308,6 @@ if ($mode && $rc[2] == 'install') {
 					)
 				);
 			}
-			$action .= $a->a(
-				$a->button(
-					$a->icon('gear'),
-					array(
-						'data-title'	=> $L->databases
-					)
-				),
-				array(
-					'href'		=> $a->action.'/db/'.$module,
-					'class'		=> 'nul'
-				)
-			);
-		}
-		//Когда модуль включен или отключен
-		if ($mdata['active'] == 1 || $mdata['active'] == 0) {
-			$action .= (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1 ?
-				$a->a(
-					$a->button(
-						$a->icon('disk'),
-						array(
-							'data-title'	=> $L->storages
-						)
-					),
-					array(
-						'href'		=> $a->action.'/storage/'.$module,
-						'class'		=> 'nul'
-					)
-				) : '');
 			if (mb_strtolower($module) != 'system') {
 				$action .= (is_dir(MODULES.DS.$module.DS.$ADMIN) ? $a->a(
 					$a->button(
@@ -343,7 +346,7 @@ if ($mode && $rc[2] == 'install') {
 					)
 				);
 			}
-		//Когда модуль удален
+		//Когда модуль удален или не установлен
 		} else {
 			$action .= $a->a(
 				$a->button(
@@ -358,12 +361,11 @@ if ($mode && $rc[2] == 'install') {
 				)
 			);
 		}
-		//Добавляем строчку модуля в общий список
-		$modules_list[$module] = $a->tr(
+		$modules_list .= $a->tr(
 			$a->td(
 				$module,
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all center_all'
+					'class'	=> 'ui-state-highlight ui-corner-all'
 				)
 			).
 			$a->td(
@@ -374,7 +376,7 @@ if ($mode && $rc[2] == 'install') {
 					)
 				).$addition_state,
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all center_all'
+					'class'	=> 'ui-state-highlight ui-corner-all'
 				)
 			).
 			$a->td(
@@ -387,10 +389,10 @@ if ($mode && $rc[2] == 'install') {
 	}
 	$a->content(
 		$a->table(
-			implode('', $modules_list),
+			$modules_list,
 			array(
 				'style'	=> 'width: 100%;',
-				'class'	=> 'admin_table'
+				'class'	=> 'admin_table center_all'
 			)
 		).
 		$a->button(
@@ -402,7 +404,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	unset($modules_list);
+	unset($db_users_items, $modules_list, $module, $mdata, $addition_state, $action, $db_json);
 }
 unset($a, $rc, $mode);
 ?>

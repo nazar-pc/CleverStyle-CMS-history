@@ -234,12 +234,6 @@ class HTML {
 	function sub		($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	function pre		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
-	}
-	function code		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
-	}
 	////Непарные теги
 	function link		($in = array()) {
 		$in['tag'] = __FUNCTION__;
@@ -445,6 +439,18 @@ class HTML {
 			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
+	function button		($in = '', $data = array()) {
+		if (is_array($in)) {
+			if (!isset($in['type'])) {
+				$in['type'] = 'button';
+			}
+		} elseif (is_array($data)) {
+			if (!isset($data['type'])) {
+				$data['type'] = 'button';
+			}
+		}
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
 	function textarea	($in = '', $data = array()) {
 		global $Page;
 		$uniqid = uniqid('textarea_');
@@ -460,16 +466,34 @@ class HTML {
 		$data['level'] = false;
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	function button		($in = '', $data = array()) {
+	function pre		($in = '', $data = array()) {
+		global $Page;
+		$uniqid = uniqid('pre_');
 		if (is_array($in)) {
-			if (!isset($in['type'])) {
-				$in['type'] = 'button';
+			if (isset($in['in'])) {
+				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$in['in'] = $uniqid;
 			}
-		} elseif (is_array($data)) {
-			if (!isset($data['type'])) {
-				$data['type'] = 'button';
-			}
+		} else {
+			$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+			$in = $uniqid;
 		}
+		$data['level'] = false;
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function code		($in = '', $data = array()) {
+		global $Page;
+		$uniqid = uniqid('code_');
+		if (is_array($in)) {
+			if (isset($in['in'])) {
+				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$in['in'] = $uniqid;
+			}
+		} else {
+			$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+			$in = $uniqid;
+		}
+		$data['level'] = false;
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
 

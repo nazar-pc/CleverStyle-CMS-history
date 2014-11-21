@@ -42,7 +42,10 @@ class Index extends HTML {
 			define('MFOLDER', MODULES.DS.MODULE);
 			$this->module = true;
 		}
-		include_x(PLUGINS.DS.'TinyMCE'.DS.'index.php');
+		foreach ($Config->components['plugins'] as $plugin) {
+			include_x(PLUGINS.DS.$plugin.DS.'index.php', true, false);
+		}
+		unset($plugin);
 	}
 	function init ($save_file = false) {
 		if (file_exists(MFOLDER.DS.'index.json')) {
@@ -52,7 +55,7 @@ class Index extends HTML {
 		global $Config, $L, $Page, $ADMIN;
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
-			$Page->title($L->__get(defined('HOME') ? 'home' : MODULE));
+			$Page->title($L->get(defined('HOME') ? 'home' : MODULE));
 			$this->savefile = $save_file ?: $this->savefile;
 		}
 		if ($this->parts !== false) {
@@ -67,9 +70,7 @@ class Index extends HTML {
 			if (file_exists(MFOLDER.DS.$rc[0].'.json')) {
 				$this->parts = json_decode_x(file_get_contents(MFOLDER.DS.$rc[0].'.json'));
 			}
-			if (file_exists(MFOLDER.DS.$rc[0].'.php')) {
-				include_x(MFOLDER.DS.$rc[0].'.php');
-			}
+			include_x(MFOLDER.DS.$rc[0].'.php', true, false);
 			if (is_array($this->subparts)) {
 				if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
 					$rc[1] = $this->subparts[0];
@@ -87,7 +88,6 @@ class Index extends HTML {
 			$this->action = $Config->server['current_url'];
 			include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
 		}
-		return $this;
 	}
 	function mainmenu () {
 		global $Config, $L, $Page, $User, $ADMIN;

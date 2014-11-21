@@ -1,7 +1,7 @@
 <?php
 global $L;
 //Файл перевода Русского языка
-$L->set(true,		$L->on = 'Вкл.');
+$L->set(true,	$L->on = 'Вкл.');
 $L->set(false,	$L->off = 'Выкл.');
 $L->translate = array(
 	'home'				=> 'Главная',
@@ -227,7 +227,9 @@ $L->translate = array(
 //Блоки
 	'blocks'	=> 'Блоки',
 //Плагины
-	'plugins'	=> 'Плагины',
+	'plugins'					=> 'Плагины',
+	'plugin_name'				=> 'Название плагина',
+	'information_about_plugin'	=> 'Информация о плагине',
 //Базы данных
 	'databases'				=> 'Базы данных',
 	'db'					=> 'БД',
