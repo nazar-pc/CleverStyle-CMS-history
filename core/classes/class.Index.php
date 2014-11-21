@@ -161,7 +161,8 @@ class Index extends HTML {
 					$this->input(
 						array(
 							'type'	=> 'hidden',
-							'name'	=> $Config->routing['current'][1]
+							'name'	=> 'subpart',
+							'value'	=> $Config->routing['current'][1]
 						)
 					).
 					//Кнопка применить
@@ -270,6 +271,8 @@ class Index extends HTML {
 				)
 			);
 			$this->cancel = '';
+			global $Page;
+			$Page->js("\$(function(){save = true;});", 'code');
 			return true;
 		} else {
 			$Page->title($L->settings_apply_error);

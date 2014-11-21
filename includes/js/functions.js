@@ -61,14 +61,12 @@ $(function() {
 	);
 });
 function menuadmin (item, direct_link) {
-	var url = direct_link ? direct_link : base_url+'/'+item;
+	var url = direct_link ? item : base_url+'/'+item;
 	if (!save) {
 		document.location.href = url;
 	} else {
 		if (confirm(save_before)) {
-			if (!direct_link) {
-				$('#admin_form').attr({action: url});
-			}
+			$('#admin_form').attr('action', url);
 			$('#save_settings').click();
 		} else {
 			if (confirm(continue_transfer)) {

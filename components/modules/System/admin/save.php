@@ -25,16 +25,14 @@ if (isset($_POST['edit_settings'])) {
 	}
 	if ($_POST['edit_settings'] == 'apply' && $Cache->cache) {
 		if ($Index->apply()) {
-			if (isset($_POST['visual_style']) || isset($_POST['caching'])) {
+			if ($_POST['subpart'] == 'visual_style' || $_POST['subpart'] == 'caching') {
 				flush_pcache();
 			}
-			global $Page;
-			$Page->js("\$(function(){save = true;});", 'code');
 		} else {
 			$apply_error = true;
 		}
 	} elseif ($_POST['edit_settings'] == 'save' && isset($update)) {
-		if ($Index->save($update) && isset($_POST['visual_style']) || isset($_POST['caching'])) {
+		if ($Index->save($update) && ($_POST['subpart'] == 'visual_style' || $_POST['subpart'] == 'caching')) {
 			flush_pcache();
 		}
 	} elseif ($_POST['edit_settings'] == 'cancel' && $Cache->cache) {
