@@ -5,7 +5,7 @@ $rc = &$Config->routing['current'];
 $a->form = false;
 $test_dialog = true;
 if (isset($rc[2])) {
-	$a->apply_button = false;
+	$a->apply = false;
 	$a->cancel_back = true;
 	if ($rc[2] == 'add' || ($rc[2] == 'edit' && isset($rc[3]))) {
 		if ($rc[2] == 'edit') {
@@ -49,7 +49,7 @@ if (isset($rc[2])) {
 							),
 							$a->select(
 								array(
-									'in'		=> filter(get_list(ENGINES, '/^storage\.[0-9a-z_\-]*?\.php$/i', 'f'), 'substr', 8, -4)
+									'in'		=> filter(get_list(ENGINES, '/^storage\.[0-9a-z_\-]*?\.php$/i', 'f'), 'mb_substr', 8, -4)
 								),
 								array(
 									'name'		=> 'storage[connection]',

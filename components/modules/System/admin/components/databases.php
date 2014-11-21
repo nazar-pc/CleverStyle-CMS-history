@@ -4,7 +4,7 @@ $a = &$Index;
 $rc = &$Config->routing['current'];
 $test_dialog = true;
 if (isset($rc[2])) {
-	$a->apply_button = false;
+	$a->apply = false;
 	$a->cancel_back = true;
 	if ($rc[2] == 'add' || ($rc[2] == 'edit' && isset($rc[3]))) {
 		if ($rc[2] == 'edit') {
@@ -70,7 +70,7 @@ if (isset($rc[2])) {
 							),
 							$a->select(
 								array(
-									'in'		=> filter(get_list(ENGINES, '/^db\.[0-9a-z_\-]*?\.php$/i', 'f'), 'substr', 3, -4)
+									'in'		=> filter(get_list(ENGINES, '/^db\.[0-9a-z_\-]*?\.php$/i', 'f'), 'mb_substr', 3, -4)
 								),
 								array(
 									'name'		=> 'db[type]',

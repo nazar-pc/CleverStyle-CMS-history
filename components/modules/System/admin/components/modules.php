@@ -54,7 +54,7 @@ if ($mode && $rc[2] == 'install') {
 	);
 } elseif ($mode && $rc[2] == 'db' && isset($Config->components['modules'][$rc[3]]) && count($Config->db) > 1) {
 	$a->buttons = true;
-	$a->apply_button = false;
+	$a->apply = false;
 	$a->cancel_back = true;
 	$dbs = array(0);
 	$dbsname = array($L->core_db);
@@ -126,7 +126,7 @@ if ($mode && $rc[2] == 'install') {
 	);
 } elseif ($mode && $rc[2] == 'storage' && isset($Config->components['modules'][$rc[3]]) && count($Config->storage) > 1) {
 	$a->buttons = true;
-	$a->apply_button = false;
+	$a->apply = false;
 	$a->cancel_back = true;
 	$storages = array(0);
 	$storagesname = array($L->core_storage);

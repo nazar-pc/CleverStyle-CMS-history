@@ -227,7 +227,12 @@ $L->translate = array(
 	'information_about_module'	=> 'Информация о модуле',
 	'license'					=> 'Лицензия',
 //Блоки
-	'blocks'	=> 'Блоки',
+	'blocks'			=> 'Блоки',
+	'top_blocks'		=> 'Верхние блоки',
+	'left_blocks'		=> 'Левые блоки',
+	'invisible_blocks'	=> 'Невидимые блоки',
+	'right_blocks'		=> 'Правые блоки',
+	'bottom_blocks'		=> 'Нижние блоки',
 //Плагины
 	'plugins'					=> 'Плагины',
 	'plugin_name'				=> 'Название плагина',

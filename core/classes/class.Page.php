@@ -117,16 +117,30 @@ class Page extends HTML {
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
-			$this->core_css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1], array('type' => 'text/css'));
+			$this->core_css[1] = $this->style(
+				$Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1],
+				array(
+					'type' => 'text/css'
+				)
+			);
 		}
 		if ($this->css[1]) {
-			$this->css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1], array('type' => 'text/css'));
+			$this->css[1] = $this->style(
+				$Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1],
+				array(
+					'type' => 'text/css'
+				)
+			);
 		}
 		if ($this->core_js[1]) {
-			$this->core_js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1]);
+			$this->core_js[1] = $this->script(
+				$Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1]
+			);
 		}
 		if ($this->js[1]) {
-			$this->js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1]);
+			$this->js[1] = $this->script(
+				$Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1]
+			);
 		}
 		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
 						$this->meta(array('http-equiv'	=> 'Content-Type',		'content'	=> 'text/html; charset=utf-8')).
@@ -218,13 +232,13 @@ class Page extends HTML {
 		} elseif ($add) {
 			if ($core) {
 				if ($mode == 'file') {
-					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
+					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false))."\n";
 				} elseif ($mode == 'code') {
 					$this->core_js[1] .= $add."\n";
 				}
 			} else {
 				if ($mode == 'file') {
-					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
+					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false))."\n";
 				} elseif ($mode == 'code') {
 					$this->js[1] .= $add."\n";
 				}
@@ -298,11 +312,11 @@ class Page extends HTML {
 			$key = $Cache->pcache_key;
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
-				$this->css('storages/pcache/'.$file.'css?'.$key, 'file', true);
+				file_exists(realpath('storages/pcache/'.$file.'css')) && $this->css('storages/pcache/'.$file.'css?'.$key, 'file', true);
 			}
 			//Подключение JavaScript
 			foreach ($this->cache_list as $file) {
-				$this->js('storages/pcache/'.$file.'js?'.$key, 'file', true);
+				file_exists(realpath('storages/pcache/'.$file.'js')) && $this->js('storages/pcache/'.$file.'js?'.$key, 'file', true);
 			}
 			unset($key);
 		} else {
@@ -347,7 +361,7 @@ class Page extends HTML {
 				if (file_exists($file)) {
 					unlink($file);
 				}
-				file_put_contents($file, gzcompress($temp_cache, 9), LOCK_EX|FILE_BINARY);
+				file_put_contents($file, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
 				$key .= md5($temp_cache);
 				unset($temp_cache, $cache);
 			}

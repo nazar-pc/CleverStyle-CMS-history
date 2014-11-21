@@ -342,11 +342,17 @@ function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 			}
 		} elseif ($mode == 'htmlentities') {
 			return htmlentities($text);
-		} elseif ($mode == 'substr') {
+		} elseif ($mode == 'mb_substr') {
 			if ($data2 !== NULL) {
 				return mb_substr($text, $data, $data2);
 			} else {
 				return mb_substr($text, $data);
+			}
+		} elseif ($mode == 'substr') {
+			if ($data2 !== NULL) {
+				return substr($text, $data, $data2);
+			} else {
+				return substr($text, $data);
 			}
 		} elseif ($mode == 'form') {
 			return function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($text, 'stripslashes') : $text;
@@ -357,7 +363,19 @@ function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 }
 //Исправленная функция json_encode, настоятельно рекомендуется к использованию вместо стандартной!
 function json_encode_x ($in) {
-	return html_entity_decode(preg_replace('/\\\&#x([0-9a-fA-F]{3});/', '\\\\\u0$1', preg_replace('/\\\u0([0-9a-fA-F]{3})/', '&#x$1;', json_encode($in))), ENT_NOQUOTES, 'utf-8');
+	return html_entity_decode(
+		preg_replace(
+			'/\\\&#x([0-9a-fA-F]{3});/',
+			'\\\\\u0$1',
+			preg_replace(
+				'/\\\u0([0-9a-fA-F]{3})/',
+				'&#x$1;',
+				json_encode($in)
+			)
+		),
+		ENT_NOQUOTES,
+		'utf-8'
+	);
 }
 //Аналог json_decode, сразу возвращает ассоциативный массив
 function json_decode_x ($in, $depth = 512) {

@@ -1,8 +1,9 @@
 <?php
 //Интерфейс для работы с классами
 class Classes {
-	public	$ObjectsList = array();	//Массив со списком объектов, и данными о занятом объеме памяти после их создания,
-									//и длительностью их содания
+	public	$ObjectsList		= array(),	//Массив со списком объектов, и данными о занятом объеме памяти
+											//после их создания, и длительностью содания
+			$unload_priority	= array('Page', 'Text', 'db', 'Config', 'User', 'Error', 'L', 'Cache', 'Core');
 	private	$LoadedObjects = array();
 	//Метод добавления объектов в список для их разрушения в конце работы
 	function add ($name) {
@@ -74,15 +75,18 @@ class Classes {
 	function __clone () {}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __finish () {
-		$unload_priority = array('Page', 'Text', 'db', 'Config', 'User', 'Error', 'L', 'Cache', 'Core');
-		$this->unload('Index');
+		if (isset($this->LoadedObjects['Index'])) {
+			$this->unload('Index');
+		}
 		foreach ($this->LoadedObjects as $class) {
-			if (!in_array($class, $unload_priority)) {
+			if (!in_array($class, $this->unload_priority)) {
 				$this->unload($class);
 			}
 		}
-		foreach ($unload_priority as $class) {
-			$this->unload($class);
+		foreach ($this->unload_priority as $class) {
+			if (isset($this->LoadedObjects[$class])) {
+				$this->unload($class);
+			}
 		}
 		exit;
 	}

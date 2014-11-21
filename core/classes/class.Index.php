@@ -11,10 +11,10 @@ class Index extends HTML {
 			$form			= false,
 			$action,
 			$buttons		= true,
-			$apply_button	= true,
+			$apply			= true,
 			$cancel			= ' disabled',
 			$cancel_back	= false,
-			$reset_button	= false,
+			$reset			= true,
 			$save			= false,
 			$post_buttons	= '',
 
@@ -164,7 +164,7 @@ class Index extends HTML {
 						)
 					).
 					//Кнопка применить
-					($this->apply_button && $this->buttons ?
+					($this->apply && $this->buttons ?
 						$this->button(
 							$L->apply,
 							array(
@@ -191,7 +191,7 @@ class Index extends HTML {
 						)
 					: '').
 					//Кнопка отмена (отменяет настройки или возвращает на предыдущую страницу)
-					(($this->apply_button && $this->buttons) || $this->cancel_back ?
+					(($this->apply && $this->buttons) || $this->cancel_back ?
 						$this->button(
 							$L->cancel,
 							array(
@@ -206,7 +206,7 @@ class Index extends HTML {
 						)
 					: '').
 					//Кнопка сбросить
-					($this->buttons || (!$this->buttons && $this->reset_button) ?
+					($this->buttons && $this->reset ?
 						$this->button(
 							$L->reset,
 							array(
