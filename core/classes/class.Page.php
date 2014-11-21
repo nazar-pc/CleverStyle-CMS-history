@@ -614,7 +614,7 @@ class Page extends HTML {
 				}
 				$ob = false;
 			}
-			$timeload['end'] = time_x(true);
+			$timeload['end'] = microtime(true);
 			if ($User->is_admin() && is_object($Config) && $Config->core['debug']) {
 				$this->debug();
 			}

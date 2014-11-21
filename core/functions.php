@@ -95,10 +95,6 @@ function __finish () {
 	}
 	exit;
 }
-//Получение времени по Гринвичу целым числом, и числом с плавающей точкой
-function time_x ($microtime = false) {
-	return ($microtime ? microtime(true) : time())-date('Z');
-}
 //Приостановить ограничение на время выполнение скрипта
 //Применяется для выполнения длительных операций без ошибок
 function time_limit_pause ($pause = true) {

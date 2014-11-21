@@ -61,11 +61,7 @@ $(function() {
 	);
 });
 function menuadmin (item, direct_link) {
-	if (direct_link) {
-		url = direct_link;
-	} else {
-		url = base_url+'/'+item;
-	}
+	var url = direct_link ? direct_link : base_url+'/'+item;
 	if (!save) {
 		document.location.href = url;
 	} else {

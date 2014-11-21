@@ -19,6 +19,7 @@ class HTML {
 	}
 	//Метод для обертки контента парными тегами
 	function wrap ($data = array()) {
+		$data = (array)$data;
 		$in = $add = '';
 		$tag = 'div';
 		$quote = '"';
@@ -49,18 +50,14 @@ class HTML {
 			$add = ' '.$data['add'];
 			unset($data['add']);
 		}
-		if (isset($data['async'])) {
-			$add .= ' async';
-			unset($data['async']);
+		$unit_atributes = array('async', 'defer', 'formnovalidate', 'autofocus', 'checked', 'selected', 'readonly', 'required', 'disabled', 'multiple');
+		foreach ($unit_atributes as $attr) {
+			if (isset($data[$attr])) {
+				$add .= ' '.$attr;
+				unset($data[$attr]);
+			}
 		}
-		if (isset($data['defer'])) {
-			$add .= ' defer';
-			unset($data['defer']);
-		}
-		if (isset($data['selected'])) {
-			$add .= ' selected';
-			unset($data['selected']);
-		}
+		unset($unit_atributes, $attr);
 		if (isset($data['quote'])) {
 			$quote = $data['quote'];
 			unset($data['quote']);
@@ -109,6 +106,7 @@ class HTML {
 	}
 	//Метод для обертки контента непарными тегами
 	function iwrap ($data = array()) {
+		$data = (array)$data;
 		$in = $add = '';
 		$tag = 'input';
 		$quote = '"';
@@ -131,10 +129,14 @@ class HTML {
 			$add = $data['add'];
 			unset($data['add']);
 		}
-		if (isset($data['checked'])) {
-			$add .= ' checked';
-			unset($data['checked']);
+		$unit_atributes = array('async', 'defer', 'formnovalidate', 'autofocus', 'checked', 'selected', 'readonly', 'required', 'disabled', 'multiple');
+		foreach ($unit_atributes as $attr) {
+			if (isset($data[$attr])) {
+				$add .= ' '.$attr;
+				unset($data[$attr]);
+			}
 		}
+		unset($unit_atributes, $attr);
 		if (isset($data['quote'])) {
 			$quote = $data['quote'];
 			unset($data['quote']);

@@ -9,6 +9,7 @@ class Index extends HTML {
 
 			$savefile		= 'save',
 			$form			= false,
+			$form_atributes	= array(),
 			$action,
 			$buttons		= true,
 			$apply			= true,
@@ -223,7 +224,7 @@ class Index extends HTML {
 						'id'		=> 'admin_form',
 						'onReset'	=> 'save = 0;',
 						'class'		=> 'admin_form'
-					)
+					)+$this->form_atributes
 				), 1
 			);
 		} else {

@@ -1,7 +1,10 @@
 <?php
 class User {
-	private	$user = true,
-			$admin = true;
+	private	$user				= true,
+			$admin				= true;
+	function __construct () {
+		date_default_timezone_set('Europe/Kiev');
+	}
 	function is_admin () {
 		return $this->admin;
 	}
@@ -16,10 +19,6 @@ class User {
 	}
 	function __clone () {}
 	//Запрет клонирования
-	function __finish () {
-		foreach ($this as &$var) {
-			unset($var);
-		}
-	}
+	function __finish () {}
 }
 ?>

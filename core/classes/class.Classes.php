@@ -36,7 +36,7 @@ class Classes {
 								$this->LoadedObjects[$class[2]] = $class[2];
 								$$class[2] = new $class[0]();
 							}
-							$this->ObjectsList[$class[2]] = array(time_x(true), memory_get_usage());
+							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
 							return $$class[2];
 						} else {
 							global $$class[0];
@@ -44,7 +44,7 @@ class Classes {
 								$this->LoadedObjects[$class[0]] = $class[0];
 								$$class[0] = new $class[0]();
 							}
-							$this->ObjectsList[$class[0]] = array(time_x(true), memory_get_usage());
+							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
 							return $$class[0];
 						}
 					}

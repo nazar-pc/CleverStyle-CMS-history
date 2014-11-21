@@ -56,9 +56,11 @@ class Language {
 				if (file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
 					$lang_data = json_decode_x(file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'));
 					$this->clang = $lang_data['short_format'];
+					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $lang_data['locale']) : setlocale(LC_TIME, $lang_data['locale']);
 					unset($lang_data);
 				} else {
 					$this->clang = strtolower(mb_substr($this->clanguage, 0, 2));
+					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $this->clang.'_'.strtoupper($this->clang)) : setlocale(LC_TIME, $this->clang.'_'.strtoupper($this->clang));
 				}
 				$Text->language($this->clanguage);
 				$this->need_to_rebuild_cache = true;

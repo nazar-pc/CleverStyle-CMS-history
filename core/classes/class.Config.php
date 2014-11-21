@@ -206,6 +206,7 @@ class Config {
 		$this->apply();
 		return true;
 	}
+	//Применение изменений без сохранения в БД
 	function apply () {
 		global $Error, $Cache;
 		//Перезапись кеша
@@ -225,6 +226,7 @@ class Config {
 		$Cache->config = $Config;
 		return true;
 	}
+	//Сохранение и применение изменений
 	function save ($parts = NULL) {
 		if ($parts === NULL || empty($parts)) {
 			$parts = $this->admin_parts;
@@ -251,6 +253,7 @@ class Config {
 		}
 		return false;
 	}
+	//Отмена примененных изменений и перестройка кеша
 	function cancel () {
 		global $Cache;
 		unset($Cache->config);
