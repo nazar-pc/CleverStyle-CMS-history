@@ -44,6 +44,8 @@ if (isset($rc[2], $rc[3])) {
 					)
 				)
 			);
+			global $Page;
+			$Page->warning($L->changing_settings_warning);
 		break;
 		case 'delete':
 			$a->buttons		= false;
@@ -61,7 +63,9 @@ if (isset($rc[2], $rc[3])) {
 				).
 				h::{'button[type=submit]'}($L->yes)
 			);
-			break;
+			global $Page;
+			$Page->warning($L->changing_settings_warning);
+		break;
 	}
 	$a->content(
 		h::{'input[type=hidden]'}(

@@ -58,4 +58,3 @@ if ($Config->core['cache_compress_js_css']) {
 		)
 	);
 }
-?>

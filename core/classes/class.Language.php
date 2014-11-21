@@ -91,7 +91,7 @@ class Language {
 			$this->clanguage = $language;
 			if ($translate = $Cache->{'language/'.$this->clanguage}) {
 				$this->set($translate);
-				if (!is_a($Text, 'Loader')) {
+				if (!($Text instanceof Loader)) {
 					$Text->language($this->clang);
 				}
 				return true;
@@ -115,7 +115,7 @@ class Language {
 					$this->translate['clocale'] = $this->clang.'_'.mb_strtoupper($this->clang);
 				}
 				setlocale(LC_TIME | (defined('LC_MESSAGES') ? LC_MESSAGES : 0), $this->clocale);
-				if (!is_a($Text, 'Loader')) {
+				if (!($Text instanceof Loader)) {
 					$Text->language($this->clang);
 				}
 				$this->need_to_rebuild_cache = true;

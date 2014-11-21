@@ -24,7 +24,7 @@ class Objects {
 				//Используем заданное имя для объекта
 				if ($custom_name !== false) {
 					global $$custom_name;
-					if (!is_object($$custom_name) || is_a($$custom_name, 'Loader')) {
+					if (!is_object($$custom_name) || $$custom_name instanceof Loader) {
 						if ($loader) {
 							$$custom_name				= new Loader($custom_name, $class);
 						} else {
@@ -37,7 +37,7 @@ class Objects {
 				//Для имени объекта используем название класса
 				} else {
 					global $$class;
-					if (!is_object($$class) || is_a($$class, 'Loader')) {
+					if (!is_object($$class) || $$class instanceof Loader) {
 						if ($loader) {
 							$$class					= new Loader($class, $class);
 						} else {

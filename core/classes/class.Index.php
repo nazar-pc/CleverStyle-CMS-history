@@ -33,7 +33,9 @@ class Index {
 
 				$structure		= array(),
 				$parts			= array(),
-				$subparts		= array();
+				$subparts		= array(),
+				$triggers_reg	= false,
+				$triggers;
 
 	function __construct () {
 		global $Config, $User;
@@ -385,6 +387,83 @@ class Index {
 			$this->postload = array();
 		}
 		$this->postload[] = $closure;
+	}
+	/**
+	 * Registration of triggers for actions
+	 *
+	 * @param array $trigger
+	 * @param array|null $triggers
+	 * @return bool
+	 */
+	function register_trigger ($trigger, &$triggers = null) {
+		if ((!is_array($trigger) || empty($trigger)) && !($trigger instanceof Closure)) {
+			return false;
+		}
+		if ($triggers === null) {
+			$triggers = &$this->triggers;
+		}
+		if ($trigger instanceof Closure) {
+			$triggers[] = $trigger;
+			return true;
+		}
+		$return = true;
+		foreach ($trigger as $item => $function) {
+			if (!isset($triggers[$item])) {
+				$triggers[$item] = array();
+			}
+			$return = $return && $this->register_trigger($function, $triggers[$item]);
+		}
+		return $return;
+	}
+	/**
+	 * Running trigers for some actions
+	 *
+	 * @param string $action
+	 * @param mixed $data
+	 * @return bool
+	 */
+	function run_trigger ($action, $data = null) {
+		if (!$this->triggers_reg) {
+			global $Config;
+			$modules = array_keys($Config->components['modules']);
+			foreach ($modules as $module) {
+				_include(MODULES.DS.$module.DS.'trigger.php', true, false);
+			}
+			unset($modules, $module);
+			$plugins = get_list(PLUGINS, false, 'd');
+			foreach ($plugins as $plugin) {
+				_include(PLUGINS.DS.$plugin.DS.'trigger.php', true, false);
+			}
+			unset($plugins, $plugin);
+			$this->triggers_reg = true;
+		}
+		$action = explode('/', $action);
+		if (!is_array($action) || empty($action)) {
+			return false;
+		}
+		$triggers = $this->triggers;
+		foreach ($action as $item) {
+			if (is_array($triggers) && isset($triggers[$item])) {
+				$triggers = $triggers[$item];
+			} else {
+				return true;
+			}
+		}
+		unset($action, $item);
+		if (!is_array($triggers) || empty($triggers)) {
+			return false;
+		}
+		$return = true;
+		foreach ($triggers as $trigger) {
+			if ($trigger instanceof Closure) {
+				if ($data === null) {
+					$return = $return && $trigger();
+				} else {
+					$return = $return && $trigger($data);
+				}
+			}
+		}
+		return $return;
 	}
 	/**
 	 * Cloning restriction

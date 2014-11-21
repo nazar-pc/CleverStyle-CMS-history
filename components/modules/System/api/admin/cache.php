@@ -15,10 +15,14 @@ if ($User->is('system') && isset($rc[2], $rc[3])) {
 			if (!isset($rc[3]) && $Config->server['mirrors']['count'] > 1) {
 				global $API;
 				foreach ($Config->server['mirrors']['http'] as $url) {
-					@file_get_contents('http://'.$url.'/'.$API.'/System/admin/cache/flush_cache/1');
+					if (!($url == $Config->server['host'] && $Config->server['protocol'] == 'http')) {
+						@file_get_contents('http://'.$url.'/'.$API.'/System/admin/cache/flush_cache/1');
+					}
 				}
 				foreach ($Config->server['mirrors']['https'] as $url) {
-					@file_get_contents('https://'.$url.'/'.$API.'/System/admin/cache/flush_cache/1');
+					if (!($url != $Config->server['host'] && $Config->server['protocol'] == 'https')) {
+						@file_get_contents('https://'.$url.'/'.$API.'/System/admin/cache/flush_cache/1');
+					}
 				}
 				unset($url);
 			}

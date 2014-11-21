@@ -10,22 +10,23 @@ class Config {
 				'routing'
 			),
 			$server			= array(		//Массив некоторых настроек адресов, зеркал и прочего
-				'url'			=> false,	//Сырой путь страницы (тот, который вводит пользователь в строке адреса)
-				'current_url'	=> false,	//Скорректированный полный путь страницы (рекомендуемый к использованию)
-				'protocol'		=> false,	//Протокол страницы (http/https)
-				'base_url'		=> false,	//Адрес главной страницы текущего зеркала с учётом префикса протокола (http/https)
+				'url'			=> '',		//Сырой путь страницы (тот, который вводит пользователь в строке адреса)
+				'host'			=> '',		//Host
+				'current_url'	=> '',		//Скорректированный полный путь страницы (рекомендуемый к использованию)
+				'protocol'		=> '',		//Протокол страницы (http/https)
+				'base_url'		=> '',		//Адрес главной страницы текущего зеркала с учётом префикса протокола (http/https)
 				'mirrors'	=> array(		//Массив всех адресов, по которым разрешен доступ к сайту
 					'count'		=> 0,		//Общее количество
 					'http'		=> array(),	//Небезопасные адреса
 					'https'		=> array()	//Безопасные адреса
 				),
 				'referer'		=> array(
-					'url'		=> false,
-					'protocol'	=> false,
-					'host'		=> false,
+					'url'		=> '',
+					'protocol'	=> '',
+					'host'		=> '',
 					'local'		=> false
 				),
-				'ajax'			=> false	//Сделан ли запрос к странице через AJAX
+				'ajax'			=> false	//Is this page request via AJAX
 			),
 			$mirror_index	= -1;	//Индекс текущего адреса сайта в списке зеркал ('-1' - не зеркало, а основной домен)
 
@@ -76,6 +77,7 @@ class Config {
 	protected function routing () {
 		global $ADMIN, $API;
 		$this->server['url']		= urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		$this->server['host']		= $_SERVER['HTTP_HOST'];
 		null_byte_filter($this->server['url']);
 		$this->server['protocol']	= isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 		$core_url					= explode('://', $this->core['url'], 2);
@@ -299,4 +301,3 @@ class Config {
 	 */
 	function __clone () {}
 }
-?>

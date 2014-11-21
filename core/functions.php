@@ -255,7 +255,7 @@
 			}
 			return CHARSET == FS_CHARSET || strpos($str, 'http:\\') === 0 || strpos($str, 'https:\\') === 0 || strpos($str, 'ftp:\\') === 0 ?
 				$str :
-				!is_utf8($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
+				!is_unicode($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
 		}
 		//Функция подготавливает строку, которая была получена как путь в файловой системе, для использования в движке
 		function path_to_str ($path) {
@@ -265,30 +265,33 @@
 				}
 				return $path;
 			}
-			return CHARSET == FS_CHARSET ? $path : is_utf8($path) ? $path : iconv(FS_CHARSET, CHARSET, $path);
+			return CHARSET == FS_CHARSET ? $path : is_unicode($path) ? $path : iconv(FS_CHARSET, CHARSET, $path);
 		}
-		//Функция обнаружения utf-8 строки
-		function is_utf8 ($s) {
-			// http://w3.org/International/questions/qa-forms-utf-8.html
-			return preg_match('%^(?:
-			   [\x09\x0A\x0D\x20-\x7E]            # ASCII
-			 | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
-			 | \xE0[\xA0-\xBF][\x80-\xBF]         # excluding overlongs
-			 | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
-			 | \xED[\x80-\x9F][\x80-\xBF]         # excluding surrogates
-			 | \xF0[\x90-\xBF][\x80-\xBF]{2}      # planes 1-3
-			 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
-			 | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
-			)*$%xs', $s);
-			/*$s	= urlencode($s);
-			$l	= strlen($s);
-			$u	= strlen(str_replace(array('%D0', '%D1'), '', strtoupper($s)));
-			
-			if ($u > 0){
-				$k = $l/$u;
-				return ($k > 1.2) && ($k < 2.2);
+		//Detection of unicode strings
+		if (!function_exists('is_unicode')) {
+			function is_unicode ($s) {
+				//From http://w3.org/International/questions/qa-forms-utf-8.html
+				return preg_match('%^(?:
+				   [\x09\x0A\x0D\x20-\x7E]            # ASCII
+				 | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+				 | \xE0[\xA0-\xBF][\x80-\xBF]         # excluding overlongs
+				 | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+				 | \xED[\x80-\x9F][\x80-\xBF]         # excluding surrogates
+				 | \xF0[\x90-\xBF][\x80-\xBF]{2}      # planes 1-3
+				 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+				 | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
+				)*$%xs', $s);
+				//Another way
+				/*$s	= urlencode($s);
+				$l	= strlen($s);
+				$u	= strlen(str_replace(array('%D0', '%D1'), '', strtoupper($s)));
+
+				if ($u > 0){
+					$k = $l/$u;
+					return ($k > 1.2) && ($k < 2.2);
+				}
+				return false;*/
 			}
-			return false;*/
 		}
 	//Аналоги системных функций с теми же параметрами в том же порядке. Настоятельно рекомендуется использовать вместо стандартных
 	//При использовании этих функций будет небольшая потеря в скорости, зато нивелируются различия в операционных системах
@@ -630,7 +633,7 @@
 	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче,
 	//настоятельно рекомендуется к использованию вместо стандартной!
 	function _json_encode ($in) {
-		if (defined('JSON_UNESCAPED_UNICODE')) {				//for php 5.4
+		if (defined('JSON_UNESCAPED_UNICODE')) {				//defined in php 5.4+
 			return json_encode($in, JSON_UNESCAPED_UNICODE);
 		}
 		return html_entity_decode(
@@ -1073,96 +1076,22 @@
 		$sql_encoding = '';
 		$sql = $db->q('SHOW VARIABLES');
 		while ($data = $db->f($sql, false, MYSQL_NUM)) {
-			if ($data[0]=='character_set_client') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->client_encoding.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='character_set_connection') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->character_connection.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='character_set_database') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->character_database.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='character_set_results') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->character_results.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='character_set_server') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->character_server.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='character_set_system') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->character_system.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='collation_connection') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->collation_connection.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='collation_database') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->collation_database.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
-			} elseif ($data[0]=='collation_server') {
-				$sql_encoding .= '
-		<tr>
-			<td>
-				'.$L->collation_server.':
-			</td>
-			<td>
-				'.$data[1].'
-			</td>
-		</tr>';
+			switch ($data[0]) {
+				case 'character_set_client':
+				case 'character_set_connection':
+				case 'character_set_database':
+				case 'character_set_results':
+				case 'character_set_server':
+				case 'character_set_system':
+				case 'collation_connection':
+				case 'collation_database':
+				case 'collation_server':
+					$sql_encoding .= h::{'tr td'}(
+						array(
+							$L->character_set_client,
+							$data[1]
+						)
+					);
 			}
 		}
 		return $sql_encoding;
@@ -1170,8 +1099,8 @@
 
 $temp = base64_decode('Y29weXJpZ2h0');
 $$temp = array(
-	0 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Генератор
-	1 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExLTIwMTIgYnkgTW9rcnluc2t5aSBOYXphcg=='),															//Копирайт
-	2 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Ссылка
+	0 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Generator
+	1 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExLTIwMTIgYnkgTW9rcnluc2t5aSBOYXphcg=='),															//Copyright
+	2 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Link
 );
 unset($temp);

@@ -4,25 +4,37 @@ $a = &$Index;
 $rc = &$Config->routing['current'];
 $a->form = false;
 $mode = isset($rc[2], $rc[3]) && !empty($rc[2]) && !empty($rc[3]);
+$plugins = get_list(PLUGINS, false, 'd');
 if ($mode && $rc[2] == 'enable') {
-	if (!in_array($rc[3], $Config->components['plugins'])) {
+	if (!in_array($rc[3], $Config->components['plugins']) && in_array($rc[3], $plugins)) {
 		$Config->components['plugins'][] = $rc[3];
 		$a->save('components');
+		$a->run_trigger(
+			'admin/System/components/plugins/enable',
+			array(
+				'name' => $rc[3]
+			)
+		);
 	}
 } elseif ($mode && $rc[2] == 'disable') {
 	if (in_array($rc[3], $Config->components['plugins'])) {
 		foreach ($Config->components['plugins'] as $i => $plugin) {
-			if ($plugin == $rc[3]) {
+			if ($plugin == $rc[3] || !in_array($rc[3], $plugins)) {
 				unset($Config->components['plugins'][$i], $i, $plugin);
 				break;
 			}
 		}
 		unset($i, $plugin);
 		$a->save('components');
+		$a->run_trigger(
+			'admin/System/components/plugins/disable',
+			array(
+				'name' => $rc[3]
+			)
+		);
 	}
 }
 unset($rc, $mode);
-$plugins = get_list(PLUGINS, false, 'd');
 $plugins_list = h::tr(
 	h::{'th.ui-widget-header.ui-corner-all'}(
 		array(
@@ -114,5 +126,3 @@ unset($plugins, $plugin, $state, $addition_state, $action);
 $a->content(
 	h::{'table.admin_table.center_all'}($plugins_list)
 );
-unset($plugins_list, $a);
-?>
