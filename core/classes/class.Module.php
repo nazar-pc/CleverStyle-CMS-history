@@ -27,7 +27,7 @@ class Module extends XForm {
 		if ($this->User->is_admin()) {
 			$this->Page->mainmenu .= '<a href="admin" title="'.$this->L->administration.'">'.mb_substr($this->L->administration, 0, 1).'</a>&nbsp;';
 		}
-		$this->Page->mainmenu .= '<a href="/" title="">'.$this->L->home.'</a></menu>';
+		$this->Page->mainmenu .= '<a href="/" title="'.$this->L->home.'">'.$this->L->home.'</a></menu>';
 	}
 }
 ?>

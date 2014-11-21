@@ -24,27 +24,28 @@ if (isset($Config->routing['current'][2])) {
 				$a->td($a->info('disk_cache')).
 				$a->td(
 					$a->input(
-						'radio',
-						'core[disk_cache]',
-						array(intval($Config->core['disk_cache']), 1, 0),
-						true,
-						'',
-						'',
-						true,
-						array('', $L->on, $L->off)
+						array(
+							'type'			=> 'radio',
+							'name'			=> 'core[disk_cache]',
+							'checked'		=> intval($Config->core['disk_cache']),
+							'value'			=> array(1, 0),
+							'in'			=> array($L->on, $L->off)
+						)
 					)
 				)
 			).
 			$a->tr(
-				$a->td($a->info('disk_cache_size', array('for' => 'core[disk_cache_size]'))).
+				$a->td($a->info('disk_cache_size')).
 				$a->td(
 					$a->input(
-						'number',
-						'core[disk_cache_size]',
-						intval($Config->core['disk_cache_size']),
-						true,
-						' min="1" style="width: 90px;"',
-						'form_element'
+						array(
+							'type'			=> 'number',
+							'name'			=> 'core[disk_cache_size]',
+							'value'			=> intval($Config->core['disk_cache_size']),
+							'min'			=> 1,
+							'style'			=> 'width: 90px;',
+							'class'			=> 'form_element'
+						)
 					)
 				)
 			).
@@ -52,14 +53,14 @@ if (isset($Config->routing['current'][2])) {
 				$a->td($a->info('memcache')).
 				$a->td(
 					$a->input(
-						'radio',
-						'core[memcache]',
-						array(intval($Config->core['memcache']), 1, 0),
-						true,
-						memcache() ? '' : ' disabled',
-						'',
-						true,
-						array('', $L->on, $L->off)
+						array(
+							'type'			=> 'radio',
+							'name'			=> 'core[memcache]',
+							'checked'		=> intval($Config->core['memcache']),
+							'value'			=> array(1, 0),
+							'in'			=> array($L->on, $L->off),
+							'add'			=> memcache() ? '' : ' disabled'
+						)
 					)
 				)
 			).
@@ -67,14 +68,14 @@ if (isset($Config->routing['current'][2])) {
 				$a->td($a->info('memcached')).
 				$a->td(
 					$a->input(
-						'radio',
-						'core[memcached]',
-						array(intval($Config->core['memcached']), 1, 0),
-						true,
-						memcached() ? '' : ' disabled',
-						'',
-						true,
-						array('', $L->on, $L->off)
+						array(
+							'type'			=> 'radio',
+							'name'			=> 'core[memcached]',
+							'checked'		=> intval($Config->core['memcached']),
+							'value'			=> array(1, 0),
+							'in'			=> array($L->on, $L->off),
+							'add'			=> memcache() ? '' : ' disabled'
+						)
 					)
 				)
 			).
@@ -82,47 +83,50 @@ if (isset($Config->routing['current'][2])) {
 				$a->td($a->info('zlib_compression')).
 				$a->td(
 					$a->input(
-						'radio',
-						'core[zlib_compression]',
-						array(intval($Config->core['zlib_compression']), 1, 0),
-						true,
-						zlib() ? array('', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').show();"', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').hide();"') : '',
-						'',
-						true,
-						array('', $L->on, $L->off)
+						array(
+							'type'			=> 'radio',
+							'name'			=> 'core[zlib_compression]',
+							'checked'		=> intval($Config->core['zlib_compression']),
+							'value'			=> array(1, 0),
+							'in'			=> array($L->on, $L->off),
+							'onClick'		=> zlib() ? array('$(\'#zlib_compression\').show();', '$(\'#zlib_compression\').hide();') : '',
+							'add'			=> zlib_autocompression() ? ' disabled' : ''
+						)
 					)
 				)
 			).
 			$a->tr(
+				$a->td($L->zlib_coompression_level).
 				$a->td(
-					$L->zlib_coompression_level.': '.
 					$a->input(
-						'number',
-						'core[zlib_compression_level]',
-						intval($Config->core['zlib_compression_level']),
-						true,
-						' min="1" max="9" style="width: 50px;"',
-						'form_element'
-					),
-					array(
-						'id' => 'zlib_compression',
-						'colspan' => 2,
-						'style' => ($Config->core['zlib_compression'] || zlib_autocompression() ? '' : 'display: none; ').'text-align: center;'
+						array(
+							'type'			=> 'number',
+							'name'			=> 'core[zlib_compression_level]',
+							'value'			=> intval($Config->core['zlib_compression_level']),
+							'min'			=> 1,
+							'max'			=> 9,
+							'style'			=> 'width: 90px;',
+							'class'			=> 'form_element'
+						)
 					)
+				),
+				array(
+					'id'	=> 'zlib_compression',
+					'style'	=> ($Config->core['zlib_compression'] || zlib_autocompression() ? '' : 'display: none; ').'text-align: center;'
 				)
 			).
 			$a->tr(
 				$a->td($a->info('gzip_compression')).
 				$a->td(
 					$a->input(
-						'radio',
-						'core[gzip_compression]',
-						array(intval($Config->core['gzip_compression']), 1, 0),
-						true,
-						!zlib_autocompression() && !$Config->core['zlib_compression'] ? '' : ' disabled',
-						'',
-						true,
-						array('', $L->on, $L->off)
+						array(
+							'type'			=> 'radio',
+							'name'			=> 'core[gzip_compression]',
+							'checked'		=> intval($Config->core['gzip_compression']),
+							'value'			=> array(1, 0),
+							'in'			=> array($L->on, $L->off),
+							'add'			=> !zlib_autocompression() || $Config->core['zlib_compression'] ? '' : ' disabled'
+						)
 					)
 				)
 			).
@@ -130,24 +134,19 @@ if (isset($Config->routing['current'][2])) {
 				$a->td($a->info('cache_compress_js_css')).
 				$a->td(
 					$a->input(
-						'radio',
-						'core[cache_compress_js_css]',
-						array(intval($Config->core['cache_compress_js_css']), 1, 0),
-						true,
-						'',
-						'',
-						true,
-						array('', $L->on, $L->off)
+						array(
+							'type'			=> 'radio',
+							'name'			=> 'core[cache_compress_js_css]',
+							'checked'		=> intval($Config->core['cache_compress_js_css']),
+							'value'			=> array(1, 0),
+							'in'			=> array($L->on, $L->off)
+						)
 					)
 				)
 			).
 			$a->tr(
-				$a->td(
-					$a->div(array('id' => 'clean_cache'))				
-				).
-				$a->td(
-					$a->div(array('id' => 'clean_pcache'))
-				)
+				$a->td($a->div(array('id' => 'clean_cache'))).
+				$a->td($a->div(array('id' => 'clean_pcache')))
 			).
 			$a->tr(
 				$a->td(

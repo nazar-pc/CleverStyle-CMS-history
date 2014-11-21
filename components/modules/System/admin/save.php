@@ -26,6 +26,7 @@ if (isset($_POST['edit_settings'])) {
 	}
 	if (strval($_POST['edit_settings']) == 'apply') {
 		if ($Config->rebuild_cache()) {
+			$Config->init();
 			if (isset($_POST['visual_style'])) {
 				empty_pcache();
 			}

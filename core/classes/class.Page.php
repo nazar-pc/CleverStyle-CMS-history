@@ -111,7 +111,7 @@ class Page extends XForm {
 	}
 	//Обработка шаблона и подготовка данных к выводу
 	protected function prepare ($stop) {
-		global $copyright, $User;
+		global $copyright, $User, $L;
 		//Загрузка настроек оформления и шаблона темы
 		$this->load($stop);
 		//Загрузка стилей и скриптов
@@ -164,6 +164,7 @@ class Page extends XForm {
 		$this->Footer .= $this->footer($stop);
 		//Подстановка контента в шаблон
 		$construct['in'] = array(
+								'<!--html_lang-->',
 								'<!--title-->',
 								'<!--head-->',
 								'<!--pre_Body-->',
@@ -181,8 +182,9 @@ class Page extends XForm {
 								'<!--right_blocks-->',
 								'<!--footer-->',
 								'<!--post_Body-->'
-								);
+							);
 		$construct['out'] = array(
+									$L->clang,
 									$this->Title[0],
 									$this->level($this->Head, $this->level['Head']),
 									$this->level($this->pre_Body, $this->level['pre_Body']),
@@ -230,13 +232,13 @@ class Page extends XForm {
 		} elseif ($add) {
 			if ($core) {
 				if ($mode == 'file') {
-					$this->core_js[0] .= "<script src=\"$add\"></script>\n";
+					$this->core_js[0] .= $this->script(false, array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
 				} elseif ($mode == 'code') {
 					$this->core_js[1] .= $this->level($add);
 				}
 			} else {
 				if ($mode == 'file') {
-					$this->js[0] .= "<script src=\"$add\"></script>\n";
+					$this->js[0] .= $this->script(false, array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
 				} elseif ($mode == 'code') {
 					$this->js[1] .= $this->level($add);
 				}
@@ -252,7 +254,7 @@ class Page extends XForm {
 		} elseif ($add) {
 			if ($core) {
 				if ($mode == 'file') {
-					$this->core_css[0] .= "<link href=\"$add\" type=\"text/css\" rel=\"StyleSheet\">\n";
+					$this->core_css[0] .= $this->link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
 				} elseif ($mode == 'code') {
 					$this->core_css[1] = $add;
 				}

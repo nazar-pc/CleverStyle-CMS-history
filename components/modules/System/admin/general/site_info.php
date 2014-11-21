@@ -7,9 +7,8 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('name2')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
-						'type'	=> 'text',
 						'name'	=> 'core[name]',
 						'value' => $Config->core['name'],
 						'class'	=> 'form_element',
@@ -21,7 +20,7 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('url')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'	=> 'url',
 						'name'	=> 'core[url]',
@@ -35,9 +34,8 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('cookie_domain')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
-						'type'	=> 'text',
 						'name'	=> 'core[cookie_domain]',
 						'value' => $Config->core['cookie_domain'],
 						'class'	=> 'form_element',
@@ -49,9 +47,8 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('cookie_path')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
-						'type'	=> 'text',
 						'name'	=> 'core[cookie_path]',
 						'value' => $Config->core['cookie_path'],
 						'class'	=> 'form_element',
@@ -112,9 +109,8 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('keywords')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
-						'type'	=> 'text',
 						'name'	=> 'core[keywords]',
 						'value' => $Config->core['keywords'],
 						'class'	=> 'form_element',
@@ -126,9 +122,8 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('description')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
-						'type'	=> 'text',
 						'name'	=> 'core[description]',
 						'value' => $Config->core['description'],
 						'class'	=> 'form_element',
@@ -140,7 +135,7 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('admin_mail')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'	=> 'email',
 						'name'	=> 'core[admin_mail]',
@@ -154,7 +149,7 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('admin_phone')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'	=> 'tel',
 						'name'	=> 'core[admin_phone]',
@@ -168,7 +163,7 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('start_date')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'	=> 'date',
 						'name'	=> 'core[start_date]',
@@ -181,7 +176,7 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('time_of_site')).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'	=> 'number',
 						'name'	=> 'core[time_of_site]',

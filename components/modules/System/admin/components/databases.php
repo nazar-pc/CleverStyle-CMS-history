@@ -57,9 +57,8 @@ if (isset($Config->routing['current'][2])) {
 							)
 						)
 						: false),
-						$a->inputx(
+						$a->input(
 							array(
-								'type'		=> 'text',
 								'name'		=> 'db[host]',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? $database['host'] : $DB_HOST,
 								'class'		=> 'form_element',
@@ -77,60 +76,55 @@ if (isset($Config->routing['current'][2])) {
 								'class'		=> 'form_element'
 							)
 						),
-						$a->inputx(
+						$a->input(
 							array(
-								'type'		=> 'text',
 								'name'		=> 'db[prefix]',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? $database['prefix'] : $DB_PREFIX,
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
 						),
-						$a->inputx(
+						$a->input(
 							array(
-								'type'		=> 'text',
 								'name'		=> 'db[name]',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? $database['name'] : '',
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
 						),
-						$a->inputx(
+						$a->input(
 							array(
-								'type'		=> 'text',
 								'name'		=> 'db[user]',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? $database['user'] : '',
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
 						),
-						$a->inputx(
+						$a->input(
 							array(
-								'type'		=> 'text',
 								'name'		=> 'db[password]',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? $database['password'] : '',
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
 						),
-						$a->inputx(
+						$a->input(
 							array(
-								'type'		=> 'text',
 								'name'		=> 'db[codepage]',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? $database['codepage'] : $DB_CODEPAGE,
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
 						).
-						$a->inputx(
+						$a->input(
 							array(
 								'type'		=> 'hidden',
 								'name'		=> 'mode',
 								'value'		=> $Config->routing['current'][2] == 'edit' ? 'edit' : 'add'
 							)
 						).
-						(isset($Config->routing['current'][3]) ? $a->inputx(array('type' => 'hidden', 'name' => 'database', 'value' => $Config->routing['current'][3])) : '').
-						(isset($Config->routing['current'][4]) ? $a->inputx(array('type' => 'hidden', 'name' => 'mirror', 'value' => $Config->routing['current'][4])) : '')
+						(isset($Config->routing['current'][3]) ? $a->input(array('type' => 'hidden', 'name' => 'database', 'value' => $Config->routing['current'][3])) : '').
+						(isset($Config->routing['current'][4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $Config->routing['current'][4])) : '')
 					),
 					array(
 						'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
@@ -161,10 +155,10 @@ if (isset($Config->routing['current'][2])) {
 				$a->td(
 					$a->button(array('in'	=> $L->yes,		'type'	=> 'submit')).
 					$a->button(array('in'	=> $L->no,		'type'	=> 'button',	'onClick'	=> 'javascript: history.go(-1);')).
-					$a->inputx(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-					$a->inputx(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $Config->routing['current'][3])).
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $Config->routing['current'][3])).
 					(isset($Config->routing['current'][4]) ?
-					$a->inputx(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $Config->routing['current'][4]))
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $Config->routing['current'][4]))
 					: ''),
 					array('style'	=> 'text-align: center;')
 				)
@@ -196,7 +190,13 @@ if (isset($Config->routing['current'][2])) {
 	$a->tr(
 		$a->td(
 			array(
-				'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/0" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
+				$a->a(
+					$L->add.' '.$L->mirror,
+					array(
+						'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/0',
+						'class'		=> 'black'
+					)
+				),
 				$DB_HOST,
 				$DB_TYPE,
 				$DB_PREFIX,
@@ -215,7 +215,27 @@ if (isset($Config->routing['current'][2])) {
 			$db_list .=	$a->tr(
 				$a->td(
 					array(
-						'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'" class="black">'.$L->edit.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'" class="black">'.$L->delete.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i.'" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
+						$a->a(
+							$L->add.' '.$L->mirror,
+							array(
+								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i,
+								'class'		=> 'black'
+							)
+						).'<br>'.
+						$a->a(
+							$L->edit.' '.$L->db,
+							array(
+								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i,
+								'class'		=> 'black'
+							)
+						).'<br>'.
+						$a->a(
+							$L->delete.' '.$L->db,
+							array(
+								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i,
+								'class'		=> 'black'
+							)
+						),
 						$db['host'],
 						$db['type'],
 						$db['prefix'],
@@ -235,7 +255,20 @@ if (isset($Config->routing['current'][2])) {
 				$db_list .=	$a->tr(
 					$a->td(
 						array(
-							'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
+							$a->a(
+								$L->edit.' '.$L->mirror,
+								array(
+									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m,
+									'class'		=> 'black'
+								)
+							).'<br>'.
+							$a->a(
+								$L->delete.' '.$L->mirror,
+								array(
+									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
+									'class'		=> 'black'
+								)
+							),
 							$mirror['host'],
 							$mirror['type'],
 							$mirror['prefix'],
@@ -271,17 +304,17 @@ if (isset($Config->routing['current'][2])) {
 		$a->tr(
 			$a->td($a->info('db_balance'), array('colspan' => 4)).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[db_balance]',
 						'checked'		=> intval($Config->core['db_balance']),
 						'value'			=> array(1, 0),
-						'class'			=> array('form_element', 'form_element'),
+						'class'			=> array('form_element'),
 						'in'			=> array($L->on, $L->off)
 					)
 				).
-				$a->inputx(
+				$a->input(
 					array(
 						'type'			=> 'hidden',
 						'name'			=> 'mode',
@@ -294,17 +327,17 @@ if (isset($Config->routing['current'][2])) {
 		$a->tr(
 			$a->td($a->info('maindb_for_write'), array('colspan' => 4)).
 			$a->td(
-				$a->inputx(
+				$a->input(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[maindb_for_write]',
 						'checked'		=> intval($Config->core['maindb_for_write']),
 						'value'			=> array(1, 0),
-						'class'			=> array('form_element', 'form_element'),
+						'class'			=> array('form_element'),
 						'in'			=> array($L->on, $L->off)
 					)
 				).
-				$a->inputx(
+				$a->input(
 					array(
 						'type'			=> 'hidden',
 						'name'			=> 'mode',

@@ -52,14 +52,13 @@ $a->content(
 			$a->td($a->info('multilanguage')).
 			$a->td(
 				$a->input(
-					'radio',
-					'core[multilanguage]',
-					array(intval($Config->core['multilanguage']), 1, 0),
-					true,
-					'',
-					'',
-					true,
-					array('', $L->on, $L->off)
+					array(
+						'type'			=> 'radio',
+						'name'			=> 'core[multilanguage]',
+						'checked'		=> intval($Config->core['multilanguage']),
+						'value'			=> array(1, 0),
+						'in'			=> array($L->on, $L->off)
+					)
 				)
 			)
 		).
@@ -67,14 +66,13 @@ $a->content(
 			$a->td($a->info('allow_change_language')).
 			$a->td(
 				$a->input(
-					'radio',
-					'core[allow_change_language]',
-					array(intval($Config->core['allow_change_language']), 1, 0),
-					true,
-					'',
-					'',
-					true,
-					array('', $L->on, $L->off)
+					array(
+						'type'			=> 'radio',
+						'name'			=> 'core[allow_change_language]',
+						'checked'		=> intval($Config->core['allow_change_language']),
+						'value'			=> array(1, 0),
+						'in'			=> array($L->on, $L->off)
+					)
 				)
 			)
 		),

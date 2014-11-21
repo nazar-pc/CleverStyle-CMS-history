@@ -1,6 +1,6 @@
 <?php
-//Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным синтаксисом
-class XForm {
+//Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
+abstract class XForm {
 	public	$return = true;
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
@@ -24,9 +24,6 @@ class XForm {
 		$quote = '"';
 		$level = 1;
 		if (isset($data['in'])) {
-			if ($data['in'] === false) {
-				return false;
-			}
 			$in = $data['in'];
 			unset($data['in']);
 		}
@@ -38,6 +35,14 @@ class XForm {
 			$add = ' '.$data['add'];
 			unset($data['add']);
 		}
+		if (isset($data['defer'])) {
+			$add .= ' defer';
+			unset($data['defer']);
+		}
+		if (isset($data['selected'])) {
+			$add .= ' selected';
+			unset($data['selected']);
+		}
 		if (isset($data['quote'])) {
 			$quote = $data['quote'];
 			unset($data['quote']);
@@ -46,6 +51,15 @@ class XForm {
 			$level = $data['level'];
 			unset($data['level']);
 		}
+		if (isset($data['class']) && empty($data['class'])) {
+			unset($data['class']);
+		}		
+		if (isset($data['style']) && empty($data['style'])) {
+			unset($data['style']);
+		}		
+		if (isset($data['onClick']) && empty($data['onClick'])) {
+			unset($data['onClick']);
+		}		
 		asort($data);
 		foreach ($data as $key => $value) {
 			if (empty($key)) {
@@ -81,9 +95,6 @@ class XForm {
 		$tag = 'input';
 		$quote = '"';
 		if (isset($data['in'])) {
-			if ($data['in'] === false) {
-				return false;
-			}
 			$in = $data['in'];
 			unset($data['in']);
 		}
@@ -95,10 +106,23 @@ class XForm {
 			$add = $data['add'];
 			unset($data['add']);
 		}
+		if (isset($data['checked'])) {
+			$add .= ' checked';
+			unset($data['checked']);
+		}
 		if (isset($data['quote'])) {
 			$quote = $data['quote'];
 			unset($data['quote']);
 		}
+		if (isset($data['class']) && empty($data['class'])) {
+			unset($data['class']);
+		}		
+		if (isset($data['style']) && empty($data['style'])) {
+			unset($data['style']);
+		}		
+		if (isset($data['onClick']) && empty($data['onClick'])) {
+			unset($data['onClick']);
+		}		
 		asort($data);
 		foreach ($data as $key => $value) {
 			if (empty($key)) {
@@ -171,10 +195,18 @@ class XForm {
 		}
 		return $this->label($this->L->$in, array_merge(array('data-title' => $this->L->$info), $data));
 	}
-	function inputx ($in = '') {
-		if ($in['type'] == 'radio') {
+	function input ($in = '') {
+		if (isset($in['type']) && $in['type'] == 'radio') {
 			if (is_array($in)) {
 				if (isset($in['checked'])) {
+					if (isset($in['add']) && !is_array($in['add'])) {
+						$add = $in['add'];
+						$in['add'] = array();
+						foreach ($in['in'] as $v) {
+							$in['add'][] = $add;
+						}
+						unset($add);
+					}
 					foreach ($in['value'] as $i => $v) {
 						if ($v == $in['checked']) {
 							if (!isset($in['add'][$i])) {
@@ -221,11 +253,8 @@ class XForm {
 				$items = $this->array_flip($in, count($in['name']));
 				$temp = '';
 				foreach ($items as $item) {
-					if (!isset($item['id'])) {
-						$item['id'] = uniqid('input_');
-					}
-					if (isset($item['in'])) {
-						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
+					if (!isset($item['type'])) {
+						$item['type'] = 'text';
 					}
 					$item['tag'] = 'input';
 					if (isset($item['value'])) {
@@ -236,62 +265,15 @@ class XForm {
 				unset($items, $item);
 				return $temp;
 			} else {
-				if (!isset($in['id'])) {
-					$in['id'] = uniqid('input_');
+				if (!isset($in['type'])) {
+					$in['type'] = 'text';
 				}
-				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
 				$in['tag'] = 'input';
 				if (isset($in['value'])) {
 					$in['value'] = filter($in['value']);
 				}
 				return $this->iwrap($in);
 			}
-		}
-	}
-	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
-		$uniqid = uniqid('input_');
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$type || !$id) {
-			return false;
-		}
-		if (is_array($values) && count($values) > 2) {
-			$Content = array();
-			foreach ($values as $i => $v) {
-				if (!$i) {
-					continue;
-				}
-				$Content[] = $this->input(
-										$type,
-										is_array($id) ? $id[$i] : $id,
-										is_array($values) ? array($values[0], $values[$i]) : $values,
-										true,
-										is_array($add) ? $add[$i] : $add,
-										is_array($classes) ? $classes[$i] : $classes,
-										is_array($array_if_size) ? $array_if_size[$i] : $array_if_size,
-										is_array($array_text) ? $array_text[$i] : $array_text,
-										$label,
-										$devider
-										);
-			}
-			$Content = implode('', $Content);
-		} else {
-			if ($type == 'text') {
-				$Content = '<input name="'.$id.'" id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
-			} elseif ($type == 'checkbox' || $type == 'radio') {
-				$Content = '<input id="'.$uniqid.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, array('for' => $uniqid)).$devider."\n";
-			} else {
-				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[0]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
-			}
-			if ($type != 'checkbox' && $type != 'radio' && $label && $array_text) {
-				$Content = $this->label($Content).$devider;
-			}
-		}
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $this->level($Content, 5);
 		}
 	}
 	function select ($in = '', $data = array()) {
@@ -375,6 +357,19 @@ class XForm {
 			}
 		}
 		return $this->swrap($in, $data, 'button');
+	}
+	function menu ($in = '', $data = array()) {
+		return $this->swrap($in, $data, 'menu');
+	}
+	function a ($in = '', $data = array()) {
+		return $this->swrap($in, $data, 'a');
+	}
+	function script ($in = '', $data = array()) {
+		return $this->swrap($in, $data, 'script');
+	}
+	function link ($in = '', $data = array()) {
+		$in['tag'] = 'link';
+		return $this->iwrap($in);
 	}
 }
 ?>

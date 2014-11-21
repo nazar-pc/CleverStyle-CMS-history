@@ -8,27 +8,25 @@ $a->content(
 			$a->td($a->info('site_mode')).
 			$a->td(
 				$a->input(
-					'radio',
-					'core[site_mode]',
-					array(intval($Config->core['site_mode']), 1, 0),
-					true,
-					'',
-					'',
-					true,
-					array('', $L->on, $L->off)
+					array(
+						'type'			=> 'radio',
+						'name'			=> 'core[site_mode]',
+						'checked'		=> intval($Config->core['site_mode']),
+						'value'			=> array(1, 0),
+						'in'			=> array($L->on, $L->off)
+					)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('closed_title', array('for' => 'core[closed_title]'))).
+			$a->td($a->info('closed_title')).
 			$a->td(
 				$a->input(
-					'text',
-					'core[closed_title]',
-					$Config->core['closed_title'],
-					true,
-					'',
-					'form_element'
+					array(
+						'name'			=> 'core[closed_title]',
+						'value'			=> $Config->core['closed_title'],
+						'class'			=> 'form_element'
+					)
 				)
 			)
 		).
@@ -46,15 +44,14 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->info('title_delimiter', array('for' => 'core[title_delimiter]'))).
+			$a->td($a->info('title_delimiter')).
 			$a->td(
 				$a->input(
-					'text',
-					'core[title_delimiter]',
-					$Config->core['title_delimiter'],
-					true,
-					'',
-					'form_element'
+					array(
+						'name'			=> 'core[title_delimiter]',
+						'value'			=> $Config->core['title_delimiter'],
+						'class'			=> 'form_element'
+					)
 				)
 			)
 		).
@@ -62,14 +59,13 @@ $a->content(
 			$a->td($a->info('title_reverse')).
 			$a->td(
 				$a->input(
-					'radio',
-					'core[title_reverse]',
-					array(intval($Config->core['title_reverse']), 1, 0),
-					true,
-					'',
-					'',
-					true,
-					array('', $L->on, $L->off)
+					array(
+						'type'			=> 'radio',
+						'name'			=> 'core[title_reverse]',
+						'checked'		=> intval($Config->core['title_reverse']),
+						'value'			=> array(1, 0),
+						'in'			=> array($L->on, $L->off)
+					)
 				)
 			)
 		).
@@ -77,14 +73,14 @@ $a->content(
 			$a->td($a->info('debug')).
 			$a->td(
 				$a->input(
-					'radio',
-					'core[debug]',
-					array(intval($Config->core['debug']), 1, 0),
-					true,
-					array('', ' onClick="$(\'#debug_form\').show();"', ' onClick="$(\'#debug_form\').hide();"'),
-					'',
-					true,
-					array('', $L->on, $L->off)
+					array(
+						'type'			=> 'radio',
+						'name'			=> 'core[debug]',
+						'checked'		=> intval($Config->core['debug']),
+						'value'			=> array(1, 0),
+						'in'			=> array($L->on, $L->off),
+						'OnClick'		=> array('$(\'#debug_form\').show();', '$(\'#debug_form\').hide();')
+					)
 				)
 			)
 		).
@@ -93,66 +89,58 @@ $a->content(
 			$a->td(
 				$a->table(
 					$a->tr(
-						$a->td($L->show_objects_data.':').
+						$a->td($L->show_objects_data).
 						$a->td(
 							$a->input(
-								'radio',
-								'core[show_objects_data]',
-								array(intval($Config->core['show_objects_data']), 0, 1),
-								true,
-								'',
-								'',
-								true,
-								array('', $L->off, $L->on),
-								true
+								array(
+									'type'			=> 'radio',
+									'name'			=> 'core[show_objects_data]',
+									'checked'		=> intval($Config->core['show_objects_data']),
+									'value'			=> array(0, 1),
+									'in'			=> array($L->off, $L->on)
+								)
 							)
 						)
 					).
 					$a->tr(
-						$a->td($L->show_user_data.':').
+						$a->td($L->show_user_data).
 						$a->td(
 							$a->input(
-								'radio',
-								'core[show_user_data]',
-								array(intval($Config->core['show_user_data']), 0, 1),
-								true,
-								'',
-								'',
-								true,
-								array('', $L->off, $L->on),
-								true
+								array(
+									'type'			=> 'radio',
+									'name'			=> 'core[show_user_data]',
+									'checked'		=> intval($Config->core['show_user_data']),
+									'value'			=> array(0, 1),
+									'in'			=> array($L->off, $L->on)
+								)
 							)
 						)
 					).
 					$a->tr(
-						$a->td($L->show_queries.':').
+						$a->td($L->show_queries).
 						$a->td(
 							$a->input(
-								'radio',
-								'core[show_queries]',
-								array(intval($Config->core['show_queries']), 0, 1, 2, 3),
-								true,
-								'',
-								'',
-								true,
-								array('', $L->off, $L->on, $L->show_queries_and_time, $L->show_queries_extended),
-								true
+								array(
+									'type'			=> 'radio',
+									'name'			=> 'core[show_queries]',
+									'checked'		=> intval($Config->core['show_queries']),
+									'value'			=> array(0, 1, 2, 3),
+									'in'			=> array($L->off, $L->on, $L->show_queries_and_time, $L->show_queries_extended)
+								)
 							)
 						)
 					).
 					$a->tr(
-						$a->td($L->show_cookies.':').
+						$a->td($L->show_cookies).
 						$a->td(
 							$a->input(
-								'radio',
-								'core[show_cookies]',
-								array(intval($Config->core['show_cookies']), 0, 1),
-								true,
-								'',
-								'',
-								true,
-								array('', $L->off, $L->on),
-								true
+								array(
+									'type'			=> 'radio',
+									'name'			=> 'core[show_cookies]',
+									'checked'		=> intval($Config->core['show_cookies']),
+									'value'			=> array(0, 1),
+									'in'			=> array($L->off, $L->on)
+								)
 							)
 						)
 					)

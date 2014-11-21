@@ -35,16 +35,33 @@ class Admin extends Module {
 	}
 	function mainsubmenu () {
 		foreach ($this->parts as $part) {
-			$this->mainsubmenu .= '	<a id="'.$part.'_a" href="admin/'.MODULE.'/'.$part.'" title="'.$this->L->$part.'"'.(isset($this->Config->routing['current'][0]) && $this->Config->routing['current'][0] == $part ? ' class="active"' : '').">".$this->L->$part."</a>\n";
+			$this->mainsubmenu .= $this->a(
+									$this->L->$part,
+									array(
+										'id'		=> $part.'_a',
+										'href'		=> 'admin/'.MODULE.'/'.$part,
+										'title'		=> $this->L->$part,
+										'class'		=> isset($this->Config->routing['current'][0]) && $this->Config->routing['current'][0] == $part ? 'active' : ''
+									)
+								);
 		}
 	}
 	function menumore () {
 		foreach ($this->subparts as $subpart) {
 			$onClick = '';
 			if ($this->save) {
-				$onClick = ' onClick="javascript: menuadmin(\''.$subpart.'\', false); return false;"';
+				$onClick = 'javascript: menuadmin(\''.$subpart.'\', false); return false;';
 			}
-			$this->menumore .= '	<a id="'.$subpart.'_a" href="admin/'.MODULE.'/'.$this->Config->routing['current'][0].'/'.$subpart.'"'.$onClick.($this->Config->routing['current'][1] == $subpart ? ' class="active"' : '').' title="'.$this->L->$subpart.'">'.$this->L->$subpart."</a>\n";
+			$this->menumore .= $this->a(
+									$this->L->$subpart,
+									array(
+										'id'		=> $subpart.'_a',
+										'href'		=> 'admin/'.MODULE.'/'.$this->Config->routing['current'][0].'/'.$subpart,
+										'title'		=> $this->L->$subpart,
+										'class'		=> $this->Config->routing['current'][1] == $subpart ? 'active' : '',
+										'onClick'	=>	$onClick
+									)
+								);
 		}
 	}
 	function generate () {
@@ -54,33 +71,42 @@ class Admin extends Module {
 			"var save_before = '".$this->L->save_before."', continue_transfer = '".$this->L->continue_transfer."', base_url = '".$this->Config->core['url']."/admin/".MODULE.'/'.$this->Config->routing['current'][0]."';\n",
 			'code'
 		);
-		$this->Page->mainsubmenu = "<menu>\n".$this->mainsubmenu."</menu>\n";
-		$this->Page->menumore = "<menu>\n".$this->menumore."</menu>\n";
+		$this->Page->mainsubmenu	= $this->menu($this->mainsubmenu);
+		$this->Page->menumore		= $this->menu($this->menumore);
 		if ($this->form) {
 			$this->Page->content(
 				$this->form(
 					$this->Content.
 					$this->input(
-						'hidden',
-						$this->Config->routing['current'][1]
+						array(
+							'type'	=> 'hidden',
+							'name'	=> $this->Config->routing['current'][1]
+						)
 					).
 					$this->input(
-						'hidden',
-						'edit_settings',
-						'save'
+						array(
+							'type'	=> 'hidden',
+							'id'	=> 'edit_settings',
+							'name'	=> 'edit_settings',
+							'value'	=> 'save'
+						)
 					).
 					($this->buttons ?
-						($this->apply_button ? "<button id=\"apply_settings\" type=\"submit\">".$this->L->apply."</button>\n" : '')
-						."<button id=\"save_settings\" type=\"submit\">".$this->L->save."</button>\n"
-						.($this->apply_button ? "<button id=\"cancel_settings\" type=\"submit\"".$this->cancel.">".$this->L->cancel."</button>\n" : '')
-						."<button type=\"reset\">".$this->L->reset."</button>\n"
+						($this->apply_button ?
+							$this->button($this->L->apply,	array('id'		=> 'apply_settings',	'type'	=> 'submit'))
+						: '')
+							.$this->button($this->L->save,	array('id'		=> 'save_settings',		'type'	=> 'submit'))
+						.($this->apply_button ?
+							$this->button($this->L->cancel,	array('id'		=> 'cancel_settings',	'type'	=> 'submit', 'add'	=> $this->cancel))
+						: '')
+							.$this->button($this->L->reset,	array('type'	=> 'reset'))
 					: ''),
 					array(
-						'method' => 'post',
-						'action' => $this->action,
-						'id' => 'admin_form',
-						'onReset' => 'javascript: save = 0;',
-						'class' => 'admin_form'
+						'method'	=> 'post',
+						'action'	=> $this->action,
+						'id'		=> 'admin_form',
+						'onReset'	=> 'javascript: save = 0;',
+						'class'		=> 'admin_form'
 					)
 				), 1
 			);

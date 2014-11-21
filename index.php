@@ -14,16 +14,15 @@ unset($GLOBALS['HTTP_GET_VARS'], $GLOBALS['_SERVER']['argv'], $GLOBALS['_SERVER'
 define('USE_CUSTOM', false);				//Использовать пользовательские файлы ядра
 define('OUT_CLEAN', false);					//Включить захват вывода (для безопасности)
 //Захват вывода для избежания вывода нежелательных данных
-if (OUT_CLEAN) {
-	ob_start();
-}
+OUT_CLEAN && ob_start();
 //Базовый абсолютный путь к сайту на сервере
 define('DIR', __DIR__);						//Алиас корневой папки сайта
 define('DS', DIRECTORY_SEPARATOR);			//Алиас для системной константы разделителя путей
+define('PS', PATH_SEPARATOR);				//Алиас для системной константы разделителя папок включений
 chdir(DIR);
 
 //Подключение библиотеки базовых функций
-require(DIR.DS.'core'.DS.'functions.php');
+require DIR.DS.'core'.DS.'functions.php';
 
 //Запуск загрузчика движка
 require_x(DIR.DS.'core'.DS.'loader.php');

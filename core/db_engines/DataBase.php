@@ -1,28 +1,28 @@
 <?php
 abstract class DataBase {
-	public  $connected = false,				//Метка наличия соединения
-			$database,						//Текущая БД
-			$prefix,						//Текущий префикс
-			$time,							//Массив для хранения общей длительности выполнения запросов
-			$query = array(					//Массив для хранения данных последнего выполненого запроса
-						'start' => '',
-						'end' => '',
-						'time' => '',
-						'text' => '',
-						'resource' => '',
-						'id' => ''
-					),
-			$queries = array(				//Массив для хранения данных всех выполненых запросов
-						'num' => '',
-						'time' => array(),
-						'text' => array()
+	public	$connected	= false,				//Метка наличия соединения
+			$database,							//Текущая БД
+			$prefix,							//Текущий префикс
+			$time,								//Массив для хранения общей длительности выполнения запросов
+			$query		= array(				//Массив для хранения данных последнего выполненого запроса
+							'start' => '',
+							'end' => '',
+							'time' => '',
+							'text' => '',
+							'resource' => '',
+							'id' => ''
 						),
-			$connecting_time;				//Время соединения
-	protected $id;
+			$queries	= array(				//Массив для хранения данных всех выполненых запросов
+							'num' => '',
+							'time' => array(),
+							'text' => array()
+						),
+			$connecting_time;					//Время соединения
+	private	$id;								//Указатель на соединение с БД
 	
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница [, постоянное_соединение]]]
-	abstract function __construct ($database, $user, $password, $host='localhost', $codepage=false, $persistency = false);
+	abstract function __construct ($database, $user = '', $password = '', $host = 'localhost', $codepage = false);
 	//Смена текущей БД
 	abstract function select_db ($database);
 	//Запрос в БД
@@ -58,12 +58,13 @@ abstract class DataBase {
 	//Получение списка полей таблицы
 	//(название_таблицы [, похожих_на])
 	function fields ($table, $like = false) {
-		if($table) {
-			if ($like) {
-				$fields = $this->q('SHOW FIELDS FROM `'.$table.'` LIKE \''.$like.'\'');
-			} else {
-				$fields = $this->q('SHOW FIELDS FROM `'.$table.'`');
-			}
+		if(!$table) {
+			return false;
+		}
+		if ($like) {
+			$fields = $this->q('SHOW FIELDS FROM `'.$table.'` LIKE \''.$like.'\'');
+		} else {
+			$fields = $this->q('SHOW FIELDS FROM `'.$table.'`');
 		}
 		if ($fields) {
 			return $this->f($fields);
@@ -90,6 +91,8 @@ abstract class DataBase {
 	}
 	//Информация о сервере
 	abstract function server ();
+	//Запрет клонирования
+	private function __clone() {}
 	//Отключение от БД
 	abstract function __destruct ();
 }

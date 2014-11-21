@@ -60,14 +60,13 @@ $a->content(
 			$a->td($a->info('allow_change_theme')).
 			$a->td(
 				$a->input(
-					'radio',
-					'core[allow_change_theme]',
-					array(intval($Config->core['allow_change_theme']), 1, 0),
-					true,
-					'',
-					'',
-					true,
-					array('', $L->on, $L->off)
+					array(
+						'type'			=> 'radio',
+						'name'			=> 'core[allow_change_theme]',
+						'checked'		=> intval($Config->core['allow_change_theme']),
+						'value'			=> array(1, 0),
+						'in'			=> array($L->on, $L->off)
+					)
 				)
 			)
 		),

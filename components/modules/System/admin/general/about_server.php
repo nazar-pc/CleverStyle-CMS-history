@@ -1,6 +1,6 @@
 <?php
 
-global $L, $DB_TYPE, $DB_HOST, $DB_NAME, $DB_PREFIX, $db;
+global $L, $DB_TYPE, $DB_HOST, $DB_NAME, $DB_PREFIX, $db, $Cache;
 global $$DB_TYPE, $Admin, $PHP;
 $a = &$Admin;
 $a->form = false;
@@ -38,7 +38,11 @@ $a->content(
 					$a->tr(
 						$a->td($L->memcache_lib.':').
 						$a->td($L->__get(memcache()), array('class' => memcache() ? 'green' : 'red'))
-					).
+					).(memcache() && $Cache->memcache ?
+					$a->tr(
+						$a->td($L->version.' memcache:', array('style' => 'padding-left: 20px;')).
+						$a->td($Cache->memcache['object']->getVersion(), array('class' => 'green'))
+					) : '').
 /*					$a->tr(
 						$a->td($L->memcached_lib.':').
 						$a->td($L->__get(memcached()), array('class' => memcached() ? 'green' : 'red'))

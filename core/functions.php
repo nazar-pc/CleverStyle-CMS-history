@@ -5,15 +5,15 @@ if (USE_CUSTOM) {
 	function require_x ($file, $once = false, $show_errors = true) {
 		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
-				return require_once($file_x);
+				return require_once $file_x;
 			} else {
-				return require($file_x);
+				return require $file_x;
 			}
 		} elseif (file_exists($file)) {
 			if ($once) {
-				return require_once($file);
+				return require_once $file;
 			} else {
-				return require($file);
+				return require $file;
 			}
 		} else {
 			global $L;
@@ -26,15 +26,15 @@ if (USE_CUSTOM) {
 	function include_x ($file, $once = false, $show_errors = true) {
 		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
-				return include_once($file_x);
+				return include_once $file_x;
 			} else {
-				return include($file_x);
+				return include $file_x;
 			}
 		} elseif (file_exists($file)) {
 			if ($once) {
-				return include_once($file);
+				return include_once $file;
 			} else {
-				return include($file);
+				return include $file;
 			}
 		} else {
 			global $L;
@@ -48,9 +48,9 @@ if (USE_CUSTOM) {
 	function require_x ($file, $once = false, $show_errors = true) {
 		if (file_exists($file)) {
 			if ($once) {
-				return require_once($file);
+				return require_once $file;
 			} else {
-				return require($file);
+				return require $file;
 			}
 		} else {
 			global $L;
@@ -63,9 +63,9 @@ if (USE_CUSTOM) {
 	function include_x ($file, $once = false, $show_errors = true) {
 		if (file_exists($file)) {
 			if ($once) {
-				return include_once($file);
+				return include_once $file;
 			} else {
-				return include($file);
+				return include $file;
 			}
 		} else {
 			global $L;

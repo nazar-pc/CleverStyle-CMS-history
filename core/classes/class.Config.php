@@ -5,7 +5,7 @@ class Config {
 			$mirror_index = -1;
 	//Инициализация параметров системы
 	function __construct () {
-		global $Page, $Cache, $db, $L;
+		global $Cache;
 		$this->admin_parts = array('db', 'core', 'components', 'replace', 'routing');
 		//Считывание настроек с кеша и определение недостающих данных
 		$config = $Cache->get('config');
@@ -27,6 +27,14 @@ class Config {
 		if (isset($query) && is_array($query) && !empty($query)) {
 			$this->rebuild_cache($query);
 		}
+		//Инициализация движка
+		$this->init();
+		//Запуск роутинга адреса
+		$this->routing();
+	}
+	//Инициализация движка (или реинициалицазия при необходимости)
+	function init() {
+		global $Page, $Cache, $db, $L;
 		//Инициализация объекта языков с использованием настроек движка
 		$L->init($this);
 		//Инициализация объекта БД с использованием настроек движка
@@ -35,8 +43,6 @@ class Config {
 		$Cache->init($this);
 		//Инициализация объекта страницы с использованием настроек движка
 		$Page->init($this);
-		//Запуск роутинга адреса
-		$this->routing();
 	}
 	//Анализ и обработка текущего адреса страницы
 	protected function routing () {

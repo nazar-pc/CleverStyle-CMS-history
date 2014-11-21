@@ -27,20 +27,22 @@ class Classes {
 			} else {
 				global $timeload;
 				if (file_exists(CLASSES.DS.'class.'.$class[0].'.php')) {
-					require_x(CLASSES.DS.'class.'.$class[0].'.php', 1);
+					if (!class_exists($class[0])) {
+						require_x(CLASSES.DS.'class.'.$class[0].'.php', 1);
+					}
 					//Если второй параметр true - создаем глобальный объект
 					if ($class[1]) {
 						if (isset($class[2]) && $class[2]) {
 							global $$class[2];
-							$this->LoadedObjects[$class[2]] = $class[2];
 							if (!is_object($$class[2])) {
+								$this->LoadedObjects[$class[2]] = $class[2];
 								$$class[2] = new $class[0]();
 							}
 							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
 						} else {
 							global $$class[0];
-							$this->LoadedObjects[$class[0]] = $class[0];
 							if (!is_object($$class[0])) {
+								$this->LoadedObjects[$class[0]] = $class[0];
 								$$class[0] = new $class[0]();
 							}
 							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
@@ -70,7 +72,7 @@ class Classes {
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __destruct () {
 		foreach ($this->LoadedObjects as $class) {
-			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config' && $class != 'User') {
+			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config' && $class != 'User' && $class != 'Error' && $class != 'L') {
 				$this->unload($class);
 			}
 		}
@@ -90,6 +92,12 @@ class Classes {
 		}
 		if (isset($this->LoadedObjects['User'])) {
 			$this->unload('User');
+		}
+		if (isset($this->LoadedObjects['Error'])) {
+			$this->unload('Error');
+		}
+		if (isset($this->LoadedObjects['L'])) {
+			$this->unload('L');
 		}
 		exit;
 	}

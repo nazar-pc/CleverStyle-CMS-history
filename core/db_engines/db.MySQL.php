@@ -2,16 +2,11 @@
 class MySQL extends DataBase {
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница [, постоянное_соединение]]]
-	function __construct ($database, $user, $password, $host='localhost', $codepage=false, $persistency = false) {
+	function __construct ($database, $user = '', $password = '', $host = 'localhost', $codepage = false) {
 		$this->connecting_time = microtime(true);
-		if($persistency) {
-			$this->id = mysql_pconnect($host, $user, $password);
-		} else {
-			$this->id = mysql_connect($host, $user, $password);
-		}
-		if($this->id) {
+		$this->id = mysql_connect($host, $user, $password);
+		if(is_resource($this->id)) {
 			if(!$this->select_db($database)) {
-				mysql_close($this->id);
 				unset($this);
 				return false;
 			}
@@ -39,38 +34,39 @@ class MySQL extends DataBase {
 	//Запрос в БД
 	//(текст_запроса)
 	function q ($query = '') {
-		if($query) {
-			//Обработка запроса
-			unset($this->query['resource']);
-			$this->query['resource'] = '';
-			$this->query['time'] = microtime(true);
-			$this->query['text'] = str_replace('[prefix]', $this->prefix, $query);
-			unset($this->query['resource']);
-			$this->query['resource'] = mysql_query($this->query['text'], $this->id);
-			$this->query['time'] = round(microtime(true) - $this->query['time'], 6);
-			$this->time += $this->query['time'];
-			++$this->queries['num'];
-			global $db, $Config;
-			++$db->queries;
-			$db->time += $this->query['time'];
-			if (is_object($Config) && $Config->core['show_queries'] > 0) {
-				$this->queries['time'][] = $this->query['time'];
-				$this->queries['text'][] = xap($this->query['text']);
-			}
-			if ($this->query['resource']) {
-				return $this->query['resource'];
-			} else {
-				return false;
-			}
+		if(!$query) {
+			return false;
+		}
+		if (is_resource($this->query['resource'])) {
+			mysql_free_result($this->query['resource']);
+		}
+		$this->query['time'] = microtime(true);
+		$this->query['text'] = str_replace('[prefix]', $this->prefix, $query);
+		unset($this->query['resource']);
+		$this->query['resource'] = mysql_query($this->query['text'], $this->id);
+		$this->query['time'] = round(microtime(true) - $this->query['time'], 6);
+		$this->time += $this->query['time'];
+		++$this->queries['num'];
+		global $db, $Config;
+		++$db->queries;
+		$db->time += $this->query['time'];
+		if (is_object($Config) && $Config->core['show_queries'] > 0) {
+			$this->queries['time'][] = $this->query['time'];
+			$this->queries['text'][] = xap($this->query['text']);
+		}
+		if ($this->query['resource']) {
+			return $this->query['resource'];
+		} else {
+			return false;
 		}
 	}
 	//Подсчёт количества строк
 	//([id_запроса])
 	function n ($query_resource = false) {
-		if(!$query_resource) {
+		if($query_resource === false) {
 			$query_resource = $this->query['resource'];
 		}
-		if($query_resource) {
+		if(is_resource($query_resource)) {
 			return mysql_num_rows($query_resource);
 		} else {
 			return false;
@@ -82,7 +78,7 @@ class MySQL extends DataBase {
 		if (!$query_resource) {
 			$query_resource = $this->query['resource'];
 		}
-		if ($query_resource) {
+		if (is_resource($query_resource)) {
 			if ($array) {
 				while ($result[] = mysql_fetch_array($query_resource, $result_type));
 				return $result;
@@ -99,9 +95,10 @@ class MySQL extends DataBase {
 	}
 	//Отключение от БД
 	function __destruct () {
-		if($this->connected && $this->id) {
-			if (isset($this->query['resource']) && $this->query['resource']) {
+		if($this->connected && is_resource($this->id)) {
+			if (is_resource($this->query['resource'])) {
 				mysql_free_result($this->query['resource']);
+				$this->query['resource'] = '';
 			}
 			mysql_close($this->id);
 		}
