@@ -178,7 +178,7 @@ if (isset($rc[2])) {
 			$a->button(array('in' => $L->yes, 'type' => 'submit'))
 		);
 	} elseif ($rc[2] == 'test') {
-		define('nointerface', true);
+		interface_off();
 		$test_dialog = false;
 		$a->form = false;
 		global $Page, $db;
@@ -409,6 +409,15 @@ if (isset($rc[2])) {
 		)
 	);
 }
-$test_dialog && $a->content($a->div(array('id' => 'test_db', 'style' => 'display: none;', 'title' => $L->test_connection)));
+$test_dialog && $a->content(
+	$a->div(
+		array(
+			'id'			=> 'test_db',
+			'class'			=> 'dialog',
+			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"resizable":false,"show":"scale","width":"250"}',
+			'title'			=> $L->test_connection
+		)
+	)
+);
 unset($a, $rc);
 ?>

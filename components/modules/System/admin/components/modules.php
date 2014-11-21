@@ -1,5 +1,5 @@
 <?php
-global $Config, $Admin, $L, $db, $ADMIN;
+global $Config, $Admin, $L, $db, $ADMIN, $API;
 $a = &$Admin;
 $rc = &$Config->routing['current'];
 $a->buttons = false;
@@ -228,10 +228,53 @@ if ($mode && $rc[2] == 'install') {
 			}
 			unset($db_users_item);
 			if (!empty($lost_columns)) {
-				$addition_state .= $a->span(
+				$addition_state .= $a->a(
+					$a->icon('alert'),
 					array(
 						'data-title'	=> $L->missing_users_columns.':'.$a->br().$a->br().implode(', ', $lost_columns).$a->br().$a->br().$L->click_to_fix,
-						'class'			=> 'ui-icon ui-icon-alert',
+						'class'			=> 'nul',
+						'style'			=> 'display: inline-block;'
+					)
+				);
+			}
+			//Уведомление об наличии API
+			if (is_dir(MODULES.DS.$module.DS.$API)) {
+				if (file_exists(MODULES.DS.$module.DS.$API.DS.'readme.txt')) {
+					$addition_state .= $a->div(
+						file_get_contents(MODULES.DS.$module.DS.$API.DS.'readme.txt'),
+						array(
+							'id'			=> $module.'_api',
+							'class'			=> 'dialog',
+							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
+							'title'			=> $module.' -> '.$L->API
+						)
+					);
+				}
+				$addition_state .= $a->span(
+					$a->icon('link'),
+					array(
+						'data-title'	=> $L->API_exists.$a->br().(file_exists(MODULES.DS.$module.DS.$API.DS.'readme.txt') ? $L->click_to_view_details : ''),
+						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');',
+						'style'			=> 'display: inline-block;'
+					)
+				);
+			}
+			//Информация о модуле
+			if (file_exists(MODULES.DS.$module.DS.'readme.txt')) {
+				$addition_state .= $a->div(
+					file_get_contents(MODULES.DS.$module.DS.'readme.txt'),
+					array(
+						'id'			=> $module.'_copyright',
+						'class'			=> 'dialog',
+						'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
+						'title'			=> $module.' -> '.$L->information_about_module
+					)
+				).
+				$a->span(
+					$a->icon('info'),
+					array(
+						'data-title'	=> $L->information_about_module.$a->br().$L->click_to_view_details,
+						'onClick'		=> '$(\'#'.$module.'_copyright\').dialog(\'open\');',
 						'style'			=> 'display: inline-block;'
 					)
 				);

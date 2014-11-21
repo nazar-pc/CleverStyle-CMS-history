@@ -27,7 +27,7 @@ $(document).ready(
 					$(element).button();
 				}
 			}
-		);		
+		);
 		$('#debug').dialog({
 				autoOpen:	false,
 				height:		'400',
@@ -35,15 +35,15 @@ $(document).ready(
 				show:		'scale',
 				width:		'700'
 		});
-		$('#test_db, #test_storage').dialog({
-				autoOpen:	false,
-				height:		'75',
-				hide:		'puff',
-				modal:		true,
-				resizable:	false,
-				show:		'scale',
-				width:		'250'
-		});
+		$('.dialog').each(
+			function (index, element) {
+				if ($(element).attr('data-dialog')) {
+					$(element).dialog($.secureEvalJSON($(element).attr('data-dialog')));
+				} else {
+					$(element).dialog();
+				}
+			}
+		);
 		$('#admin_form *').change(
 			function(){
 				save = true;

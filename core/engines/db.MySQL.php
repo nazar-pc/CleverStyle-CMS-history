@@ -50,10 +50,8 @@ class MySQL extends DatabaseAbstract {
 		global $db, $Config;
 		++$db->queries;
 		$db->time += $this->query['time'];
-		if (!is_object($Config) || $Config->core['show_queries'] > 0) {
-			$this->queries['time'][] = $this->query['time'];
-			$this->queries['text'][] = xap($this->query['text']);
-		}
+		$this->queries['time'][] = $this->query['time'];
+		$this->queries['text'][] = xap($this->query['text']);
 		if ($this->query['resource']) {
 			return $this->query['resource'];
 		} else {

@@ -56,10 +56,3 @@ td#main_content > section > article > div {
 	padding: 10px;
 	height: 100%;
 }
-div.ui-state-highlight.red, div.ui-state-highlight.green, #debug > p.ui-state-highlight {
-	font-size: 14px;
-	margin: 10px;
-	margin-bottom: 20px;
-	padding: 5px;
-	text-align: center;
-}

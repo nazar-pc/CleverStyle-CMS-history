@@ -104,6 +104,25 @@ function errors_off() {
 	global $Error;
 	is_object($Error) && $Error->error = false;
 }
+//Включение или отключение отображения полного интерфейса
+function interface_on() {
+	global $Page;
+	if (is_object($Page)) {
+		$Page->interface = true;
+	} else {
+		global $interface;
+		$interface = true;
+	}
+}
+function interface_off() {
+	global $Page;
+	if (is_object($Page)) {
+		$Page->interface = false;
+	} else {
+		global $interface;
+		$interface = false;
+	}
+}
 //Функция для получения списка содержимого директории (и поддиректорий при необходимости)
 function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $DS = false) {
 	if (!is_dir($dir)) {
@@ -276,7 +295,7 @@ function sip ($in) {
 function xap ($in, $format=false) {
 	if ($format == 'html') {
 		//Делаем безопасный html
-		$in = preg_replace('/(<(link|script|iframe|object).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i', '', $in); //Удаляем скрипты, фреймы и flash
+		$in = preg_replace('/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i', '', $in); //Удаляем скрипты, фреймы и flash
 		$in = preg_replace('/(script:)|(expression\()/i', '\\1&nbsp;', $in); //Обезвреживаем скрипты, что остались
 		$in = preg_replace('/(onblur|onchange|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onload|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|onreset|onselect|onsubmit|onunload)=?/i', '', $in); //Удаляем события
 		$in = preg_replace('/((src|href).*?=.*?)(http:\/\/)/i', '\\1redirect/\\2', $in); //Обезвреживаем внешние ссылки
@@ -471,10 +490,10 @@ function get_sql_info () {
 }
 $temp = base64_decode('Y29weXJpZ2h0');
 $$temp = array(
-				0 => base64_decode('TW9rcnluc2t5aSBOYXphcg=='),
-				1 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),
-				2 => base64_decode('Q29weXJpZ2h0IChjKSAyMDEwIGJ5IE1va3J5bnNreWkgTmF6YXI='),
-				3 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMgLSBDUyBDTVMiPkNsZXZlclN0eWxlIENNUyAtIENTIENNUzwvYT4=')
-				);
+	0 => base64_decode('TW9rcnluc2t5aSBOYXphcg=='),																								//Автор
+	1 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Генератор
+	2 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExIGJ5IE1va3J5bnNreWkgTmF6YXI='),																	//Копирайт
+	3 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Ссылка
+);
 unset($temp);
 ?>

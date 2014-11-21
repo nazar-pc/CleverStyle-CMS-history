@@ -126,8 +126,8 @@ $a->content(
 									'type'			=> 'radio',
 									'name'			=> 'core[show_queries]',
 									'checked'		=> (int)$Config->core['show_queries'],
-									'value'			=> array(0, 1, 2, 3),
-									'in'			=> array($L->off, $L->on, $L->show_queries_and_time, $L->show_queries_extended)
+									'value'			=> array(0, 1),
+									'in'			=> array($L->off, $L->on)
 								)
 							)
 						)

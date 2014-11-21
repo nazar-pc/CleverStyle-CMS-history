@@ -28,7 +28,7 @@ if (isset($_POST['edit_settings'])) {
 		global $Cache;
 		if ($Admin->applied($Config->rebuild_cache(false))) {
 			$Config->init();
-			if (isset($_POST['visual_style'])) {
+			if (isset($_POST['visual_style']) || isset($_POST['caching'])) {
 				flush_pcache();
 			}
 			$Page->js("\$(document).ready(function(){save = true;});\n", 'code');
@@ -40,7 +40,7 @@ if (isset($_POST['edit_settings'])) {
 		if ($Admin->saved($db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $update).' WHERE `domain` = '.sip(CDOMAIN)))) {
 			flush_cache();
 			$Config->rebuild_cache();
-			if (isset($_POST['visual_style'])) {
+			if (isset($_POST['visual_style']) || isset($_POST['caching'])) {
 				flush_pcache();
 			}
 		}

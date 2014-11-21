@@ -103,6 +103,12 @@ class Config {
 			}
 			$this->server['current_url'] = (ADMIN ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
 		}
+		if (isset($_POST['nonterface'])) {
+			interface_off();
+		} elseif (isset($r['current'][count($r['current']) - 1]) && mb_strtolower($r['current'][count($r['current']) - 1]) == 'nointerface') {
+			interface_off();
+			array_pop($r['current']);
+		}
 		unset($r);
 	}
 	//Обновление информации о текущем наборе тем оформления
@@ -151,7 +157,7 @@ class Config {
 					$query[$id] = '`'.$q.'`';
 				}
 			}
-			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), false, 1);
+			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN).' LIMIT 1', false, 1);
 			foreach ($query as $q) {
 				$q = trim($q, '`');
 				if ($q == 'routing' && isset($this->routing['current'])) {

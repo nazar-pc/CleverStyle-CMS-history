@@ -1,4 +1,4 @@
-AddDefaultCharset UTF-8
+AddDefaultCharset utf-8
 Options -Indexes
 IndexIgnore *.php *.pl *.cgi *.htaccess *.htpasswd
 RewriteEngine On
@@ -7,4 +7,5 @@ RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
 RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
 RewriteRule ^(.*)$ index.php [F,L]
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ ./index.php [L]

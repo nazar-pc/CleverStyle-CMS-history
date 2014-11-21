@@ -1,6 +1,6 @@
 <?php
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
-abstract class HTML {
+class HTML {
 	public $Content;
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
@@ -37,6 +37,9 @@ abstract class HTML {
 			} else {
 				$data['class'] = 'info';
 			}
+		}
+		if (isset($data['data-dialog'])) {
+			$data['data-dialog'] = filter($data['data-dialog']);
 		}
 		if (isset($data['tag'])) {
 			$tag = $data['tag'];
@@ -75,7 +78,7 @@ abstract class HTML {
 		if (isset($data['onClick']) && empty($data['onClick'])) {
 			unset($data['onClick']);
 		}
-		asort($data);
+		ksort($data);
 		foreach ($data as $key => $value) {
 			if (empty($key)) {
 				continue;
@@ -145,19 +148,20 @@ abstract class HTML {
 		if (isset($data['onClick']) && empty($data['onClick'])) {
 			unset($data['onClick']);
 		}
-		asort($data);
+		ksort($data);
 		foreach ($data as $key => $value) {
 			if (empty($key)) {
 				continue;
 			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
-		$return = '<'.$tag.$add.'>'.$in."\n";
+		$return = '<'.$tag.$add.' />'.$in."\n";
 		return isset($data_title) ? $this->label($return, array('data-title' => $data_title)) : $return;
 	}
 
 	//HTML тэги
 	///Простая обработка
+	////Парные теги
 	function html		($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
@@ -224,6 +228,19 @@ abstract class HTML {
 	function h6			($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
+	function sup		($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function sub		($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function pre		($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function code		($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	////Непарные теги
 	function link		($in = array()) {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
@@ -462,8 +479,8 @@ abstract class HTML {
 		$info = $in.'_info';
 		return $this->label($L->$in, array_merge(array('data-title' => $L->$info), $data));
 	}
-	function icon		($class) {
-		return $this->span(array('class' => 'ui-icon ui-icon-'.$class));
+	function icon		($class, $data = array()) {
+		return $this->span(array('class' => 'ui-icon ui-icon-'.$class), $data);
 	}
 }
 ?>

@@ -52,7 +52,6 @@ class Admin extends Module {
 									array(
 										'id'		=> $part.'_a',
 										'href'		=> $ADMIN.'/'.MODULE.'/'.$part,
-										'title'		=> $L->$part,
 										'class'		=> isset($Config->routing['current'][0]) && $Config->routing['current'][0] == $part ? 'active' : ''
 									)
 								);
@@ -70,7 +69,6 @@ class Admin extends Module {
 									array(
 										'id'		=> $subpart.'_a',
 										'href'		=> $ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
-										'title'		=> $L->$subpart,
 										'class'		=> $Config->routing['current'][1] == $subpart ? 'active' : '',
 										'onClick'	=>	$onClick
 									)
