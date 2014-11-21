@@ -2,17 +2,15 @@
 class MySQL extends DataBase {
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница [, постоянное_соединение]]]
-	function __construct ($database, $user, $password, $host='localhost', $codepage=false, $persistency = false, $mirror = false) {
+	function __construct ($database, $user, $password, $host='localhost', $codepage=false, $persistency = false) {
 		$this->connecting_time = get_time();
-		$this->database = $database;
-		$this->mirror = $mirror;
 		if($persistency) {
 			$this->id = mysql_pconnect($host, $user, $password);
 		} else {
 			$this->id = mysql_connect($host, $user, $password);
 		}
 		if($this->id) {
-			if(!$this->select_db($this->database)) {
+			if(!$this->select_db($database)) {
 				mysql_close($this->id);
 				unset($this);
 				return false;
@@ -23,7 +21,7 @@ class MySQL extends DataBase {
 					mysql_set_charset($codepage, $this->id);
 				}
 			}
-			$this->connected = 1;
+			$this->connected = true;
 		} else {
 			unset($this);
 			return false;
@@ -43,13 +41,13 @@ class MySQL extends DataBase {
 	function q ($query = '') {
 		if($query) {
 			//Обработка запроса
-			$this->query['start'] = get_time();
+			unset($this->query['resource']);
+			$this->query['resource'] = '';
+			$this->query['time'] = get_time();
 			$this->query['text'] = str_replace('[prefix]', $this->prefix, $query);
-			unset($this->query['result']);
-			$this->query['result'] = mysql_query($this->query['text'], $this->id);
-			$this->query['end'] = get_time();
-			$this->query['id'] = mysql_insert_id($this->id);
-			$this->query['time'] = round(($this->query['end']-$this->query['start']), 6);
+			unset($this->query['resource']);
+			$this->query['resource'] = mysql_query($this->query['text'], $this->id);
+			$this->query['time'] = round(get_time() - $this->query['time'], 6);
 			$this->time += $this->query['time'];
 			++$this->queries['num'];
 			global $db, $Config;
@@ -61,8 +59,8 @@ class MySQL extends DataBase {
 					$this->queries['text'][] = htmlspecialchars($this->query['text']);
 				}
 			}
-			if ($this->query['result']) {
-				return $this->query['result'];
+			if ($this->query['resource']) {
+				return $this->query['resource'];
 			} else {
 				return false;
 			}
@@ -70,28 +68,28 @@ class MySQL extends DataBase {
 	}
 	//Подсчёт количества строк
 	//([id_запроса])
-	function n ($query_id = 0) {
-		if(!$query_id) {
-			$query_id = $this->query['result'];
+	function n ($query_resource = false) {
+		if(!$query_resource) {
+			$query_resource = $this->query['resource'];
 		}
-		if($query_id) {
-			return mysql_num_rows($query_id);
+		if($query_resource) {
+			return mysql_num_rows($query_resource);
 		} else {
 			return false;
 		}
 	}
 	//Получение результатов
 	//([id_запроса [, тип_возвращаемого_массива [, в_виде_массива_результатов]]])
-	function f ($query_id = 0, $result_type = MYSQL_BOTH, $array = false) { //MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
-		if (!$query_id) {
-			$query_id = $this->query['result'];
+	function f ($query_resource = false, $result_type = MYSQL_BOTH, $array = false) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+		if (!$query_resource) {
+			$query_resource = $this->query['resource'];
 		}
-		if ($query_id) {
+		if ($query_resource) {
 			if ($array) {
-				while ($result[] = mysql_fetch_array($query_id, $result_type));
+				while ($result[] = mysql_fetch_array($query_resource, $result_type));
 				return $result;
 			} else {
-				return mysql_fetch_array($query_id, $result_type);
+				return mysql_fetch_array($query_resource, $result_type);
 			}
 		} else {
 			return false;
@@ -103,9 +101,9 @@ class MySQL extends DataBase {
 	}
 	//Отключение от БД
 	function __destruct () {
-		if($this->id) {
-			if (isset($this->query['result']) && $this->query['result']) {
-				mysql_free_result($this->query['result']);
+		if($this->connected && $this->id) {
+			if (isset($this->query['resource']) && $this->query['resource']) {
+				mysql_free_result($this->query['resource']);
 			}
 			mysql_close($this->id);
 		}

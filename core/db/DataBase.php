@@ -1,17 +1,28 @@
 <?php
 abstract class DataBase {
+	public  $connected = false,				//Метка наличия соединения
+			$database,						//Текущая БД
+			$prefix,						//Текущий префикс
+			$time,							//Массив для хранения общей длительности выполнения запросов
+			$query = array(					//Массив для хранения данных последнего выполненого запроса
+						'start' => '',
+						'end' => '',
+						'time' => '',
+						'text' => '',
+						'resource' => '',
+						'id' => ''
+					),
+			$queries = array(				//Массив для хранения данных всех выполненых запросов
+						'num' => '',
+						'time' => array(),
+						'text' => array()
+						),
+			$connecting_time;				//Время соединения
 	protected $id;
-	public  $connected = 0,		//Метка наличия соединения
-			$mirror,	//Метка типа БД (основная или зеркало)
-			$database,			//Текущая БД
-			$prefix,			//Текущий префикс
-			$time,				//Массив для хранения общей длительности выполнения запросов
-			$query = array('start' => '', 'end' => '', 'time' => '', 'text' => '', 'result' => '', 'id' => ''), //Массив для хранения данных последнего выполненого запроса
-			$queries = array('num' => '', 'time' => array(), 'text' => array()), //Массив для хранения данных всех выполненых запросов
-			$connecting_time;  //Время соединения
+	
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница [, постоянное_соединение]]]
-	abstract function __construct ($database, $user, $password, $host='localhost', $codepage=false, $persistency = false, $mirror = false);
+	abstract function __construct ($database, $user, $password, $host='localhost', $codepage=false, $persistency = false);
 	//Смена текущей БД
 	abstract function select_db ($database);
 	//Запрос в БД
@@ -19,27 +30,26 @@ abstract class DataBase {
 	abstract function q ($query = '');
 	//Подсчёт количества строк
 	//([id_запроса])
-	abstract function n ($query_id = 0);
+	abstract function n ($query_resource = false);
 	//Получение результатов
 	//([id_запроса [, тип_возвращаемого_массива [, в_виде_массива_результатов]]])
-	abstract function f ($query_id = 0, $result_type = MYSQL_BOTH, $array = false); //MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	abstract function f ($query_resource = false, $result_type = MYSQL_BOTH, $array = false);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 	//Упрощенный интерфейс метода для получения результата в виде массива
 	//([id_запроса [, тип_возвращаемого_массива]])
-	function fs ($query_id = 0, $result_type = MYSQL_BOTH) {
-		$this->f ($query_id, $result_type, true);
+	function fs ($query_resource = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+		$this->f ($query_resource, $result_type, true);
 	}
 	//Запрос с получением результатов, результаты запросов кешируются при соответствующей настройке сайта
 	//(текст_запроса [, тип_возвращаемого_массива [, в_виде массива]])
-	function qf ($query = '', $result_type = MYSQL_BOTH, $array = false) { //MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	function qf ($query = '', $result_type = MYSQL_BOTH, $array = false) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 		if (!$query) {
 			return false;
 		}
-		//md5($query);
 		return $this->f($this->q($query), $result_type, $array);
 	}
 	//Упрощенный интерфейс метода запроса с получением результата в виде массива
 	//(текст_запроса [, тип_возвращаемого_массива])
-	function qfs ($query = '', $result_type = MYSQL_BOTH) {
+	function qfs ($query = '', $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 		if (!$query) {
 			return false;
 		}

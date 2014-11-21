@@ -66,7 +66,7 @@ class Classes {
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __destruct () {
 		foreach ($this->LoadedClasses as $class) {
-			if ($class != 'Page' && $class != 'Config' && $class != 'db') {
+			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config') {
 				$this->unload($class);
 			}
 		}
@@ -77,6 +77,9 @@ class Classes {
 		}
 		if (isset($this->LoadedClasses['db'])) {
 			$this->unload('db');
+		}
+		if (isset($this->LoadedClasses['Core'])) {
+			$this->unload('Core');
 		}
 		if (isset($this->LoadedClasses['Config'])) {
 			$this->unload('Config');

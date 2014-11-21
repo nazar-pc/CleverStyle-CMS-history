@@ -22,6 +22,7 @@ $L->translate = array(
 	'sure_to_delete' => 'Вы уверенны, что хотите удалить',
 	'yes' => 'Да',
 	'no' => 'Нет',
+
 //Администрация
 	'administration' => 'Администрация',
 	'admin_symb' => 'A',
