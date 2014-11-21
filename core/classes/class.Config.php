@@ -112,6 +112,8 @@ class Config {
 			}
 			array_shift($rc);
 		}
+		!defined('ADMIN')	&& define('ADMIN', false);
+		!defined('API')		&& define('API', false);
 		//Определение модуля модуля
 		if (isset($rc[0]) && in_array($rc[0], array_keys($this->components['modules']))) {
 			if (!defined('MODULE')) {
@@ -120,15 +122,16 @@ class Config {
 		} else {
 			if (!defined('MODULE')) {
 				define('MODULE', 'System');
+				if (!ADMIN && !API && !defined('HOME')) {
+					define('HOME', true);
+				}
 			}
 		}
-		if (!defined('ADMIN') && !defined('API') && !defined('HOME') && empty($rc[0])) {
-			define('HOME', true);
-		}
+		!defined('HOME')	&& define('HOME', false);
 		//Скорректированный путь страницы (рекомендуемый к использованию)
-		$this->server['current_url'] = (defined('ADMIN') ? $ADMIN.'/' : '').MODULE.(defined('API') ? $API.'/' : '').'/'.implode('/', $rc);
+		$this->server['current_url'] = (ADMIN ? $ADMIN.'/' : '').MODULE.(API ? $API.'/' : '').'/'.implode('/', $rc);
 		//Определение необходимости отключить интерфейс
-		if (isset($_POST['nonterface']) || defined('API')) {
+		if (isset($_POST['nonterface']) || API) {
 			interface_off();
 		} elseif (isset($rc[count($rc) - 1]) && mb_strtolower($rc[count($rc) - 1]) == 'nointerface') {
 			interface_off();

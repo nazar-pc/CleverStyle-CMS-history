@@ -353,25 +353,26 @@ class Page extends HTML {
 			}
 		}
 		$Cache->pcache_key = mb_substr(md5($key), 0, 5);
-		unset($key);
 	}
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
-		preg_match_all('/url\((.*?)\)/', $data, $images);
 		chdir(dirname(realpath($file)));
-		unset($images[0]);
-		foreach ($images[1] as $image) {
-			$format = mb_substr($image, -3);
-			if ($format != 'jpg' && $format != 'png' && $format != 'gif') {
-				if (mb_substr($image, -4) == 'jpeg') {
+		preg_replace_callback(
+			'/url\((.*?)\)/',
+			function ($link) use (&$data) {
+				$link[0] = trim($link[1], '\'" ');	//array(0 - фильтрованный адрес, 1 - исходные данные)
+				$format = mb_substr($link[0], -3);
+				if (mb_substr($link[0], -4) == 'jpeg') {
 					$format = 'jpg';
-				} else {
-					continue;
 				}
-			}
-			$data = str_replace($image, 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(realpath($image))), $data);
-		}
-		unset($format, $images);
+				if (($format == 'jpg' || $format == 'png' || $format == 'gif') && file_exists(realpath($link[0]))) {
+					$data = str_replace($link[1], 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(realpath($link[0]))), $data);
+				} elseif ($format == 'css' && file_exists(realpath($link[0]))) {
+					$data = str_replace($link[1], 'data:text/'.$format.';base64,'.base64_encode(file_get_contents(realpath($link[0]))), $data);
+				}
+			},
+			$data
+		);
 		chdir(DIR);
 	}
 	//Фильтр лиших данных в CSS и JavaScript файлах

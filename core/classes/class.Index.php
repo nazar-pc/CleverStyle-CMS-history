@@ -31,11 +31,11 @@ class Index extends HTML {
 	function __construct () {
 		global $Config, $L, $Page, $User, $Classes, $ADMIN, $API;
 		$Page->js("var language = '".$L->clanguage."', lang = '".$L->clang."';\n", 'code');
-		if (defined('ADMIN') && $User->is_admin()) {
+		if (ADMIN && $User->is_admin()) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.$ADMIN);
 			$this->form = true;
 			$this->admin = true;
-		} elseif (defined('API')) {
+		} elseif (API) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.$API);
 			$this->api = true;
 		} else {
@@ -55,7 +55,7 @@ class Index extends HTML {
 		global $Config, $L, $Page, $ADMIN;
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
-			$Page->title($L->get(defined('HOME') ? 'home' : MODULE));
+			$Page->title($L->get(HOME ? 'home' : MODULE));
 			$this->savefile = $save_file ?: $this->savefile;
 		}
 		if ($this->parts !== false) {
@@ -142,10 +142,12 @@ class Index extends HTML {
 		$this->method('mainmenu');
 		$this->method('mainsubmenu');
 		$this->method('menumore');
-		$Page->js(
-			"var save_before = '".$L->save_before."', continue_transfer = '".$L->continue_transfer."', base_url = '".$Config->core['url'].'/'.$ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0]."';\n",
-			'code'
-		);
+		if (!API) {
+			$Page->js(
+				"var save_before = '".$L->save_before."', continue_transfer = '".$L->continue_transfer."', base_url = '".$Config->core['url'].(ADMIN ? '/'.$ADMIN : '').'/'.MODULE.(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '')."';\n",
+				'code'
+			);
+		}
 		if ($this->parts !== false) {
 			$Page->mainsubmenu	= $this->menu($this->mainsubmenu);
 			if ($this->subparts !== false) {
