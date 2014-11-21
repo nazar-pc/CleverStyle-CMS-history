@@ -480,6 +480,11 @@ class HTML {
 		return $this->label($L->$in, array_merge(array('data-title' => $L->$info), $data));
 	}
 	function icon		($class, $data = array()) {
+		if (!isset($data['style'])) {
+			$data['style'] = 'display: inline-block;';
+		} else {
+			$data['style'] .= ' display: inline-block;';
+		}
 		return $this->span(array('class' => 'ui-icon ui-icon-'.$class), $data);
 	}
 }

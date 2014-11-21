@@ -2,18 +2,11 @@ body {
 	font-family: "Sergoe UI", Tahoma, Verdana, Arial;
 	font-size: 11px;
 	margin: 0px;
-	overflow-x: hidden;
 	padding: 0px;
 	width: 100%;
 }
-#body * {
-	overflow: visible;
-}
-body[id=textarea] {
-	width: auto;
-}
 #body {
-	padding: 7px;
+	margin: 7px;
 }
 #body > table {
 	border-radius: 10px;

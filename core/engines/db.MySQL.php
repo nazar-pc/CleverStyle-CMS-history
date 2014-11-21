@@ -7,7 +7,6 @@ class MySQL extends DatabaseAbstract {
 		$this->id = @mysql_connect($host, $user, $password);
 		if(is_resource($this->id)) {
 			if(!$this->select_db($database)) {
-				unset($this);
 				return false;
 			}
 			//Смена кодировки соеденения с БД
@@ -18,7 +17,6 @@ class MySQL extends DatabaseAbstract {
 			}
 			$this->connected = true;
 		} else {
-			unset($this);
 			return false;
 		}
 		$this->connecting_time = time_x(true) - $this->connecting_time;

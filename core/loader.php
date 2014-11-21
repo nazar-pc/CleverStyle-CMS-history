@@ -9,7 +9,10 @@ header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("utf-8");
 
 //Задание базовых констант с путями системных папок
-define('DOMAIN',		$_SERVER['HTTP_HOST']);		//Доменное имя текущего сайта
+//DOMAIN - константа, содержащая базовый домен сайта
+//CDOMAIN - константа, содержащая домен текущего сайта
+//(он может отличатся от базового домена, если вы находитесь на зеркале)
+define('CDOMAIN',		$_SERVER['HTTP_HOST']);		//Доменное имя текущего сайта
 define('CORE',			DIR.DS.'core');				//Папка ядра
 	define('CLASSES',	CORE.DS.'classes');			//Папка с классами
 	define('CONFIG',	CORE.DS.'config');			//Папка конфигурации
@@ -23,7 +26,6 @@ define('COMPONENTS',	DIR.DS.'components');		//Папка для компонен
 	define('BLOCKS',	COMPONENTS.DS.'blocks');	//Папка для блоков
 	define('MODULES',	COMPONENTS.DS.'modules');	//Папка для модулей
 	define('PLUGINS',	COMPONENTS.DS.'plugins');	//Папка для плагинов
-define('TEMP',			DIR.DS.'temp');				//Папка для временных файлов
 define('THEMES',		DIR.DS.'themes');			//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы

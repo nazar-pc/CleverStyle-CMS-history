@@ -6,7 +6,7 @@ $Admin->subparts = array(					//Задаем список подразделов
 						'plugins',
 						'databases',
 						'storages',
-						'instruments',
+						'tools',
 						'security'
 						);
 ?>

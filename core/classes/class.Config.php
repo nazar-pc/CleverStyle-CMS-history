@@ -155,7 +155,7 @@ class Config {
 					$query[$id] = '`'.$q.'`';
 				}
 			}
-			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN).' LIMIT 1', false, 1);
+			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1', false, 1);
 			foreach ($query as $q) {
 				$q = trim($q, '`');
 				if ($q == 'routing' && isset($this->routing['current'])) {

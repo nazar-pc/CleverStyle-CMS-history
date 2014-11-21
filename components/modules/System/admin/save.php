@@ -14,8 +14,7 @@ if (isset($_POST['edit_settings'])) {
 					$temp['out'] = explode("\n", $temp['out']);
 					foreach ($temp['in'] as $i => $val) {
 						if (empty($val)) {
-							unset($temp['in'][$i]);
-							unset($temp['out'][$i]);
+							unset($temp['in'][$i], $temp['out'][$i]);
 						}
 					}
 				}

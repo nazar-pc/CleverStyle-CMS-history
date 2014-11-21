@@ -101,15 +101,15 @@ function time_x ($microtime = false) {
 }
 //Приостановить ограничение на время выполнение скрипта
 //Применяется для выполнения длительных операций без ошибок
-function time_limit_pause ($resume = false) {
+function time_limit_pause ($pause = true) {
 	static $time_limit = false;
 	if ($time_limit === false) {
 		$time_limit = ini_get('max_execution_time');
 	}
-	if ($resume) {
-		set_time_limit($time_limit);
-	} else {
+	if ($pause) {
 		set_time_limit(0);
+	} else {
+		set_time_limit($time_limit);
 	}
 }
 //Включение или отключение обработки ошибок
@@ -227,6 +227,27 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		}
 		return $list;
 	}
+}
+//Получить URL файла по его расположению в файловой системе
+function url_by_source ($source) {
+	$source = realpath($source);
+	if (strpos($source, DIR.DS) === 0) {
+		global $Config;
+		if (is_object($Config)) {
+			return str_replace(DS, '/', str_replace(DIR, $Config->server['base_url'], $source));
+		}
+	}
+	return false;
+}
+//Получить расположение файла в файловой системе по его URL
+function source_by_url ($url) {
+	if (strpos($url, $Config->server['base_url']) === 0) {
+		global $Config;
+		if (is_object($Config)) {
+			return str_replace('/', DS, str_replace($Config->server['base_url'], DIR, $url));
+		}
+	}
+	return false;
 }
 //Очистка системного кеша
 function flush_cache () {

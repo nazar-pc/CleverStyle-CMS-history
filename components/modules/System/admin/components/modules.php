@@ -264,7 +264,7 @@ if ($mode && $rc[2] == 'install') {
 				$addition_state .= $a->div(
 					file_get_contents(MODULES.DS.$module.DS.'readme.txt'),
 					array(
-						'id'			=> $module.'_copyright',
+						'id'			=> $module.'_readme',
 						'class'			=> 'dialog',
 						'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 						'title'			=> $module.' -> '.$L->information_about_module
@@ -274,8 +274,8 @@ if ($mode && $rc[2] == 'install') {
 					$a->icon('info'),
 					array(
 						'data-title'	=> $L->information_about_module.$a->br().$L->click_to_view_details,
-						'onClick'		=> '$(\'#'.$module.'_copyright\').dialog(\'open\');',
-						'style'			=> 'display: inline-block;'
+						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');',
+						'style'			=> 'display: inline-block; border-spacing: 0px;'
 					)
 				);
 			}
@@ -369,11 +369,10 @@ if ($mode && $rc[2] == 'install') {
 				)
 			).
 			$a->td(
-				$a->span(
+				$a->icon(
+					$mdata['active'] == 1 ? 'check' : ($mdata['active'] == 2 ? 'minusthick' : 'closethick'),
 					array(
-						'data-title'	=> $mdata['active'] == 1 ? $L->enabled : ($mdata['active'] == 2 ? $L->disabled : $L->uninstalled.' ('.$L->not_installed.')'),
-						'class'			=> 'ui-icon ui-icon-'.($mdata['active'] == 1 ? 'check' : ($mdata['active'] == 2 ? 'minusthick' : 'closethick')),
-						'style'			=> 'display: inline-block;'
+						'data-title'	=> $mdata['active'] == 1 ? $L->enabled : ($mdata['active'] == 2 ? $L->disabled : $L->uninstalled.' ('.$L->not_installed.')')
 					)
 				).$addition_state,
 				array(

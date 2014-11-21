@@ -21,14 +21,14 @@ class Cache {
 		}
 		//$this->memcached = $Config->core['memcached'];
 		$this->cache = $this->disk || (bool)$this->memcache/* || (bool)$this->memcached*/;
-		unset($MEMCACHE_HOST, $MEMCACHE_PORT);
+		unset($MEMCACHE_HOST, $MEMCACHE_PORT, $GLOBALS['MEMCACHE_HOST'], $GLOBALS['MEMCACHE_PORT']);
 	}
 	function get ($label) {
 		if (isset($this->local_storage[$label])) {
 			return $this->local_storage[$label];
 		}
 		global $Core;
-		if (is_object($this->memcache) && $cache = $this->memcache->get(CDOMAIN.$label)) {
+		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$label)) {
 			if ($cache = @json_decode($Core->decrypt($result), true)) {
 				$this->local_storage[$label] = $cache;
 				return $cache;
@@ -48,7 +48,7 @@ class Cache {
 	function set ($label, $data) {
 		global $Core, $L;
 		$this->local_storage[$label] = $data;
-		if (is_object($this->memcache) && $this->memcache->set(CDOMAIN.$label, $Core->encrypt(json_encode_x($data)), zlib() ? MEMCACHE_COMPRESSED : false, $time)) {
+		if (is_object($this->memcache) && $this->memcache->set(DOMAIN.$label, $Core->encrypt(json_encode_x($data)), zlib() ? MEMCACHE_COMPRESSED : false, $time)) {
 			return true;
 		}
 		if ($this->disk) {
@@ -65,8 +65,8 @@ class Cache {
 	}
 	function del ($label) {
 		unset($this->local_storage[$label]);
-		if (is_object($this->memcache) && $this->memcache->get(CDOMAIN.$label)) {
-			$this->memcache->delete(CDOMAIN.$label, $time);
+		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$label)) {
+			$this->memcache->delete(DOMAIN.$label, $time);
 		}
 		if (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label)) {
 			unlink(CACHE.DS.$label);

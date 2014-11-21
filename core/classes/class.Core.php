@@ -7,30 +7,39 @@ class Core {
 			$support = false;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
-		if (require_x(CONFIG.DS.DOMAIN.DS.'main.php', true, false)) {
-			define('CACHE',	CORE.DS.'cache'.DS.CDOMAIN);	//Папка с кешем
-			define('LOGS',	CORE.DS.'logs'.DS.CDOMAIN);		//Папка для логов
-			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_USER, $DB_PASSWORD, $DB_PREFIX, $DB_CODEPAGE, $KEY;
-			if(!is_dir(CACHE)) {
-				@mkdir(CACHE, 0600);
-			}
-			if(!is_dir(LOGS)) {
-				@mkdir(LOGS, 0600);
-			}
-			if ($this->support = check_mcrypt()) {
-				$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');
-				$this->crypt_open(
-					'core',
-					mb_substr($KEY, 0, mcrypt_enc_get_key_size($td)),
-					mb_substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, mcrypt_enc_get_iv_size($td)),
-					$td
-				);
-			}
-			unset($KEY, $td);
-		} else {
+		if (!require_x(CONFIG.DS.CDOMAIN.DS.'main.php', true, false)) {
 			header('HTTP/1.0 404 Not Found');
 			__finish();
 		}
+		define('CACHE',		CORE.DS.'cache'.DS.DOMAIN);		//Папка с кешем
+		define('LOGS',		CORE.DS.'logs'.DS.DOMAIN);		//Папка для логов
+		define('STORAGE',	DIR.DS.'storage'.DS.DOMAIN);	//Локальное хранилище
+		define('TEMP',		STORAGE.DS.'temp');				//Папка для временных файлов
+		global	$DB_HOST,
+				$DB_TYPE,
+				$DB_NAME,
+				$DB_USER,
+				$DB_PASSWORD,
+				$DB_PREFIX,
+				$DB_CODEPAGE,
+				
+				$KEY;
+		if(!is_dir(CACHE)) {
+			@mkdir(CACHE, 0600);
+		}
+		if(!is_dir(LOGS)) {
+			@mkdir(LOGS, 0600);
+		}
+		if ($this->support = check_mcrypt()) {
+			$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');
+			$this->crypt_open(
+				'core',
+				mb_substr($KEY, 0, mcrypt_enc_get_key_size($td)),
+				mb_substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, mcrypt_enc_get_iv_size($td)),
+				$td
+			);
+		}
+		unset($KEY, $GLOBALS['KEY'], $td);
 	}
 	//Инициализация шифрования
 	function crypt_open ($name, $key, $iv, $td = false) {

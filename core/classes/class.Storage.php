@@ -24,15 +24,30 @@ class Storage {
 		if (!isset($Config->storage[$connection]) || !is_array($Config->storage[$connection])) {
 			return false;
 		}
-		//Загружаем настройки
-		$storage = &$Config->storage[$connection];
+		//Если подключается локальное хранилище
+		if ($connection == 'core' || $connection == 0) {
+			$storage['connection'] = 'StorageLocal';
+			$storage['url'] = $Config->server['base_url'];
+			$storage['host'] = '';
+		} else {
+			//Загружаем настройки
+			$storage = &$Config->storage[$connection];
+		}
 		//Создаем новое подключение к хранилищу
-		$this->connections[$connection] = new $storage['connection']($storage['name'], $storage['user'], $storage['password'], $storage['host'], $storage['codepage']);
+		$this->connections[$connection] = new $storage['connection']($storage['url'], $storage['host'], $storage['user'], $storage['password']);
 		//В случае успешного подключения - заносим в общий список подключений, и возвращаем ссылку на подключение
 		if (is_object($this->connections[$connection]) && $this->connections[$connection]->connected) {
 			$this->succesful_connections[] = $connection.'/'.$storage['host'].'/'.$storage['connection'];
 			unset($storage);
 			//Ускоряем повторную операцию доступа к этому хранилищу
+			if ($connection == 'core') {
+				$zero = 0;
+				$this->$zero = $this->$connection;
+				unset($zero);
+			}
+			if ($connection == 0) {
+				$this->core = $this->$connection;
+			}
 			$this->$connection = $this->connections[$connection];
 			return $this->connections[$connection];
 		//Если подключение не удалось - разрушаем соединение

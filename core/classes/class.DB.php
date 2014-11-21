@@ -14,7 +14,7 @@ class DB {
 		global $DB_USER, $DB_PASSWORD;
 		$this->DB_USER = $DB_USER;
 		$this->DB_PASSWORD = $DB_PASSWORD;
-		unset($DB_USER, $DB_PASSWORD);
+		unset($DB_USER, $DB_PASSWORD, $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWORD']);
 	}
 	//Обработка запросов получения данных БД
 	//При соответствующей настройке срабатывает балансировка нагрузки на БД
@@ -66,7 +66,7 @@ class DB {
 			return $this->connections[$connection];
 		}
 		global $Config;
-		//Если создается подключение ядра
+		//Если подключается БД ядра
 		if (($connection == 'core' || $connection == 0) && !is_array($mirror)) {
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_PREFIX, $DB_CODEPAGE;
 			$db['type']		= $DB_TYPE;
