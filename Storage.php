@@ -5,7 +5,7 @@ define('CORE',		__DIR__.DS.'core');
 chdir(__DIR__);
 require CORE.DS.'functions.php';
 $DOMAIN = (string)$_POST['domain'];
-define('STORAGE',	__DIR__.DS.'storages'.DS.$DOMAIN.DS.'storage');	//Для размещения на одном сервере с основным сайтом, или с другими хранилищами
+define('STORAGE',	__DIR__.DS.'storages'.DS.$DOMAIN.DS.'public');	//Для размещения на одном сервере с основным сайтом, или с другими хранилищами
 //define('STORAGE',	__DIR__);										//Для размещения на отдельном сервере
 if (
 	$_SERVER['HTTP_USER_AGENT'] == 'CleverStyle CMS' &&
@@ -21,8 +21,6 @@ if (
 	if (md5(md5(json_encode_x($data).$STORAGE_USER).$STORAGE_PASSWORD) !== $KEY) {
 		exit;
 	}
-	define('DIR', __DIR__.DS.'storage'.DS.$DOMAIN);
-	chdir(DIR);
 	unset($STORAGE_USER, $STORAGE_PASSWORD, $GLOBALS['STORAGE_USER'], $GLOBALS['STORAGE_PASSWORD'], $KEY, $DOMAIN);
 } else {
 	exit;

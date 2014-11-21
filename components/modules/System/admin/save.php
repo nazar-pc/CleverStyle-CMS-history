@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['edit_settings'])) {
-	global $Config, $db, $Page, $L, $Admin, $Cache;
+	global $Config, $L, $Admin, $Cache;
 	$apply_error = false;
 	if ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save') {
 		foreach ($Config->admin_parts as $part) {
@@ -18,34 +18,28 @@ if (isset($_POST['edit_settings'])) {
 						}
 					}
 				}
-				$update[] = '`'.$part.'` = '.sip(json_encode_x($temp));
+				$update[] = $part;
 				unset($temp);
 			}
 		}
 	}
 	if ($_POST['edit_settings'] == 'apply' && $Cache->cache) {
-		if ($Admin->applied($Config->rebuild_cache(false))) {
-			$Config->init();
+		if ($Admin->apply()) {
 			if (isset($_POST['visual_style']) || isset($_POST['caching'])) {
 				flush_pcache();
 			}
+			global $Page;
 			$Page->js("\$(document).ready(function(){save = true;});\n", 'code');
 			$Admin->cancel = '';
 		} else {
 			$apply_error = true;
 		}
 	} elseif ($_POST['edit_settings'] == 'save' && isset($update)) {
-		if ($Admin->saved($db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $update).' WHERE `domain` = '.sip(CDOMAIN)))) {
-			flush_cache();
-			$Config->rebuild_cache();
-			if (isset($_POST['visual_style']) || isset($_POST['caching'])) {
-				flush_pcache();
-			}
+		if ($Admin->save($update) && isset($_POST['visual_style']) || isset($_POST['caching'])) {
+			flush_pcache();
 		}
-	}
-	if (($_POST['edit_settings'] == 'cancel' && $Cache->cache) || ($_POST['edit_settings'] == 'apply' && $Cache->cache && $apply_error)) {
-		flush_cache();
-		$Admin->canceled();
+	} elseif ($_POST['edit_settings'] == 'cancel' && $Cache->cache) {
+		$Admin->cancel();
 	}
 }
 ?>

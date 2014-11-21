@@ -44,6 +44,61 @@ class Admin extends Module {
 		}
 		$this->mainmenu();
 	}
+	function save ($parts = false) {
+		global $L, $Page, $Config;
+		if ($Config->save($parts)) {
+			$Page->title($L->settings_saved);
+			$Page->Top .= $Page->div(
+				$L->settings_saved,
+				array(
+					'class'	=> 'green ui-state-highlight'
+				)
+			);
+			return true;
+		} else {
+			$Page->title($L->settings_save_error);
+			$Page->Top .= $Page->div(
+				$L->settings_save_error,
+				array(
+					'class'	=> 'red ui-state-highlight'
+				)
+			);
+			return false;
+		}
+	}
+	function apply () {
+		global $L, $Page, $Config;
+		if ($Config->apply()) {
+			$Page->title($L->settings_applied);
+			$Page->Top .= $Page->div(
+				$L->settings_applied.$L->check_applied,
+				array(
+					'class'	=> 'green ui-state-highlight'
+				)
+			);
+			return true;
+		} else {
+			$Page->title($L->settings_apply_error);
+			$Page->Top .= $Page->div(
+				$L->settings_apply_error,
+				array(
+					'class'	=> 'red ui-state-highlight'
+				)
+			);
+			return false;
+		}
+	}
+	function cancel () {
+		global $L, $Page, $Config;
+		$Config->cancel();
+		$Page->title($L->settings_canceled);
+		$Page->Top .= $Page->div(
+			$L->settings_canceled,
+			array(
+				'class'	=> 'green ui-state-highlight'
+			)
+		);
+	}
 	function mainsubmenu () {
 		global $Config, $L, $ADMIN;
 		foreach ($this->parts as $part) {
@@ -74,58 +129,6 @@ class Admin extends Module {
 									)
 								);
 		}
-	}
-	function saved ($success = true) {
-		global $L, $Page;
-		if ($success) {
-			$Page->title($L->settings_saved);
-			$Page->Top .= $Page->div(
-				$L->settings_saved,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
-		} else {
-			$Page->title($L->settings_save_error);
-			$Page->Top .= $Page->div(
-				$L->settings_save_error,
-				array(
-					'class'	=> 'red ui-state-highlight'
-				)
-			);
-		}
-		return $success;
-	}
-	function applied ($success = true) {
-		global $L, $Page;
-		if ($success) {
-			$Page->title($L->settings_applied);
-			$Page->Top .= $Page->div(
-				$L->settings_applied.$L->check_applied,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
-		} else {
-			$Page->title($L->settings_apply_error);
-			$Page->Top .= $Page->div(
-				$L->settings_apply_error,
-				array(
-					'class'	=> 'red ui-state-highlight'
-				)
-			);
-		}
-		return $success;
-	}
-	function canceled () {
-		global $L, $Page;
-		$Page->title($L->settings_canceled);
-		$Page->Top .= $Page->div(
-			$L->settings_canceled,
-			array(
-				'class'	=> 'green ui-state-highlight'
-			)
-		);
 	}
 	function generate () {
 		global $Config, $L, $Page, $Cache, $ADMIN;

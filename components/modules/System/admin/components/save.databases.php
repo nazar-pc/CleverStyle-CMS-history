@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['mode'])) {
-	global $Config, $db, $Page, $L, $Admin;
+	global $Config, $Page, $L, $Admin;
 	$update = false;
 	if ($_POST['mode'] == 'add') {
 		foreach ($_POST['db'] as $item => $value) {
@@ -37,9 +37,7 @@ if (isset($_POST['mode'])) {
 		include_x(MFOLDER.'/'.$Admin->savefile.'.php', true, false);
 	}
 	if ($update) {
-		if ($Admin->saved($db->core()->q('UPDATE `[prefix]config` SET `db` = '.sip(json_encode_x($Config->db)).' WHERE `domain` = '.sip(CDOMAIN)))) {
-			flush_cache();
-		}
+		$Admin->save('db');
 	}
 	unset($update);
 }

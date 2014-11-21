@@ -1,9 +1,9 @@
 <?php
 class Language {
-	public	$clanguage;
-	private	$translate = array(),
-			$need_to_rebuild_cache = false,
-			$initialized = false;
+	public	$clanguage;						//Текущий язык
+	private	$translate = array(),			//Локальный кеш переводов
+			$need_to_rebuild_cache = false,	//Требуется пересобрать кеш
+			$initialized = false;			//Состояние инициализации
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;

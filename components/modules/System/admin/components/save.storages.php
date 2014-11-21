@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['mode'])) {
-	global $Config, $db, $Page, $L, $Admin;
+	global $Config, $Page, $L, $Admin;
 	$update = false;
 	if ($_POST['mode'] == 'add') {
 		foreach ($_POST['storage'] as $item => $value) {
@@ -21,9 +21,7 @@ if (isset($_POST['mode'])) {
 		$update = true;
 	}
 	if ($update) {
-		if ($Admin->saved($db->core()->q('UPDATE `[prefix]config` SET `storage` = '.sip(json_encode_x($Config->storage)).' WHERE `domain` = '.sip(DOMAIN)))) {
-			flush_cache();
-		}
+		$Admin->save('storage');
 	}
 	unset($update);
 }

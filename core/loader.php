@@ -4,7 +4,6 @@ $interface = true;
 //error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
 //error_reporting(0);
-ini_get('display_errors')	== 'Off'	&& @ini_set('display_errors',	'On');
 header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("utf-8");
 

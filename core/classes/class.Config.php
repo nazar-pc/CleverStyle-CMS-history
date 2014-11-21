@@ -1,31 +1,28 @@
 <?php
 class Config {
-	public	$cache_file,
-			$admin_parts,
-			$mirror_index = -1;	//Индекс текущего адреса сайта в списке зеркал
+	public	$admin_parts = array('core', 'db', 'storage', 'components', 'replace', 'routing'),
+			$mirror_index = -1;	//Индекс текущего адреса сайта в списке зеркал ("-1" - не зеркало, а основной домен)
 	//Инициализация параметров системы
 	function __construct () {
 		global $Cache;
-		$this->admin_parts = array('core', 'db', 'storage', 'components', 'replace', 'routing');
 		//Считывание настроек с кеша и определение недостающих данных
 		$Config = $Cache->config;
 		if (is_array($Config)) {
+			$query = false;
 			foreach ($this->admin_parts as $part) {
-					if (!empty($Config[$part])) {
-						$this->$part = $Config[$part];
-					} else {
-						$query[] = "`$part`";
-					}
+				if (isset($Config[$part]) && !empty($Config[$part])) {
+					$this->$part = $Config[$part];
+				} else {
+					$query = true;
+					break;
+				}
 			}
 		} else {
-			$query = $this->admin_parts;
-			foreach ($query as $id => $q) {
-				$query[$id] = '`'.$q.'`';
-			}
+			$query = true;
 		}
 		//Перестройка кеша при необходимости
-		if (isset($query) && is_array($query) && !empty($query)) {
-			$this->rebuild_cache($query);
+		if ($query == true) {
+			$this->load();
 		} else {
 			//Инициализация движка
 			$this->init();
@@ -148,46 +145,77 @@ class Config {
 		unset($langlist, $lang_data);
 	}
 	//Перестройка кеша настроек
-	function rebuild_cache ($query = true) {
-		global $Error, $Cache;
-		if ($query !== false) {//Загрузка недостающих данных
-			global $db;
-			if (!is_array($query)) {
-				$query = $this->admin_parts;
-				foreach ($query as $id => $q) {
-					$query[$id] = '`'.$q.'`';
-				}
-			}
-			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1', false, 1);
-			foreach ($query as $q) {
-				$q = trim($q, '`');
-				if ($q == 'routing' && isset($this->routing['current'])) {
-					$current_routing = $this->routing['current'];
-				}
-				$this->$q = json_decode($result[$q], true);
-			}
-			if (isset($current_routing)) {
-				$this->routing['current'] = $current_routing;
-				unset($current_routing);
-			}
+	function load () {
+		global $db;
+		$query = array();
+		foreach ($this->admin_parts as $part) {
+			$query[] = '`'.$part.'`';
 		}
-		$this->reload_themes();
-		$this->reload_languages();
-		$this->init();
-		//Перезапись кеша
-		if ((is_object($Error) && !$Error->num()) || !is_object($Error) && $Cache->cache) {
-			$Config = array();
+		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1', false, 1);
+		if (isset($this->routing['current'])) {
+			$current_routing = $this->routing['current'];
+		}
+		if (is_array($result)) {
 			foreach ($this->admin_parts as $part) {
-				$Config[$part] = $this->$part;
+				$this->$part = json_decode($result[$part], true);
 			}
-			if (isset($Config['routing']['current'])) {
-				unset($Config['routing']['current']);
-			}
-			$Cache->config = $Config;
-			return true;
 		} else {
 			return false;
 		}
+		unset($part);
+		if (isset($current_routing)) {
+			$this->routing['current'] = $current_routing;
+			unset($current_routing);
+		}
+		$this->reload_themes();
+		$this->reload_languages();
+		$this->apply();
+		return true;
+	}
+	function apply () {
+		global $Error, $Cache;
+		//Перезапись кеша
+		if ($Error->num() || !$Cache->cache) {
+			return false;
+		}
+		$this->init();
+		unset($Cache->config);
+		$Config = array();
+		foreach ($this->admin_parts as $part) {
+			$Config[$part] = $this->$part;
+		}
+		unset($part);
+		if (isset($Config['routing']['current'])) {
+			unset($Config['routing']['current']);
+		}
+		$Cache->config = $Config;
+		return true;
+	}
+	function save ($parts = false) {
+		if ($parts === false || empty($parts)) {
+			$parts = $this->admin_parts;
+		} elseif (!is_array($parts)) {
+			$parts = array($parts);
+		}
+		$query = '';
+		foreach ($parts as $part) {
+			if (isset($this->$part)) {
+				$query .= '`'.$part.'` = '.sip(json_encode_x($this->$part));
+			}
+			unset($part);
+		}
+		unset($parts);
+		global $db;
+		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.$query.' WHERE `domain` = '.sip(DOMAIN).' LIMIT 1')) {
+			$this->apply();
+			return true;
+		}
+		return false;
+	}
+	function cancel () {
+		flush_cache();
+		$this->load();
+		$this->apply();
 	}
 	//Запрет клонирования
 	function __clone() {}

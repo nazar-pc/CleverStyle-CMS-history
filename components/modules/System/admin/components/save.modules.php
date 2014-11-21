@@ -1,5 +1,5 @@
 <?php
-global $Config, $db, $Page, $L, $ADMIN, $Admin;
+global $Config, $Page, $L, $ADMIN, $Admin;
 $modules = &$Config->components['modules'];
 $rc = &$Config->routing['current'];
 $update = false;
@@ -41,9 +41,7 @@ if (isset($_POST['update_modules_list'])) {
 }
 
 if ($update) {
-	if ($Admin->saved($db->core()->q('UPDATE `[prefix]config` SET `components` = '.sip(json_encode_x($Config->components)).' WHERE `domain` = '.sip(CDOMAIN)))) {
-		flush_cache();
-	}
+	$Admin->save('components');
 }
 unset($update, $modules, $rc);
 ?>

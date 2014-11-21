@@ -1,11 +1,11 @@
 <?php
 class Cache {
-	private	$disk = true,
+	private	$disk = false,
 			$disk_size = -1,
 			$memcache = false,
 			/*$memcached = false,*/
 			$local_storage = array(),	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
-			$cache = false,				//Состояние кеша (вкл/выкл)
+			$cache = true,				//Состояние кеша (вкл/выкл)
 			$size = false;
 	function init ($Config) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
