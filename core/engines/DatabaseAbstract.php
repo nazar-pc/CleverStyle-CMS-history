@@ -16,9 +16,9 @@ abstract class DatabaseAbstract {
 							),
 				$queries	= array(				//Массив для хранения данных всех выполненых запросов
 								'num'		=> '',
-								'time'		=> array(),
-								'text'		=> array(),
-								'result'	=> array()
+								'time'		=> [],
+								'text'		=> [],
+								'result'	=> []
 							),
 				$connecting_time;					//Время соединения
 	protected	$id;								//Указатель на соединение с БД

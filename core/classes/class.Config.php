@@ -1,34 +1,34 @@
 <?php
 
 class Config {
-	public	$admin_parts	= array(		//Столбцы в БД в таблице конфигурации движка
+	public	$admin_parts	= [				//Столбцы в БД в таблице конфигурации движка
 				'core',
 				'db',
 				'storage',
 				'components',
 				'replace',
 				'routing'
-			),
-			$server			= array(		//Массив некоторых настроек адресов, зеркал и прочего
+			],
+			$server			= [				//Массив некоторых настроек адресов, зеркал и прочего
 				'url'			=> '',		//Сырой путь страницы (тот, который вводит пользователь в строке адреса)
 				'host'			=> '',		//Host
 				'current_url'	=> '',		//Скорректированный полный путь страницы (рекомендуемый к использованию)
 				'protocol'		=> '',		//Протокол страницы (http/https)
 				'base_url'		=> '',		//Адрес главной страницы текущего зеркала с учётом префикса протокола (http/https)
-				'mirrors'	=> array(		//Массив всех адресов, по которым разрешен доступ к сайту
+				'mirrors'	=> [			//Массив всех адресов, по которым разрешен доступ к сайту
 					'count'		=> 0,		//Общее количество
-					'http'		=> array(),	//Небезопасные адреса
-					'https'		=> array()	//Безопасные адреса
-				),
-				'referer'		=> array(
+					'http'		=> [],		//Небезопасные адреса
+					'https'		=> []		//Безопасные адреса
+				],
+				'referer'		=> [
 					'url'		=> '',
-					'protocol'	=> '',
 					'host'		=> '',
+					'protocol'	=> '',
 					'local'		=> false
-				),
+				],
 				'ajax'			=> false	//Is this page request via AJAX
-			),
-			$mirror_index	= -1;	//Индекс текущего адреса сайта в списке зеркал ('-1' - не зеркало, а основной домен)
+			],
+			$mirror_index	= -1;			//Индекс текущего адреса сайта в списке зеркал ('-1' - не зеркало, а основной домен)
 
 	//Инициализация параметров системы
 	function __construct () {
@@ -198,7 +198,7 @@ class Config {
 		$this->core['themes'] = get_list(THEMES, false, 'd');
 		asort($this->core['themes']);
 		foreach ($this->core['themes'] as $theme) {
-			$this->core['color_schemes'][$theme] = array();
+			$this->core['color_schemes'][$theme] = [];
 			$this->core['color_schemes'][$theme] = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
 			asort($this->core['color_schemes'][$theme]);
 		}
@@ -207,8 +207,8 @@ class Config {
 	function reload_languages () {
 		$this->core['languages'] = array_unique(
 			array_merge(
-				_mb_substr(get_list(LANGUAGES, '/^lang\..*?\.php$/i', 'f'), 5, -4) ?: array(),
-				_mb_substr(get_list(LANGUAGES, '/^lang\..*?\.json$/i', 'f'), 5, -5) ?: array()
+				_mb_substr(get_list(LANGUAGES, '/^lang\..*?\.php$/i', 'f'), 5, -4) ?: [],
+				_mb_substr(get_list(LANGUAGES, '/^lang\..*?\.json$/i', 'f'), 5, -5) ?: []
 			)
 		);
 		asort($this->core['languages']);
@@ -216,7 +216,7 @@ class Config {
 	//Перестройка кеша настроек
 	function load () {
 		global $db;
-		$query = array();
+		$query = [];
 		foreach ($this->admin_parts as $part) {
 			$query[] = '`'.$part.'`';
 		}
@@ -251,7 +251,7 @@ class Config {
 		}
 		$this->init();
 		unset($Cache->config);
-		$Config = array();
+		$Config = [];
 		foreach ($this->admin_parts as $part) {
 			$Config[$part] = $this->$part;
 		}

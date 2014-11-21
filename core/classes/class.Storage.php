@@ -1,9 +1,9 @@
 <?php
-class Storage {
+class Storage {//TODO total refactoring!!!!!!!!!!!! like DB class
 	public		$time					= 0,
-				$successful_connections	= array(),
-				$false_connections		= array(),
-				$connections			= array();
+				$successful_connections	= [],
+				$false_connections		= [],
+				$connections			= [];
 
 	//Обработка подключений к хранилищам
 	function __get ($connection) {

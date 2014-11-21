@@ -3,7 +3,7 @@
 //иначе работоспособность движка может быть нарушена
 	//Специальные функции для обработки подключения пользовательских файлов ядра
 	//Являются расширенными аналогами стандартных функций, настоятельно рекомендуются к использованию вместо стандартных
-		if (USE_CUSTOM) {
+		if (defined('USE_CUSTOM') && USE_CUSTOM) {
 			function _require ($file, $once = false, $show_errors = true) {
 				$file = str_to_path($file);
 				if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file)) || file_exists($file_x = $file)) {
@@ -151,20 +151,16 @@
 			$sort = mb_strtolower($sort);
 			$sort_x = explode('|', $sort);
 		}
-		if (isset($sort_x) && $sort_x[0] == 'datea') {
+		if (isset($sort_x) && $sort_x[0] == 'date') {
 			$prepare = function (&$list, &$tmp, $link) {
 				$list[_fileatime($link) ?: _filemtime($link)] = $tmp;
-			};
-		} elseif (isset($sort_x) && $sort_x[0] == 'datem') {
-			$prepare = function (&$list, &$tmp, $link) {
-				$list[_filemtime($link)] = $tmp;
 			};
 		} else {
 			$prepare = function (&$list, &$tmp, $link) {
 				$list[] = $tmp;
 			};
 		}
-		$list = array();
+		$list = [];
 		if ($with_path != 1 && $with_path) {
 			$with_path = rtrim($with_path, DS).DS;
 		}
@@ -236,7 +232,6 @@
 						ksort($list);
 					}
 				}
-				unset($sort_x);
 			}
 			return $list;
 		}
@@ -438,7 +433,7 @@
 		unset($list, $item);
 		global $Cache;
 		if (is_object($Cache) && $Cache->memcache) {
-			$ok = $Cache->flush() && $ok;
+			$ok = $Cache->flush_memcache() && $ok;
 		}
 		time_limit_pause(false);
 		return $ok;
@@ -480,7 +475,7 @@
 	//Функция форматирования времени из секунд в удобночитаемый вид
 	function format_time ($time) {
 		global $L;
-		$res = array();
+		$res = [];
 		if ($time >= 31536000) {
 			$time_x = round($time/31536000);
 			$time -= $time_x*31536000;
@@ -633,10 +628,8 @@
 	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче,
 	//настоятельно рекомендуется к использованию вместо стандартной!
 	function _json_encode ($in) {
-		if (defined('JSON_UNESCAPED_UNICODE')) {				//defined in php 5.4+
-			return json_encode($in, JSON_UNESCAPED_UNICODE);
-		}
-		return html_entity_decode(
+		return json_encode($in, JSON_UNESCAPED_UNICODE);
+		/*return html_entity_decode(
 			preg_replace(
 				'/\\\&#x([0-9a-fA-F]{3});/',
 				'\\\\\u0$1',
@@ -648,7 +641,7 @@
 			),
 			ENT_NOQUOTES,
 			CHARSET
-		);
+		);*/
 	}
 	//Аналог системной функции json_decode, сразу возвращает ассоциативный массив, просто так удобнее вызывать
 	function _json_decode ($in, $depth = 512) {
@@ -804,7 +797,7 @@
 				$parts[$last_part]	= $parts[$last_part][0].$parts[$last_part][1];
 			}
 			$numMissing		= 8 - count($parts);
-			$expandedParts	= array();
+			$expandedParts	= [];
 			$expansionDone	= false;
 			foreach($parts as $part) {
 				if(!$expansionDone && $part == '') {
@@ -853,7 +846,7 @@
 							hexdec(substr($hex, 4, 2)).'.'.
 							hexdec(substr($hex, 6, 2));
 				case 10:
-					$result = array();
+					$result = [];
 					//IPv6
 					$result[] = '0000:0000:0000:0000:0000:0000:'.substr($hex, 0, 4).':'.substr($hex, 4, 4);
 					//IPv4
@@ -889,7 +882,7 @@
 		global $Cache;
 		if (($timezones = $Cache->timezones) === false) {
 			$tzs = timezone_abbreviations_list();
-			$timezones_ = $timezones = array();
+			$timezones_ = $timezones = [];
 			foreach ($tzs as &$tz) {
 				foreach ($tz as &$v) {
 					if ($v['timezone_id']) {
@@ -965,18 +958,18 @@
 		);
 		static $small, $capital;
 		if (!isset($small)) {
-			$small = array();
+			$small = [];
 			for ($i = 97; $i <= 122; ++$i) {
 				$small[] = chr($i);
 			}
 		}
 		if (!isset($capital)) {
-			$capital = array();
+			$capital = [];
 			for ($i = 65; $i <= 90; ++$i) {
 				$capital[] = chr($i);
 			}
 		}
-		$password = array();
+		$password = [];
 		$symbols = array(0,1,2,3,4,5,6,7,8,9);
 		if ($strength > 5) {
 			$strength = 5;

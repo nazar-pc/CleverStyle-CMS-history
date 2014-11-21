@@ -111,7 +111,7 @@ class Cache {
 						$this->size -= _filesize(CACHE.DS.$item);
 					}
 					if ($this->size > $this->disk_size) {
-						$cache_list = get_list(CACHE, false, 'f', true, true, 'datea|desc');
+						$cache_list = get_list(CACHE, false, 'f', true, true, 'date|desc');
 						foreach ($cache_list as $file) {
 							$this->size -= _filesize($file);
 							_unlink($file);
@@ -144,6 +144,22 @@ class Cache {
 		return true;
 	}
 	function del ($item) {
+		global $Config, $User;
+		if (is_object($User) && !$User->is('system') && $Config->server['mirrors']['count'] > 1) {
+			global $API, $Core;
+			foreach ($Config->server['mirrors']['http'] as $url) {
+				if (!($url == $Config->server['host'] && $Config->server['protocol'] == 'http')) {
+					$Core->send('http://'.$url.'/'.$API.'/'.MODULE.'/admin/cache/del', ['item' => $item]);
+				}
+			}
+			foreach ($Config->server['mirrors']['https'] as $url) {
+				if (!($url != $Config->server['host'] && $Config->server['protocol'] == 'https')) {
+					$Core->send('https://'.$url.'/'.$API.'/'.MODULE.'/admin/cache/del', ['item' => $item]);
+				}
+			}
+			unset($url);
+		}
+
 		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$item)) {
 			$this->memcache->delete(DOMAIN.$item);
 		}
@@ -188,7 +204,7 @@ class Cache {
 	function memcache_getversion () {
 		return is_object($this->memcache) ? $this->memcache->getversion() : false;
 	}
-	function flush () {
+	function flush_memcache () {
 		if (is_object($this->memcache)) {
 			$this->memcache->flush();
 		}
@@ -210,4 +226,3 @@ class Cache {
 	 */
 	function __clone () {}
 }
-?>

@@ -3,50 +3,67 @@
 class User {
 	protected	$secret,							//Secret phrase for separating internal
 													//function calling from external ones
-				$current				= array(
+				$current				= [
 					'session'		=> false,
-					'is'			=> array(
+					'is'			=> [
 						'admin'			=> false,
 						'user'			=> false,
 						'bot'			=> false,
 						'guest'			=> false,
 						'system'		=> false
-					)
-				),
-				$id						= false,	//id текущего пользователя
-				$update_cache			= array(),	//Нужно ли обновлять кеш данных пользователей
-				$data					= array(),	//Локальный кеш данных пользователей
-				$data_set				= array(),	//Измененные данные пользователей, которыми по завершению нужно обновить данные в БД
-				$db						= false,	//Ссылка на объект БД
-				$db_prime				= false,	//Ссылка на объект основной БД
-				$cache					= array(),	//Кеш с некоторыми временными данными
-				$init					= false,	//Текущее состояние инициализации
-				$reg_id					= 0,
-				$users_columns			= array();	//Copy of columns list of users table for internal needs without Cache usage
+					]
+				],
+				$id						= false,	//id of current user
+				$update_cache			= [],		//Do we need to update users cache
+				$data					= [],		//Local cache of users data
+				$data_set				= [],		//Changed users data, at the finish, data in db must be replaced by this data
+				$db						= false,	//Link to db object
+				$db_prime				= false,	//Link to primary db object
+				$cache					= [],		//Cache with some temporary data
+				$init					= false,	//Current state of initialization
+				$reg_id					= 0,		//User id after registration
+				$users_columns			= [],		//Copy of columns list of users table for internal needs without Cache usage
+				$permissions_table		= [];		//Array of all permissions for quick selecting
 
 	function __construct () {
 		$this->secret = uniqid();
 		global $Cache, $Config, $Page, $L, $Key;
-		//Определяем системного пользователя
-		//Последний элемент в пути страницы - ключ
+		//Detecting of current user
+		//Last part in page path - key
 		$rc = &$Config->routing['current'];
-		if ($this->user_agent == 'CleverStyle CMS' &&
-			$this->login_attempts('1') &&
+		if (
+			$this->user_agent == 'CleverStyle CMS' &&
+			(
+				($this->login_attempts(hash('sha224', 0)) < $Config->core['login_attempts_block_count']) ||
+				$Config->core['login_attempts_block_count'] == 0
+			) &&
 			isset($rc[count($rc) - 1]) &&
-			($key_data = $Key->get(
-				$Config->components['modules']['System']['db']['keys'],
-				$key = $rc[count($rc) - 1],
-				true
-			)) &&
+			(
+				$key_data = $Key->get(
+					$Config->components['modules']['System']['db']['keys'],
+					$key = $rc[count($rc) - 1],
+					true
+				)
+			) &&
 			is_array($key_data)
 		) {
-			if ($this->current['is']['system'] = $key_data['data'] == md5($Config->server['url'])) {
+			unset($rc[count($rc) - 1]);
+			$url			= &$Config->server['url'];
+			$current_url	= &$Config->server['current_url'];
+			if ($this->current['is']['system'] = $key_data['url'] == $Config->server['host'].'/'.$url) {
+				$this->current['is']['admin'] = true;
+				$url = substr($url, 0, strrpos($url, '/'));
+				$current_url = substr($current_url, 0, strrpos($current_url, '/'));
 				interface_off();
+				$_POST['data'] = _json_decode($_POST['data']);
 				return;
 			} else {
+				$url = substr($url, 0, strrpos($url, '/'));
+				$current_url = substr($current_url, 0, strrpos($current_url, '/'));
 				$this->current['is']['guest'] = true;
-				//Иммитируем неудачный вход, чтобы при намеренной попытке подбора пароля заблокировать доступ
+				//Иммитируем неудачный вход, чтобы при намеренной попытке взлома заблокировать доступ
 				$this->login_result(false, hash('sha224', 'system'));
+				unset($_POST['data']);
 				sleep(1);
 			}
 		}
@@ -203,7 +220,7 @@ class User {
 			$_stop_key = uniqid();
 		}
 		if ($item == 'user_agent') {
-			return $_SERVER['HTTP_USER_AGENT'];
+			return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		} elseif ($item == 'ip') {
 			return $this->data[$this->id][$item] = $_SERVER['REMOTE_ADDR'];
 		} elseif ($item == 'forwarded_for') {
@@ -215,7 +232,7 @@ class User {
 		$data = &$this->data[$user];
 		//Если получаем массив значений
 		if (is_array($item)) {
-			$result = $new_items = array();
+			$result = $new_items = [];
 			//Пытаемся достать значения с локального кеша, иначе составляем массив недостающих значений
 			foreach ($item as $i) {
 				if (in_array($i, $this->users_columns)) {
@@ -241,7 +258,7 @@ class User {
 				$data = array_merge((array)$data, $res);
 				$result = array_merge($result, $res);
 				//Пересортируем результирующий массив в том же порядке, что и входящий массив элементов
-				$res = array();
+				$res = [];
 				foreach ($item as $i) {
 					$res[$i] = &$result[$i];
 				}
@@ -342,6 +359,7 @@ class User {
 	}
 	/**
 	 * Returns user id by login or email hash (sha224)
+	 *
 	 * @param  string $login_hash
 	 * @return bool|int
 	 */
@@ -390,7 +408,7 @@ class User {
 				WHERE `id` = '.$this->id
 			);
 			if (is_array($permissions_array)) {
-				$permissions = array();
+				$permissions = [];
 				foreach ($permissions_array as $permission) {
 					$permissions[$permission['permission']] = $permission['value'];
 				}
@@ -401,6 +419,13 @@ class User {
 			}
 		}
 		return $permissions;
+	}
+	/**
+	 * @param array $data
+	 * @param bool|int $user
+	 */
+	function set_user_permissions ($data, $user = false) {//TODO set_user_permissions
+
 	}
 	/**
 	 * @param int $group
@@ -418,7 +443,10 @@ class User {
 			);
 		}
 		return $group_data;
-	}//TODO set_group_data
+	}
+	function set_group_data ($data, $group) {//TODO set_group_data
+
+	}
 	/**
 	 * @param int $group
 	 * @return array
@@ -433,7 +461,7 @@ class User {
 				WHERE `id` = '.$group
 			);
 			if (is_array($group_permissions_list)) {
-				$group_permissions = array();
+				$group_permissions = [];
 				foreach ($group_permissions_list as &$permission) {
 					$group_permissions[$permission['permission']] = $permission['value'];
 				}
@@ -445,19 +473,25 @@ class User {
 		}
 		return $group_permissions;
 	}
+	function set_group_permissions ($data, $group) {//TODO set_group_permissions
+
+	}
+
 	/**
-	 * @param string $permission Permission label
+	 * @param int $group		Permission group
+	 * @param string $label		Permission label
 	 * @param bool|int $user
+	 *
 	 * @return bool
 	 */
-	function permission ($permission, $user = false) {
-		$user = (int)($user ?: $this->id);
+	function permission ($group, $label, $user = false) {//TODO permissions
+		/*$user = (int)($user ?: $this->id);
 		if (!isset($this->data[$user])) {
-			$data[$user] = array();
+			$data[$user] = [];
 		}
 		if (!isset($this->data[$user]['permissions'])) {
 			$groups = $this->get_user_groups($user);
-			$permissions = array();
+			$permissions = [];
 			if (is_array($groups)) {
 				foreach ($groups as $group) {
 					$permissions = array_merge($permissions, $this->get_group_permissions($group));
@@ -469,41 +503,43 @@ class User {
 		if (isset($this->data[$user]['permissions'][$permission])) {
 			return (bool)$this->data[$user]['permissions'][$permission];
 		}
-		return false;
+		return false;*/
 	}
 	/**
 	 * Find the session by id, and return id of owner (user)
 	 * @param string $session_id
+	 * @param bool|string $secret For internal usage
 	 * @return int User id
 	 */
-	function get_session ($session_id = '') {
+	function get_session ($session_id = '', $secret = false) {
 		$this->current['session'] = _getcookie('session');
 		$session_id = $session_id ?: $this->current['session'];
 		global $Cache, $Config;
 		$result = false;
 		if ($session_id && !($result = $Cache->{'sessions/'.$session_id})) {
-			$result = $this->db()->qf(
-				'SELECT `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip` '.
-				'FROM `[prefix]sessions` '.
-				'WHERE '.
-					'`id` = '.$this->db()->sip($session_id).' AND '.
-					'`expire` > '.TIME.' AND '.
-					'`user_agent` = '.$this->db()->sip($this->user_agent).' AND '.
-					'`ip` = \''.ip2hex($this->ip).'\' AND'.
-					'`forwarded_for` = \''.ip2hex($this->forwarded_for).'\' AND '.
-					'`client_ip` = \''.ip2hex($this->client_ip).'\''
+			$result = $this->db()->qf('SELECT
+					`user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`
+				FROM `[prefix]sessions`
+				WHERE
+					`id` = '.$this->db()->sip($session_id).' AND
+					`expire` > '.TIME.' AND
+					`user_agent` = '.$this->db()->sip($this->user_agent).' AND
+					`ip` = \''.ip2hex($this->ip).'\' AND
+					`forwarded_for` = \''.ip2hex($this->forwarded_for).'\' AND
+					`client_ip` = \''.ip2hex($this->client_ip).'\''
 			);
 			$Cache->{'sessions/'.$session_id} = $result;
+		}
+		if ($secret === $this->secret) {
+			return $result['user'];
 		}
 		if (!$session_id || !is_array($result)) {
 			$this->add_session(1);
 			return 1;
 		}
 		if ($result['expire'] - TIME < $Config->core['session_expire'] * $Config->core['update_ratio'] / 100) {
-			$this->db_prime()->q(
-				'UPDATE `[prefix]sessions`
-				SET
-					`expire` = '.(TIME + $Config->core['session_expire']).'
+			$this->db_prime()->q('UPDATE `[prefix]sessions`
+				SET `expire` = '.(TIME + $Config->core['session_expire']).'
 				WHERE `id` = \''.$session_id.'\''
 			);
 			$result['expire'] = TIME + $Config->core['session_expire'];
@@ -549,14 +585,14 @@ class User {
 				WHERE `id` ='.$id
 			);
 			global $Cache;
-			$Cache->{'sessions/'.$hash} = $this->current['session'] = array(
+			$Cache->{'sessions/'.$hash} = $this->current['session'] = [
 				'user'			=> $id,
 				'expire'		=> TIME + $Config->core['session_expire'],
 				'user_agent'	=> $this->user_agent,
 				'ip'			=> $ip,
 				'forwarded_for'	=> $forwarded_for,
 				'client_ip'		=> $client_ip
-			);
+			];
 			_setcookie('session', $hash, TIME + $Config->core['session_expire'], false, true);
 			$this->get_session();
 			return true;
@@ -620,7 +656,7 @@ class User {
 			false,
 			MYSQL_NUM
 		);
-		return $this->cache['login_attempts'][$login_hash] = $return['count'];
+		return isset($return['count']) ? $this->cache['login_attempts'][$login_hash] = $return['count'] : 0;
 	}
 	/**
 	 * Process login result
@@ -733,10 +769,10 @@ class User {
 					`id` != 2'
 				);
 			}
-			return array(
+			return [
 				'reg_key'	=> $Config->core['require_registration_confirmation'] ? $reg_key : true,
 				'password'	=> $password
-			);
+			];
 		} else {
 			return 'error';
 		}
@@ -783,10 +819,10 @@ class User {
 			WHERE `id` = '.$this->reg_id
 		);
 		$this->add_session($this->reg_id);
-		return array(
+		return [
 			'email'		=> $data['email'],
 			'password'	=> $password
-		);
+		];
 	}
 	/**
 	 * Canceling of bad registration
@@ -828,13 +864,13 @@ class User {
 				$Cache->{'users/'.$id} = $data;
 			}
 		}
-		$this->update_cache = array();
+		$this->update_cache = [];
 		unset($id, $data);
 		//Update users data
 		$users_columns = $Cache->users_columns;
 		if (is_array($this->data_set) && !empty($this->data_set)) {
 			foreach ($this->data_set as $id => &$data_set) {
-				$data = array();
+				$data = [];
 				foreach ($data_set as $i => &$val) {
 					if (in_array($i, $users_columns) && $i != 'id') {
 						$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
@@ -844,6 +880,6 @@ class User {
 				unset($i, $val, $data);
 			}
 		}
-		$this->data_set = array();
+		$this->data_set = [];
 	}
 }

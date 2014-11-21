@@ -89,13 +89,13 @@ if ($mode && $rc[2] == 'settings') {
 	$a->post_buttons .= h::{'button.reload_button'}(
 		$L->reset
 	);
-	$blocks_array = array(
-		'top'		=> array(),
-		'left'		=> array(),
-		'floating'	=> array(),
-		'right'		=> array(),
-		'bottom'	=> array()
-	);
+	$blocks_array = [
+		'top'		=> [],
+		'left'		=> [],
+		'floating'	=> [],
+		'right'		=> [],
+		'bottom'	=> []
+	];
 	$blocks = _mb_substr(get_list(BLOCKS, '/^block\..*?\.php$/i', 'f'), 6, -4);
 	$diff = array_diff(array_keys($Config->components['blocks']), $blocks);
 	$save = false;
@@ -110,7 +110,7 @@ if ($mode && $rc[2] == 'settings') {
 	foreach ($blocks as $block) {
 		if (!isset($Config->components['blocks'][$block])) {
 			$save = true;
-			$Config->components['blocks'][$block] = array(
+			$Config->components['blocks'][$block] = [
 				'title'			=> $block,
 				'active'		=> 0,
 				'position'		=> 'floating',
@@ -121,7 +121,7 @@ if ($mode && $rc[2] == 'settings') {
 				'expire'		=> 0,
 				'update'		=> 0,
 				'data'			=> ''
-			);
+			];
 		}
 		$block_data = &$Config->components['blocks'][$block];
 		$blocks_array[$block_data['position']][$block_data['position_id']] = h::li(
@@ -130,19 +130,19 @@ if ($mode && $rc[2] == 'settings') {
 				h::div(
 					h::icon('wrench')
 				),
-				array(
+				[
 					'href'			=> $a->action.'/settings/'.$block,
 					'data-title'	=> $L->edit.' '.$L->block
-				)
+				]
 			).
 			h::a(
 				h::div(
 					h::icon($block_data['active'] ? 'minusthick' : 'check')
 				),
-				array(
+				[
 					'href'			=> $a->action.'/'.($block_data['active'] ? 'disable' : 'enable').'/'.$block,
 					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'}
-				)
+				]
 			),
 			array(
 				'id'				=> $block,
@@ -159,15 +159,15 @@ if ($mode && $rc[2] == 'settings') {
 			h::{'ul.blocks_items'}(
 				h::{'li.ui-state-disabled.ui-state-highlight.ui-corner-all.pointer'}(
 					$L->{$position.'_blocks'},
-					array(
+					[
 						'onClick'	=> 'blocks_toggle(\''.$position.'\');'
-					)
+					]
 				).
 				implode('', $content),
-				array(
+				[
 					'data-mode'		=> 'open',
 					'id'			=> $position.'_blocks_items'
-				)
+				]
 			)
 		);
 	}
@@ -190,11 +190,7 @@ if ($mode && $rc[2] == 'settings') {
 				h::td()
 			)
 		).
-		h::{'input#position[type=hidden]'}(
-			array(
-				'name'	=> 'position'
-			)
-		)
+		h::{'input#position[type=hidden][name=position]'}()
 	);
 }
 //TODO make add block function

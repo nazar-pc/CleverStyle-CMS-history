@@ -1,10 +1,10 @@
 <?php
 //Класс ядра
 class Core {
-	protected	$iv			= array(),
-				$td			= array(),
-				$key		= array(),
-				$support	= false,
+	protected	$iv					= [],
+				$td					= [],
+				$key				= [],
+				$encrypt_support	= false,
 				$KEY,
 				$IV;
 	//Инициализация начальных параметров и функций шифрования
@@ -40,7 +40,7 @@ class Core {
 			TEMP.DS.'.htaccess',
 			'Allow From All'
 		);
-		if ($this->support = check_mcrypt()) {
+		if ($this->encrypt_support = check_mcrypt()) {
 			$this->KEY	= $KEY;
 			$this->IV	= $DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE;
 		}
@@ -55,7 +55,7 @@ class Core {
 	 * @return mixed
 	 */
 	function crypt_open ($name, $key, $iv, $td = false) {
-		if (!$this->support || empty($name) || empty($key) || empty($iv)) {
+		if (!$this->encrypt_support || empty($name) || empty($key) || empty($iv)) {
 			return;
 		}
 		$this->key[$name] = $key;
@@ -73,7 +73,7 @@ class Core {
 	 * @return bool|string
 	 */
 	function encrypt ($data, $name = 'core') {
-		if (!$this->support) {
+		if (!$this->encrypt_support) {
 			return $data;
 		}
 		if ($name == 'core' && !isset($this->td[$name])) {
@@ -102,7 +102,7 @@ class Core {
 	 * @return bool|mixed
 	 */
 	function decrypt ($data, $name = 'core') {
-		if (!$this->support) {
+		if (!$this->encrypt_support) {
 			return $data;
 		}
 		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
@@ -121,10 +121,61 @@ class Core {
 	 * @param string $name
 	 */
 	function crypt_close ($name) {
-		if ($this->support && isset($this->td[$name]) && is_resource($this->td[$name])) {
+		if ($this->encrypt_support && isset($this->td[$name]) && is_resource($this->td[$name])) {
 			mcrypt_module_close($this->td[$name]);
 			unset($this->key[$name], $this->iv[$name], $this->td[$name]);
 		}
+	}
+	/**
+	 * @param string $url With prefix <b>https://</b> (<b>http://</b> can be missed), and (if necessary) with port address
+	 * @param mixed $data Any type of data, will be accessable through <b>$_POST['data']</b>
+	 * @return array|bool Array <b>[0 => headers, 1 => body]</b> in case of successful connection, <b>false</b> on failure
+	 */
+	function send ($url, $data = '') {
+		global $Key, $Config;
+		if (!(is_object($Key) && is_object($Config))) {
+			return false;
+		}
+		$protocol	= 'http';
+		if (strpos($url, '://') !== false) {
+			$protocol	= substr($url, 0, strpos($url, '://'));
+			$url		= substr($url, strpos($url, '://')+3);
+		}
+		$url		= explode('/', $url, 2);
+		$host		= explode(':', $url[0]);
+		$url		= isset($url[1]) && !empty($url[1]) ? $url[1] : '';
+		$database	= $Config->components['modules']['System']['db']['keys'];
+		$key		= $Key->generate($database);
+		$url		= $url ? $url.'/'.$key : $key;
+		$Key->put(
+			$database,
+			$key,
+			['url' => implode(':', $host).'/'.$url],
+			time()+30
+		);
+		$socket	= fsockopen($host[0], isset($host[1]) ? $host[1] : $protocol == 'http' ? 80 : 443, $errno, $errstr);
+		if(!is_resource($socket)) {
+			global $Error;
+			$Error->process('#'.$errno.' '.$errstr);
+			$this->connected = false;
+			return false;
+		}
+		$data = 'data='.urlencode(json_encode($data));
+		time_limit_pause();
+		fwrite(
+			$socket,
+			'POST /'.$url." HTTP/1.1\r\n".
+				'Host: '.implode(':', $host)."\r\n".
+				"Content-type: application/x-www-form-urlencoded\r\n".
+				"Content-length:".strlen($data)."\r\n".
+				"Accept:*/*\r\n".
+				"User-agent: CleverStyle CMS\r\n\r\n".
+				$data."\r\n\r\n"
+		);
+		$return = explode("\r\n\r\n", stream_get_contents($socket), 2);
+		time_limit_pause(false);
+		fclose($socket);
+		return $return;
 	}
 	/**
 	 * Cloning restriction
@@ -135,7 +186,7 @@ class Core {
 	 * @return mixed
 	 */
 	function __finish () {
-		if (!$this->support) {
+		if (!$this->encrypt_support) {
 			return;
 		}
 		foreach ($this->td as $td) {
@@ -144,4 +195,3 @@ class Core {
 		unset($this->key, $this->iv, $this->td);
 	}
 }
-?>

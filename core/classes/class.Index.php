@@ -12,7 +12,7 @@ class Index {
 				$post_title		= '',
 				$form			= false,
 				$file_upload	= false,
-				$form_atributes	= array(),
+				$form_atributes	= [],
 				$action,
 				$buttons		= true,
 				$apply			= true,
@@ -28,12 +28,12 @@ class Index {
 				$module			= false,
 				$api			= false;
 
-	protected	$preload		= array(),
-				$postload		= array(),
+	protected	$preload		= [],
+				$postload		= [],
 
-				$structure		= array(),
-				$parts			= array(),
-				$subparts		= array(),
+				$structure		= [],
+				$parts			= [],
+				$subparts		= [],
 				$triggers_reg	= false,
 				$triggers;
 
@@ -372,7 +372,7 @@ class Index {
 	 */
 	function preload ($closure, $remove_others = false) {
 		if ($remove_others) {
-			$this->preload = array();
+			$this->preload = [];
 		}
 		$this->preload[] = $closure;
 	}
@@ -384,7 +384,7 @@ class Index {
 	 */
 	function postload ($closure, $remove_others = false) {
 		if ($remove_others) {
-			$this->postload = array();
+			$this->postload = [];
 		}
 		$this->postload[] = $closure;
 	}
@@ -409,7 +409,7 @@ class Index {
 		$return = true;
 		foreach ($trigger as $item => $function) {
 			if (!isset($triggers[$item])) {
-				$triggers[$item] = array();
+				$triggers[$item] = [];
 			}
 			$return = $return && $this->register_trigger($function, $triggers[$item]);
 		}

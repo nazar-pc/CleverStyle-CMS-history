@@ -31,4 +31,3 @@ $LANGUAGE		= 'Русский';
 $MEMCACHE_HOST	= 'localhost';
 $MEMCACHE_PORT	= '11211';
 $KEY			= 'f40fbea2ee5a24ce581fb53510883dfcf40fbea2ee5a24ce581fb535';
-?>

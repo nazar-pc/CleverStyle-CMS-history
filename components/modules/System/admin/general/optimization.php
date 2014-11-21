@@ -151,7 +151,7 @@ $a->content(
 					array(
 						'onMouseDown'	=> $Cache->cache ? 'admin_cache('.
 							'\'#clean_cache\','.
-							'\''.$Config->server['base_url'].'/'.$API.'/System/admin/cache/flush_cache\''.
+							'\''.$Config->server['base_url'].'/'.$API.'/'.MODULE.'/admin/cache/flush_cache\''.
 						');' : '',
 						$Cache->cache ? '' : 'disabled'
 					)
@@ -163,7 +163,7 @@ $a->content(
 					array(
 						'onMouseDown'	=> $Config->core['cache_compress_js_css'] ? 'admin_cache('.
 							'\'#clean_pcache\','.
-							'\''.$Config->server['base_url'].'/'.$API.'/System/admin/cache/flush_pcache\''.
+							'\''.$Config->server['base_url'].'/'.$API.'/'.MODULE.'/admin/cache/flush_pcache\''.
 						');' : '',
 						$Config->core['cache_compress_js_css'] ? '' : 'disabled'
 					)

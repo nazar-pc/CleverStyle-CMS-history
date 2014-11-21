@@ -3,7 +3,7 @@ class Language {
 	public		$clanguage,								//Current language
 				$time = '';								//Closure for time processing
 	protected	$init = false,							//For single initialization
-				$translate = array(),					//Local cache of translations
+				$translate = [],						//Local cache of translations
 				$need_to_rebuild_cache = false;			//Necessity for cache rebuilding
 	/**
 	 * Set basic language

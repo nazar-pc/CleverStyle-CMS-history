@@ -125,7 +125,7 @@ if (isset($rc[2])) {
 		);
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
-		$content = array();
+		$content = [];
 		if (!isset($rc[4])) {
 			foreach ($Config->components['modules'] as $module => &$mdata) {
 				if (isset($mdata['db']) && is_array($mdata['db'])) {

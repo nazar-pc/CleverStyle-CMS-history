@@ -401,7 +401,7 @@ if (isset($rc[2], $rc[3])) {
 		};
 	} else {
 		$where_func = function ($in) use ($search_columns) {
-			$return = array();
+			$return = [];
 			foreach ($search_columns as $column) {
 				$return[] = str_replace('%%', $column, $in);
 			}

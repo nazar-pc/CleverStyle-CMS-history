@@ -1,7 +1,7 @@
 <?php
 class Page {
 	public		$Content, $interface = true,
-				$Html = '', $Keywords = '', $Description = '', $Title = array(),
+				$Html = '', $Keywords = '', $Description = '', $Title = [],
 				$debug_info = '',
 				$Head		= '',
 				$pre_Body	= '',
@@ -13,7 +13,7 @@ class Page {
 					$Bottom	= '',
 					$Footer	= '',
 				$post_Body	= '',
-				$level		= array (			//Number of tabs by default for margins the substitution
+				$level		= [					//Number of tabs by default for margins the substitution
 					'Head'				=> 2,	//of values into template
 					'pre_Body'			=> 2,
 					'Header'			=> 4,
@@ -30,19 +30,19 @@ class Page {
 					'Right'				=> 3,
 					'Footer'			=> 4,
 					'post_Body'			=> 2
-				);
+				];
 
 	protected	$init = false,										//For single initialization
 				$secret,											//Secret phrase for separating internal
 																	//function calling from external ones
 				$theme, $color_scheme, $pcache_basename, $includes,
 				$user_avatar_image, $user_avatar_text, $user_info,
-				$core_js	= array(0 => '', 1 => ''),
-				$core_css	= array(0 => '', 1 => ''),
-				$js			= array(0 => '', 1 => ''),
-				$css		= array(0 => '', 1 => ''),
-				$Search		= array(),
-				$Replace	= array();
+				$core_js	= [0 => '', 1 => ''],
+				$core_css	= [0 => '', 1 => ''],
+				$js			= [0 => '', 1 => ''],
+				$css		= [0 => '', 1 => ''],
+				$Search		= [],
+				$Replace	= [];
 
 	function __construct () {
 		global $interface;

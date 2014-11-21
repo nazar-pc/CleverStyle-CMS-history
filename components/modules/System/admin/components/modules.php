@@ -13,24 +13,24 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			);
 			if ($a->run_trigger(
 				'admin/System/components/modules/install/prepare',
-				array(
+				[
 					'name' => $rc[3]
-				)
+				]
 			)) {
 				$a->cancel_back = true;
 				$a->content(
 					h::{'button[type=submit]'}($L->install).
 					h::{'input[type=hidden]'}(
-						array(
+						[
 							'name'		=> 'module',
 							'value'		=> $rc[3]
-						)
+						]
 					).
 					h::{'input[type=hidden]'}(
-						array(
+						[
 							'name'	=> 'mode',
 							'value'	=> $rc[2]
-						)
+						]
 					)
 				);
 			}
@@ -43,24 +43,24 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			);
 			if ($a->run_trigger(
 				'admin/System/components/modules/uninstall/prepare',
-				array(
+				[
 					'name' => $rc[3]
-				)
+				]
 			)) {
 				$a->cancel_back = true;
 				$a->content(
 					h::{'button[type=submit]'}($L->uninstall).
 					h::{'input[type=hidden]'}(
-						array(
+						[
 							'name'		=> 'module',
 							'value'		=> $rc[3]
-						)
+						]
 					).
 					h::{'input[type=hidden]'}(
-						array(
+						[
 							'name'	=> 'mode',
 							'value'	=> $rc[2]
-						)
+						]
 					)
 				);
 			}
@@ -71,15 +71,15 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			if (count($Config->db) > 1) {
 				if ($a->run_trigger(
 					'admin/System/components/modules/db/prepare',
-					array(
+					[
 						'name' => $rc[3]
-					)
+					]
 				)) {
 					$a->buttons = true;
 					$a->apply = false;
 					$a->cancel_back = true;
-					$dbs = array(0);
-					$dbs_name = array($L->core_db);
+					$dbs = [0];
+					$dbs_name = [$L->core_db];
 					foreach ($Config->db as $i => &$db_data) {
 						if ($i) {
 							$dbs[] = $i;
@@ -95,21 +95,21 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 					$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 					foreach ($db_json as $database) {
 						$db_list[] = h::{'td.ui-state-default.ui-corner-all'}(
-							array(
+							[
 								$L->{$rc[3].'_db_'.$database},
 								h::{'select.form_element'}(
-									array(
+									[
 										'in'		=> $dbs_name,
 										'value'		=> $dbs
-									),
-									array(
+									],
+									[
 										'name'		=> 'db['.$database.']',
 										'selected'	=> isset($Config->components['modules'][$rc[3]]['db'][$database]) ?
 											$Config->components['modules'][$rc[3]]['db'][$database] : 0,
 										'size'		=> 5
-									)
+									]
 								)
-							)
+							]
 						);
 					}
 					$a->content(
@@ -117,16 +117,16 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 							h::tr($db_list)
 						).
 						h::{'input[type=hidden]'}(
-							array(
+							[
 								'name'		=> 'module',
 								'value'		=> $rc[3]
-							)
+							]
 						).
 						h::{'input[type=hidden]'}(
-							array(
+							[
 								'name'	=> 'mode',
 								'value'	=> $rc[2]
-							)
+							]
 						)
 					);
 				}
@@ -138,9 +138,9 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			if (count($Config->storage) > 1) {
 				if ($a->run_trigger(
 					'admin/System/components/modules/storage/prepare',
-					array(
+					[
 						'name' => $rc[3]
-					)
+					]
 				)) {
 					$a->buttons = true;
 					$a->apply = false;
@@ -155,30 +155,30 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 					}
 					unset($i, $storage_data);
 					$storage_list[] = h::{'th.ui-widget-header.ui-corner-all'}(
-						array(
+						[
 							h::info('module_storage'),
 							h::info('system_storage')
-						)
+						]
 					);
 					$storage_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
 					foreach ($storage_json as $storage) {
 						$storage_translate = $rc[3].'_storage_'.$storage;
 						$storage_list[] = h::{'td.ui-state-default.ui-corner-all'}(
-							array(
+							[
 								$L->$storage_translate,
 								h::{'select.form_element'}(
-									array(
+									[
 										'in'		=> $storages_name,
 										'value'		=> $storages
-									),
-									array(
+									],
+									[
 										'name'		=> 'storage['.$storage.']',
 										'selected'	=> isset($Config->components['modules'][$rc[3]]['storage'][$storage]) ?
 											$Config->components['modules'][$rc[3]]['storage'][$storage] : 0,
 										'size'		=> 5
-									)
+									]
 								)
-							)
+							]
 						);
 					}
 					$a->content(
@@ -186,16 +186,16 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 							h::tr($storage_list)
 						).
 						h::{'input[type=hidden]'}(
-							array(
+							[
 								'name'		=> 'module',
 								'value'		=> $rc[3]
-							)
+							]
 						).
 						h::{'input[type=hidden]'}(
-							array(
+							[
 								'name'	=> 'mode',
 								'value'	=> $rc[2]
-							)
+							]
 						)
 					);
 				}
@@ -206,9 +206,9 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			$a->save('components');
 			$a->run_trigger(
 				'admin/System/components/modules/enable',
-				array(
+				[
 					'name' => $rc[3]
-				)
+				]
 			);
 			break;
 		case 'disable':
@@ -216,9 +216,9 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			$a->save('components');
 			$a->run_trigger(
 				'admin/System/components/modules/disable',
-				array(
+				[
 					'name' => $rc[3]
-				)
+				]
 			);
 			break;
 	}
@@ -229,10 +229,10 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 		case 'storage':
 			$a->content(
 				h::{'input[type=hidden]'}(
-					array(
+					[
 						'name'	=> 'mode',
 						'value'	=> $rc[2]
-					)
+					]
 				)
 			);
 	}
@@ -242,11 +242,11 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 	$db_users_items = $Cache->users_columns;
 	$modules_list = h::tr(
 		h::{'th.ui-widget-header.ui-corner-all'}(
-			array(
+			[
 				$L->module_name,
 				$L->state,
 				$L->action
-			)
+			]
 		)
 	);
 	foreach ($Config->components['modules'] as $module => &$mdata) {
@@ -258,13 +258,13 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('gear'),
-						array(
+						[
 							'data-title'	=> $L->databases
-						)
+						]
 					),
-					array(
+					[
 						'href'		=> $a->action.'/db/'.$module
-					)
+					]
 				);
 			}
 			//Storages
@@ -272,13 +272,13 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('disk'),
-						array(
+						[
 							'data-title'	=> $L->storages
-						)
+						]
 					),
-					array(
+					[
 						'href'		=> $a->action.'/storage/'.$module
-					)
+					]
 				);
 			}
 			//Notice about API existence
@@ -294,20 +294,20 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 					}
 					$addition_state .= h::$tag(
 						_file_get_contents($file),
-						array(
+						[
 							'id'			=> $module.'_api',
 							'class'			=> 'dialog',
 							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 							'title'			=> $module.' -> '.$L->API
-						)
+						]
 					);
 				}
 				$addition_state .= h::{'icon.pointer'}(
 					'link',
-					array(
+					[
 						'data-title'	=> $L->API_exists.h::br().(_file_exists($file) ? $L->click_to_view_details : ''),
 						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
-					)
+					]
 				);
 				unset($tag, $file);
 			}
@@ -320,19 +320,19 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				}
 				$addition_state .= h::$tag(
 					_file_get_contents($file),
-					array(
+					[
 						'id'			=> $module.'_readme',
 						'class'			=> 'dialog',
 						'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 						'title'			=> $module.' -> '.$L->information_about_module
-					)
+					]
 				).
 				h::{'icon.pointer'}(
 					'note',
-					array(
+					[
 						'data-title'	=> $L->information_about_module.h::br().$L->click_to_view_details,
 						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');'
-					)
+					]
 				);
 			}
 			unset($tag, $file);
@@ -345,19 +345,19 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 				}
 				$addition_state .= h::$tag(
 					_file_get_contents($file),
-					array(
+					[
 						'id'			=> $module.'_license',
 						'class'			=> 'dialog',
 						'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 						'title'			=> $module.' -> '.$L->license
-					)
+					]
 				).
 				h::{'icon.pointer'}(
 					'info',
-					array(
+					[
 						'data-title'	=> $L->license.h::br().$L->click_to_view_details,
 						'onClick'		=> '$(\'#'.$module.'_license\').dialog(\'open\');'
-					)
+					]
 				);
 			}
 			unset($tag, $file);
@@ -372,36 +372,36 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 					$action .= h::a(
 						h::{'button.compact'}(
 							h::icon('wrench'),
-							array(
+							[
 								'data-title'	=> $L->settings
-							)
+							]
 						),
-						array(
+						[
 							'href'		=> $ADMIN.'/'.$module
-						)
+						]
 					);
 				}
 				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
-						array(
+						[
 							'data-title'	=> $mdata['active'] == 1 ? $L->disable : $L->enable
-						)
+						]
 					),
-					array(
+					[
 						'href'		=> $a->action.($mdata['active'] == 1 ? '/disable/' : '/enable/').$module
-					)
+					]
 				).
 				h::a(
 					h::{'button.compact'}(
 						h::icon('trash'),
-						array(
+						[
 							'data-title'	=> $L->uninstall
-						)
+						]
 					),
-					array(
+					[
 						'href'		=> $a->action.'/uninstall/'.$module
-					)
+					]
 				);
 			}
 		//If module uninstalled or not installed yet
@@ -409,13 +409,13 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			$action .= h::a(
 				h::{'button.compact'}(
 					h::icon('arrowthickstop-1-s'),
-					array(
+					[
 						'data-title'	=> $L->install
-					)
+					]
 				),
-				array(
+				[
 					'href'		=> $a->action.'/install/'.$module
-				)
+				]
 			);
 		}
 		$modules_list .= h::tr(
@@ -423,9 +423,10 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 			h::{'td.ui-state-default.ui-corner-all'}(
 				h::icon(
 					$mdata['active'] == 1 ? 'check' : ($mdata['active'] == 2 ? 'minusthick' : 'closethick'),
-					array(
-						'data-title'	=> $mdata['active'] == 1 ? $L->enabled : ($mdata['active'] == 2 ? $L->disabled : $L->uninstalled.' ('.$L->not_installed.')')
-					)
+					[
+						'data-title'	=> $mdata['active'] == 1 ? $L->enabled :
+							($mdata['active'] == 2 ? $L->disabled : $L->uninstalled.' ('.$L->not_installed.')')
+					]
 				).
 				$addition_state
 			).
@@ -438,10 +439,10 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 		).
 		h::{'button[type=submit]'}(
 			$L->update_modules_list,
-			array(
+			[
 				'data-title'	=> $L->update_modules_list_info,
 				'name'			=> 'update_modules_list'
-			)
+			]
 		)
 	);
 }

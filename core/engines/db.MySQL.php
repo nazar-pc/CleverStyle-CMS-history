@@ -74,7 +74,7 @@ class MySQL extends DatabaseAbstract {
 		}
 		if (is_resource($query_resource)) {
 			if ($array) {
-				$result = array();
+				$result = [];
 				while ($current = @mysql_fetch_array($query_resource, $result_type)) {
 					$result[] = $current;
 				}

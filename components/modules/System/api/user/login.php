@@ -79,4 +79,3 @@ if (isset($_POST['login']) && !empty($_POST['login']) && !isset($_POST['auth_has
 		sleep($User->login_attempts()*0.5);
 	}
 }
-?>

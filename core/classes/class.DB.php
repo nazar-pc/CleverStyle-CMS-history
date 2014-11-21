@@ -2,10 +2,10 @@
 class DB {
 	public		$queries				= 0,
 				$time					= 0;
-	protected	$connections			= array(),
-				$successful_connections	= array(),
-				$false_connections		= array(),
-				$mirrors				= array(),
+	protected	$connections			= [],
+				$successful_connections	= [],
+				$false_connections		= [],
+				$mirrors				= [],
 				$DB_USER,
 				$DB_PASSWORD;
 

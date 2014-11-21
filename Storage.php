@@ -5,22 +5,27 @@ define(
 	strtolower(PHP_OS) == 'winnt' ? 'windows-1251' : 'utf-8'
 );
 header('Content-Type: text/html; charset='.CHARSET);
+header("Connection: close");
 define('DS',		DIRECTORY_SEPARATOR);
 define('CORE',		__DIR__.DS.'core');
 chdir(__DIR__);
 require CORE.DS.'functions.php';
-$DOMAIN = (string)$_POST['domain'];
-define('STORAGE',	__DIR__.DS.'storages'.DS.$DOMAIN.DS.'public');	//Для размещения на одном сервере с основным сайтом, или с другими хранилищами
-//define('STORAGE',	__DIR__);										//Для размещения на отдельном сервере
+$DOMAIN = str_replace(array('/', '\\'), '', (string)$_POST['domain']);
+null_byte_filter($DOMAIN);
+define('STORAGE',	__DIR__.DS.'storages'.DS.$DOMAIN.DS.'public');	//For storage on the same server as site or
+																	//if there are several storages for several domains
+																	//on one server
+//define('STORAGE',	__DIR__);										//For storage on separate server
 if (
 	$_SERVER['HTTP_USER_AGENT'] == 'CleverStyle CMS' &&
 	strpos($DOMAIN, '\\') === false &&
 	strpos($DOMAIN, '/') === false &&
-	_file_exists(__DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php')
+	_file_exists(__DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php') &&
+	isset($_POST['data'])
 ) {
 	include __DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php';
 	global $STORAGE_USER, $STORAGE_PASSWORD;
-	$data = _json_decode((string)$_POST['data']);
+	$data = _json_decode(urldecode($_POST['data']));
 	$KEY = substr($data['key'], 0, 32);
 	unset($data['key']);
 	if (md5(_json_encode($data).$STORAGE_USER.$STORAGE_PASSWORD) !== $KEY) {
@@ -30,7 +35,7 @@ if (
 } else {
 	exit;
 }
-global $BASE_URL;
+
 switch ($data['function']) {
 	default:
 		exit;
@@ -61,4 +66,3 @@ switch ($data['function']) {
 	case 'test':
 		exit('OK');
 }
-?>

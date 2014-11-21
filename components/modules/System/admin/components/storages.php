@@ -84,7 +84,7 @@ if (isset($rc[2])) {
 		}
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
-		$content = array();
+		$content = [];
 		foreach ($Config->components['modules'] as $module => &$mdata) {
 			if (isset($mdata['storage']) && is_array($mdata['storage'])) {
 				foreach ($mdata['storage'] as $storage_name) {

@@ -3,7 +3,7 @@ global $Config, $Page, $L, $ADMIN, $Index;
 $rc			= &$Config->routing['current'];
 $update		= false;
 if (isset($_POST['update_modules_list'])) {
-	$modules_list	= array_fill_keys(get_list(MODULES, false, 'd'), array('active' => -1, 'db' => array(), 'storage' => array()));
+	$modules_list	= array_fill_keys(get_list(MODULES, false, 'd'), array('active' => -1, 'db' => [], 'storage' => []));
 	$modules		= &$Config->components['modules'];
 	$modules		= array_merge($modules_list, array_intersect_key($modules, $modules_list));
 	ksort($modules);
@@ -26,6 +26,8 @@ if (isset($_POST['update_modules_list'])) {
 					$module_data['storage'] = $_POST['storage'];
 				}
 				$Index->save('components');
+				//TODO rights generation
+				//$parts = _json_decode(_file_get_contents(MODULES.DS.$_POST['module'].DS.'admin'.DS.'index.json'));
 			}
 		break;
 		case 'uninstall':

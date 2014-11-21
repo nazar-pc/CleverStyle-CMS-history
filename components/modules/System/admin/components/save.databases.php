@@ -9,7 +9,7 @@ if ($_POST['mode'] == 'add') {
 		$_POST['db'][$item] = $value;
 	}
 	unset($item, $value);
-	$_POST['db']['mirrors'] = array();
+	$_POST['db']['mirrors'] = [];
 	if ($_POST['db']['mirror'] == -1) {
 		$Config->db[] = $_POST['db'];
 	} else {

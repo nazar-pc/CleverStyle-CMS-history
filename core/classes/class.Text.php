@@ -68,13 +68,13 @@ class Text {
 				$update = false;
 			}
 		}
-		$result = array();
+		$result = [];
 		if (!$update) {
 			$language = $language ?: $this->language;
 			$result = $db->$database()->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
 			$result = _json_decode($result['text']);
 			if (!is_array($result)) {
-				$result = array();
+				$result = [];
 			} else {
 				$update = false;
 			}

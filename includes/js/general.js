@@ -70,12 +70,12 @@ $(function() {
 	});
 	$('#user_login, #user_password').keyup(function (event) {
 		if (event.which == 13) {
-			$('#login_process').click();
+			$('#login_process').mousedown();
 		}
 	});
 	$('#register').keyup(function (event) {
 		if (event.which == 13) {
-			$('#register_process').click();
+			$('#register_process').mousedown();
 		}
 	});
 	$('#register_list').change(function() {
