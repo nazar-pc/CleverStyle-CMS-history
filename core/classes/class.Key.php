@@ -1,7 +1,7 @@
 <?php
 class Key {
 	const	DELETE		= 10000;		//Число вставок, после которых будет произведена физическая очистка ненужных елементов
-										//так, как операция удаления достаточно накладная в плане ресурсов
+										//Так, как операция удаления достаточно накладная в плане ресурсов - она делается периодически
 	const	KEY_EXPIRE	= 1200;			//Время истекания ключа по-умолчанию 20 минут от текущего времени
 	function get ($database, $id_key, $get_data = false) {
 		global $db;
@@ -21,13 +21,14 @@ class Key {
 			$expire = TIME+self::KEY_EXPIRE;
 		}
 		global $db;
+		$this->del($database, $key);
 		$id = $db->$database()->insert_id(
 			$db->$database()->q(
 				'INSERT INTO `[prefix]keys` (`key`, `expire`, `data`) VALUES '.
 					'('.$db->$database()->sip($key).', '.$expire.', '.$db->$database()->sip(_json_encode($data)).')'
 			)
 		);
-		if (!($id % self::DELETE)) { //Чистим устаревшие ключи после каждых self::DELETE новых записей
+		if ($id && !($id % self::DELETE)) { //Чистим устаревшие ключи после каждых self::DELETE новых записей
 			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `expire` < '.TIME);
 		}
 		return $id;

@@ -34,7 +34,7 @@ class HTTP extends StorageAbstract {
 		if (empty($data)) {
 			return false;
 		} else {
-			$data['key'] = md5(md5(_json_encode($data).$this->user).$this->password);
+			$data['key'] = md5(_json_encode($data).$this->user.$this->password);
 		}
 		time_limit_pause();
 		$data = 'data='.json_encode($data).'&domain='.DOMAIN;
@@ -43,7 +43,7 @@ class HTTP extends StorageAbstract {
 			"POST /Storage.php HTTP/1.1\r\n".
 			'Host: '.$this->host."\r\n".
 			"Content-type: application/x-www-form-urlencoded\r\n".
-			"Content-length:".(strlen($data))."\r\n".
+			"Content-length:".strlen($data)."\r\n".
 			"Accept:*/*\r\n".
 			"User-agent: CleverStyle CMS\r\n".
 			'Authorization: Basic '.base64_encode($this->user.':'.$this->password)."\r\n\r\n".

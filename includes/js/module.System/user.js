@@ -21,7 +21,7 @@
 									if (result == 'true') {
 										location.reload();
 									} else {
-										alert(auth_error_login);
+										alert(result);
 									}
 								},
 								error: function() {
@@ -30,7 +30,7 @@
 							}
 						);
 					} else {
-						alert(auth_error_login);
+						alert(random_hash);
 					}
 				},
 				error: function() {

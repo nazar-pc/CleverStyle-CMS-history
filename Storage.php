@@ -18,7 +18,7 @@ if (
 	$data = _json_decode(filter((string)$_POST['data'], 'form'));
 	$KEY = substr($data['key'], 0, 32);
 	unset($data['key']);
-	if (md5(md5(_json_encode($data).$STORAGE_USER).$STORAGE_PASSWORD) !== $KEY) {
+	if (md5(_json_encode($data).$STORAGE_USER.$STORAGE_PASSWORD) !== $KEY) {
 		exit;
 	}
 	unset($GLOBALS['STORAGE_USER'], $GLOBALS['STORAGE_PASSWORD'], $KEY, $DOMAIN);

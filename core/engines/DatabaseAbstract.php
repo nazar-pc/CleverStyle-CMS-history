@@ -59,8 +59,7 @@ abstract class DatabaseAbstract {
 		return $this->qf($query, true, $result_type);
 	}
 	//id последнего insert запроса
-	//([ресурс_запроса])
-	abstract function insert_id ($query_resource = false);
+	abstract function insert_id ();
 	//Очистка результатов запроса
 	//([ресурс_запроса])
 	abstract function free ($query_resource = false);

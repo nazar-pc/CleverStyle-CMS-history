@@ -88,15 +88,8 @@ class MySQL extends DatabaseAbstract {
 	}
 	//id последнего insert запроса
 	//([ресурс_запроса])
-	function insert_id ($query_resource = false) {
-		if ($query_resource === false) {
-			$query_resource = $this->query['resource'];
-		}
-		if (is_resource($query_resource)) {
-			return @mysql_insert_id($query_resource);
-		} else {
-			return false;
-		}
+	function insert_id () {
+		return @mysql_insert_id($this->id);
 	}
 	//Очистка результатов запроса
 	//([ресурс_запроса])

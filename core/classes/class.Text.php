@@ -1,7 +1,7 @@
 <?php
 class Text {
 	const	DELETE	= 100000;			//Число вставок, после которых будет произведена физическая очистка ненужных елементов
-										//так, как операция удаления достаточно накладная в плане ресурсов
+										//Так, как операция удаления достаточно накладная в плане ресурсов - она делается периодически
 	private	$language,
 			$local_storage	= array(),	//Локальное хранилище, позволяет оптимизировать повторные запросы на получение текстов
 			$local_result	= array();	//Локальное хранилище результатов, хранит добавленные, или измененные тексты для
@@ -24,10 +24,9 @@ class Text {
 		}
 		if (!is_array($result) || empty($result)) {
 			return false;
-		}
-		if (isset($result[$this->language])) {
+		} elseif (isset($result[$this->language]) && !empty($result[$this->language])) {
 			return $this->local_storage[$database.'_'.$id] = $result[$this->language];
-		} elseif (isset($result[0])) {
+		} elseif (isset($result[0]) && !empty($result[0])) {
 			return $this->local_storage[$database.'_'.$id] = $result[0];
 		} elseif (current($result)) {
 			return $this->local_storage[$database.'_'.$id] = current($result);
@@ -47,12 +46,8 @@ class Text {
 			$result = array();
 		}
 		if (is_array($data)) {
-			foreach ($data as $language => &$translate) {
-				if (empty($translate)) {
-					continue;
-				}
+			foreach ($data as $language => $translate) {
 				$result[$language] = $translate;
-				
 			}
 			unset($language, $translate);
 		} else {
@@ -99,7 +94,7 @@ class Text {
 					'('.$db->$database()->sip($relation).', '.$db->$database()->sip($relation_id).', '.$db->$database()->sip(_json_encode($result)).')'
 			)
 		);
-		if (!($id % self::DELETE)) { //Чистим устаревшие тексты после каждых self::DELETE новых записей
+		if ($id && !($id % self::DELETE)) { //Чистим устаревшие тексты после каждых self::DELETE новых записей
 			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
 		}
 		if ($id) {
