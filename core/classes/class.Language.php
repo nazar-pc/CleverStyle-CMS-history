@@ -10,8 +10,8 @@ class Language {
 		$L = $this;
 		$this->change($LANGUAGE);
 	}
-	function init ($Config = false) {
-		if ($Config !== false) {
+	function init ($Config = null) {
+		if (is_object($Config)) {
 			$this->change(_getcookie('language') && in_array(_getcookie('language'), $Config->core['active_languages']) ? _getcookie('language') : $Config->core['language']);
 		}
 		if ($this->need_to_rebuild_cache) {
@@ -21,10 +21,21 @@ class Language {
 			$this->initialized = true;
 		}
 	}
+	/**
+	 * Get translation
+	 * @param string $item
+	 * @return string
+	 */
 	function get ($item) {
 		return isset($this->translate[$item]) ? $this->translate[$item] : ucfirst(str_replace('_', ' ', $item));
 	}
-	function set ($item, $value = '') {
+	/**
+	 * Set translation
+	 * @param array|string $item
+	 * @param null|strng $value
+	 * @return string
+	 */
+	function set ($item, $value = null) {
 		if (is_array($item)) {
 			foreach ($item as $i => &$v) {
 				$this->set($i, $v);
@@ -33,12 +44,30 @@ class Language {
 			$this->translate[$item] = $value;
 		}
 	}
+	/**
+	 * Get translation
+	 * @see get()
+	 * @param string $item
+	 * @return string
+	 */
 	function __get ($item) {
 		return $this->get($item);
 	}
-	function __set ($item, $value = '') {
+	/**
+	 * Set translation
+	 * @see set()
+	 * @param array|string $item
+	 * @param null|strng $value
+	 * @return string
+	 */
+	function __set ($item, $value = null) {
 		$this->set($item, $value);
 	}
+	/**
+	 * Change language
+	 * @param string $language
+	 * @return bool
+	 */
 	function change ($language) {
 		if (empty($language)) {
 			return false;
@@ -85,19 +114,20 @@ class Language {
 		}
 		return false;
 	}
-	//Обрабатывет время, добавляя слова с правильными окончаниями
-	//$type = s|m|h|d|M|y
-	function time ($in, $type = false) {
+	/**
+	 * Time formatting according to the current language (adding correct endings)
+	 * @param int $in		time in seconds
+	 * @param string $type	Type of formatting<br>
+	 * 						s - seconds<br>m - minutes<br>h - hours<br>d - days<br>M - months<br>y - years
+	 * @return string
+	 */
+	function time ($in, $type) {
 		if ($this->time instanceof Closure) {
 			$tmp = $this->time;
 			return $tmp($in, $type);
 		} else {
 			global $L;
 			switch ($type) {
-				default:
-					return $in;
-				break;
-				
 				case 's':
 					return $in.' '.$L->seconds;
 				break;
@@ -123,8 +153,30 @@ class Language {
 				break;
 			}
 		}
+		return $in;
 	}
-	//Запрет клонирования
+	/**
+	 * Allows to use formatted strings in translations
+	 * @see format()
+	 * @param $name
+	 * @param $arguments
+	 * @return string
+	 */
+	function __call ($name, $arguments) {
+		return $this->format($name, $arguments);
+	}
+	/**
+	 * Allows to use formatted strings in translations
+	 * @param $name
+	 * @param $arguments
+	 * @return string
+	 */
+	function format ($name, $arguments) {
+		return vsprintf($this->get($name), $arguments);
+	}
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

@@ -211,6 +211,9 @@ function login (login, password) {
  * @param email
  */
 function registration (email) {
+	if (!confirm(reg_agreement)) {
+		return;
+	}
 	$.ajax(
 		base_url+"/"+api+"/user/registration",
 		{
@@ -219,8 +222,15 @@ function registration (email) {
 			data: {
 				email: email
 			},
-			success: function(html) {//TODO Registration continuation (popup)
-
+			success: function(result) {//TODO Registration continuation (popup)
+				if (result == 'reg_confirmation') {
+					//TODO
+				} else if (result == 'reg_success') {
+					//TODO popup congratulation
+					location.reload();
+				} else {
+					//TODO error:(
+				}
 			},
 			error: function() {
 				alert(auth_error_connection);

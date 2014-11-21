@@ -77,7 +77,7 @@ $a->content(
 						'name'			=> 'core[password_min_strength]',
 						'value'			=> $Config->core['password_min_strength'],
 						'min'			=> 0,
-						'max'			=> 9,
+						'max'			=> 7,
 						'class'			=> 'form_element'
 					)
 				)

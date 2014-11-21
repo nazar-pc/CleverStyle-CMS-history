@@ -18,7 +18,8 @@ class User {
 				$db						= false,	//Ссылка на объект БД
 				$db_prime				= false,	//Ссылка на объект основной БД
 				$cache					= array(),	//Кеш с некоторыми временными данными
-				$init					= false;	//Текущее состояние инициализации
+				$init					= false,	//Текущее состояние инициализации
+				$reg_id					= 0;
 
 	function __construct () {
 		global $Cache, $Config, $Page, $L, $Key;
@@ -171,9 +172,9 @@ class User {
 				if ($group_id < 1) {
 					continue;
 				}
-				if (!($group_data = $Cache->{'users_groups/'.$group_id})) {
-					$Cache->{'users_groups/'.$group_id} = $group_data = $this->db()->qf(
-						'SELECT `permissions`, `data` FROM `[prefix]users_groups` WHERE `id` = '.$group_id.' LIMIT 1'
+				if (!($group_data = $Cache->{'groups/'.$group_id})) {
+					$Cache->{'groups/'.$group_id} = $group_data = $this->db()->qf(
+						'SELECT `permissions`, `data` FROM `[prefix]groups` WHERE `id` = '.$group_id.' LIMIT 1'
 					);
 				}
 				$permissions = strtr($permissions | $group_data['permissions'], 2, 0);
@@ -183,11 +184,14 @@ class User {
 		}
 		//Если не гость - применяем некоторые индивидуальные настройки
 		if ($this->id != 1) {
-			date_default_timezone_set($this->timezone);
-			$L->change($this->language);
+			if ($this->timezone) {
+				date_default_timezone_set($this->timezone);
+			}
+			if ($this->language) {
+				$L->change($this->language);
+			}
 		}
 		$this->init = true;
-		$this->db_prime();
 	}
 	/**
 	 * @param array|string $item
@@ -346,11 +350,13 @@ class User {
 	 * @return bool|int
 	 */
 	function get_id ($login_hash) {
-		$this->login_result(true);
+		if (!preg_match('/^[0-9a-z]{56}$/', $login_hash)) {
+			return false;
+		}
 		$data = $this->db()->qf(
 			'SELECT `id` FROM `[prefix]users` WHERE '.
-				'`login_hash` = '.$this->db()->sip((string)$login_hash).' OR '.
-				'`email_hash` = '.$this->db()->sip((string)$login_hash).' '.
+				'`login_hash` = '.$this->db()->sip($login_hash).' OR '.
+				'`email_hash` = '.$this->db()->sip($login_hash).' '.
 				'LIMIT 1'
 		);
 		return is_array($data) && $data['id'] != 1 ? $data['id'] : false;
@@ -453,7 +459,7 @@ class User {
 	function del_all_sessions ($id = false) {
 		$id = $id ?: $this->id;
 		_setcookie('session', '');
-		return $id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `user` = \''.$this->id.'\'') : false;
+		return $id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `user` = '.$this->id) : false;
 	}
 	/**
 	 * Check number of login attempts
@@ -465,7 +471,7 @@ class User {
 			return $this->cache['login_attempts'];
 		}
 		$return = $this->db()->qf(
-			'SELECT COUNT(`expire`) FROM `[prefix]user_logins` '.
+			'SELECT COUNT(`expire`) FROM `[prefix]logins` '.
 				'WHERE `expire` > '.TIME.' AND ('.
 					'`login` = '.$this->db()->sip($login ?: $_POST['login']).' OR `ip` = \''.ip2hex($this->ip).'\''.
 				')',
@@ -482,7 +488,7 @@ class User {
 	function login_result ($result, $login = false) {
 		if ($result) {
 			$this->db_prime()->q(
-				'UPDATE `[prefix]user_logins` '.
+				'UPDATE `[prefix]logins` '.
 					'SET `expire` = 0 '.
 					'WHERE '.
 						'`expire` > '.TIME.' AND ('.
@@ -492,7 +498,7 @@ class User {
 		} else {
 			global $Config;
 			$this->db_prime()->q(
-				'INSERT INTO `[prefix]user_logins` '.
+				'INSERT INTO `[prefix]logins` '.
 					'(`expire`, `login`, `ip`) '.
 						'VALUES '.
 					'('.(TIME + $Config->core['login_attempts_block_time']).', '.$this->db_prime()->sip($login ?: $_POST['login']).', \''.ip2hex($this->ip).'\')'
@@ -502,7 +508,7 @@ class User {
 			}
 			global $Config;
 			if ($this->db_prime()->insert_id() % $Config->core['inserts_limit'] == 0) {
-				$this->db_prime()->q('DELETE FROM `[prefix]user_logins` WHERE `expire` < '.TIME);
+				$this->db_prime()->q('DELETE FROM `[prefix]logins` WHERE `expire` < '.TIME);
 			}
 		}
 	}
@@ -654,10 +660,73 @@ class User {
 	/**
 	 * Processing of user registration
 	 * @param string $email
+	 * @return array|bool|string
 	 */
 	function registration ($email) {
-		//TODO Registration processing
-		//$this->db_prime()->q('INSERT INTO')
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			return false;
+		}
+		$email_ = hash('sha224', $email);
+		if (!$this->db_prime()->q('SELECT `id` FROM [prefix]users WHERE `email_hash` = \''.$email_.'\'')) {
+			return 'exists';
+		}
+		global $Config;
+		$password	= password_generate($Config->core['password_min_length'], $Config->core['password_min_strength']);
+		$reg_key	= md5($password.$this->ip);
+		if ($this->db_prime()->q('INSERT INTO [prefix]users (
+				`login`,
+				`login_hash`,
+				`password_hash`,
+				`email`,
+				`email_hash`,
+				`groups`,
+				`regdate`,
+				`regip`,
+				`regkey`,
+				`status`
+			) VALUES (
+				'.$this->db_prime()->sip($email).',
+				\''.$email_.'\',
+				\''.hash('sha224', $password).'\',
+				\''.$this->db_prime()->sip($email).'\',
+				\''.$email_.'\',
+				2,
+				'.TIME.',
+				\''.ip2hex($this->ip).'\',
+				\''.$reg_key.'\',
+				'.($Config->core['require_registration_confirmation'] ? '-1' : '1').'
+			)'
+		)) {
+			$this->reg_id = $this->db_prime()->insert_id();
+			if (!$Config->core['require_registration_confirmation'] && $Config->core['autologin_after_registration']) {
+				$this->add_session($this->reg_id);
+			}
+			if ($this->reg_id % $Config->core['inserts_limit'] == 0) {
+				$this->db_prime()->q('DELETE FROM `[prefix]users` WHERE `login_hash` = null AND `email_hash` = null AND `password_hash` = null');
+			}
+			return array(
+				'reg_key'	=> $Config->core['require_registration_confirmation'] ? $reg_key : true,
+				'password'	=> $password
+			);
+		} else {
+			return 'error';
+		}
+	}
+	function registration_cancel () {
+		$this->db_prime()->q('UPDATE [prefix]users SET
+				`login` = null,
+				`login_hash` = null,
+				`username` = \'deleted\',
+				`password_hash` = null,
+				`email` = null,
+				`email_hash` = null,
+				`groups` = null,
+				`regdate` = 0,
+				`regip` = null,
+				`regkey` = null,
+				`status` = -1
+			WHERE `id` = '.$this->reg_id
+		);
 	}
 	/**
 	 * Saving cache changing, and users data
@@ -690,5 +759,9 @@ class User {
 		}
 		$this->data_set = array();
 	}
+	/**
+	 * Cloning restriction
+	 */
+	function __clone () {}
 }
 ?>

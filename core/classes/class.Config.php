@@ -294,7 +294,9 @@ class Config {
 		$this->load();
 		$this->apply();
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

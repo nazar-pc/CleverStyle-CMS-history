@@ -191,7 +191,9 @@ class DB {
 			return false;
 		}
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

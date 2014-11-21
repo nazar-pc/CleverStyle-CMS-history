@@ -84,7 +84,9 @@ class Storage {
 			return false;
 		}
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

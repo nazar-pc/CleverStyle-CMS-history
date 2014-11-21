@@ -92,7 +92,9 @@ class Error {
 	function __call ($func, $args) {
 		$this->process($args);
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

@@ -189,7 +189,9 @@ class Cache {
 	function __unset ($item) {
 		return $this->del($item);
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

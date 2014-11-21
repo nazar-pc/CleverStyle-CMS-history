@@ -157,7 +157,12 @@ class Index extends HTML {
 						'auth_error_connection = "'.$L->auth_error_connection.'",'.
 						'reg_connection_error = "'.$L->reg_error_connection.'",'.
 						'please_type_your_email = "'.$L->please_type_your_email.'",'.
-						'please_type_correct_email = "'.$L->please_type_correct_email.'",'
+						'please_type_correct_email = "'.$L->please_type_correct_email.'",'.
+						'reg_success = "'.$L->reg_success.'",'.
+						'reg_agreement = "'.$L->reg_agreement.'",'.
+						'reg_success = "'.$L->reg_success.'",'.
+						'reg_success_confirmation = "'.$L->reg_success_confirmation.'",'
+
 					: '').
 					'language = "'.$L->clanguage.'",'.
 					'language_en = "'.$L->clanguage_en.'",'.
@@ -166,9 +171,9 @@ class Index extends HTML {
 					($User->is('admin') ? 'admin = "'.$ADMIN.'",' : '').
 					'in_admin = '.(int)$this->admin.','.
 					'api = "'.$API.'",'.
-					'routing = '._json_encode($Config->routing['current']).','.
-					'cache = '.$Config->core['disk_cache'].','.
-					'pcache = '.$Config->core['cache_compress_js_css'].';',
+					'routing = '._json_encode($Config->routing['current']).';',//.
+					//'cache = '.$Config->core['disk_cache'].','. //TODO check necessity
+					//'pcache = '.$Config->core['cache_compress_js_css'].';', //TODO check necessity
 				'code'
 			);
 		}
@@ -302,7 +307,9 @@ class Index extends HTML {
 			$this->$method();
 		}
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	final function __clone () {}
 	function __finish () {
 		closure_process($this->preload);

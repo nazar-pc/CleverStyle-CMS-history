@@ -473,7 +473,7 @@
 	}
 	//Обработка замыканий
 	/**
-	 * @param &$functions Closure[]
+	 * @param Closure[] &$functions
 	 */
 	function closure_process (&$functions) {
 		$functions = (array)$functions;
@@ -615,7 +615,7 @@
 		function _rtrim ($str, $charlist = false) {
 			return filter($str, 'rtrim', $charlist);
 		}
-		function _substr ($string, $start, $length) {
+		function _substr ($string, $start, $length = null) {
 			return filter($string, 'substr', $start, $length);
 		}
 		function _mb_substr ($string, $start, $length = null, $encoding = null) {
@@ -697,8 +697,8 @@
 	}
 	//Почти идеальная функция для защиты от XSS-атак
 	//Название xap - сокращено от XSS Attack Protection
-	function xap ($in, $format = false) {
-		if ($format == 'html') {
+	function xap ($in, $html = false) {
+		if ($html) {
 			//Делаем безопасный html
 			$in = preg_replace('/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i', '', $in); //Удаляем скрипты, фреймы и flash
 			$in = preg_replace('/(script:)|(expression\()/i', '\\1&nbsp;', $in); //Обезвреживаем скрипты, что остались
@@ -802,10 +802,10 @@
 		}
 		return $timezones;
 	}
-	//Проверка сложности пароля (от 0 до 9)
+	//Проверка сложности пароля (от 0 до 7)
 	function password_check ($password) {
 		global $Config;
-		$min		= is_object($Config) ? $Config->core['password_min_length'] : 5;
+		$min		= is_object($Config) ? $Config->core['password_min_length'] : 4;
 		$password	= preg_replace('/\s+/', ' ', $password);
 		$s			= 0;
 		if(strlen($password) >= $min) {
@@ -819,16 +819,10 @@
 			if(preg_match('/[A-Z]+/', $password)) {
 				++$s;
 			}
-			if(preg_match('/[а-я]+/', $password)) {
-				++$s;
-			}
-			if(preg_match('/[А-Я]+/', $password)) {
-				++$s;
-			}
 			if(preg_match('/\W/', $password)) {
 				++$s;
 			}
-			if($strlen = mb_strlen(preg_replace('/([0-9a-zа-я]+|\W)/i', '', $password))) {
+			if ($strlen = preg_match('/^[0-9a-z]|^\W/i', $password)) {
 				++$s;
 				if ($strlen > 1) {
 					++$s;
@@ -836,6 +830,59 @@
 			}
 		}
 		return $s;
+	}
+	/**
+	 * Generates passwords till 5 level of strength, 6-7 - only for humans:)
+	 * @param int $length
+	 * @param int $strength
+	 * @return string
+	 */
+	function password_generate ($length = 10, $strength = 5) {
+		static $special = array(
+			'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_',
+			'=', '+', '\\', '/', ';', ':', ',', '.', '?', '[', ']', '{', '}'
+		);
+		static $small, $capital;
+		if (!isset($small)) {
+			$small = array();
+			for ($i = 97; $i <= 122; ++$i) {
+				$small[] = chr($i);
+			}
+		}
+		if (!isset($capital)) {
+			$capital = array();
+			for ($i = 65; $i <= 90; ++$i) {
+				$capital[] = chr($i);
+			}
+		}
+		$password = array();
+		$symbols = array(0,1,2,3,4,5,6,7,8,9);
+		if ($strength > 5) {
+			$strength = 5;
+		}
+		if ($strength > $length) {
+			$strength = $length;
+		}
+		if ($strength == 5) {
+			$symbols = array_merge($symbols, $special);
+		}
+		if ($strength > 3) {
+			$symbols = array_merge($symbols, $capital);
+		}
+		if ($strength > 2) {
+			$symbols = array_merge($symbols, $small);
+		}
+		$size = count($symbols)-1;
+		while (true) {
+			for ($i = 0; $i < $length; ++$i) {
+				$password[] = $symbols[rand(0, $size)];
+			}
+			if (password_check(implode('', $password))) {
+				shuffle($password);
+				return implode('', $password);
+			}
+		}
+		return '';
 	}
 	//Некоторые функции для определение состояния сервера
 	//Проверка версии БД

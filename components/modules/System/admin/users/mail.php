@@ -126,7 +126,21 @@ $a->content(
 					)
 				)
 			)
-		),
+		).
+		$a->tr(
+			$a->td($a->info('mail_signature')).
+				$a->td(
+					$a->textarea(
+						$Config->core['mail_signature'],
+						array(
+							 'id'		=> 'mail_signature',
+							 'name'		=> 'core[mail_signature]',
+							 'class'	=> 'EDITORH form_element'
+						)
+					)
+				)
+		)
+		,
 		array('class' => 'admin_table left_even right_odd')
 	)
 );

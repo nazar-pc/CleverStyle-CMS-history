@@ -574,7 +574,9 @@ class Page extends HTML {
 			)
 		);
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 	//Генерирование страницы
 	function __finish () {

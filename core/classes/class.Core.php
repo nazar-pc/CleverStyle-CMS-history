@@ -106,7 +106,9 @@ class Core {
 			unset($this->key[$name], $this->iv[$name], $this->td[$name]);
 		}
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 	//Отключений функций шифрования
 	function __finish () {

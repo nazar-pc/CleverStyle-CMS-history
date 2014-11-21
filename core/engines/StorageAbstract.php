@@ -22,7 +22,9 @@ abstract class StorageAbstract {
 	function base_url () {
 		return $this->base_url;
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	final function __clone () {}
 }
 ?>

@@ -15,7 +15,7 @@ if (!$Config->server['referer']['local'] || !$Config->server['ajax']) {
 	return;
 }
 //Первый шаг - поиск пользователя по логину, создание случайного хеша для второго шага, и создание временного ключа
-if (isset($_POST['login']) && !isset($_POST['auth_hash']) && ($id = $User->get_id($_POST['login'])) && $id != 1) {
+if (isset($_POST['login']) && !empty($_POST['login']) && !isset($_POST['auth_hash']) && ($id = $User->get_id($_POST['login'])) && $id != 1) {
 	if ($User->get('status', $id) == -1) {
 		$Page->content($L->your_account_is_not_active);
 		sleep(1);
@@ -27,15 +27,14 @@ if (isset($_POST['login']) && !isset($_POST['auth_hash']) && ($id = $User->get_i
 	}
 	$random_hash = hash('sha224', MICROTIME);
 	if ($Key->put(
-			$Config->components['modules']['System']['db']['keys'],
-			hash('sha224', $User->ip.$User->user_agent.(string)$_POST['login']),
-			array(
-				'random_hash'	=> $random_hash,
-				'login'			=> $_POST['login'],
-				'id'			=> $id
-			)
+		$Config->components['modules']['System']['db']['keys'],
+		hash('sha224', $User->ip.$User->user_agent.$_POST['login']),
+		array(
+			'random_hash'	=> $random_hash,
+			'login'			=> $_POST['login'],
+			'id'			=> $id
 		)
-	) {
+	)) {
 		$Page->content($random_hash);
 	} else {
 		$Page->content($L->auth_error_server);
@@ -45,7 +44,7 @@ if (isset($_POST['login']) && !isset($_POST['auth_hash']) && ($id = $User->get_i
 } elseif (isset($_POST['auth_hash'])) {
 	$key_data = $Key->get(
 		$Config->components['modules']['System']['db']['keys'],
-		hash('sha224', $User->ip.$User->user_agent.(string)$_POST['login']),
+		hash('sha224', $User->ip.$User->user_agent.$_POST['login']),
 		true
 	);
 	$auth_hash = hash(
@@ -57,6 +56,7 @@ if (isset($_POST['login']) && !isset($_POST['auth_hash']) && ($id = $User->get_i
 	);
 	if ($_POST['auth_hash'] == $auth_hash) {
 		$User->add_session($key_data['id']);
+		$User->login_result(true);
 		$Page->content('reload');
 	} else {
 		$User->login_result(false);

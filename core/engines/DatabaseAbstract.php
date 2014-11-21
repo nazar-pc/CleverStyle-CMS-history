@@ -101,7 +101,9 @@ abstract class DatabaseAbstract {
 	abstract function sip ($data);
 	//Информация о сервере
 	abstract function server ();
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	final function __clone () {}
 	//Отключение от БД
 	abstract function __destruct ();

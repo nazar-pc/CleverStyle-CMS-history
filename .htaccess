@@ -1,6 +1,4 @@
 AddDefaultCharset utf-8
-php_flag display_errors on
-php_value error_reporting 204700
 Options -All -Multiviews +FollowSymLinks
 IndexIgnore *.php *.pl *.cgi *.htaccess *.htpasswd
 

@@ -136,7 +136,9 @@ class Text {
 			$data
 		);
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>

@@ -44,7 +44,9 @@ class Key {
 		$id_key = $db->$database()->sip($id_key);
 		return $db->$database()->q('UPDATE `[prefix]keys` SET `expire` = 0, `data` = null, key=null WHERE (`id` = '.$id_key.' OR `key` = '.$id_key.')');
 	}
-	//Запрет клонирования
+	/**
+	 * Cloning restriction
+	 */
 	function __clone () {}
 }
 ?>
