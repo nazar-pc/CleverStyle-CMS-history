@@ -24,30 +24,25 @@ body[id=textarea] {
 }
 .admin_form {
 	text-align: center;
-}
-.admin_form {
 	width: 100%;
 }
 .admin_table {
 	margin: auto;
 }
-.admin_table> tbody > tr > td:nth-child(odd) {
-	border-spacing: 0px;
-	padding-right: 20px;
+.left_odd > tbody > tr > td:nth-child(odd), .left_even > tbody > tr > td:nth-child(even), .left_all > tbody > tr > td, tr.left_all > td, td.left_all {
+	text-align: left;
+	vertical-align: top;
+	padding: 2px;
+}
+.right_odd > tbody > tr > td:nth-child(odd), .right_even > tbody > tr > td:nth-child(even), .right_all > tbody > tr > td, tr.right_all > td, td.right_all {
 	text-align: right;
 	vertical-align: top;
+	padding: 2px;
 }
-.admin_table> tbody > tr > td:nth-child(even) {
-	text-align: left;
-	vertical-align: top;
-}
-.left_table> tbody > tr > td:nth-child(odd) {
-	text-align: left;
-	vertical-align: top;
-}
-.r-table td {
-	border-radius: 5px;
-	padding: 5px;
+.center_odd > tbody > tr > td:nth-child(odd), .center_even > tbody > tr > td:nth-child(even), .center_all > tbody > tr > td, tr.center_all > td, td.center_all {
+	text-align: center;
+	vertical-align: middle;
+	padding: 2px;
 }
 td#main_content {
 	border-radius: 7px;

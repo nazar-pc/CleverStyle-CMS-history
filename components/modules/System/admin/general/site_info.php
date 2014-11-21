@@ -180,7 +180,7 @@ $a->content(
 					array(
 						'type'	=> 'number',
 						'name'	=> 'core[time_of_site]',
-						'value' => intval($Config->core['time_of_site']),
+						'value' => (int)$Config->core['time_of_site'],
 						'class'	=> 'form_element',
 						'style'	=> 'width: 50px;',
 						'min'	=> -12,
@@ -189,7 +189,7 @@ $a->content(
 				)
 			)
 		),
-		array('class' => 'admin_table')
+		array('class' => 'admin_table left_even right_odd')
 	)
 );
 unset($a);

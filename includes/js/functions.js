@@ -90,7 +90,7 @@ function debug_window () {
 function admin_cache (element, action) {
 	if (stop_cache) {
 		stop_cache		= false;
-		cache_interval	= setInterval(function () {progress(element)}, 100);
+		cache_interval	= setInterval(function () {progress_cache(element)}, 100);
 		$(element).html('').progressbar(
 			{value: 1}
 		).load(
@@ -107,7 +107,7 @@ function admin_cache (element, action) {
 		);
 	}
 }
-function progress (element) {
+function progress_cache (element) {
 	if (!stop_cache) {
 		$(element).progressbar('value', $(element).progressbar('value')+1);
 		if ($(element).progressbar('value') == 100) {
@@ -119,7 +119,7 @@ function db_test (url, added) {
 	$('#test_db').html('<div id="test_progress" style="width: 100%"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_db').dialog('open');
-	var test_interval = setInterval(function () {progress(element)}, 100);
+	var test_interval = setInterval(function () {progress_cache(element)}, 100);
 	if (added == true) {
 		$.ajax({
 			url:		url,
@@ -153,7 +153,7 @@ function storage_test (url, added) {
 	$('#test_storage').html('<div id="test_progress" style="width: 100%"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_storage').dialog('open');
-	test_interval = setInterval(function () {progress(element)}, 100);
+	test_interval = setInterval(function () {progress_cache(element)}, 100);
 	if (added == true) {
 		$.ajax({
 			url:		url,

@@ -1,7 +1,7 @@
 <?php
 class Admin extends Module {
-	public		$parts,
-				$subparts,
+	public		$parts = false,
+				$subparts = false,
 				$mainsubmenu = '',
 				$menumore = '',
 				$savefile = 'save',
@@ -14,23 +14,30 @@ class Admin extends Module {
 				
 	function init ($save_file = false) {
 		global $Config, $L, $Page;
-		$this->action = $Config->server['current_url'];
 		$Page->title($L->administration);
-		$r = &$Config->routing;
-		if (!isset($r['current'][0]) || !in_array($r['current'][0], $this->parts) || !file_exists(MFOLDER.DS.$r['current'][0].'.php')) {
-			$r['current'][0] = $this->parts[0];
-		}
-		$Page->title($L->$r['current'][0]);
+		$module = MODULE;
+		$Page->title($L->$module);
 		$this->savefile = $save_file ?: $this->savefile;
-		if (!include_x(MFOLDER.DS.$r['current'][0].DS.$this->savefile.'.php', true, false)) {
+		if ($this->parts !== false) {
+			$rc = &$Config->routing['current'];
+			if (!isset($rc[0]) || !in_array($rc[0], $this->parts) || !file_exists(MFOLDER.DS.$rc[0].'.php')) {
+				$rc[0] = $this->parts[0];
+			}
+			$Page->title($L->$rc[0]);
+			if (!include_x(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
+				include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
+			}
+			include_x(MFOLDER.DS.$Config->routing['current'][0].'.php');
+			if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
+				$rc[1] = $this->subparts[0];
+			}
+			$this->action = ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
+			include_x(MFOLDER.DS.$rc[0].DS.$rc[1].'.php');
+			unset($rc);
+		} else {
+			$this->action = $Config->server['current_url'];
 			include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
 		}
-		include_x(MFOLDER.DS.$Config->routing['current'][0].'.php');
-		if (!isset($r['current'][1]) || !in_array($r['current'][1], $this->subparts) || !file_exists(MFOLDER.DS.$r['current'][0].DS.$r['current'][1].'.php')) {
-			$r['current'][1] = $this->subparts[0];
-		}
-		include_x(MFOLDER.DS.$r['current'][0].DS.$r['current'][1].'.php');
-		unset($r);
 		$this->mainmenu();
 	}
 	function mainsubmenu () {
@@ -51,7 +58,7 @@ class Admin extends Module {
 		global $Config, $L;
 		foreach ($this->subparts as $subpart) {
 			$onClick = '';
-			if ($this->save) {
+			if ($this->save && $this->form) {
 				$onClick = 'menuadmin(\''.$subpart.'\', false); return false;';
 			}
 			$this->menumore .= $this->a(
@@ -74,8 +81,12 @@ class Admin extends Module {
 			"var save_before = '".$L->save_before."', continue_transfer = '".$L->continue_transfer."', base_url = '".$Config->core['url']."/admin/".MODULE.'/'.$Config->routing['current'][0]."';\n",
 			'code'
 		);
-		$Page->mainsubmenu	= $this->menu($this->mainsubmenu);
-		$Page->menumore		= $this->menu($this->menumore);
+		if ($this->parts !== false) {
+			$Page->mainsubmenu	= $this->menu($this->mainsubmenu);
+			if ($this->subparts !== false) {
+				$Page->menumore		= $this->menu($this->menumore);
+			}
+		}
 		if ($this->form) {
 			$Page->content(
 				$this->form(

@@ -1,7 +1,6 @@
 <?php
 //Специальные функции для обработки подключения пользовательских файлов ядра
 if (USE_CUSTOM) {
-	define('CUSTOM_DIR', DIR.DS.'custom');
 	function require_x ($file, $once = false, $show_errors = true) {
 		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
@@ -204,7 +203,7 @@ function flush_pcache () {
 	unset($list);
 	return $ok;
 }
-//Функция форматирования размера файла из байтов в удобный вид
+//Функция форматирования размера файла из байтов в удобночитаемый вид
 function formatfilesize($size, $round = false) {
 	global $L;
 	if($size >= 1073741824) {
@@ -270,7 +269,7 @@ function sip ($in) {
 function xap ($in, $format=false) {
 	if ($format == 'html') {
 		//Делаем безопасный html
-		$in = preg_replace('/(<(style|link|script|iframe|object).*?>[^<]*(<\/(style|link|script|iframe).*?>)?)/i', '', $in); //Удаляем стили, скрипты, фреймы и flash
+		$in = preg_replace('/(<(link|script|iframe|object).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i', '', $in); //Удаляем скрипты, фреймы и flash
 		$in = preg_replace('/(script:)|(expression\()/i', '\\1&nbsp;', $in); //Обезвреживаем скрипты, что остались
 		$in = preg_replace('/(onblur|onchange|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onload|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|onreset|onselect|onsubmit|onunload)=?/i', '', $in); //Удаляем события
 		$in = preg_replace('/((src|href).*?=.*?)(http:\/\/)/i', '\\1redirect/\\2', $in); //Обезвреживаем внешние ссылки
@@ -286,37 +285,26 @@ function check_db () {
 	global $DB_TYPE, $db;
 	global $$DB_TYPE;
 	preg_match('/[\.0-9]+/', $db->core->server(), $db_version);
-	return $db_version[0] >= $$DB_TYPE;
+	return (bool)version_compare($db_version[0], $$DB_TYPE, '>=');
 }
 //Проверка версии PHP
 function check_php () {
 	global $PHP;
-	return phpversion() >= $PHP;
+	return (bool)version_compare(phpversion(), $PHP, '>=');
 }
 //Проверка наличия и версии mcrypt
-function check_mcrypt ($n = -1) {
-	static $mcrypt_version;
-	if (empty($mcrypt_version)) {
+function check_mcrypt ($n = 0) { //0 - версия библиотеки (и наличие), 1 - подходит ли версия библиотеки
+	static $mcrypt_data;
+	if (empty($mcrypt_data)) {
 		ob_start();
 		phpinfo(8);
 		$mcrypt_version = ob_get_clean();
-		preg_match('/mcrypt support(.*?)(enabled|disabled).*?\n.*?(\n.*?)?Version <\/td><td class=\"v\">(.*) <\/td>/', $mcrypt_version, $mcrypt_version);
-		if (isset($mcrypt_version[2], $mcrypt_version[4]) && $mcrypt_version[2] == 'enabled') {
-			global $mcrypt;
-			if ($mcrypt_version[4] > $mcrypt) {
-				$mcrypt_version = array($mcrypt_version[4], true, true);
-			} else {
-				$mcrypt_version = array($mcrypt_version[4], true, false);
-			}
-		} else {
-			$mcrypt_version = array(false, false, false);
-		}
+		preg_match('/mcrypt support.*?(enabled|disabled).*?\n.*?Version <\/td><td class=\"v\">(.*) <\/td>/', $mcrypt_version, $mcrypt_version);
+		$mcrypt_data[0] = $mcrypt_version[1] != 'enabled' ?: $mcrypt_version[2];
+		global $mcrypt;
+		$mcrypt_data[1] = $mcrypt_data[0] ? (bool)version_compare($mcrypt_version[2], $mcrypt, '>=') : false;
 	}
-	if ($n == -1) {
-		return $mcrypt_version;
-	} else {
-		return $mcrypt_version[$n];
-	}
+	return $mcrypt_data[$n];
 }
 //Проверка наличия memcache
 function memcache () {

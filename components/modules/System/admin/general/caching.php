@@ -27,7 +27,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[disk_cache]',
-							'checked'		=> intval($Config->core['disk_cache']),
+							'checked'		=> (int)$Config->core['disk_cache'],
 							'value'			=> array(1, 0),
 							'in'			=> array($L->on, $L->off)
 						)
@@ -41,7 +41,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'number',
 							'name'			=> 'core[disk_cache_size]',
-							'value'			=> intval($Config->core['disk_cache_size']),
+							'value'			=> (int)$Config->core['disk_cache_size'],
 							'min'			=> 1,
 							'style'			=> 'width: 90px;',
 							'class'			=> 'form_element'
@@ -56,7 +56,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[memcache]',
-							'checked'		=> intval($Config->core['memcache']),
+							'checked'		=> (int)$Config->core['memcache'],
 							'value'			=> array(1, 0),
 							'in'			=> array($L->on, $L->off),
 							'add'			=> memcache() ? '' : ' disabled'
@@ -71,7 +71,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[memcached]',
-							'checked'		=> intval($Config->core['memcached']),
+							'checked'		=> (int)$Config->core['memcached'],
 							'value'			=> array(1, 0),
 							'in'			=> array($L->on, $L->off),
 							'add'			=> memcache() ? '' : ' disabled'
@@ -86,7 +86,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[zlib_compression]',
-							'checked'		=> intval($Config->core['zlib_compression']),
+							'checked'		=> (int)$Config->core['zlib_compression'],
 							'value'			=> array(1, 0),
 							'in'			=> array($L->on, $L->off),
 							'onClick'		=> zlib() ? array('$(\'#zlib_compression\').show();', '$(\'#zlib_compression\').hide();') : '',
@@ -102,7 +102,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'range',
 							'name'			=> 'core[zlib_compression_level]',
-							'value'			=> intval($Config->core['zlib_compression_level']),
+							'value'			=> (int)$Config->core['zlib_compression_level'],
 							'min'			=> 1,
 							'max'			=> 9,
 							'style'			=> 'width: 90px;',
@@ -122,7 +122,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[gzip_compression]',
-							'checked'		=> intval($Config->core['gzip_compression']),
+							'checked'		=> (int)$Config->core['gzip_compression'],
 							'value'			=> array(1, 0),
 							'in'			=> array($L->on, $L->off),
 							'add'			=> !zlib_autocompression() || $Config->core['zlib_compression'] ? '' : ' disabled'
@@ -137,7 +137,7 @@ if (isset($Config->routing['current'][2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[cache_compress_js_css]',
-							'checked'		=> intval($Config->core['cache_compress_js_css']),
+							'checked'		=> (int)$Config->core['cache_compress_js_css'],
 							'value'			=> array(1, 0),
 							'in'			=> array($L->on, $L->off)
 						)
@@ -165,7 +165,7 @@ if (isset($Config->routing['current'][2])) {
 			$a->tr(
 				$a->td('', array('colspan' => 2))
 			),
-			array('class' => 'admin_table')
+			array('class' => 'admin_table left_even right_odd')
 		)
 	);
 	unset($a);

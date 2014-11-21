@@ -36,6 +36,7 @@ class Page extends HTML {
 
 	protected	$Search = array(), $Replace = array();
 	
+	function __construct () {}
 	function init ($Config) {
 		$this->Title[0] = $Config->core['name'];
 		$this->Keywords = $Config->core['keywords'];
@@ -210,13 +211,13 @@ class Page extends HTML {
 		} elseif ($add) {
 			if ($core) {
 				if ($mode == 'file') {
-					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
+					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
 				} elseif ($mode == 'code') {
 					$this->core_js[1] .= $this->level($add);
 				}
 			} else {
 				if ($mode == 'file') {
-					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
+					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
 				} elseif ($mode == 'code') {
 					$this->js[1] .= $this->level($add);
 				}
@@ -403,14 +404,18 @@ class Page extends HTML {
 	//Сбор и отображение отладочных данных
 	protected function debug () {
 		global $Config, $L, $db;
+		$span = array(
+					0	=> $this->span(false, array('class'	=> 'ui-icon ui-icon-triangle-1-e',	'style'	=> 'display: inline-block;',	'level'	=> 0)),
+					1	=> $this->span(false, array('class'	=> 'ui-icon ui-icon-triangle-1-se',	'style'	=> 'display: inline-block;',	'level'	=> 0))
+		);
 		//Объекты
 		if ($Config->core['show_objects_data']) {
 			global $Classes, $timeload, $loader_init_memory;
 			$this->debug_info .= $this->p(
-				'►'.$L->objects,
+				$span[0].$L->objects,
 				array(
 					'class' => 'notice',
-					'onClick' => '$(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
+					'onClick' => '$(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
 				)
 			);
 			$debug_info =	$this->p(
@@ -451,10 +456,10 @@ class Page extends HTML {
 		//Данные пользователя
 		if ($Config->core['show_user_data']) {
 			$this->debug_info .= $this->p(
-				'►'.$L->user_data,
+				$span[0].$L->user_data,
 				array(
 					'class' => 'notice',
-					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
+					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
 				)
 			);
 			global $Classes, $timeload, $loader_init_memory;
@@ -470,10 +475,10 @@ class Page extends HTML {
 		//Запросы в БД
 		if ($Config->core['show_queries']) {
 			$this->debug_info .= $this->p(
-				'►'.$L->queries,
+				$span[0].$L->queries,
 				array(
 					'class' => 'notice',
-					'onClick' => '$(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
+					'onClick' => '$(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
 				)
 			);
 			//Показываем только запросы в БД
@@ -561,10 +566,10 @@ class Page extends HTML {
 		//Cookies
 		if ($Config->core['show_cookies']) {
 			$this->debug_info .= $this->p(
-				'►'.$L->cookies,
+				$span[0].$L->cookies,
 				array(
 					'class' => 'notice',
-					'onClick' => '$(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
+					'onClick' => '$(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
 				)
 			);
 			$debug_info = $this->tr(

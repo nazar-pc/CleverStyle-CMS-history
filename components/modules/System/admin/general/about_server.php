@@ -1,7 +1,7 @@
 <?php
 
 global $L, $DB_TYPE, $DB_HOST, $DB_NAME, $DB_PREFIX, $db, $Cache;
-global $$DB_TYPE, $Admin, $PHP;
+global $$DB_TYPE, $Admin, $PHP, $mcrypt;
 $a = &$Admin;
 $a->form = false;
 
@@ -14,7 +14,7 @@ $a->content(
 		$a->tr(
 			$a->td($L->server_type.':').
 			$a->td($server = server_api())
-		).(($server = explode(' ', $server) && $server[0] = 'Apache') ? 
+		).(strpos($server, 'Apache') !== false ?
 		$a->tr(
 			$a->td($L->version.' Apache:').
 			$a->td(apache_version ())
@@ -29,7 +29,7 @@ $a->content(
 		).
 		$a->tr(
 			$a->td($L->version.' PHP:').
-			$a->td(phpversion().(!check_php() ? ' ('.$L->required.' '.$PHP.' '.$L->or_higher.')' : ''), true, '', check_php() ? 'green' : 'red')
+			$a->td(phpversion().(!check_php() ? ' ('.$L->required.' '.$PHP.' '.$L->or_higher.')' : ''), array('class' => check_php() ? 'green' : 'red'))
 		).
 		$a->tr(
 			$a->td($L->components.' PHP:').
@@ -49,11 +49,11 @@ $a->content(
 					).
 */					$a->tr(
 						$a->td($L->mcrypt.':').
-						$a->td(check_mcrypt(1) ? $L->on : $L->off.'<sup title="'.$L->mcrypt_warning.'"> (!) </sup>', array('class' => check_mcrypt(1) ? 'green' : 'red'))
-					).(check_mcrypt(1) ?
+						$a->td(check_mcrypt() ? $L->on : $L->off.'<sup title="'.$L->mcrypt_warning.'"> (!) </sup>', array('class' => check_mcrypt() ? 'green' : 'red'))
+					).(check_mcrypt() ?
 					$a->tr(
 						$a->td($L->version.' mcrypt:', array('style' => 'padding-left: 20px;')).
-						$a->td(check_mcrypt(0).(!check_mcrypt(2) ? ' ('.$L->required.' '.$mcrypt.' '.$L->or_higher.')' : ''), array('class' => check_mcrypt(2) ? 'green' : 'red'))
+						$a->td(check_mcrypt().(!check_mcrypt(1) ? ' ('.$L->required.' '.$mcrypt.' '.$L->or_higher.')' : ''), array('class' => check_mcrypt(1) ? 'green' : 'red'))
 					) : '').
 					$a->tr(
 						$a->td($L->zlib.':').
@@ -63,7 +63,7 @@ $a->content(
 						$a->td($L->zlib_autocompression.':', array('style' => 'padding-left: 20px;')).
 						$a->td($L->__get(zlib_autocompression()))
 					) : ''),
-					array('class' => 'left_table')
+					array('class' => 'left_odd', 'style' => 'width: 100%;')
 				)
 			)
 		).
@@ -95,15 +95,15 @@ $a->content(
 						$a->td($L->encodings.':').
 						$a->td(
 							$a->table(
-								get_sql_info(), array('class' => 'left_table')
+								get_sql_info(), array('class' => 'left_odd')
 							),
 							array('style' => 'padding-left: 20px;')
 						)
 					),
-					array('class' => 'left_table')
+					array('class' => 'left_odd', 'style' => 'width: 100%;')
 				)
 			)
-		).
+		).(strpos($server, 'Apache') !== false ?
 		$a->tr(
 			$a->td($L->configs.' "php.ini":').
 			$a->td(
@@ -155,11 +155,11 @@ $a->content(
 						$a->td('register_globals:').
 						$a->td($L->__get(register_globals()), array('class' => !register_globals() ? 'green' : 'red'))
 					),
-					array('class' => 'left_table')
+					array('class' => 'left_odd', 'style' => 'width: 100%;')
 				)
 			)
-		),
-		array('class' => 'admin_table')
+		) : ''),
+		array('class' => 'admin_table left_even right_odd')
 	)
 );
 unset($a);

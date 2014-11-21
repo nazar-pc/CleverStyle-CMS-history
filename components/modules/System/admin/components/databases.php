@@ -37,8 +37,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->info('db_codepage')
 						),
 						array(
-							'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
-							'class'	=> 'greybg1 white'
+							'class'	=> 'ui-widget-header ui-corner-all'
 						)
 					)
 				).
@@ -129,14 +128,13 @@ if (isset($Config->routing['current'][2])) {
 							(isset($Config->routing['current'][4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $Config->routing['current'][4])) : '')
 						),
 						array(
-							'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
-							'class'	=> 'greybg2'
+							'class'	=> 'ui-state-highlight ui-corner-all'
 						)
 					)
 				),
 				array(
 					'style'	=> 'width: 100%;',
-					'class'	=> 'admin_table r-table'
+					'class'	=> 'admin_table center_all'
 				)
 			).
 			$a->button(
@@ -161,8 +159,7 @@ if (isset($Config->routing['current'][2])) {
 						(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['name'] : $Config->db[$Config->routing['current'][3]]['name']).
 						' ('.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['host'] : $Config->db[$Config->routing['current'][3]]['host']).
 						'/'.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['type'] : $Config->db[$Config->routing['current'][3]]['type']).
-						')</b>?',
-						array('style'	=> 'text-align: center;')
+						')</b>?'
 					)
 				).
 				$a->tr(
@@ -173,13 +170,12 @@ if (isset($Config->routing['current'][2])) {
 						$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $Config->routing['current'][3])).
 						(isset($Config->routing['current'][4]) ?
 						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $Config->routing['current'][4]))
-						: ''),
-						array('style'	=> 'text-align: center;')
+						: '')
 					)
 				),
 				array(
 					'style'	=> 'width: 100%',
-					'class'	=> 'admin_table'
+					'class'	=> 'admin_table center_all'
 				)
 			)
 		);
@@ -209,8 +205,7 @@ if (isset($Config->routing['current'][2])) {
 				$L->db_codepage
 			),
 			array(
-				'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
-				'class'	=> 'greybg1 white'
+				'class'	=> 'ui-widget-header ui-corner-all'
 			)
 		)
 	);
@@ -226,7 +221,7 @@ if (isset($Config->routing['current'][2])) {
 					),
 					array(
 						'href'		=> $a->action.'/add/'.$i,
-						'class'		=> 'black'
+						'class'		=> 'nul'
 					)
 				).($i ? 
 				$a->a(
@@ -238,7 +233,7 @@ if (isset($Config->routing['current'][2])) {
 					),
 					array(
 						'href'		=> $a->action.'/edit/'.$i,
-						'class'		=> 'black'
+						'class'		=> 'nul'
 					)
 				).
 				$a->a(
@@ -250,7 +245,7 @@ if (isset($Config->routing['current'][2])) {
 					),
 					array(
 						'href'		=> $a->action.'/delete/'.$i,
-						'class'		=> 'black'
+						'class'		=> 'nul'
 					)
 				) : '').
 				$a->a(
@@ -262,12 +257,12 @@ if (isset($Config->routing['current'][2])) {
 					),
 					array(
 						'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'\', true);',
-						'class'			=> 'black'
+						'class'			=> 'nul'
 					)
 				),
 				array(
-					'style'	=> 'text-align: left;',
-					'class'	=> 'greybg2'.($i ? '' : ' green')
+					'style'	=> 'text-align: left !important;',
+					'class'	=> 'ui-state-highlight ui-corner-all'.($i ? '' : ' green')
 				)
 			).
 			$a->td(
@@ -280,8 +275,7 @@ if (isset($Config->routing['current'][2])) {
 					$i	? $db['codepage']	: $DB_CODEPAGE
 				),
 				array(
-					'style'	=> 'text-align: center; vertical-align: middle;',
-					'class'	=> 'greybg2'.($i ? '' : ' green')
+					'class'	=> 'ui-state-highlight ui-corner-all'.($i ? '' : ' green')
 				)
 			)
 		);
@@ -298,7 +292,7 @@ if (isset($Config->routing['current'][2])) {
 							),
 							array(
 								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m,
-								'class'		=> 'black'
+								'class'		=> 'nul'
 							)
 						).
 						$a->a(
@@ -310,7 +304,7 @@ if (isset($Config->routing['current'][2])) {
 							),
 							array(
 								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
-								'class'		=> 'black'
+								'class'		=> 'nul'
 							)
 						).
 						$a->a(
@@ -322,11 +316,12 @@ if (isset($Config->routing['current'][2])) {
 							),
 							array(
 								'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'/'.$m.'\', true);',
-								'class'			=> 'black'
+								'class'			=> 'nul'
 							)
 						),
 						array(
-							'class'	=> 'greybg3'
+							'style'	=> 'text-align: right !important;',
+							'class'	=> 'ui-widget-shadow'
 						)
 					).
 					$a->td(
@@ -339,8 +334,7 @@ if (isset($Config->routing['current'][2])) {
 							$mirror['codepage']
 						),
 						array(
-							'style'	=> 'text-align: center; vertical-align: middle;',
-							'class'	=> 'greybg3'
+							'class'	=> 'ui-widget-shadow'
 						)
 					)
 				);
@@ -360,18 +354,18 @@ if (isset($Config->routing['current'][2])) {
 					).$a->br(),
 					array(
 						'colspan'	=> 7,
-						'style'		=> 'text-align: left;'
+						'style'		=> 'text-align: left !important;;'
 					)
 				)
 			).
 			$a->tr(
-				$a->td($a->info('db_balance'), array('colspan' => 4)).
+				$a->td($a->info('db_balance'), array('colspan' => 4, 'style'	=> 'text-align: right !important;')).
 				$a->td(
 					$a->input(
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[db_balance]',
-							'checked'		=> intval($Config->core['db_balance']),
+							'checked'		=> (int)$Config->core['db_balance'],
 							'value'			=> array(1, 0),
 							'class'			=> array('form_element'),
 							'in'			=> array($L->on, $L->off)
@@ -384,17 +378,17 @@ if (isset($Config->routing['current'][2])) {
 							'value'			=> 'config'
 						)
 					),
-					array('colspan' => 3)
+					array('colspan' => 3, 'style'	=> 'text-align: left !important;')
 				)
 			).
 			$a->tr(
-				$a->td($a->info('maindb_for_write'), array('colspan' => 4)).
+				$a->td($a->info('maindb_for_write'), array('colspan' => 4, 'style'	=> 'text-align: right !important;')).
 				$a->td(
 					$a->input(
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[maindb_for_write]',
-							'checked'		=> intval($Config->core['maindb_for_write']),
+							'checked'		=> (int)$Config->core['maindb_for_write'],
 							'value'			=> array(1, 0),
 							'class'			=> array('form_element'),
 							'in'			=> array($L->on, $L->off)
@@ -407,12 +401,12 @@ if (isset($Config->routing['current'][2])) {
 							'value'			=> 'config'
 						)
 					),
-					array('colspan' => 3)
+					array('colspan' => 3, 'style'	=> 'text-align: left !important;')
 				)
 			),
 			array(
-				'style'	=> 'text-align: center; width: 100%;',
-				'class'	=> 'admin_table r-table'
+				'style'	=> 'width: 100%;',
+				'class'	=> 'admin_table center_all'
 			)
 		)
 	);

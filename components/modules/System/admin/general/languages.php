@@ -43,7 +43,7 @@ $a->content(
 						'selected' => $Config->core['active_languages'],
 						'size' => 5,
 						'add' => ' multiple',
-						'onChange' => '$(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').attr(\'selected\', \'selected\');',
+						'onChange' => '$(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').prop(\'selected\', true);',
 						'class' => 'form_element'
 					)
 				)
@@ -56,7 +56,7 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[multilanguage]',
-						'checked'		=> intval($Config->core['multilanguage']),
+						'checked'		=> (int)$Config->core['multilanguage'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off),
 					)
@@ -70,14 +70,14 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[allow_change_language]',
-						'checked'		=> intval($Config->core['allow_change_language']),
+						'checked'		=> (int)$Config->core['allow_change_language'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off)
 					)
 				)
 			)
 		),
-		array('class' => 'admin_table')
+		array('class' => 'admin_table left_even right_odd')
 	)
 );
 unset($a);

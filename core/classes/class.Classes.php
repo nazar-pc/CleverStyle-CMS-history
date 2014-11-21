@@ -35,17 +35,15 @@ class Classes {
 								$this->LoadedObjects[$class[2]] = $class[2];
 								$$class[2] = new $class[0]();
 							}
-							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage(true));
+							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
 						} else {
 							global $$class[0];
 							if (!is_object($$class[0])) {
 								$this->LoadedObjects[$class[0]] = $class[0];
 								$$class[0] = new $class[0]();
 							}
-							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage(true));
+							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
 						}
-					} else {
-						$this->LoadedObjects[$class[0]] = $class[0];
 					}
 				} else {
 					$Error->process('{%CANT_LOAD_CLASS%} '.$class[0]);

@@ -1,10 +1,10 @@
 <?php
 global $L;
-//Интерфейс пользователя
+//Файл перевода Русского языка
 $L->__set(true,		$L->on = 'Вкл.');
 $L->__set(false,	$L->off = 'Выкл.');
 $L->translate = array(
-	'clang'				=> 'ru',
+	'clang'				=> 'ru', //Краткий формат названия языка (обязательно!)
 	'home'				=> 'Главная',
 	'page_generated'	=> 'Страница сгенерирована за',
 	'queries_to_db'		=> 'запрос(ов) в БД',
@@ -25,6 +25,21 @@ $L->translate = array(
 	'success'			=> 'успешно',
 	'fail'				=> 'безуспешно',
 	'empty'				=> 'Пусто',
+	'state'				=> 'Состояние',
+	'System'			=> 'Система',
+	'enable'			=> 'Включить',
+	'disable'			=> 'Отключить',
+	'enabled'			=> 'Включен',
+	'disabled'			=> 'Отключен',
+	'deleted'			=> 'Удален',
+	'remove'			=> 'Удалить',
+	'removed'			=> 'Удален',
+	'install'			=> 'Установить',
+	'uninstall'			=> 'Удалить',
+	'installed'			=> 'Установлен',
+	'uninstalled'		=> 'Удален',
+	'not_installed'		=> 'не установлен',
+	'settings'			=> 'Настройки',
 
 //Администрация
 	'administration'		=> 'Администрация',
@@ -201,8 +216,8 @@ $L->translate = array(
 	'update_modules_list'		=> 'Обновить список модулей',
 	'update_modules_list_info'	=> 'ВНИМАНИЕ! Отсутствующие модули будут удалены из списка со всеми настройками!',
 	'module_name'				=> 'Название модуля',
-	'update_modules_list'		=> 'Обновить список модулей',
-	'update_modules_list'		=> 'Обновить список модулей',
+	'missing_users_columns'		=> 'Недостающие колонки в таблице пользователей',
+	'click_to_fix'				=> 'Кликните для исправления',
 	'update_modules_list'		=> 'Обновить список модулей',
 	'update_modules_list'		=> 'Обновить список модулей',
 	'update_modules_list'		=> 'Обновить список модулей',

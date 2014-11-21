@@ -92,7 +92,7 @@ class Config {
 					define('ADMIN', false);
 				}
 			}
-			if (isset($r['current'][0]) && ((!empty($r['out']) && in_array($r['current'][0], $r['out'])) || $r['current'][0] == 'System')) {
+			if (isset($r['current'][0]) && in_array($r['current'][0], array_keys($this->components['modules']))) {
 				if (!defined('MODULE')) {
 					define('MODULE', array_shift($r['current']));
 				}

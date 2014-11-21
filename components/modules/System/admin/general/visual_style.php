@@ -32,7 +32,7 @@ $a->content(
 						'name' => 'core[active_themes][]',
 						'selected' => $Config->core['active_themes'],
 						'size' => 5,
-						'add' => ' multiple onChange="$(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').click();"',
+						'add' => ' multiple onChange="$(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').prop(\'selected\', true); $(\'#apply_settings\').click();"',
 						'class' => 'form_element'
 					)
 				)
@@ -63,14 +63,14 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[allow_change_theme]',
-						'checked'		=> intval($Config->core['allow_change_theme']),
+						'checked'		=> (int)$Config->core['allow_change_theme'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off)
 					)
 				)
 			)
 		),
-		array('class' => 'admin_table')
+		array('class' => 'admin_table left_even right_odd')
 	)
 );
 unset($a);

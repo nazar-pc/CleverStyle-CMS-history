@@ -17,7 +17,7 @@ abstract class HTML {
 			$this->Content .= $add;
 		}
 	}
-	//Функция для обертки контента парными тегами
+	//Метод для обертки контента парными тегами
 	function wrap ($data = array()) {
 		$in = $add = '';
 		$tag = 'div';
@@ -29,6 +29,14 @@ abstract class HTML {
 			}
 			$in = $data['in'];
 			unset($data['in']);
+		}	
+		if (isset($data['data-title'])) {
+			$data_title = $data['data-title'];
+			if (isset($data['class'])) {
+				$data['class'] .= ' info';
+			} else {
+				$data['class'] = 'info';
+			}
 		}
 		if (isset($data['tag'])) {
 			$tag = $data['tag'];
@@ -37,6 +45,10 @@ abstract class HTML {
 		if (isset($data['add'])) {
 			$add = ' '.$data['add'];
 			unset($data['add']);
+		}
+		if (isset($data['async'])) {
+			$add .= ' async';
+			unset($data['async']);
 		}
 		if (isset($data['defer'])) {
 			$add .= ' defer';
@@ -56,13 +68,13 @@ abstract class HTML {
 		}
 		if (isset($data['class']) && empty($data['class'])) {
 			unset($data['class']);
-		}		
+		}
 		if (isset($data['style']) && empty($data['style'])) {
 			unset($data['style']);
-		}		
+		}
 		if (isset($data['onClick']) && empty($data['onClick'])) {
 			unset($data['onClick']);
-		}		
+		}
 		asort($data);
 		foreach ($data as $key => $value) {
 			if (empty($key)) {
@@ -72,19 +84,11 @@ abstract class HTML {
 		}
 		return '<'.$tag.$add.'>'.($level ? "\n" : '').$this->level($in ? $in.($level ? "\n" : '') : ($in === false ? '' : ($level ? "&nbsp;\n" : '')), $level).'</'.$tag.'>'.($level ? "\n" : '');
 	}
-	//Функция для простой обертки контента парными тегами
+	//Метод для простой обертки контента парными тегами
 	function swrap ($in = '', $data = '', $tag = 'div') {
-		if ($tag != 'label' && isset($data['data-title'])) {
-			$data_title = $data['data-title'];
-			unset($data['data-title']);
-			return $this->label(
-				$this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag))),
-				array('data-title' => $data_title, 'class' => 'info')
-			);
-		}
-		return	$this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
+		return $this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
 	}
-	//Функция для разворота массива навыворот для select и radio
+	//Метод для разворота массива навыворот для select и radio
 	function array_flip ($in, $num) {
 		$options = array();
 		foreach ($in as $i => $v) {
@@ -100,7 +104,7 @@ abstract class HTML {
 		}
 		return $options;
 	}
-	//Функция для обертки контента непарными тегами
+	//Метод для обертки контента непарными тегами
 	function iwrap ($data = array()) {
 		$in = $add = '';
 		$tag = 'input';
@@ -148,17 +152,10 @@ abstract class HTML {
 			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
-		if (isset($data_title)) {
-			return $this->label(
-				'<'.$tag.$add.'>'.$in."\n",
-				array('data-title' => $data_title, 'class' => 'info')
-			);
-
-		} else {
-			return '<'.$tag.$add.'>'.$in."\n";
-		}
+		$return = '<'.$tag.$add.'>'.$in."\n";
+		return isset($data_title) ? $this->label($return, array('data-title' => $data_title)) : $return;
 	}
-	
+
 	function html ($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
@@ -175,7 +172,7 @@ abstract class HTML {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->tr($this->td($item), $data2);
+				$temp .= $this->tr($this->td($item, $data2));
 			}
 			return $this->swrap($temp, $data, __FUNCTION__);
 		} else {
@@ -212,16 +209,6 @@ abstract class HTML {
 	}
 	function label ($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
-	}
-	function info ($in = '', $data = array()) {
-		global $L;
-		$info = $in.'_info';
-		if (isset($data['class'])) {
-			$data['class'] .= ' info';
-		} else {
-			$data['class'] = 'info';
-		}
-		return $this->label($L->$in, array_merge(array('data-title' => $L->$info), $data));
 	}
 	function input ($in = array()) {
 		if (isset($in['type']) && $in['type'] == 'radio') {
@@ -446,6 +433,12 @@ abstract class HTML {
 	function hr ($in = array()) {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
+	}
+	
+	function info ($in = '', $data = array()) {
+		global $L;
+		$info = $in.'_info';
+		return $this->label($L->$in, array_merge(array('data-title' => $L->$info), $data));
 	}
 }
 ?>
