@@ -22,6 +22,7 @@ if (defined('DOMAIN')) {
 		header("HTTP/1.0 404 Not Found");
 		exit;
 	}
+	unset($MULTIDOMAIN, $MULTIDOMAIN_CURRENT, $GLOBALS['MULTIDOMAIN'], $GLOBALS['MULTIDOMAIN_CURRENT']);
 } else {
 	define('DOMAIN', 'cscms.org');
 }
@@ -29,7 +30,6 @@ if (DOMAIN !== 'cscms.org') {
 	header("HTTP/1.0 404 Not Found");
 	exit;
 }
-unset($MULTIDOMAIN, $MULTIDOMAIN_CURRENT, $GLOBALS['MULTIDOMAIN'], $GLOBALS['MULTIDOMAIN_CURRENT']);
 $ADMIN			= 'admin';
 $API			= 'api';
 $DB_HOST		= 'localhost';

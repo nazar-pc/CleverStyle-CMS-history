@@ -3,10 +3,9 @@ global $Config, $Admin, $L, $ADMIN;
 $a = &$Admin;
 $rc = &$Config->routing['current'];
 $test_dialog = true;
-$a->buttons = false;
 if (isset($rc[2])) {
-	$a->buttons = true;
 	$a->apply_button = false;
+	$a->cancel_back = true;
 	if ($rc[2] == 'add' || ($rc[2] == 'edit' && isset($rc[3]))) {
 		if ($rc[2] == 'edit') {
 			$storage = &$Config->storage[$rc[3]];
@@ -101,33 +100,48 @@ if (isset($rc[2])) {
 				)
 			)
 		);
-		$a->post_buttons .= $a->button(
-				$L->cancel,
-				array(
-					'type'		=> 'button',
-					'onClick'	=> 'history.go(-1);'
-				)
-			);
 		if (isset($storage)) {
 			unset($storage);
 		}
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
-		$a->cancel_back = true;
-		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
-		$a->content(
-			$a->p(
-				$L->sure_to_delete.' '.$L->storage.' '.
-				$a->b($Config->storage[$rc[3]]['host'].'/'.$Config->storage[$rc[3]]['connection']).'?'.
-				$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-				$a->input(array('type'	=> 'hidden',	'name'	=> 'storage',	'value'		=> $rc[3])),
+		$content = array();
+		foreach ($Config->components['modules'] as $module => $mdata) {
+			if (isset($mdata['storage']) && is_array($mdata['storage'])) {
+				foreach ($mdata['storage'] as $storage) {
+					if ($storage == $rc[3]) {
+						$content[] = $a->b($module);
+						unset($storage);
+						break;
+					}
+				}
+			}
+		}
+		unset($module, $mdata);
+		if (!empty($content)) {
+			global $Page;
+			$Page->Top .= $a->div(
+				$L->storage_used_by_modules.': '.implode(', ', $content),
 				array(
-					'style'	=> 'width: 100%',
-					'class'	=> 'center_all'
+					'class'	=> 'red ui-state-highlight'
 				)
-			).
-			$a->button(array('in'	=> $L->yes,		'type'	=> 'submit'))
-		);
+			);
+		} else {
+			$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
+			$a->content(
+				$a->p(
+					$L->sure_to_delete.' '.$L->storage.' '.
+					$a->b($Config->storage[$rc[3]]['host'].'/'.$Config->storage[$rc[3]]['connection']).'?'.
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'storage',	'value'		=> $rc[3])),
+					array(
+						'style'	=> 'width: 100%',
+						'class'	=> 'center_all'
+					)
+				).
+				$a->button(array('in'	=> $L->yes,		'type'	=> 'submit'))
+			);
+		}
 	} elseif ($rc[2] == 'test') {
 		interface_off();
 		$test_dialog = false;

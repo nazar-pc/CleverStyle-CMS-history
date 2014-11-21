@@ -76,7 +76,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	$db_json = (array)json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
+	$db_json = json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'), true);
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
 		$db_list .= $a->td(
@@ -148,7 +148,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	$storage_json = (array)json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
+	$storage_json = json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'), true);
 	foreach ($storage_json as $storage) {
 		$storage_translate = $rc[3].'_storage_'.$storage;
 		$storage_list .= $a->td(
@@ -219,7 +219,7 @@ if ($mode && $rc[2] == 'install') {
 		$addition_state = $action = '';
 		$db_json = array();
 		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
-			$db_json = (array)json_decode(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
+			$db_json = json_decode(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'), true);
 			$lost_columns = array();
 			foreach ($db_json['users'] as $db_users_item) {
 				if (!in_array($db_users_item, $db_users_items)) {
@@ -250,12 +250,11 @@ if ($mode && $rc[2] == 'install') {
 						)
 					);
 				}
-				$addition_state .= $a->span(
-					$a->icon('link'),
+				$addition_state .= $a->icon(
+					'link',
 					array(
 						'data-title'	=> $L->API_exists.$a->br().(file_exists(MODULES.DS.$module.DS.$API.DS.'readme.txt') ? $L->click_to_view_details : ''),
-						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');',
-						'style'			=> 'display: inline-block;'
+						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
 					)
 				);
 			}
@@ -270,12 +269,11 @@ if ($mode && $rc[2] == 'install') {
 						'title'			=> $module.' -> '.$L->information_about_module
 					)
 				).
-				$a->span(
-					$a->icon('info'),
+				$a->icon(
+					'info',
 					array(
 						'data-title'	=> $L->information_about_module.$a->br().$L->click_to_view_details,
-						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');',
-						'style'			=> 'display: inline-block; border-spacing: 0px;'
+						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');'
 					)
 				);
 			}

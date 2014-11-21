@@ -62,20 +62,6 @@ $a->content(
 					)
 				)
 			)
-		).
-		$a->tr(
-			$a->td($a->info('allow_change_language')).
-			$a->td(
-				$a->input(
-					array(
-						'type'			=> 'radio',
-						'name'			=> 'core[allow_change_language]',
-						'checked'		=> (int)$Config->core['allow_change_language'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off)
-					)
-				)
-			)
 		),
 		array('class' => 'admin_table left_even right_odd')
 	)

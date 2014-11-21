@@ -152,31 +152,55 @@ if (isset($rc[2])) {
 		}
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
-		$a->cancel_back = true;
-		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
-		$a->content(
-			$a->p(
-				$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' '.
-				$a->b(
-					isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']
-				).
-				' ('.
-				(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['host'] : $Config->db[$rc[3]]['host']).
-				'/'.
-				(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['type'] : $Config->db[$rc[3]]['type']).
-				')?'.
-				$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-				$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $rc[3])).
-				(isset($rc[4]) ?
-					$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
-				: ''),
+		$content = array();
+		if (!isset($rc[4])) {
+			foreach ($Config->components['modules'] as $module => $mdata) {
+				if (isset($mdata['db']) && is_array($mdata['db'])) {
+					foreach ($mdata['db'] as $db) {
+						if ($db == $rc[3]) {
+							$content[] = $a->b($module);
+							unset($db);
+							break;
+						}
+					}
+				}
+			}
+		unset($module, $mdata);
+		}
+		if (!empty($content)) {
+			global $Page;
+			$Page->Top .= $a->div(
+				$L->db_used_by_modules.': '.implode(', ', $content),
 				array(
-					'style'	=> 'width: 100%',
-					'class'	=> 'center_all'
+					'class'	=> 'red ui-state-highlight'
 				)
-			).
-			$a->button(array('in' => $L->yes, 'type' => 'submit'))
-		);
+			);
+		} else {
+			$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
+			$a->content(
+				$a->p(
+					$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' '.
+					$a->b(
+						isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']
+					).
+					' ('.
+					(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['host'] : $Config->db[$rc[3]]['host']).
+					'/'.
+					(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['type'] : $Config->db[$rc[3]]['type']).
+					')?'.
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $rc[3])).
+					(isset($rc[4]) ?
+						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
+					: ''),
+					array(
+						'style'	=> 'width: 100%',
+						'class'	=> 'center_all'
+					)
+				).
+				$a->button(array('in' => $L->yes, 'type' => 'submit'))
+			);
+		}
 	} elseif ($rc[2] == 'test') {
 		interface_off();
 		$test_dialog = false;

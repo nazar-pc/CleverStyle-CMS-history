@@ -43,7 +43,7 @@ class HTTP extends StorageAbstract {
 			"POST /Storage.php HTTP/1.1\r\n".
 			'Host: '.$this->host."\r\n".
 			"Content-type: application/x-www-form-urlencoded\r\n".
-			"Content-length:".(mb_strlen($data))."\r\n".
+			"Content-length:".(strlen($data))."\r\n".
 			"Accept:*/*\r\n".
 			"User-agent: CleverStyle CMS\r\n".
 			'Authorization: Basic '.base64_encode($this->user.':'.$this->password)."\r\n\r\n".

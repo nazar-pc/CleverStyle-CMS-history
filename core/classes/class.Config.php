@@ -48,20 +48,23 @@ class Config {
 		global $ADMIN, $API;
 		$this->server['url'] = urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$this->server['protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-		if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $this->core['url']) === 0) {
-			$uri_replace = explode('//', $this->core['url'], 2);
-			$this->server['base_url'] = &$this->core['url'];
+		$core_url = explode(';', $this->core['url'], 2);
+		if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $core_url[0]) === 0) {
+			$url_replace = explode('//', $core_url[0], 2);
+			$this->server['base_url'] = $core_url[0];
+			unset($core_url);
 		} elseif (!empty($this->core['mirrors_url'])) {
 			$mirrors_url = explode("\n", $this->core['mirrors_url']);
 			foreach ($mirrors_url as $i => $mirror) {
-				if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $mirror) === 0) {
-					$uri_replace = explode('//', $mirror, 2);
-					$this->server['base_url'] = &$mirror;
+				$mirror_url = explode(';', $mirror, 2);
+				if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $mirror_url[0]) === 0) {
+					$url_replace = explode('//', $mirror_url[0], 2);
+					$this->server['base_url'] = $mirror_url[0];
 					$this->mirror_index = $i;
-					unset($i, $mirror, $mirrors_url);
 					break;
 				}
 			}
+			unset($i, $mirror, $mirror_url, $mirrors_url);
 			if ($this->mirror_index == -1) {
 				global $Error, $L;
 				$this->server['base_url'] = '';
@@ -72,7 +75,7 @@ class Config {
 			$this->server['base_url'] = '';
 			$Error->process($L->mirror_not_allowed, 'stop');
 		}
-		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
+		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
 		$r['current'] = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
 		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
@@ -135,7 +138,7 @@ class Config {
 		$langlist = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?\.php$/i', 'f');
 		foreach ($langlist as $lang) {
 			if (file_exists(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json')) {
-				$lang_data = (array)json_decode(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'));
+				$lang_data = json_decode(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'), true);
 				$this->core['languages'][mb_substr($lang, 5, -4)] = $lang_data['name'];
 			} else {
 				$this->core['languages'][mb_substr($lang, 5, -4)] = ucfirst(mb_substr($lang, 5, -4));

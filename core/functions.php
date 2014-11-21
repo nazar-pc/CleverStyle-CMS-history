@@ -146,9 +146,10 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		return false;
 	}
 	if ($sort !== false) {
-		$sort == mb_strtolower($sort);
+		$sort = mb_strtolower($sort);
+		$sort_x = explode('|', $sort);
 	}
-	if ($sort !== false && mb_strstr($sort, 'date') == 0) {
+	if (isset($sort_x) && $sort_x[0] == 'date') {
 		$prepare = function (&$list, &$tmp, $link) {
 			$list[filectime($link)] = $tmp;
 		};
@@ -207,10 +208,10 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 	}
 	closedir($dirc);
 	if (empty($list)) {
-		return array();
+		return $list;
 	} else {
-		if ($sort !== false) {
-			if ($sort[0] == 'name') {
+		if (isset($sort_x)) {
+			if ($sort_x[0] == 'name') {
 				if (isset($sort_x[1]) && $sort_x[1] == 'desc') {
 					natcasesort($list);
 				} else {
@@ -224,6 +225,7 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 					ksort($list);
 				}
 			}
+			unset($sort_x);
 		}
 		return $list;
 	}

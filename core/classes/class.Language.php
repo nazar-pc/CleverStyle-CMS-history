@@ -39,7 +39,7 @@ class Language {
 		if ($language === $this->clanguage) {
 			return true;
 		}
-		if (!is_object($Config) || ($Config->core['allow_change_language'] && in_array($language, $Config->core['active_languages']))) {
+		if (!is_object($Config) || ($Config->core['multilanguage'] && in_array($language, $Config->core['active_languages']))) {
 			global $Cache;
 			$this->clanguage = $language;
 			if ($translate = $Cache->get('lang.'.$this->clanguage)) {
@@ -49,8 +49,8 @@ class Language {
 				if (!include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
 					return false;
 				} else {
-					if (file_exists(LANGUAGES.'/'.$this->clanguage.'.json')) {
-						$lang_data = (array)json_decode(file_get_contents(LANGUAGES.'/'.$this->clanguage.'.json'));
+					if (file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
+						$lang_data = json_decode(file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'), true);
 						$this->clang = $lang_data['short_format'];
 						unset($lang_data);
 					} else {

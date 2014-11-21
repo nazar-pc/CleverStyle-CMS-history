@@ -42,7 +42,7 @@ if (isset($Config->routing['current'][2])) {
 							'type'			=> 'number',
 							'name'			=> 'core[disk_cache_size]',
 							'value'			=> (int)$Config->core['disk_cache_size'],
-							'min'			=> 1,
+							'min'			=> 0,
 							'style'			=> 'width: 90px;',
 							'class'			=> 'form_element'
 						)

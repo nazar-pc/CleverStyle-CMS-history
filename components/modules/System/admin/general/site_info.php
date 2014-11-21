@@ -22,7 +22,6 @@ $a->content(
 			$a->td(
 				$a->input(
 					array(
-						'type'	=> 'url',
 						'name'	=> 'core[url]',
 						'value' => $Config->core['url'],
 						'class'	=> 'form_element',
@@ -79,7 +78,7 @@ $a->content(
 										'name'	=> 'core[mirrors_url]',
 										'style'	=> 'height: 4em; white-space: nowrap; margin-right: 2%;',
 										'class'	=> 'form_element',
-										'cols'	=> 25
+										'cols'	=> 30
 									)
 								),
 								$a->textarea(
@@ -88,7 +87,7 @@ $a->content(
 										'name'	=> 'core[mirrors_cookie_domain]',
 										'style'	=> 'height: 4em; white-space: nowrap; margin-right: 2%;',
 										'class'	=> 'form_element',
-										'cols'	=> 15
+										'cols'	=> 20
 									)
 								),
 								$a->textarea(

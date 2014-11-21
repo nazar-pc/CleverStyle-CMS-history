@@ -27,7 +27,7 @@ class Storage {
 		//Если подключается локальное хранилище
 		if ($connection == 'core' || $connection == 0) {
 			$storage['connection'] = 'StorageLocal';
-			$storage['url'] = $Config->server['base_url'];
+			$storage['url'] = url_by_source(STORAGE);
 			$storage['host'] = '';
 		} else {
 			//Загружаем настройки
