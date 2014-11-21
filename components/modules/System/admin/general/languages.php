@@ -42,7 +42,8 @@ $a->content(
 						'name' => 'core[active_languages][]',
 						'selected' => $Config->core['active_languages'],
 						'size' => 5,
-						'add' => ' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').attr(\'selected\', \'selected\');"',
+						'add' => ' multiple',
+						'onChange' => '$(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').attr(\'selected\', \'selected\');',
 						'class' => 'form_element'
 					)
 				)
@@ -57,7 +58,7 @@ $a->content(
 						'name'			=> 'core[multilanguage]',
 						'checked'		=> intval($Config->core['multilanguage']),
 						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off)
+						'in'			=> array($L->on, $L->off),
 					)
 				)
 			)

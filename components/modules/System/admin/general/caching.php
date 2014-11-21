@@ -96,7 +96,7 @@ if (isset($Config->routing['current'][2])) {
 				)
 			).
 			$a->tr(
-				$a->td($L->zlib_coompression_level).
+				$a->td($L->zlib_compression_level).
 				$a->td(
 					$a->input(
 						array(
@@ -152,13 +152,13 @@ if (isset($Config->routing['current'][2])) {
 				$a->td(
 					$a->button(
 						$L->clean_settings_cache,
-						array('onMouseDown' => 'javascript: admin_cache(\'#clean_cache\', \''.$a->action.'/cache/nointerface\');')
+						array('onMouseDown' => 'admin_cache(\'#clean_cache\', \''.$a->action.'/cache/nointerface\');')
 					)
 				).
 				$a->td(
 					$a->button(
 						$L->clean_scripts_styles_cache,
-						array('onMouseDown' => 'javascript: admin_cache(\'#clean_pcache\', \''.$a->action.'/pcache/nointerface\');')
+						array('onMouseDown' => 'admin_cache(\'#clean_pcache\', \''.$a->action.'/pcache/nointerface\');')
 					)
 				)
 			).

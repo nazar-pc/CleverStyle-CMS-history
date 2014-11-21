@@ -26,7 +26,6 @@ if (isset($_POST['edit_settings'])) {
 	}
 	if (strval($_POST['edit_settings']) == 'apply') {
 		global $Cache;
-		$Cache->disk = true;
 		if ($Config->rebuild_cache()) {
 			$Config->init();
 			if (isset($_POST['visual_style'])) {

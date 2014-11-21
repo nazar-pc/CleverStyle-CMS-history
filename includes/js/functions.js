@@ -76,7 +76,7 @@ function menuadmin (item, direct_link) {
 			if (!direct_link) {
 				$('#admin_form').attr({action: url});
 			}
-			$('#admin_form > #save_settings').click();
+			$('#save_settings').click();
 		} else {
 			if (confirm(continue_transfer)) {
 				document.location.href = url;

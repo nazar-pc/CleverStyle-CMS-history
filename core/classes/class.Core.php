@@ -28,45 +28,45 @@ class Core {
 	}
 	//Инициализация шифрования
 	function crypt_open ($name, $key, $iv, $td = false) {
-		if ($this->support && !empty($name) && !empty($key) && !empty($iv)) {
-			$this->key[$name] = $key;
-			$this->iv[$name] = $iv;
-			if ($td === false) {
-				$this->td[$name] = &$td['core'];
-			} else {
-				$this->td[$name] = $td;
-			}
-			
+		if (!$this->support || empty($name) || empty($key) || empty($iv)) {
+			return;
+		}
+		$this->key[$name] = $key;
+		$this->iv[$name] = $iv;
+		if ($td === false) {
+			$this->td[$name] = &$td['core'];
+		} else {
+			$this->td[$name] = $td;
 		}
 	}
 	//Метод шифрования данных
 	function encrypt ($data, $name = 'core') {
-		if ($this->support) {
-			mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
-			$encrypted = mcrypt_generic($this->td[$name], serialize(array('key' => $this->key[$name], 'data' => $data)));
-			mcrypt_generic_deinit($this->td[$name]);
-			if ($encrypted) {
-				return $encrypted;
-			} else {
-				return false;
-			}
-		} else {
+		if (!$this->support) {
 			return $data;
+		}
+		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
+		$encrypted = mcrypt_generic($this->td[$name], serialize(array('key' => $this->key[$name], 'data' => $data)));
+		mcrypt_generic_deinit($this->td[$name]);
+		if ($encrypted) {
+			return $encrypted;
+		} else {
+			return false;
 		}
 	}
 	//Метод дешифрования данных
 	function decrypt ($data, $name = 'core') {
-		if ($this->support) {
-			mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
-			$decrypted = unserialize(mdecrypt_generic($this->td[$name], $data));
-			mcrypt_generic_deinit($this->td[$name]);
-			if (is_array($decrypted) && $decrypted['key'] == $this->key[$name]) {
-				return $decrypted['data'];
-			} else {
-				return false;
-			}
-		} else {
+		if (!$this->support) {
 			return $data;
+		}
+		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
+		errors(false);
+		$decrypted = unserialize(mdecrypt_generic($this->td[$name], $data));
+		errors();
+		mcrypt_generic_deinit($this->td[$name]);
+		if (is_array($decrypted) && $decrypted['key'] == $this->key[$name]) {
+			return $decrypted['data'];
+		} else {
+			return false;
 		}
 	}
 	//Отключение шифрования
@@ -78,12 +78,13 @@ class Core {
 	}
 	//Отключений функций шифрования
 	function __finish () {
-		if ($this->support) {
-			foreach ($this->td as $td) {
-				mcrypt_module_close($td);
-			}
-			unset($this->key, $this->iv, $this->td);
+		if (!$this->support) {
+			return;
 		}
+		foreach ($this->td as $td) {
+			mcrypt_module_close($td);
+		}
+		unset($this->key, $this->iv, $this->td);
 	}
 }
 ?>

@@ -4,6 +4,12 @@ a {
 a:hover {
 	border-bottom-style: solid;
 }
+a[href='#'] {
+	border-bottom-style: none;
+}
+a:hover[href='#'] {
+	border-bottom-style: inherit;
+}
 a[target="_blank"]::after, a[target="_new"]::after {
     content: "↑";
 }

@@ -1,6 +1,6 @@
 a {
-	color: #07f;
-	border-bottom: 1px dashed #07f;
+	color: #000;
+	border-bottom: 1px dashed #000;
 }
 .form_element, .form_element:hover, .form_element:focus {
 	background: #fff;

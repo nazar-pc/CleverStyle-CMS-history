@@ -52,7 +52,7 @@ class Admin extends Module {
 		foreach ($this->subparts as $subpart) {
 			$onClick = '';
 			if ($this->save) {
-				$onClick = 'javascript: menuadmin(\''.$subpart.'\', false); return false;';
+				$onClick = 'menuadmin(\''.$subpart.'\', false); return false;';
 			}
 			$this->menumore .= $this->a(
 									$L->$subpart,
@@ -67,7 +67,7 @@ class Admin extends Module {
 		}
 	}
 	function generate () {
-		global $Config, $L, $Page;
+		global $Config, $L, $Page, $Cache;
 		$this->mainsubmenu();
 		$this->menumore();
 		$Page->js(
@@ -88,7 +88,7 @@ class Admin extends Module {
 					).
 					($this->buttons ?
 						($this->apply_button ?
-							$this->button($L->apply,	array('name' => 'edit_settings', 'data-title'	=> $L->apply_info, 'id' => 'apply_settings', 'type' => 'submit', 'value' => 'apply'))
+							$this->button($L->apply,	array('name' => 'edit_settings', 'data-title'	=> $L->apply_info, 'id' => 'apply_settings', 'type' => 'submit', 'value' => 'apply',	'add'	=> $Cache->cache ? '' : ' disabled'))
 						: '')
 							.$this->button($L->save,	array('name' => 'edit_settings', 'data-title'	=> $L->save_info, 'id' => 'save_settings', 'type' => 'submit', 'value' => 'save'))
 						.($this->apply_button ?
@@ -100,7 +100,7 @@ class Admin extends Module {
 						'method'	=> 'post',
 						'action'	=> $this->action,
 						'id'		=> 'admin_form',
-						'onReset'	=> 'javascript: save = 0;',
+						'onReset'	=> 'save = 0;',
 						'class'		=> 'admin_form'
 					)
 				), 1

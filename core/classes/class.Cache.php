@@ -84,7 +84,7 @@ class Cache {
 		}
 	}
 	function disable () {
-		$this->disk = $this->memcache/* = $this->memcached*/ = false;
+		$this->cache = $this->disk = $this->memcache/* = $this->memcached*/ = false;
 	}
 	function __get ($item) {
 		if ($item == 'memcache') {

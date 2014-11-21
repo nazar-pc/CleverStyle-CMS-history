@@ -173,19 +173,11 @@ abstract class HTML {
 	}
 	function table ($in = array(), $data = array(), $data2 = array()) {
 		if (is_array($in)) {
-			if (empty($data2)) {
-				$temp = '';
-				foreach ($in as $item) {
-					$temp .= $this->tr($this->td($item));
-				}
-				return $this->swrap($temp, $data, __FUNCTION__);
-			} elseif (is_array($data)) {
-				$temp = '';
-				foreach ($in as $i => $item) {
-					$temp .= $this->tr($this->td($item).$this->td($data[$i]));
-				}
-				return $this->swrap($temp, $data, __FUNCTION__);
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->tr($this->td($item), $data2);
 			}
+			return $this->swrap($temp, $data, __FUNCTION__);
 		} else {
 			return $this->swrap($in, $data, __FUNCTION__);
 		}
@@ -436,6 +428,9 @@ abstract class HTML {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function u ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function span ($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function strong ($in = '', $data = array()) {

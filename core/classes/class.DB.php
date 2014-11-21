@@ -107,6 +107,11 @@ class DB {
 			unset($db);
 			//Ускоряем повторную операцию доступа к этой БД
 			$this->$connection = $this->connections[$connection];
+			if ($connection == 'core') {
+				$zero = 0;
+				$this->$zero = $this->$connection;
+				unset($zero);
+			}
 			return $this->connections[$connection];
 		//Если подключение не удалось - разрушаем соединение и пытаемся подключится к зеркалу
 		} else {
@@ -177,10 +182,9 @@ class DB {
 		}
 		unset($data);
 		if (is_array($db)) {
-			global $Error;
-			$Error->error = false;
+			errors(false);
 			$test = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'] ?: $DB_HOST, $db['codepage'] ?: $DB_CODEPAGE);
-			$Error->error = true;
+			errors();
 			return $test->connected;
 		} else {
 			return false;

@@ -27,14 +27,14 @@ if (isset($Config->routing['current'][2])) {
 				$a->tr(
 					$a->td(
 						array(
-							$Config->routing['current'][2] == 'add' ? $a->info('dbmirror') : false,
-							$a->info('dbhost'),
-							$a->info('dbtype'),
-							$a->info('dbprefix'),
-							$a->info('dbname'),
-							$a->info('dbuser'),
-							$a->info('dbpass'),
-							$a->info('dbcodepage')
+							$Config->routing['current'][2] == 'add' ? $a->info('db_mirror') : false,
+							$a->info('db_host'),
+							$a->info('db_type'),
+							$a->info('db_prefix'),
+							$a->info('db_name'),
+							$a->info('db_user'),
+							$a->info('db_password'),
+							$a->info('db_codepage')
 						),
 						array(
 							'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
@@ -142,8 +142,8 @@ if (isset($Config->routing['current'][2])) {
 			$a->button(
 				$L->test_connection,
 				array(
-					'type'		=> 'button',
-					'onClick'	=> 'javascript: db_test(\''.$a->action.'/test\');'
+					'type'			=> 'button',
+					'onMouseDown'	=> 'db_test(\''.$a->action.'/test\');'
 				)
 			)
 		);
@@ -157,7 +157,7 @@ if (isset($Config->routing['current'][2])) {
 			$a->table(
 				$a->tr(
 					$a->td(
-						$L->sure_to_delete.' '.$L->db.' <b>'.
+						$L->sure_to_delete.' '.(isset($Config->routing['current'][4]) ? $L->mirror.' '.$a->b($Config->routing['current'][3] ? $L->db.' '.$Config->db[$Config->routing['current'][3]]['name'] : $L->core_db).', ' : $L->db).' <b>'.
 						(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['name'] : $Config->db[$Config->routing['current'][3]]['name']).
 						' ('.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['host'] : $Config->db[$Config->routing['current'][3]]['host']).
 						'/'.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['type'] : $Config->db[$Config->routing['current'][3]]['type']).
@@ -168,7 +168,7 @@ if (isset($Config->routing['current'][2])) {
 				$a->tr(
 					$a->td(
 						$a->button(array('in'	=> $L->yes,		'type'	=> 'submit')).
-						$a->button(array('in'	=> $L->no,		'type'	=> 'button',	'onClick'	=> 'javascript: history.go(-1);')).
+						$a->button(array('in'	=> $L->no,		'type'	=> 'button',	'onClick'	=> 'history.go(-1);')).
 						$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
 						$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $Config->routing['current'][3])).
 						(isset($Config->routing['current'][4]) ?
@@ -201,12 +201,12 @@ if (isset($Config->routing['current'][2])) {
 		$a->td(
 			array(
 				$L->action,
-				$L->dbhost,
-				$L->dbtype,
-				$L->dbprefix,
-				$L->dbname,
-				$L->dbuser,
-				$L->dbcodepage
+				$L->db_host,
+				$L->db_type,
+				$L->db_prefix,
+				$L->db_name,
+				$L->db_user,
+				$L->db_codepage
 			),
 			array(
 				'style'	=> 'text-align: center; vertical-align: middle; padding-right: 5px;',
@@ -217,35 +217,61 @@ if (isset($Config->routing['current'][2])) {
 	foreach ($Config->db as $i => $db) {
 		$db_list .=	$a->tr(
 			$a->td(
-				array(
-					$a->a(
-						$L->add.' '.$L->mirror,
+				$a->a(
+					$a->button(
+						$a->span(array('class'	=> 'ui-icon ui-icon-plus')),
 						array(
-							'href'		=> $a->action.'/add/'.$i,
-							'class'		=> 'black'
-						)
-					).$a->br().($i ? 
-					$a->a(
-						$L->edit.' '.$L->db,
-						array(
-							'href'		=> $a->action.'/edit/'.$i,
-							'class'		=> 'black'
-						)
-					).$a->br().
-					$a->a(
-						$L->delete.' '.$L->db,
-						array(
-							'href'		=> $a->action.'/delete/'.$i,
-							'class'		=> 'black'
-						)
-					).$a->br() : '').
-					$a->a(
-						$L->test_connection,
-						array(
-							'href'		=> 'javascript: db_test(\''.$a->action.'/test/'.$i.'\', true);',
-							'class'		=> 'black'
+							'data-title'	=> $L->add.' '.$L->mirror
 						)
 					),
+					array(
+						'href'		=> $a->action.'/add/'.$i,
+						'class'		=> 'black'
+					)
+				).($i ? 
+				$a->a(
+					$a->button(
+						$a->span(array('class'	=> 'ui-icon ui-icon-wrench')),
+						array(
+							'data-title'	=> $L->edit.' '.$L->db
+						)
+					),
+					array(
+						'href'		=> $a->action.'/edit/'.$i,
+						'class'		=> 'black'
+					)
+				).
+				$a->a(
+					$a->button(
+						$a->span(array('class'	=> 'ui-icon ui-icon-minus')),
+						array(
+							'data-title'	=> $L->delete.' '.$L->db
+						)
+					),
+					array(
+						'href'		=> $a->action.'/delete/'.$i,
+						'class'		=> 'black'
+					)
+				) : '').
+				$a->a(
+					$a->button(
+						$a->span(array('class'	=> 'ui-icon ui-icon-signal-diag')),
+						array(
+							'data-title'	=> $L->test_connection
+						)
+					),
+					array(
+						'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'\', true);',
+						'class'			=> 'black'
+					)
+				),
+				array(
+					'style'	=> 'text-align: left;',
+					'class'	=> 'greybg2'.($i ? '' : ' green')
+				)
+			).
+			$a->td(
+				array(
 					$i	? $db['host']		: $DB_HOST,
 					$i	? $db['type']		: $DB_TYPE,
 					$i	? $db['prefix']		: $DB_PREFIX,
@@ -263,28 +289,48 @@ if (isset($Config->routing['current'][2])) {
 			if (is_array($mirror) && !empty($mirror)) {
 				$db_list .=	$a->tr(
 					$a->td(
-						array(
-							$a->a(
-								$L->edit.' '.$L->mirror,
+						$a->a(
+							$a->button(
+								$a->span(array('class'	=> 'ui-icon ui-icon-wrench')),
 								array(
-									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m,
-									'class'		=> 'black'
-								)
-							).$a->br().
-							$a->a(
-								$L->delete.' '.$L->mirror,
-								array(
-									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
-									'class'		=> 'black'
-								)
-							).$a->br().
-							$a->a(
-								$L->test_connection,
-								array(
-									'href'	=> 'javascript: db_test(\''.$a->action.'/test/'.$i.'/'.$m.'\', true);',
-									'class'		=> 'black'
+									'data-title'	=> $L->edit.' '.$L->mirror
 								)
 							),
+							array(
+								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m,
+								'class'		=> 'black'
+							)
+						).
+						$a->a(
+							$a->button(
+								$a->span(array('class'	=> 'ui-icon ui-icon-minus')),
+								array(
+									'data-title'	=> $L->delete.' '.$L->mirror
+								)
+							),
+							array(
+								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
+								'class'		=> 'black'
+							)
+						).
+						$a->a(
+							$a->button(
+								$a->span(array('class'	=> 'ui-icon ui-icon-signal-diag')),
+								array(
+									'data-title'	=> $L->test_connection
+								)
+							),
+							array(
+								'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'/'.$m.'\', true);',
+								'class'			=> 'black'
+							)
+						),
+						array(
+							'class'	=> 'greybg3'
+						)
+					).
+					$a->td(
+						array(
 							$mirror['host'],
 							$mirror['type'],
 							$mirror['prefix'],

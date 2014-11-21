@@ -410,7 +410,7 @@ class Page extends HTML {
 				'►'.$L->objects,
 				array(
 					'class' => 'notice',
-					'onClick' => 'javascript: $(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
+					'onClick' => '$(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
 				)
 			);
 			$debug_info =	$this->p(
@@ -454,7 +454,7 @@ class Page extends HTML {
 				'►'.$L->user_data,
 				array(
 					'class' => 'notice',
-					'onClick' => 'javascript: $(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
+					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
 				)
 			);
 			global $Classes, $timeload, $loader_init_memory;
@@ -473,7 +473,7 @@ class Page extends HTML {
 				'►'.$L->queries,
 				array(
 					'class' => 'notice',
-					'onClick' => 'javascript: $(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
+					'onClick' => '$(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
 				)
 			);
 			//Показываем только запросы в БД
@@ -564,7 +564,7 @@ class Page extends HTML {
 				'►'.$L->cookies,
 				array(
 					'class' => 'notice',
-					'onClick' => 'javascript: $(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
+					'onClick' => '$(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
 				)
 			);
 			$debug_info = $this->tr(

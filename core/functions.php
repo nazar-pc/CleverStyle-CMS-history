@@ -83,14 +83,20 @@ if (USE_CUSTOM) {
 }
 //Автозагрузка необходимых классов
 function __autoload ($class) {
-	require_x(CLASSES.DS.'class.'.$class.'.php', 1, false) || require_x(DB.DS.'db.'.$class.'.php', 1, false) || require_x(STORAGE.DS.'storage.'.$class.'.php', 1, false);
+	require_x(CLASSES.DS.'class.'.$class.'.php', true, false) || require_x(DB.DS.'db.'.$class.'.php', true, false) || require_x(STORAGE.DS.'storage.'.$class.'.php', true, false);
 }
+//Функция для корректной остановки выполнения из любого места движка
 function __finish () {
 	global $Classes;
 	if (is_object($Classes)) {
 		$Classes->__finish();
 	}
 	exit;
+}
+//Включение или отключение обработки ошибок
+function errors($in = true) {
+	global $Error;
+	is_object($Error) && $Error->error = (bool)$in;
 }
 //Функция для получения списка содержимого директории (и поддиректорий при необходимости)
 function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $DS = false) {
@@ -354,7 +360,7 @@ function server_api () {
 		return $L->indefinite;
 	}
 }
-//Проверка версии сервера Apache
+//Проверка версии веб-сервера Apache
 function apache_version () {
 	global $L;
 	ob_start();

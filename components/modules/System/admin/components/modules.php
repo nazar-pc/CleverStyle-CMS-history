@@ -2,36 +2,33 @@
 global $Config, $Admin, $L;
 $a = &$Admin;
 
+$modules_list = $a->tr(
+	$a->td(
+		$L->module_name,
+		array(
+			'style'	=> 'text-align: center; vertical-align: middle;',
+			'class'	=> 'greybg1 white'
+		)
+	)
+);
+foreach ($Config->components['modules'] as $module => $mdata) {
+	$modules_list .= $a->tr(
+		$a->td(
+			$module,
+			array(
+				'style'	=> 'text-align: center; vertical-align: middle;',
+				'class'	=> 'greybg2'
+			)
+		)
+	);
+}
 $a->content(
 	$a->table(
-		$a->tr(
-			$a->td($a->info('name2')).
-			$a->td(
-				$a->input(
-					array(
-						'name'	=> 'core[name]',
-						'value' => $Config->core['name'],
-						'class'	=> 'form_element',
-						'size'	=> 40
-					)
-				)
-			)
-		).
-		$a->tr(
-			$a->td($a->info('url')).
-			$a->td(
-				$a->input(
-					array(
-						'type'	=> 'url',
-						'name'	=> 'core[url]',
-						'value' => $Config->core['url'],
-						'class'	=> 'form_element',
-						'size'	=> 40
-					)
-				)
-			)
-		),
-		array('class' => 'admin_table')
+		$modules_list,
+		array(
+			'style'	=> 'text-align: center; width: 100%;',
+			'class'	=> 'admin_table r-table'
+		)
 	).
 	$a->button(
 		$L->update_modules_list,
@@ -43,5 +40,5 @@ $a->content(
 		)
 	)
 );
-unset($a);
+unset($a, $modules_list);
 ?>
