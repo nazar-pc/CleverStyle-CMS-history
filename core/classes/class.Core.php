@@ -1,10 +1,12 @@
 <?php
 //Класс ядра
 class Core {
-	protected	$iv,
-				$td,
-				$key,
-				$support = false;
+	protected	$iv			= array(),
+				$td			= array(),
+				$key		= array(),
+				$support	= false,
+				$KEY,
+				$IV;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
 		if (!_require(CONFIG.DS.CDOMAIN.DS.'main.php', true, false)) {
@@ -23,39 +25,35 @@ class Core {
 				$DB_PREFIX,
 				$DB_CODEPAGE,
 				$KEY;
-		if(!_is_dir(STORAGES.DS.DOMAIN)) {
-			@_mkdir(STORAGES.DS.DOMAIN, 0770);
-		}
-		if(!_is_dir(STORAGE)) {
-			@_mkdir(STORAGE, 0777);
-			_file_put_contents(STORAGE.DS.'.htaccess', 'Allow From All');
-		}
-		if(!_is_dir(CACHE)) {
-			@_mkdir(CACHE, 0770);
-		}
-		if(!_is_dir(PCACHE)) {
-			@_mkdir(PCACHE, 0777);
-			_file_put_contents(PCACHE.DS.'.htaccess', "Allow From All\r\nAddEncoding gzip .js\r\nAddEncoding gzip .css");
-		}
-		if(!_is_dir(LOGS)) {
-			@_mkdir(LOGS, 0770);
-		}
-		if(!_is_dir(TEMP)) {
-			@_mkdir(TEMP, 0777);
-			_file_put_contents(TEMP.DS.'.htaccess', 'Allow From All');
-		}
+		!_is_dir(STORAGES.DS.DOMAIN)	&& @_mkdir(STORAGES.DS.DOMAIN, 0770);
+		!_is_dir(STORAGE)				&& @_mkdir(STORAGE, 0777)	&& _file_put_contents(
+			STORAGE.DS.'.htaccess',
+			'Allow From All'
+		);
+		!_is_dir(CACHE)					&& @_mkdir(CACHE, 0770);
+		!_is_dir(PCACHE)				&& @_mkdir(PCACHE, 0777)	&& _file_put_contents(
+			PCACHE.DS.'.htaccess',
+			"Allow From All\r\nAddEncoding gzip .js\r\nAddEncoding gzip .css"
+		);
+		!_is_dir(LOGS)					&& @_mkdir(LOGS, 0770);
+		!_is_dir(TEMP)					&& @_mkdir(TEMP, 0777)		&& _file_put_contents(
+			TEMP.DS.'.htaccess',
+			'Allow From All'
+		);
 		if ($this->support = check_mcrypt()) {
-			$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');
-			$this->crypt_open(
-				'core',
-				mb_substr($KEY, 0, mcrypt_enc_get_key_size($td)),
-				mb_substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, mcrypt_enc_get_iv_size($td)),
-				$td
-			);
+			$this->KEY	= $KEY;
+			$this->IV	= $DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE;
 		}
-		unset($GLOBALS['KEY'], $td);
+		unset($GLOBALS['KEY']);
 	}
-	//Инициализация шифрования
+	/**
+	 * Encryption initialization
+	 * @param string $name
+	 * @param string $key
+	 * @param string $iv
+	 * @param bool|resource $td
+	 * @return mixed
+	 */
 	function crypt_open ($name, $key, $iv, $td = false) {
 		if (!$this->support || empty($name) || empty($key) || empty($iv)) {
 			return;
@@ -68,10 +66,25 @@ class Core {
 			$this->td[$name] = $td;
 		}
 	}
-	//Метод шифрования данных
+	/**
+	 * Encryption of data
+	 * @param string $data
+	 * @param string $name
+	 * @return bool|string
+	 */
 	function encrypt ($data, $name = 'core') {
 		if (!$this->support) {
 			return $data;
+		}
+		if ($name == 'core' && !isset($this->td[$name])) {
+			$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');
+			$this->crypt_open(
+				'core',
+				mb_substr($this->KEY, 0, mcrypt_enc_get_key_size($td)),
+				mb_substr(md5($this->IV), 0, mcrypt_enc_get_iv_size($td)),
+				$td
+			);
+			unset($td);
 		}
 		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
 		$encrypted = mcrypt_generic($this->td[$name], @serialize(array('key' => $this->key[$name], 'data' => $data)));
@@ -82,7 +95,12 @@ class Core {
 			return false;
 		}
 	}
-	//Метод дешифрования данных
+	/**
+	 * Decryption of data
+	 * @param string $data
+	 * @param string $name
+	 * @return bool|mixed
+	 */
 	function decrypt ($data, $name = 'core') {
 		if (!$this->support) {
 			return $data;
@@ -98,7 +116,10 @@ class Core {
 			return false;
 		}
 	}
-	//Отключение шифрования
+	/**
+	 * Encryption deinitialization
+	 * @param string $name
+	 */
 	function crypt_close ($name) {
 		if ($this->support && isset($this->td[$name]) && is_resource($this->td[$name])) {
 			mcrypt_module_close($this->td[$name]);
@@ -109,7 +130,10 @@ class Core {
 	 * Cloning restriction
 	 */
 	function __clone () {}
-	//Отключений функций шифрования
+	/**
+	 * Disabling encryption
+	 * @return mixed
+	 */
 	function __finish () {
 		if (!$this->support) {
 			return;

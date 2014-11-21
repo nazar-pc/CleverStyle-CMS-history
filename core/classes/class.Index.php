@@ -315,10 +315,7 @@ class Index {
 	}
 	function save ($parts = null) {
 		global $L, $Page, $Config;
-		if (
-			(($parts === null || is_array($parts) || in_array($parts, $Config->admin_parts)) && $Config->save($parts)) ||
-			$parts
-		) {
+		if ((($parts === null || is_array($parts) || in_array($parts, $Config->admin_parts)) && $Config->save($parts)) || $parts) {
 			$Page->title($L->settings_saved);
 			$Page->notice($L->settings_saved);
 			return true;
@@ -330,10 +327,7 @@ class Index {
 	}
 	function apply ($parts = null) {
 		global $L, $Page, $Config;
-		if (
-			($parts === null && $Config->apply()) ||
-			$parts
-		) {
+		if (($parts === null && $Config->apply()) || $parts) {
 			$Page->title($L->settings_applied);
 			$Page->notice($L->settings_applied.$L->check_applied);
 			$this->cancel = '';

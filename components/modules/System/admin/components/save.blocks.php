@@ -58,4 +58,3 @@ if ((!isset($rc[2]) || $rc[2] != 'edit') && isset($_POST['edit_settings']) && ($
 }
 $save && $a->save('components');
 unset($a, $save, $rc);
-?>

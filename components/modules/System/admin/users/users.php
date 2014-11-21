@@ -2,51 +2,58 @@
 global $Config, $Index, $L, $db, $Cache, $User;
 $a				= &$Index;
 $rc				= &$Config->routing['current'];
-$u_db			= $User->db();
 $search_columns	= $Cache->users_columns;
 if (isset($rc[2], $rc[3])) {
-	$a->apply		= false;
-	$a->cancel_back	= true;
-	$content		= $content_ = '';
-	$user_data		= $User->get($search_columns, $rc[3]);
-	$last			= count($search_columns)-1;
-	foreach ($search_columns as $i => $column) {
-		$content_ .= h::{'th.ui-widget-header.ui-corner-all'}(
-			$column
-		).
-		h::{'td.ui-state-default.ui-corner-all'}(
-			($column == 'id' ? $user_data[$column] :
+	if ($rc[2] == 'edit_raw') {
+		$a->apply		= false;
+		$a->cancel_back	= true;
+		$content		= $content_ = '';
+		$user_data		= $User->get($search_columns, $rc[3]);
+		$last			= count($search_columns)-1;
+		foreach ($search_columns as $i => $column) {
+			$content_ .= h::{'th.ui-widget-header.ui-corner-all'}(
+				$column
+			).
+			h::{'td.ui-state-default.ui-corner-all'}(
 				h::{($column == 'data' ? 'textarea' : 'input').'.form_element'}(
 					array(
-						'name'		=> 'db[prefix]',
-						'value'		=> $rc[2] == 'edit' ? $user_data[$column] : ''
+						'name'		=> 'user['.$column.']',
+						'value'		=> $user_data[$column],
+						$column == 'id' ? 'readonly' : false
 					)
+				),
+				array(
+					'colspan'	=> $i == $last ? 3 : false
 				)
-			),
-			array(
-				'colspan'	=> $i == $last ? 3 : false
-			)
-		);
-		if  ($i % 2) {
+			);
+			if  ($i % 2) {
+				$content .= h::tr(
+					$content_
+				);
+				$content_ = '';
+			}
+		}
+		if ($content_ != '') {
 			$content .= h::tr(
 				$content_
 			);
-			$content_ = '';
 		}
-	}
-	if ($content_ != '') {
-		$content .= h::tr(
-			$content_
+		unset($i, $column, $content_);
+		$a->content(
+			h::{'table.admin_table.center_all.user_edit'}(
+				$content.
+				h::{'input[type=hidden]'}(
+					array(
+						'name'		=> 'mode',
+						'value'		=> 'edit_raw'
+					)
+				)
+			)
 		);
 	}
-	unset($i, $column, $content_);
-	$a->content(
-		h::{'table.admin_table.center_all.user_edit'}(
-			$content
-		)
-	);
 } else {
-	$columns		= isset($_POST['columns']) && $_POST['columns'] ? explode(';', $_POST['columns']) : array('id', 'login', 'username', 'email', 'groups');
+	$u_db			= $User->db();
+	$columns		= isset($_POST['columns']) && $_POST['columns'] ? explode(';', $_POST['columns']) : array('id', 'login', 'username', 'email');
 	$limit			= isset($_POST['search_limit']) ? (int)$_POST['search_limit'] : 100;
 	$start			= isset($_POST['search_start']) ? (int)$_POST['search_start']-1 : 0;
 	$search_text	= isset($_POST['search_text']) ? $_POST['search_text'] : '';
@@ -66,7 +73,7 @@ if (isset($rc[2], $rc[3])) {
 		);
 	}
 	unset($column);
-	$columns = array('id')+array_intersect($search_columns, $columns);
+	$columns = array_intersect($search_columns, $columns);
 	$search_column = isset($_POST['search_column']) && in_array($_POST['search_column'], $search_columns) ? $_POST['search_column'] : '';
 	//Closures for constructing WHERE part of SQL query
 	if ($search_column) {
@@ -111,7 +118,7 @@ if (isset($rc[2], $rc[3])) {
 	$results_count	= $u_db->qf('SELECT COUNT(`id`) AS `count` FROM [prefix]users WHERE '.$where);
 	if ($results_count = $results_count['count']) {
 		$users_data		= $u_db->qfa(
-			'SELECT `'.implode('`, `', $columns).'` FROM [prefix]users WHERE '.$where.' LIMIT '.($start*$limit).', '.$limit
+			'SELECT `id` FROM [prefix]users WHERE '.$where.' LIMIT '.($start*$limit).', '.$limit
 		);
 	}
 	$users_list		= array(
@@ -129,23 +136,40 @@ if (isset($rc[2], $rc[3])) {
 			//TODO need real actions
 			$action = h::a(
 				h::{'button.compact'}(
+					h::icon('pencil'),
+					array(
+						'data-title'	=> $L->edit_raw_user_data
+					)
+				),
+				array(
+					'href'		=> $a->action.'/edit_raw/'.$item['id']
+				)
+			).
+			h::a(
+				h::{'button.compact'}(
 					h::icon('wrench'),
 					array(
 						'data-title'	=> $L->edit_user_data
 					)
-				).($item['id'] != 1 && $item['id'] != 2 ?
-					h::{'button.compact'}(
-						h::icon('trash'),
-						array(
-							'data-title'	=> $L->edit_user_data
-						)
-					) : ''
 				),
 				array(
 					'href'		=> $a->action.'/edit/'.$item['id']
 				)
+			).
+			($item['id'] != 1 && $item['id'] != 2 ?
+				h::a(
+					h::{'button.compact'}(
+						h::icon($User->get('status', $item['id']) == 1 ? 'minusthick' : 'check'),
+						array(
+							'data-title'	=> $L->deactivate_user
+						)
+					),
+					array(
+						'href'		=> $a->action.'/'.($User->get('status', $item['id']) == 1 ? 'deactivate' : 'activate').'/'.$item['id']
+					)
+				) : ''
 			);
-			$users_list[] = vsprintf($users_list_template, array($action)+$item);
+			$users_list[] = vsprintf($users_list_template, array($action)+$User->get($columns, $item['id']));
 		}
 	}
 	unset($users_list_template, $item, $action);

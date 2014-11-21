@@ -46,7 +46,7 @@ class User {
 			} else {
 				$this->current['is']['guest'] = true;
 				//Иммитируем неудачный вход, чтобы при намеренной попытке подбора пароля заблокировать доступ
-				$this->login_result(false, 'system');
+				$this->login_result(false, hash('sha224', 'system'));
 				sleep(1);
 			}
 		}
@@ -125,8 +125,10 @@ class User {
 		$data = &$this->data[$this->id];
 		if (!($data = $Cache->{'users/'.$this->id})) {
 			$data = $this->db()->qf(
-				'SELECT `login`, `username`, `language`, `timezone`, `status`, `block_until`, `avatar` FROM `[prefix]users` '.
-					'WHERE `id` = '.$this->id.' LIMIT 1'
+				'SELECT `login`, `username`, `language`, `timezone`, `status`, `block_until`, `avatar`
+				FROM `[prefix]users`
+				WHERE `id` = '.$this->id.'
+				LIMIT 1'
 			);
 			if (is_array($data)) {
 				$data['groups'] = $this->get_user_groups();
@@ -204,9 +206,9 @@ class User {
 		} elseif ($item == 'ip') {
 			return $this->data[$this->id][$item] = $_SERVER['REMOTE_ADDR'];
 		} elseif ($item == 'forwarded_for') {
-			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : false;
+			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_X_FORWARDED_FOR'])	? $_SERVER['HTTP_X_FORWARDED_FOR'] : false;
 		} elseif ($item == 'client_ip') {
-			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : false;
+			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_CLIENT_IP'])		? $_SERVER['HTTP_CLIENT_IP'] : false;
 		}
 		//Link for simplier use
 		$data = &$this->data[$user];
@@ -227,10 +229,15 @@ class User {
 				return $result;
 			}
 			//Если есть недостающие значения - достаем их из БД
-			$res = $this->db()->qf('SELECT `'.implode('`, `', $new_items).'` FROM `[prefix]users` WHERE `id` = '.$user.' LIMIT 1');
+			$res = $this->db()->qf(
+				'SELECT `'.implode('`, `', $new_items).'`
+				FROM `[prefix]users`
+				WHERE `id` = '.$user.'
+				LIMIT 1'
+			);
 			if (is_array($res)) {
 				$this->update_cache[$user] = true;
-				$data = array_merge($data, $res);
+				$data = array_merge((array)$data, $res);
 				$result = array_merge($result, $res);
 				//Пересортируем результирующий массив в том же порядке, что и входящий массив элементов
 				$res = array();
@@ -376,7 +383,11 @@ class User {
 		global $Cache;
 		$user = (int)($user ?: $this->id);
 		if (!($permissions = $Cache->{'users/permissions/'.$user})) {
-			$permissions_array = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]users_permissions` WHERE `id` = '.$this->id);
+			$permissions_array = $this->db()->qfa(
+				'SELECT `permission`, `value`
+				FROM `[prefix]users_permissions`
+				WHERE `id` = '.$this->id
+			);
 			if (is_array($permissions_array)) {
 				$permissions = array();
 				foreach ($permissions_array as $permission) {
@@ -399,7 +410,10 @@ class User {
 		$group = (int)$group;
 		if (!($group_data = $Cache->{'groups/'.$group})) {
 			return $Cache->{'groups/'.$group} = $this->db()->qf(
-				'SELECT `title`, `description`, `data` FROM `[prefix]groups` WHERE `id` = '.$group.' LIMIT 1'
+				'SELECT `title`, `description`, `data`
+				FROM `[prefix]groups`
+				WHERE `id` = '.$group.'
+				LIMIT 1'
 			);
 		}
 		return $group_data;
@@ -412,7 +426,11 @@ class User {
 		global $Cache;
 		$group = (int)$group;
 		if (!($group_permissions = $Cache->{'groups/permissions/'.$group})) {
-			$group_permissions_list = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]groups_permissions` WHERE `id` = '.$group);
+			$group_permissions_list = $this->db()->qfa(
+				'SELECT `permission`, `value`
+				FROM `[prefix]groups_permissions`
+				WHERE `id` = '.$group
+			);
 			if (is_array($group_permissions_list)) {
 				$group_permissions = array();
 				foreach ($group_permissions_list as &$permission) {
@@ -483,7 +501,10 @@ class User {
 		}
 		if ($result['expire'] - TIME < $Config->core['session_expire'] * $Config->core['update_ratio'] / 100) {
 			$this->db_prime()->q(
-				'UPDATE `[prefix]sessions` SET `expire` = '.(TIME + $Config->core['session_expire']).' WHERE `id` = \''.$session_id.'\''
+				'UPDATE `[prefix]sessions`
+				SET
+					`expire` = '.(TIME + $Config->core['session_expire']).'
+				WHERE `id` = \''.$session_id.'\''
 			);
 			$result['expire'] = TIME + $Config->core['session_expire'];
 			$Cache->{'sessions/'.$session_id} = $result;
@@ -520,7 +541,13 @@ class User {
 						\''.($client_ip = ip2hex($this->client_ip)).'\'
 					)'
 			);
-			$this->db_prime()->q('UPDATE `[prefix]users` SET `lastlogin` = '.TIME.', `lastip` = \''.$ip.'\' WHERE `id` ='.$id);
+			$this->db_prime()->q(
+				'UPDATE `[prefix]users`
+				SET
+					`lastlogin`	= '.TIME.',
+					`lastip`	= \''.$ip.'\'
+				WHERE `id` ='.$id
+			);
 			global $Cache;
 			$Cache->{'sessions/'.$hash} = $this->current['session'] = array(
 				'user'			=> $id,
@@ -550,7 +577,11 @@ class User {
 			return false;
 		}
 		unset($Cache->{'sessions/'.$session_id});
-		return $session_id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `id` = \''.$session_id.'\'') : false;
+		return $session_id ? $this->db_prime()->q(
+			'UPDATE `[prefix]sessions`
+			SET `expire` = 0
+			WHERE `id` = \''.$session_id.'\''
+		) : false;
 	}
 	/**
 	 * Remove all user sessions
@@ -570,48 +601,61 @@ class User {
 	}
 	/**
 	 * Check number of login attempts
-	 * @param string $login
+	 * @param bool|string $login_hash
 	 * @return int Number of attempts
 	 */
-	function login_attempts ($login = '') {
-		if (isset($this->cache['login_attempts'])) {
-			return $this->cache['login_attempts'];
+	function login_attempts ($login_hash = false) {
+		$login_hash = $login_hash ?: hash('sha224', $_POST['login']);
+		if (!preg_match('/^[0-9a-z]{56}$/', $login_hash)) {
+			return false;
+		}
+		if (isset($this->cache['login_attempts'][$login_hash])) {
+			return $this->cache['login_attempts'][$login_hash];
 		}
 		$return = $this->db()->qf(
-			'SELECT COUNT(`expire`) FROM `[prefix]logins` '.
+			'SELECT COUNT(`expire`) as `count` FROM `[prefix]logins` '.
 				'WHERE `expire` > '.TIME.' AND ('.
-					'`login` = '.$this->db()->sip($login ?: $_POST['login']).' OR `ip` = \''.ip2hex($this->ip).'\''.
+					'`login_hash` = \''.$login_hash.'\' OR `ip` = \''.ip2hex($this->ip).'\''.
 				')',
 			false,
 			MYSQL_NUM
 		);
-		return $cache['login_attempts'] = $return[0];
+		return $this->cache['login_attempts'][$login_hash] = $return['count'];
 	}
 	/**
 	 * Process login result
 	 * @param bool $result
-	 * @param bool|int $login
+	 * @param bool|string $login_hash
 	 */
-	function login_result ($result, $login = false) {
+	function login_result ($result, $login_hash = false) {
+		$login_hash = $login_hash ?: hash('sha224', $_POST['login']);
+		if (!preg_match('/^[0-9a-z]{56}$/', $login_hash)) {
+			return;
+		}
 		if ($result) {
 			$this->db_prime()->q(
 				'UPDATE `[prefix]logins` '.
 					'SET `expire` = 0 '.
 					'WHERE '.
 						'`expire` > '.TIME.' AND ('.
-							'`login` = '.$this->db_prime()->sip($login ?: $_POST['login']).' OR `ip` = \''.ip2hex($this->ip).'\''.
+							'`login_hash` = \''.$login_hash.'\' OR `ip` = \''.ip2hex($this->ip).'\''.
 						')'
 			);
 		} else {
 			global $Config;
 			$this->db_prime()->q(
-				'INSERT INTO `[prefix]logins` '.
-					'(`expire`, `login`, `ip`) '.
-						'VALUES '.
-					'('.(TIME + $Config->core['login_attempts_block_time']).', '.$this->db_prime()->sip($login ?: $_POST['login']).', \''.ip2hex($this->ip).'\')'
+				'INSERT INTO `[prefix]logins` (
+					`expire`,
+					`login_hash`,
+					`ip`
+				) VALUES (
+					'.(TIME + $Config->core['login_attempts_block_time']).',
+					\''.$login_hash.'\',
+					\''.ip2hex($this->ip).'\'
+				)'
 			);
-			if (isset($cache['login_attempts'])) {
-				++$cache['login_attempts'];
+			if (isset($this->cache['login_attempts'][$login_hash])) {
+				++$this->cache['login_attempts'][$login_hash];
 			}
 			global $Config;
 			if ($this->db_prime()->insert_id() % $Config->core['inserts_limit'] == 0) {
@@ -724,13 +768,20 @@ class User {
 				`regdate` != 0 AND
 				`regdate` < '.(TIME - $Config->core['registration_confirmation_time']*86400)
 		);
-		$data = $this->db_prime()->qf('SELECT `id`, `email` FROM `[prefix]users` WHERE `regkey` = \''.$reg_key.'\' AND `status` = -1 LIMIT 1');
+		$data = $this->db_prime()->qf(
+			'SELECT `id`, `email` FROM `[prefix]users` WHERE `regkey` = \''.$reg_key.'\' AND `status` = -1 LIMIT 1'
+		);
 		if (!isset($data['email'])) {
 			return false;
 		}
 		$this->reg_id = $data['id'];
 		$password	= password_generate($Config->core['password_min_length'], $Config->core['password_min_strength']);
-		$this->db_prime()->q('UPDATE `[prefix]users` SET `password_hash` = \''.hash('sha512', $password).'\', `status` = 1 WHERE `id` = '.$this->reg_id);
+		$this->db_prime()->q(
+			'UPDATE `[prefix]users` SET
+				`password_hash` = \''.hash('sha512', $password).'\',
+				`status` = 1
+			WHERE `id` = '.$this->reg_id
+		);
 		$this->add_session($this->reg_id);
 		return array(
 			'email'		=> $data['email'],

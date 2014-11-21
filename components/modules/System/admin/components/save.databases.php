@@ -42,4 +42,3 @@ if ($update) {
 	$Index->save('db');
 }
 unset($update);
-?>

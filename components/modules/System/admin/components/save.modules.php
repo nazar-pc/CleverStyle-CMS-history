@@ -44,4 +44,3 @@ if ($update) {
 	$Index->save('components');
 }
 unset($update, $modules, $rc);
-?>

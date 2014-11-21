@@ -12,7 +12,8 @@ class h {
 		'required',
 		'disabled',
 		'multiple'
-	);
+	),
+	$single_tag_xml_style = false;
 	//Отступы строк для красивого исходного кода
 	static function level ($in, $level = 1) {
 		if ($level < 1) {
@@ -20,15 +21,16 @@ class h {
 		}
 		return preg_replace('/^(.*)$/m', str_repeat("\t", $level).'$1', $in);
 	}
-	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
-	//Используется наследуемыми классами
-	//Метод для обертки контента парными тегами
-	static function wrap ($data = array()) {
-		$data = (array)$data;
-		$in = $add = '';
-		$tag = 'div';
-		$quote = '"';
-		$level = 1;
+	/**
+	 * @static
+	 * @param array $data
+	 * @param string $in
+	 * @param string $tag
+	 * @param string $add
+	 * @return bool
+	 */
+	protected static function data_prepare (&$data, &$in, &$tag, &$add) {
+		$q = '"';
 		if (isset($data['in'])) {
 			if ($data['in'] === false) {
 				return false;
@@ -42,6 +44,45 @@ class h {
 		if (isset($data['href'])) {
 			$data['href'] = str_replace(' ', '%20', $data['href']);
 		}
+		if (isset($data['tag'])) {
+			$tag = $data['tag'];
+			unset($data['tag']);
+		}
+		if (isset($data['add'])) {
+			$add = ' '.$data['add'];
+			unset($data['add']);
+		}
+		if (isset($data['quote'])) {
+			$q = $data['quote'];
+			unset($data['quote']);
+		}
+		if (isset($data['class']) && empty($data['class'])) {
+			unset($data['class']);
+		}
+		if (isset($data['style']) && empty($data['style'])) {
+			unset($data['style']);
+		}
+		ksort($data);
+		foreach ($data as $key => $value) {
+			if (is_int($key)) {
+				unset($data[$key]);
+				if (in_array($value, self::$unit_atributes)) {
+					$add .= ' '.$value;
+				}
+			} elseif ($value !== false) {
+				$add .= ' '.$key.'='.$q.$value.$q;
+			}
+		}
+		return true;
+	}
+	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
+	//Используется наследуемыми классами
+	//Метод для обертки контента парными тегами
+	static function wrap ($data = array()) {
+		$data = (array)$data;
+		$in = $add = '';
+		$tag = 'div';
+		$level = 1;
 		if (isset($data['data-title']) && $data['data-title']) {
 			$data['data-title'] = filter($data['data-title']);
 			if (isset($data['class'])) {
@@ -53,47 +94,12 @@ class h {
 		if (isset($data['data-dialog'])) {
 			$data['data-dialog'] = filter($data['data-dialog']);
 		}
-		if (isset($data['tag'])) {
-			$tag = $data['tag'];
-			unset($data['tag']);
-		}
-		if (isset($data['add'])) {
-			$add = ' '.$data['add'];
-			unset($data['add']);
-		}
-		foreach (self::$unit_atributes as $attr) {
-			if (isset($data[$attr])) {
-				$add .= ' '.$attr;
-				unset($data[$attr]);
-			}
-		}
-		unset($unit_atributes, $attr);
-		if (isset($data['quote'])) {
-			$quote = $data['quote'];
-			unset($data['quote']);
-		}
 		if (isset($data['level'])) {
 			$level = $data['level'];
 			unset($data['level']);
 		}
-		if (isset($data['class']) && empty($data['class'])) {
-			unset($data['class']);
-		}
-		if (isset($data['style']) && empty($data['style'])) {
-			unset($data['style']);
-		}
-		if (isset($data['onClick']) && empty($data['onClick'])) {
-			unset($data['onClick']);
-		}
-		ksort($data);
-		foreach ($data as $key => $value) {
-			if (empty($key) && $key !== 0) {
-				continue;
-			}
-			if (is_int($key)) {
-				$add .= ' '.$value;
-			}
-			$add .= ' '.$key.'='.$quote.$value.$quote;
+		if (!self::data_prepare($data, $in, $tag, $add)) {
+			return false;
 		}
 		return	'<'.$tag.$add.'>'.
 				($level ? "\n" : '').
@@ -130,60 +136,14 @@ class h {
 		$data = (array)$data;
 		$in = $add = '';
 		$tag = 'input';
-		$quote = '"';
-		if (isset($data['in'])) {
-			if ($data['in'] === false) {
-				return false;
-			}
-			$in = $data['in'];
-			unset($data['in']);
-		}
-		if (isset($data['src'])) {
-			$data['src'] = str_replace(' ', '%20', $data['src']);
-		}
-		if (isset($data['href'])) {
-			$data['href'] = str_replace(' ', '%20', $data['href']);
+		if (!self::data_prepare($data, $in, $tag, $add)) {
+			return false;
 		}
 		if (isset($data['data-title']) && $data['data-title']) {
 			$data_title = $data['data-title'];
 			unset($data['data-title']);
 		}
-		if (isset($data['tag'])) {
-			$tag = $data['tag'];
-			unset($data['tag']);
-		}
-		if (isset($data['add'])) {
-			$add = $data['add'];
-			unset($data['add']);
-		}
-		foreach (self::$unit_atributes as $attr) {
-			if (isset($data[$attr])) {
-				$add .= ' '.$attr;
-				unset($data[$attr]);
-			}
-		}
-		unset($unit_atributes, $attr);
-		if (isset($data['quote'])) {
-			$quote = $data['quote'];
-			unset($data['quote']);
-		}
-		if (isset($data['class']) && empty($data['class'])) {
-			unset($data['class']);
-		}
-		if (isset($data['style']) && empty($data['style'])) {
-			unset($data['style']);
-		}
-		if (isset($data['onClick']) && empty($data['onClick'])) {
-			unset($data['onClick']);
-		}
-		ksort($data);
-		foreach ($data as $key => $value) {
-			if (empty($key)) {
-				continue;
-			}
-			$add .= ' '.$key.'='.$quote.$value.$quote;
-		}
-		$return = '<'.$tag.$add.' />'.$in."\n";
+		$return = '<'.$tag.$add.(self::$single_tag_xml_style ? ' /' : '').'>'.$in."\n";
 		return isset($data_title) ? self::label($return, array('data-title' => $data_title)) : $return;
 	}
 
@@ -436,24 +396,11 @@ class h {
 			) {
 				$items = self::array_flip($in, $num);
 				unset($num);
-				$temp = '';
+				$return = '';
 				foreach ($items as $item) {
-					if (!isset($item['type'])) {
-						$item['type'] = 'text';
-					}
-					if (isset($item['min']) && isset($item['value']) && $item['min'] > $item['value']) {
-						$item['value'] = $item['min'];
-					}
-					if (isset($item['max']) && isset($item['value']) && $item['max'] < $item['value']) {
-						$item['value'] = $item['max'];
-					}
-					$item['tag'] = __FUNCTION__;
-					if (isset($item['value'])) {
-						$item['value'] = filter($item['value']);
-					}
-					$temp .= self::iwrap($item);
+					$return .= self::{__FUNCTION__}($item);
 				}
-				return $temp;
+				return $return;
 			} else {
 				if (!isset($in['type'])) {
 					$in['type'] = 'text';

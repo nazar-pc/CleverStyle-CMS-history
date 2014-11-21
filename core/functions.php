@@ -476,7 +476,8 @@
 	}
 	//Обработка замыканий
 	/**
-	 * @param Closure[] &$functions
+	 * Closure processing
+	 * @param Closure[] $functions
 	 */
 	function closure_process (&$functions) {
 		$functions = (array)$functions;
@@ -520,7 +521,12 @@
 		}
 		return implode(' ', $res);
 	}
-	//Функция форматирования размера файла из байтов в удобночитаемый вид
+	/**
+	 * Function for formatting of file size in bytes to human-readable form
+	 * @param $size
+	 * @param bool|int $round
+	 * @return float|string
+	 */
 	function format_filesize ($size, $round = false) {
 		global $L;
 		$unit = '';
@@ -539,13 +545,13 @@
 		} else {
 			$size = $size." ".$L->Bytes;
 		}
-		if ($round) {
-			return round($size, $round).$unit;
-		} else {
-			return $size;
-		}
+		return $round ? round($size, $round).$unit : $size;
 	}
-	//Защита от null Byte уязвимости
+	/**
+	 * Protecting against null Byte injection
+	 * @param string|array $in
+	 * @return string|array
+	 */
 	function null_byte_filter (&$in) {
 		if (is_array($in)) {
 			foreach ($in as &$val) {
@@ -556,45 +562,48 @@
 		}
 		return $in;
 	}
-	//Фильтрация и функции для рекурсивной обработки массивов
+	/**
+	 * Filtering and functions for recursive processing of arrays
+	 * @param array|string $text
+	 * @param string $mode
+	 * @param bool|string $data
+	 * @param null|string $data2
+	 * @param null|string $data3
+	 * @return array|string
+	 */
 	function filter ($text, $mode = '', $data = false, $data2 = null, $data3 = null) {
 		if (is_array($text)) {
 			foreach ($text as $item => &$val) {
 				$text[$item] = filter($val, $mode, $data, $data2, $data3);
 			}
 			return $text;
-		} else {
-			if ($mode == 'stripslashes' || $mode == 'addslashes') {
+		}
+		switch ($mode) {
+			case 'stripslashes':
+			case 'addslashes':
 				return $mode($text);
-			} elseif ($mode == 'trim' || $mode == 'ltrim' || $mode == 'rtrim') {
-				if ($data !== false) {
-					return $mode($text, $data);
-				} else {
-					return $mode($text);
-				}
-			} elseif ($mode == 'substr') {
-				if ($data2 !== null) {
-					if ($data3 !== null) {
-						return $mode($text, $data, $data2, $data3);
-					} else {
-						return $mode($text, $data, $data2);
-					}
-				} else {
-					return $mode($text, $data);
-				}
-			} elseif ($mode == 'mb_substr') {
-				if ($data2 !== null) {
-					return $mode($text, $data, $data2);
-				} else {
-					return $mode($text, $data);
-				}
-			} elseif ($mode == 'mb_strtolower' || $mode == 'mb_strtoupper') {
+			case 'trim':
+			case 'ltrim':
+			case 'rtrim':
+				return $data === false ? $mode($text) : $mode($text, $data);
+			case 'substr':
+				return $data2 === null ? $mode($text, $data) : (
+					$data3 === null ? $mode($text, $data, $data2) : $mode($text, $data, $data2, $data3)
+				);
+			case 'mb_substr':
+				return $data2 === null ? $mode($text, $data) : $mode($text, $data, $data2);
+			case 'mb_strtolower':
+			case 'mb_strtoupper':
 				return $mode($text, $data);
-			} elseif ($mode == 'strtolower' || $mode == 'strtoupper') {
+			case 'strtolower':
+			case 'strtoupper':
 				return $mode($text);
-			} else {
-				return str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), trim($text));
-			}
+			default:
+				return str_replace(
+					array('&', '"', '<', '>'),
+					array('&amp;', '&quot;', '&lt;', '&gt;'),
+					trim($text)
+				);
 		}
 	}
 	//Функции работы со строками аналоги системных, но вместо входящей строки могут принимать массив для его рекурсивной обработки
