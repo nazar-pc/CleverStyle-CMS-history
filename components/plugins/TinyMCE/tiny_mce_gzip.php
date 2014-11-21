@@ -123,7 +123,7 @@ class TinyMCE_Compressor {
 			$multipel = 86400;
 		if (strpos($time, "m") > 0)
 			$multipel = 2592000;
-		return intval($time) * $multipel;
+		return (int)$time * $multipel;
 	}
 	private function getFileContents($file) {
 		if (file_exists($file)) {

@@ -11,7 +11,7 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[site_mode]',
-						'checked'		=> (int)$Config->core['site_mode'],
+						'checked'		=> $Config->core['site_mode'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off)
 					)
@@ -64,7 +64,7 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[title_reverse]',
-						'checked'		=> (int)$Config->core['title_reverse'],
+						'checked'		=> $Config->core['title_reverse'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off)
 					)
@@ -78,7 +78,7 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[debug]',
-						'checked'		=> (int)$Config->core['debug'],
+						'checked'		=> $Config->core['debug'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off),
 						'OnClick'		=> array('$(\'#debug_form\').show();', '$(\'#debug_form\').hide();')
@@ -97,7 +97,7 @@ $a->content(
 								array(
 									'type'			=> 'radio',
 									'name'			=> 'core[show_objects_data]',
-									'checked'		=> (int)$Config->core['show_objects_data'],
+									'checked'		=> $Config->core['show_objects_data'],
 									'value'			=> array(0, 1),
 									'in'			=> array($L->off, $L->on)
 								)
@@ -111,7 +111,7 @@ $a->content(
 								array(
 									'type'			=> 'radio',
 									'name'			=> 'core[show_user_data]',
-									'checked'		=> (int)$Config->core['show_user_data'],
+									'checked'		=> $Config->core['show_user_data'],
 									'value'			=> array(0, 1),
 									'in'			=> array($L->off, $L->on)
 								)
@@ -125,7 +125,7 @@ $a->content(
 								array(
 									'type'			=> 'radio',
 									'name'			=> 'core[show_queries]',
-									'checked'		=> (int)$Config->core['show_queries'],
+									'checked'		=> $Config->core['show_queries'],
 									'value'			=> array(0, 1),
 									'in'			=> array($L->off, $L->on)
 								)
@@ -139,7 +139,7 @@ $a->content(
 								array(
 									'type'			=> 'radio',
 									'name'			=> 'core[show_cookies]',
-									'checked'		=> (int)$Config->core['show_cookies'],
+									'checked'		=> $Config->core['show_cookies'],
 									'value'			=> array(0, 1),
 									'in'			=> array($L->off, $L->on)
 								)

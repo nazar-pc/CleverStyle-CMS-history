@@ -17,6 +17,7 @@ class Config {
 					break;
 				}
 			}
+			unset($part);
 		} else {
 			$query = true;
 		}
@@ -56,11 +57,11 @@ class Config {
 				if (mb_strpos($this->server['url'], $url) === 0) {
 					$this->server['base_url'] = $this->server['protocol'].'://'.$url;
 					$url_replace = $url;
-					unset($core_url, $url);
 					break;
 				}
 			}
 		}
+		unset($core_url, $url);
 		//Если это не главный домен - ищем совпадение в зерказах
 		if (!isset($url_replace) && !empty($this->core['mirrors_url'])) {
 			$mirrors_url = explode("\n", $this->core['mirrors_url']);
@@ -74,12 +75,12 @@ class Config {
 							$this->server['base_url'] = $this->server['protocol'].'://'.$url;
 							$url_replace = $url;
 							$this->mirror_index = $i;
-							unset($mirrors_url, $mirror_url, $url, $i, $mirror);
 							break;
 						}
 					}
 				}
 			}
+			unset($mirrors_url, $mirror_url, $url, $i, $mirror);
 			//Если в зеркалах соответствие не найдено - зеркало не разрешено!
 			if ($this->mirror_index == -1) {
 				global $Error, $L;
@@ -153,11 +154,13 @@ class Config {
 				foreach ($color_schemes as $i => $scheme) {
 					$this->core['color_schemes'][$theme][$scheme] = $color_schemes_name[$i] ?: $scheme;
 				}
+				unset($i, $scheme);
 			} else {
 				$color_schemes = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
 				foreach ($color_schemes as $scheme) {
 					$this->core['color_schemes'][$theme][$scheme] = $scheme;
 				}
+				unset($scheme);
 			}
 			asort($this->core['color_schemes'][$theme]);
 			$color_schemes = $color_schemes_name = array();
@@ -176,7 +179,6 @@ class Config {
 			}
 		}
 		asort($this->core['languages']);
-		unset($langlist, $lang_data);
 	}
 	//Перестройка кеша настроек
 	function load () {
@@ -185,6 +187,7 @@ class Config {
 		foreach ($this->admin_parts as $part) {
 			$query[] = '`'.$part.'`';
 		}
+		unset($part);
 		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1');
 		if (isset($this->routing['current'])) {
 			$current_routing = $this->routing['current'];
@@ -193,10 +196,10 @@ class Config {
 			foreach ($this->admin_parts as $part) {
 				$this->$part = json_decode_x($result[$part]);
 			}
+			unset($part);
 		} else {
 			return false;
 		}
-		unset($part);
 		if (isset($current_routing)) {
 			$this->routing['current'] = $current_routing;
 			unset($current_routing);

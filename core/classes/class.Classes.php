@@ -3,7 +3,7 @@
 class Classes {
 	public	$ObjectsList		= array(),	//Массив со списком объектов, и данными о занятом объеме памяти
 											//после их создания, и длительностью содания
-			$unload_priority	= array('Page', 'Text', 'db', 'Config', 'User', 'Error', 'L', 'Cache', 'Core');
+			$unload_priority	= array('Page', 'Config', 'User', 'db', 'Error', 'L', 'Text', 'Cache', 'Core');
 	private	$LoadedObjects = array();
 	//Метод добавления объектов в список для их разрушения в конце работы
 	function add ($name) {

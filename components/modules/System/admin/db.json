@@ -11,7 +11,7 @@
 					"email",
 					"email_hash",
 					"groups",
-					"permissions_local",
+					"permissions",
 					"language",
 					"languages",
 					"timezone",

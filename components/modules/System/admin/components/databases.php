@@ -2,11 +2,12 @@
 global $Config, $Index, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE, $ADMIN;
 $a = &$Index;
 $rc = &$Config->routing['current'];
-$test_dialog = true;
+$test_dialog = false;
 if (isset($rc[2])) {
 	$a->apply = false;
 	$a->cancel_back = true;
 	if ($rc[2] == 'add' || ($rc[2] == 'edit' && isset($rc[3]))) {
+		$test_dialog = true;
 		if ($rc[2] == 'edit') {
 			if (isset($rc[4])) {
 				$database = &$Config->db[$rc[3]]['mirrors'][$rc[4]];
@@ -22,6 +23,7 @@ if (isset($rc[2])) {
 					$dbsname[] = $db['name'];
 				}
 			}
+			unset($i, $db);
 		}
 		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
@@ -154,18 +156,17 @@ if (isset($rc[2])) {
 		$a->buttons = false;
 		$content = array();
 		if (!isset($rc[4])) {
-			foreach ($Config->components['modules'] as $module => $mdata) {
+			foreach ($Config->components['modules'] as $module => &$mdata) {
 				if (isset($mdata['db']) && is_array($mdata['db'])) {
-					foreach ($mdata['db'] as $db) {
-						if ($db == $rc[3]) {
+					foreach ($mdata['db'] as $db_name) {
+						if ($db_name == $rc[3]) {
 							$content[] = $a->b($module);
-							unset($db);
 							break;
 						}
 					}
 				}
 			}
-		unset($module, $mdata);
+		unset($module, $mdata, $db_name);
 		}
 		if (!empty($content)) {
 			global $Page;
@@ -203,7 +204,6 @@ if (isset($rc[2])) {
 		}
 	} elseif ($rc[2] == 'test') {
 		interface_off();
-		$test_dialog = false;
 		$a->form = false;
 		global $Page, $db;
 		if (isset($rc[4])) {
@@ -215,6 +215,7 @@ if (isset($rc[2])) {
 		}
 	}
 } else {
+	$test_dialog = true;
 	$db_list = $a->tr(
 		$a->td(
 			array(
@@ -231,14 +232,14 @@ if (isset($rc[2])) {
 			)
 		)
 	);
-	foreach ($Config->db as $i => $db) {
+	foreach ($Config->db as $i => &$db_data) {
 		$db_list .=	$a->tr(
 			$a->td(
 				$a->a(
 					$a->button(
 						$a->icon('plus'),
 						array(
-							'data-title'	=> $L->add.' '.$L->mirror
+							'data-title'	=> $L->add.' '.$L->mirror.' '.$L->of_db
 						)
 					),
 					array(
@@ -289,19 +290,19 @@ if (isset($rc[2])) {
 			).
 			$a->td(
 				array(
-					$i	? $db['host']		: $DB_HOST,
-					$i	? $db['type']		: $DB_TYPE,
-					$i	? $db['prefix']		: $DB_PREFIX,
-					$i	? $db['name']		: $DB_NAME,
-					$i	? $db['user']		: '*****',
-					$i	? $db['codepage']	: $DB_CODEPAGE
+					$i	? $db_data['host']		: $DB_HOST,
+					$i	? $db_data['type']		: $DB_TYPE,
+					$i	? $db_data['prefix']	: $DB_PREFIX,
+					$i	? $db_data['name']		: $DB_NAME,
+					$i	? $db_data['user']		: '*****',
+					$i	? $db_data['codepage']	: $DB_CODEPAGE
 				),
 				array(
 					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
 				)
 			)
 		);
-		foreach ($Config->db[$i]['mirrors'] as $m => $mirror) {
+		foreach ($Config->db[$i]['mirrors'] as $m => &$mirror) {
 			if (is_array($mirror) && !empty($mirror)) {
 				$db_list .=	$a->tr(
 					$a->td(
@@ -309,7 +310,7 @@ if (isset($rc[2])) {
 							$a->button(
 								$a->icon('wrench'),
 								array(
-									'data-title'	=> $L->edit.' '.$L->mirror
+									'data-title'	=> $L->edit.' '.$L->mirror.' '.$L->of_db
 								)
 							),
 							array(
@@ -321,7 +322,7 @@ if (isset($rc[2])) {
 							$a->button(
 								$a->icon('close'),
 								array(
-									'data-title'	=> $L->delete.' '.$L->mirror
+									'data-title'	=> $L->delete.' '.$L->mirror.' '.$L->of_db
 								)
 							),
 							array(
@@ -363,7 +364,9 @@ if (isset($rc[2])) {
 				);
 			}
 		}
+		unset($m, $mirror);
 	}
+	unset($i, $db_data);
 	$a->content(
 		$a->table(
 			$db_list.
@@ -388,7 +391,7 @@ if (isset($rc[2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[db_balance]',
-							'checked'		=> (int)$Config->core['db_balance'],
+							'checked'		=> $Config->core['db_balance'],
 							'value'			=> array(1, 0),
 							'class'			=> array('form_element'),
 							'in'			=> array($L->on, $L->off)
@@ -411,7 +414,7 @@ if (isset($rc[2])) {
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[maindb_for_write]',
-							'checked'		=> (int)$Config->core['maindb_for_write'],
+							'checked'		=> $Config->core['maindb_for_write'],
 							'value'			=> array(1, 0),
 							'class'			=> array('form_element'),
 							'in'			=> array($L->on, $L->off)
@@ -433,6 +436,7 @@ if (isset($rc[2])) {
 			)
 		)
 	);
+	unset($db_list);
 }
 $test_dialog && $a->content(
 	$a->div(
@@ -444,5 +448,5 @@ $test_dialog && $a->content(
 		)
 	)
 );
-unset($a, $rc);
+unset($a, $rc, $test_dialog);
 ?>

@@ -52,12 +52,12 @@ class Page extends HTML {
 	protected function load($stop) {
 		global $Config;
 		//Определение темы оформления
-		if (is_object($Config) && $Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $Config->core['active_themes'])) {
-			$this->theme = strval($_COOKIE['theme']);
+		if (is_object($Config) && $Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array($_COOKIE['theme'], $Config->core['active_themes'])) {
+			$this->theme = $_COOKIE['theme'];
 		}
 		if (is_object($Config) && $Config->core['site_mode']) {
-			if ($Config->core['allow_change_theme'] && isset($_COOKIE['color_scheme']) && in_array(strval($_COOKIE['color_scheme']), $Config->core['color_schemes'])) {
-				$this->color_scheme = strval($_COOKIE['color_scheme']);
+			if ($Config->core['allow_change_theme'] && isset($_COOKIE['color_scheme']) && in_array($_COOKIE['color_scheme'], $Config->core['color_schemes'])) {
+				$this->color_scheme = $_COOKIE['color_scheme'];
 			}
 		}
 		//Задание названий файлов кеша
@@ -206,11 +206,8 @@ class Page extends HTML {
 	function replace ($search, $replace = '') {
 		if (is_array($search)) {
 			foreach ($search as $i => $val) {
-				if (mb_substr($val, 0, 1) != '/') {
-					$val = '/'.$val.'/';
-				}
-				$this->Search[] = $val;
-				$this->Replace[] = $replace[$i];
+				$this->Search[] = '/'.trim($val, '/').'/';
+				$this->Replace[] = is_array($replace) ? $replace[$i] : $replace;
 			}
 		} else {
 			if (mb_substr($search, 0, 1) != '/') {
@@ -315,7 +312,6 @@ class Page extends HTML {
 			foreach ($this->cache_list as $file) {
 				file_exists(realpath('storages/pcache/'.$file.'js')) && $this->js('storages/pcache/'.$file.'js?'.$key, 'file', true);
 			}
-			unset($key);
 		} else {
 			$this->get_list();
 			//Подключение CSS стилей
@@ -333,8 +329,8 @@ class Page extends HTML {
 		global $Cache;
 		$this->get_list();
 		$key = '';
-		foreach ($this->get_list as $part => $array) {
-			foreach ($array as $i => $files) {
+		foreach ($this->get_list as $part => &$array) {
+			foreach ($array as $i => &$files) {
 				if (!is_array($files)) {
 					continue;
 				}
@@ -447,7 +443,7 @@ class Page extends HTML {
 								array('style' => 'padding-left: 20px;')
 							);
 			$last = $timeload['loader_init'];
-			foreach ($Classes->ObjectsList as $object => $data) {
+			foreach ($Classes->ObjectsList as $object => &$data) {
 				$debug_info .=	$this->p(
 									$object,
 									array('style' => 'font-weight: bold;')
@@ -509,7 +505,7 @@ class Page extends HTML {
 			$this->p(
 				$L->active_connections.': '.(count($db->connections) ? '' : $this->b($L->no))
 			);
-			foreach ($db->connections as $name => $database) {
+			foreach ($db->connections as $name => &$database) {
 				if ($name == 'core') {
 						$name = $L->core_db;
 				} else {
@@ -531,7 +527,7 @@ class Page extends HTML {
 					);
 				}
 			}
-			unset($database, $i, $text);
+			unset($name, $database, $i, $text);
 			$debug_info =	$this->div(
 				$this->p(
 					$L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')
@@ -612,7 +608,7 @@ class Page extends HTML {
 				$ob = false;
 			}
 			$timeload['end'] = microtime(true);
-			if ($User->is_admin() && is_object($Config) && $Config->core['debug']) {
+			if ($User->is('admin') && is_object($Config) && $Config->core['debug']) {
 				$this->debug();
 			}
 			echo str_replace(

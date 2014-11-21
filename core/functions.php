@@ -260,7 +260,7 @@ function flush_cache () {
 			$ok = false;
 		}
 	}
-	unset($list);
+	unset($list, $item);
 	global $Cache;
 	if (is_object($Cache)) {
 		if ($Cache->memcache) {
@@ -280,6 +280,7 @@ function flush_pcache () {
 			$ok = false;
 		}
 	}
+	unset($list, $item);
 	if (file_exists(CACHE.DS.'pcache_key')) {
 		unlink(CACHE.DS.'pcache_key');
 	}
@@ -319,7 +320,7 @@ function formatfilesize ($size, $round = false) {
 //Фильтрация и функции для рекурсивной обработки массивов
 function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 	if (is_array($text)) {
-		foreach ($text as $item => $val) {
+		foreach ($text as $item => &$val) {
 			$text[$item] = filter($val, $mode, $data, $data2);
 		}
 		return $text;

@@ -1,7 +1,7 @@
 <?php
 global $Classes, $timeload, $loader_init_memory, $interface;
 $interface = true;
-error_reporting(PHP_INT_MAX);
+error_reporting(E_ALL | E_STRICT);
 //error_reporting(0);
 header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("utf-8");

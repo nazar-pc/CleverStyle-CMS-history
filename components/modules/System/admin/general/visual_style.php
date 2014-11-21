@@ -63,7 +63,7 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[allow_change_theme]',
-						'checked'		=> (int)$Config->core['allow_change_theme'],
+						'checked'		=> $Config->core['allow_change_theme'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off)
 					)

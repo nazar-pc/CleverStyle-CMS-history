@@ -9,7 +9,7 @@ class Text {
 		$this->language = $language;
 	}
 	function get ($db, $id) {
-		$result = json_decode_x($db->qf('SELECT `text` FROM `[prefix]text` WHERE `id` = '.(int)$id.' LIMIT 1'));
+		$result = json_decode_x($db->qf('SELECT `text` FROM `[prefix]text` WHERE `id` = '.$id.' LIMIT 1'));
 		if (!is_array($result) || empty($result)) {
 			return false;
 		}
@@ -36,13 +36,14 @@ class Text {
 			$result = array();
 		}
 		if (is_array($data)) {
-			foreach ($data as $language => $translate) {
+			foreach ($data as $language => &$translate) {
 				if (empty($translate)) {
 					continue;
 				}
 				$result[$language] = $translate;
 				
 			}
+			unset($translate);
 		} else {
 			$result[0] = $data;
 		}
@@ -54,12 +55,13 @@ class Text {
 		}
 		$result = array();
 		if (is_array($data)) {
-			foreach ($data as $language => $translate) {
+			foreach ($data as $language => &$translate) {
 				if (empty($translate)) {
 					continue;
 				}
 				$result[$language] = $translate;
 			}
+			unset($translate);
 		} else {
 			$result[0] = $data;
 		}

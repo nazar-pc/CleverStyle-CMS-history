@@ -394,7 +394,7 @@ class HTML {
 							break;
 						}
 					}
-					unset($in['checked']);
+					unset($in['checked'], $i, $v);
 				}
 				$items = $this->array_flip($in, count($in['in']));
 				unset($in, $v, $i);
@@ -412,7 +412,6 @@ class HTML {
 					}
 					$temp .= $this->iwrap($item);
 				}
-				unset($items, $item);
 				return $temp;
 			} else {
 				if (!isset($in['id'])) {
@@ -439,7 +438,6 @@ class HTML {
 					}
 					$temp .= $this->iwrap($item);
 				}
-				unset($items, $item);
 				return $temp;
 			} else {
 				if (!isset($in['type'])) {
@@ -482,7 +480,7 @@ class HTML {
 					}
 				}
 			}
-			unset($data['selected']);
+			unset($data['selected'], $i, $v);
 		}
 		if (isset($in['selected'])) {
 			if (is_array($in['selected'])) {
@@ -496,7 +494,7 @@ class HTML {
 					}
 				}
 			}
-			unset($in['selected']);
+			unset($in['selected'], $i, $v);
 		}
 		if (!$selected) {
 			if (!isset($in['add'][0])) {

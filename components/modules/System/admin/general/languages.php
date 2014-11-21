@@ -56,7 +56,7 @@ $a->content(
 					array(
 						'type'			=> 'radio',
 						'name'			=> 'core[multilanguage]',
-						'checked'		=> (int)$Config->core['multilanguage'],
+						'checked'		=> $Config->core['multilanguage'],
 						'value'			=> array(1, 0),
 						'in'			=> array($L->on, $L->off),
 					)

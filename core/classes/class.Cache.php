@@ -10,7 +10,7 @@ class Cache {
 	function init ($Config) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
 		$this->disk			= $Config->core['disk_cache'];
-		$this->disk_size	= (int)$Config->core['disk_cache_size']*1024;
+		$this->disk_size	= $Config->core['disk_cache_size']*1024;
 		$this->memcache		= $Config->core['memcache'];
 		if ($this->memcache) {
 			$this->memcache = new Memcache;
@@ -68,7 +68,11 @@ class Cache {
 					$handle = fopen(CACHE.DS.'size', 'c+b');
 					flock($handle, LOCK_EX);
 					if ($this->size === false) {
-						$this->size = (int)fread($handle, 20);
+						$this->size = '';
+						while (!feof($handle)) {
+							$this->size .= fread($handle, 20);
+						}
+						$this->size = (int)$this->size;
 					}
 					$this->size += $dsize;
 					if ($this->size > $this->disk_size) {
@@ -80,6 +84,7 @@ class Cache {
 								break;
 							}
 						}
+						unset($cache_list, $file);
 					}
 					if (file_put_contents(CACHE.DS.$label, $data, LOCK_EX|FILE_BINARY) !== false) {
 						ftruncate($handle, 0);
@@ -88,9 +93,9 @@ class Cache {
 					} else {
 						$this->size -= $dsize;
 					}
+					unset($dsize);
 					flock($handle, LOCK_UN);
 					fclose($handle);
-					unset($dsize, $cache_list, $file);
 				} else {
 					file_put_contents(CACHE.DS.$label, $data, LOCK_EX|FILE_BINARY);
 				}
@@ -112,7 +117,11 @@ class Cache {
 				$handle = fopen(CACHE.DS.'size', 'c+b');
 				flock($handle, LOCK_EX);
 				if ($this->size === false) {
-					$this->size = (int)fread($handle, 20);
+					$this->size = '';
+					while (!feof($handle)) {
+						$this->size .= fread($handle, 20);
+					}
+					$this->size = (int)$this->size;
 				}
 				$this->size -= filesize(CACHE.DS.$label);
 				if (unlink(CACHE.DS.$label)) {

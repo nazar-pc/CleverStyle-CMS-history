@@ -107,18 +107,17 @@ if (isset($rc[2])) {
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
 		$content = array();
-		foreach ($Config->components['modules'] as $module => $mdata) {
+		foreach ($Config->components['modules'] as $module => &$mdata) {
 			if (isset($mdata['storage']) && is_array($mdata['storage'])) {
-				foreach ($mdata['storage'] as $storage) {
-					if ($storage == $rc[3]) {
+				foreach ($mdata['storage'] as $storage_name) {
+					if ($storage_name == $rc[3]) {
 						$content[] = $a->b($module);
-						unset($storage);
 						break;
 					}
 				}
 			}
 		}
-		unset($module, $mdata);
+		unset($module, $mdata, $storage_name);
 		if (!empty($content)) {
 			global $Page;
 			$Page->Top .= $a->div(
@@ -169,7 +168,7 @@ if (isset($rc[2])) {
 			)
 		)
 	);
-	foreach ($Config->storage as $i => $storage) {
+	foreach ($Config->storage as $i => &$storage_data) {
 		$storage_list .=	$a->tr(
 			$a->td(
 				($i ? 
@@ -215,10 +214,10 @@ if (isset($rc[2])) {
 			).
 			$a->td(
 				array(
-					$i	? $storage['url']			: url_by_source(STORAGE),
-					$i	? $storage['host']			: 'localhost',
-					$i	? $storage['connection']	: 'Local',
-					$i	? $storage['user']			: '-'
+					$i	? $storage_data['url']			: url_by_source(STORAGE),
+					$i	? $storage_data['host']			: 'localhost',
+					$i	? $storage_data['connection']	: 'Local',
+					$i	? $storage_data['user']			: '-'
 				),
 				array(
 					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
@@ -226,6 +225,7 @@ if (isset($rc[2])) {
 			)
 		);
 	}
+	unset($i, $storage_data);
 	$a->content(
 		$a->table(
 			$storage_list.
@@ -249,6 +249,7 @@ if (isset($rc[2])) {
 			)
 		)
 	);
+	unset($storage_list);
 }
 $test_dialog && $a->content(
 	$a->div(
@@ -260,5 +261,5 @@ $test_dialog && $a->content(
 		)
 	)
 );
-unset($a, $rc);
+unset($a, $rc, $test_dialog);
 ?>

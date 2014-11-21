@@ -57,11 +57,11 @@ if ($mode && $rc[2] == 'install') {
 	$a->apply = false;
 	$a->cancel_back = true;
 	$dbs = array(0);
-	$dbsname = array($L->core_db);
-	foreach ($Config->db as $i => $db_data) {
+	$dbs_name = array($L->core_db);
+	foreach ($Config->db as $i => &$db_data) {
 		if ($i) {
 			$dbs[] = $i;
-			$dbsname[] = $db_data['name'].' ('.$db_data['host'].' / '.$db_data['type'].')';
+			$dbs_name[] = $db_data['name'].' ('.$db_data['host'].' / '.$db_data['type'].')';
 		}
 	}
 	unset($i, $db_data);
@@ -84,7 +84,7 @@ if ($mode && $rc[2] == 'install') {
 				$L->$db_translate,
 				$a->select(
 					array(
-						'in'		=> $dbsname,
+						'in'		=> $dbs_name,
 						'value'		=> $dbs
 					),
 					array(
@@ -100,14 +100,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		);
 	}
-	unset($db_json, $dbsname, $dbs, $database, $db_translate);
-	global $Page;
-	$Page->Top .= $a->div(
-		$L->changing_settings_warning,
-		array(
-			'class'	=> 'red ui-state-default'
-		)
-	);
+	unset($db_json, $dbs_name, $dbs, $database, $db_translate);
 	$a->content(
 		$a->table(
 			$a->tr($db_list),
@@ -124,19 +117,27 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
+	unset($db_list);
+	global $Page;
+	$Page->Top .= $a->div(
+		$L->changing_settings_warning,
+		array(
+			'class'	=> 'red ui-state-error'
+		)
+	);
 } elseif ($mode && $rc[2] == 'storage' && isset($Config->components['modules'][$rc[3]]) && count($Config->storage) > 1) {
 	$a->buttons = true;
 	$a->apply = false;
 	$a->cancel_back = true;
 	$storages = array(0);
-	$storagesname = array($L->core_storage);
-	foreach ($Config->storage as $i => $storage_data) {
+	$storages_name = array($L->core_storage);
+	foreach ($Config->storage as $i => &$storage_data) {
 		if ($i) {
 			$storages[] = $i;
-			$storagesname[] = $storage_data['host'].'('.$storage_data['connection'].')';
+			$storages_name[] = $storage_data['host'].'('.$storage_data['connection'].')';
 		}
 	}
-	unset($i, $db_data);
+	unset($i, $storage_data);
 	$storage_list = $a->tr(
 		$a->td(
 			array(
@@ -156,7 +157,7 @@ if ($mode && $rc[2] == 'install') {
 				$L->$storage_translate,
 				$a->select(
 					array(
-						'in'		=> $storagesname,
+						'in'		=> $storages_name,
 						'value'		=> $storages
 					),
 					array(
@@ -172,14 +173,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		);
 	}
-	unset($storage_json, $storagesname, $storages, $storage, $storage_translate);
-	global $Page;
-	$Page->Top .= $a->div(
-		$L->changing_settings_warning,
-		array(
-			'class'	=> 'red ui-state-default'
-		)
-	);
+	unset($storage_json, $storages_name, $storages, $storage, $storage_translate);
 	$a->content(
 		$a->table(
 			$a->tr($storage_list),
@@ -196,13 +190,22 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
+	unset($storage_list);
+	global $Page;
+	$Page->Top .= $a->div(
+		$L->changing_settings_warning,
+		array(
+			'class'	=> 'red ui-state-error'
+		)
+	);
 } else {
+	unset($mode, $rc);
 	$db_users_data = $db->core()->columns('[prefix]users');
 	$db_users_items = array();
 	foreach ($db_users_data as $column) {
 		$db_users_items[] = $column['Field'];
 	}
-	unset($column, $db_users_data);
+	unset($db_users_data, $column);
 	$modules_list = $a->tr(
 		$a->td(
 			array(
@@ -215,7 +218,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	foreach ($Config->components['modules'] as $module => $mdata) {
+	foreach ($Config->components['modules'] as $module => &$mdata) {
 		//Когда модуль включен или отключен
 		if ($mdata['active'] == 1 || $mdata['active'] == 0) {
 			$addition_state = $action = '';
@@ -229,6 +232,7 @@ if ($mode && $rc[2] == 'install') {
 						$lost_columns[] = $db_users_item;
 					}
 				}
+				unset($db_users_item, $db_json);
 				if (!empty($lost_columns)) {
 					$addition_state .= $a->a(
 						$a->icon('alert'),
@@ -239,7 +243,7 @@ if ($mode && $rc[2] == 'install') {
 						)
 					);
 				}
-				unset($db_users_item, $lost_columns);
+				unset($lost_columns);
 				$action .= $a->a(
 					$a->button(
 						$a->icon('gear'),
@@ -433,6 +437,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		);
 	}
+	unset($module, $db_users_items, $addition_state, $action);
 	$a->content(
 		$a->table(
 			$modules_list,
@@ -450,7 +455,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	unset($db_users_items, $modules_list, $module, $mdata, $addition_state, $action, $db_json);
+	unset($modules_list);
 }
-unset($a, $rc, $mode);
+unset($a);
 ?>

@@ -27,11 +27,11 @@ class Language {
 	}
 	function set ($item, $value = '') {
 		if ($item == 'translate' && is_array($value)) {
-			foreach ($value as $i => $v) {
+			foreach ($value as $i => &$v) {
 				$this->set($i, $v);
 			}
 		} else {
-			$this->translate[$item] = &$value;
+			$this->translate[$item] = $value;
 		}
 	}
 	function __get ($item) {

@@ -128,8 +128,8 @@ class DB {
 				)
 			) {
 				$dbx = ($connection == 'core' ? $Config->db[0]['mirrors'] : $Config->db[$connection]['mirrors']);
-				foreach ($dbx as $i => $mirror) {
-					$mirror_connection = $this->connecting($connection.' ('.$mirror['name'].')', $mirror);
+				foreach ($dbx as $i => &$mirror_data) {
+					$mirror_connection = $this->connecting($connection.' ('.$mirror_data['name'].')', $mirror_data);
 					if (is_object($mirror_connection) && $mirror_connection->connected) {
 						$this->mirrors[$connection] = $mirror_connection;
 						//Ускоряем повторную операцию доступа к этой БД
@@ -137,8 +137,8 @@ class DB {
 						//Возвращаем ссылку на подключение
 						return $this->mirrors[$connection];
 					}
-					unset($mirror_connection);
 				}
+				unset($dbx, $i, $mirror_data, $mirror_connection);
 			}
 			//Если подключалось не зеркало - выводим ошибку подключения к БД
 			if (!is_array($mirror)) {

@@ -32,7 +32,7 @@ class Index extends HTML {
 	function __construct () {
 		global $Config, $L, $Page, $User, $Classes, $ADMIN, $API;
 		$Page->js('var language = "'.$L->clanguage.'", lang = "'.$L->clang.'";', 'code');
-		if (ADMIN && $User->is_admin()) {
+		if (ADMIN && $User->is('admin')) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.$ADMIN);
 			$this->form = true;
 			$this->admin = true;
@@ -46,7 +46,6 @@ class Index extends HTML {
 		foreach ($Config->components['plugins'] as $plugin) {
 			include_x(PLUGINS.DS.$plugin.DS.'index.php', true, false);
 		}
-		unset($plugin);
 	}
 	function init () {
 		if (file_exists(MFOLDER.DS.'index.json')) {
@@ -95,7 +94,7 @@ class Index extends HTML {
 		if ($Config->core['debug']) {
 			$Page->mainmenu .= '<a onClick="debug_window();" title="'.$L->debug.'">'.mb_substr($L->debug, 0, 1).'</a>&nbsp;';
 		}
-		if ($User->is_admin()) {
+		if ($User->is('admin')) {
 			$Page->mainmenu .= '<a href="'.$ADMIN.'" title="'.$L->administration.'">'.mb_substr($L->administration, 0, 1).'</a>&nbsp;';
 		}
 		$Page->mainmenu .= '<a href="/" title="'.$L->home.'">'.$L->home.'</a>';
@@ -107,13 +106,13 @@ class Index extends HTML {
 		global $Config, $L, $ADMIN;
 		foreach ($this->parts as $part) {
 			$this->mainsubmenu .= $this->a(
-									$L->$part,
-									array(
-										'id'		=> $part.'_a',
-										'href'		=> $ADMIN.'/'.MODULE.'/'.$part,
-										'class'		=> isset($Config->routing['current'][0]) && $Config->routing['current'][0] == $part ? 'active' : ''
-									)
-								);
+				$L->$part,
+				array(
+					'id'		=> $part.'_a',
+					'href'		=> $ADMIN.'/'.MODULE.'/'.$part,
+					'class'		=> isset($Config->routing['current'][0]) && $Config->routing['current'][0] == $part ? 'active' : ''
+				)
+			);
 		}
 	}
 	function menumore () {
@@ -127,14 +126,14 @@ class Index extends HTML {
 				$onClick = 'menuadmin(\''.$subpart.'\', false); return false;';
 			}
 			$this->menumore .= $this->a(
-									$L->$subpart,
-									array(
-										'id'		=> $subpart.'_a',
-										'href'		=> $ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
-										'class'		=> $Config->routing['current'][1] == $subpart ? 'active' : '',
-										'onClick'	=>	$onClick
-									)
-								);
+				$L->$subpart,
+				array(
+					'id'		=> $subpart.'_a',
+					'href'		=> $ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
+					'class'		=> $Config->routing['current'][1] == $subpart ? 'active' : '',
+					'onClick'	=>	$onClick
+				)
+			);
 		}
 	}
 	function generate () {
@@ -251,7 +250,7 @@ class Index extends HTML {
 			$Page->Top .= $Page->div(
 				$L->settings_save_error,
 				array(
-					'class'	=> 'red ui-state-highlight'
+					'class'	=> 'red ui-state-error'
 				)
 			);
 			return false;

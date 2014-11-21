@@ -40,7 +40,9 @@ header, footer {
 	-moz-border-radius: 5px;
 	z-index: 1;
 }
-div.ui-state-highlight.red, div.ui-state-highlight.green, #debug > p.ui-state-highlight {
+div.ui-state-highlight.red, div.ui-state-highlight.green, #debug > p.ui-state-highlight,
+div.ui-state-default.red, div.ui-state-default.green, #debug > p.ui-state-default,
+div.ui-state-error.red {
 	font-size: 14px;
 	margin: 10px;
 	margin-bottom: 20px;
