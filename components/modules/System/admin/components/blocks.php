@@ -92,7 +92,7 @@ if ($mode && $rc[2] == 'settings') {
 	$blocks_array = array(
 		'top'		=> array(),
 		'left'		=> array(),
-		'invisible'	=> array(),
+		'floating'	=> array(),
 		'right'		=> array(),
 		'bottom'	=> array()
 	);
@@ -113,7 +113,7 @@ if ($mode && $rc[2] == 'settings') {
 			$Config->components['blocks'][$block] = array(
 				'title'			=> $block,
 				'active'		=> 0,
-				'position'		=> 'invisible',
+				'position'		=> 'floating',
 				'position_id'	=> $num++,
 				'template'		=> 'default.html',
 				'permissions'	=> '',
@@ -128,20 +128,20 @@ if ($mode && $rc[2] == 'settings') {
 			h::{'div.blocks_items_title'}($block_data['title']).
 			h::a(
 				h::div(
-					h::icon($block_data['active'] ? 'minusthick' : 'check')
-				),
-				array(
-					'href'			=> $a->action.'/'.($block_data['active'] ? 'disable' : 'enable').'/'.$block,
-					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'}
-				)
-			).
-			h::a(
-				h::div(
 					h::icon('wrench')
 				),
 				array(
 					'href'			=> $a->action.'/settings/'.$block,
 					'data-title'	=> $L->edit.' '.$L->block
+				)
+			).
+			h::a(
+				h::div(
+					h::icon($block_data['active'] ? 'minusthick' : 'check')
+				),
+				array(
+					'href'			=> $a->action.'/'.($block_data['active'] ? 'disable' : 'enable').'/'.$block,
+					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'}
 				)
 			),
 			array(
@@ -181,7 +181,7 @@ if ($mode && $rc[2] == 'settings') {
 			).
 			h::tr(
 				$blocks_array['left'].
-				$blocks_array['invisible'].
+				$blocks_array['floating'].
 				$blocks_array['right']
 			).
 			h::tr(
@@ -197,5 +197,4 @@ if ($mode && $rc[2] == 'settings') {
 		)
 	);
 }
-unset($a);
-?>
+//TODO make add block function

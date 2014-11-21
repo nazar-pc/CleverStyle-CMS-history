@@ -103,8 +103,8 @@
 			$time_limit = array('max_execution_time' => ini_get('max_execution_time'), 'max_input_time' => ini_get('max_input_time'));
 		}
 		if ($pause) {
-			set_time_limit(0);
-			@ini_set('max_input_time', 0);
+			set_time_limit(900);
+			@ini_set('max_input_time', 900);
 		} else {
 			set_time_limit($time_limit['max_execution_time']);
 			@ini_set('max_input_time', $time_limit['max_input_time']);
@@ -423,6 +423,7 @@
 	 */
 	function flush_cache () {
 		$ok = true;
+		time_limit_pause();
 		$list = get_list(CACHE, false, 'fd', true, true, 'name|desc');
 		foreach ($list as $item) {
 			if (_is_writable($item)) {
@@ -433,11 +434,10 @@
 		}
 		unset($list, $item);
 		global $Cache;
-		if (is_object($Cache)) {
-			if ($Cache->memcache) {
-				$ok = $Cache->flush() && $ok;
-			}
+		if (is_object($Cache) && $Cache->memcache) {
+			$ok = $Cache->flush() && $ok;
 		}
+		time_limit_pause(false);
 		return $ok;
 	}
 	/**
@@ -446,6 +446,7 @@
 	 */
 	function flush_pcache () {
 		$ok = true;
+		time_limit_pause();
 		$list = get_list(PCACHE, false, 'fd', true, true, 'name|desc');
 		foreach ($list as $item) {
 			if (_is_writable($item)) {
@@ -458,7 +459,7 @@
 		if (_is_writable(CACHE.DS.'pcache_key')) {
 			_unlink(CACHE.DS.'pcache_key');
 		}
-		unset($list);
+		time_limit_pause(false);
 		return $ok;
 	}
 	/**
@@ -713,7 +714,12 @@
 	//Почти идеальная функция для защиты от XSS-атак
 	//Название xap - сокращено от XSS Attack Protection
 	function xap ($in, $html = 'text') {
-		if ($html === true) {
+		if (is_array($in)) {
+			foreach ($in as &$item) {
+				$item = xap($item, $html);
+			}
+			return $in;
+		} elseif ($html === true) {
 			//Делаем безопасный html
 			$in = preg_replace(
 				'/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i',
@@ -735,12 +741,11 @@
 				'/((src|href).*?=.*?)(http:\/\/)/i',
 				'\\1redirect/\\2',
 				$in
-			); //Обезвреживаем внешние ссылки
+			);
 			return $in;
 		} elseif ($html === false) {
 			return strip_tags($in);
 		} else {
-			//Приводим всё в вид для чтения
 			return htmlentities($in);
 		}
 	}
@@ -759,7 +764,6 @@
 			return $res;
 		}
 	}
-	//Функция для конвертации IPv4 и IPv6 адресов в hex значение для помещения в БД
 	/**
 	 * Function for convertion of Ipv4 and Ipv6 into hex values to store in db
 	 * @param string $ip

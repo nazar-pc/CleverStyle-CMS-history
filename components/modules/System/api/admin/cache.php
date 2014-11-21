@@ -11,18 +11,40 @@ if ($User->is('system') && isset($rc[2], $rc[3])) {
 	global $Page, $L;
 	if ($rc[2] == 'flush_cache') {
 		if (flush_cache()) {
-			global $Cache;
+			time_limit_pause();
+			if (!isset($rc[3]) && $Config->server['mirrors']['count'] > 1) {
+				global $API;
+				foreach ($Config->server['mirrors']['http'] as $url) {
+					@file_get_contents('http://'.$url.'/'.$API.'/System/admin/cache/flush_cache/1');
+				}
+				foreach ($Config->server['mirrors']['https'] as $url) {
+					@file_get_contents('https://'.$url.'/'.$API.'/System/admin/cache/flush_cache/1');
+				}
+				unset($url);
+			}
+			time_limit_pause(false);
 			$Cache->disable();
-			$Page->Content = h::div($L->done, array('class' =>'green'));
+			$Page->Content = h::p($L->done, array('class' =>'green'));
 		} else {
-			$Page->Content = h::div($L->error, array('class' =>'red'));
+			$Page->Content = h::p($L->error, array('class' =>'red'));
 		}
 	} elseif ($rc[2] == 'flush_pcache') {
 		if (flush_pcache()) {
-			$Page->Content = h::div($L->done, array('class' =>'green'));
+			time_limit_pause();
+			if (!isset($rc[3]) && $Config->server['mirrors']['count'] > 1) {
+				global $API;
+				foreach ($Config->server['mirrors']['http'] as $url) {
+					@file_get_contents('http://'.$url.'/'.$API.'/System/admin/cache/flush_pcache/1');
+				}
+				foreach ($Config->server['mirrors']['https'] as $url) {
+					@file_get_contents('https://'.$url.'/'.$API.'/System/admin/cache/flush_pcache/1');
+				}
+				unset($url);
+			}
+			time_limit_pause(false);
+			$Page->Content = h::p($L->done, array('class' =>'green'));
 		} else {
-			$Page->Content = h::div($L->error, array('class' =>'red'));
+			$Page->Content = h::p($L->error, array('class' =>'red'));
 		}
 	}
 }
-?>

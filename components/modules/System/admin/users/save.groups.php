@@ -1,5 +1,5 @@
 <?php
-if (!isset($_POST['mode'])) {
+/*if (!isset($_POST['mode'])) {
 	return;
 }
 global $Config, $Page, $Index, $User, $L;
@@ -20,10 +20,10 @@ if ($_POST['mode'] == 'edit_raw') {
 		'status',
 		'block_until',
 		'gender',
-		/*'country',
+		/ *'country',
 		'region',
 		'district',
-		'city',*/
+		'city',* /
 		'birthday',
 		'avatar',
 		'website',
@@ -96,4 +96,4 @@ if ($_POST['mode'] == 'edit_raw') {
 } elseif ($_POST['mode'] == 'activate') {
 	$User->set('status', 1, $_POST['id']);
 	$Index->save(true);
-}
+}*/

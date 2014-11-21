@@ -567,8 +567,12 @@ class h {
 	}
 	//Псевдо-элементы
 	static function info		($in = '', $data = array()) {
-		global $L;
-		return self::label($L->$in, array_merge(array('data-title' => $L->{$in.'_info'}), $data));
+		global $Config, $L;
+		if (is_object($Config) && $Config->core['show_tooltips']) {
+			return self::label($L->$in, array_merge(array('data-title' => $L->{$in.'_info'}), $data));
+		} else {
+			return self::label($L->$in, $data);
+		}
 	}
 	static function icon		($class, $data = array()) {
 		if (!isset($data['style'])) {

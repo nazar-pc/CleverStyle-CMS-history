@@ -68,10 +68,9 @@ if ($mode && $rc[2] == 'install') {
 	);
 	$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json as $database) {
-		$db_translate = $rc[3].'_db_'.$database;
 		$db_list[] = h::{'td.ui-state-default.ui-corner-all'}(
 			array(
-				$L->$db_translate,
+				$L->{$rc[3].'_db_'.$database},
 				h::{'select.form_element'}(
 					array(
 						'in'		=> $dbs_name,

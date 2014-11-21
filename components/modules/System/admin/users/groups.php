@@ -48,20 +48,22 @@ if (isset($rc[2], $rc[3])) {
 						'name'	=> 'group[id]',
 						'value'	=> $rc[3]
 					)
-				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'mode',
-						'value'	=> 'edit'
-					)
 				)
 			);
 		break;
 	}
+	$a->content(
+		h::{'input[type=hidden]'}(
+			array(
+				'name'	=> 'mode',
+				'value'	=> $rc[2]
+			)
+		)
+	);
 } else {
 	$a->buttons		= false;
 	$u_db			= $User->db();
-	$groups_ids		= $u_db->qfa('SELECT `id` FROM `[prefix]groups`');
+	$groups_ids		= $u_db->qfa('SELECT `id` FROM `[prefix]groups` ORDER BY `id`');
 	$groups_list	= h::tr(
 		h::{'th.ui-widget-header.ui-corner-all'}(
 			array(
@@ -96,7 +98,7 @@ if (isset($rc[2], $rc[3])) {
 			)
 		);
 	}
-	unset($users_list_template, $id, $action, $group_data, $groups_ids);
+	unset($id, $group_data, $groups_ids);
 	$a->content(
 		h::{'table.admin_table.center_all'}(
 			$groups_list

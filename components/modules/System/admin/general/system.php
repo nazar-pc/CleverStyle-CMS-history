@@ -50,16 +50,29 @@ $a->content(
 		).
 		h::tr(
 			h::td(h::info('title_reverse')).
-			h::td(
-				h::{'input[type=radio]'}(
-					array(
-						'name'			=> 'core[title_reverse]',
-						'checked'		=> $Config->core['title_reverse'],
-						'value'			=> array(0, 1),
-						'in'			=> array($L->off, $L->on)
+				h::td(
+					h::{'input[type=radio]'}(
+						array(
+							'name'			=> 'core[title_reverse]',
+							'checked'		=> $Config->core['title_reverse'],
+							'value'			=> array(0, 1),
+							'in'			=> array($L->off, $L->on)
+						)
 					)
 				)
-			)
+		).
+		h::tr(
+			h::td($L->show_tooltips).
+				h::td(
+					h::{'input[type=radio]'}(
+						array(
+							'name'			=> 'core[show_tooltips]',
+							'checked'		=> $Config->core['show_tooltips'],
+							'value'			=> array(0, 1),
+							'in'			=> array($L->off, $L->on)
+						)
+					)
+				)
 		).
 		h::tr(
 			h::td(h::info('debug')).

@@ -50,12 +50,6 @@ if (isset($rc[2], $rc[3])) {
 			$a->content(
 				h::{'table#users_raw_edit.admin_table.center_all'}(
 					$content
-				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'mode',
-						'value'	=> 'edit_raw'
-					)
 				)
 			);
 		break;
@@ -325,12 +319,6 @@ if (isset($rc[2], $rc[3])) {
 						'name'	=> 'user[id]',
 						'value'	=> $rc[3]
 					)
-				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'mode',
-						'value'	=> 'edit'
-					)
 				)
 			);
 		break;
@@ -348,15 +336,9 @@ if (isset($rc[2], $rc[3])) {
 						'value'	=> $rc[3]
 					)
 				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'mode',
-						'value'	=> 'deactivate'
-					)
-				).
 				h::{'button[type=submit]'}($L->yes)
 			);
-			break;
+		break;
 		case 'activate':
 			$a->buttons		= false;
 			$a->cancel_back	= true;
@@ -371,16 +353,18 @@ if (isset($rc[2], $rc[3])) {
 						'value'	=> $rc[3]
 					)
 				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'mode',
-						'value'	=> 'activate'
-					)
-				).
 				h::{'button[type=submit]'}($L->yes)
 			);
-			break;
+		break;
 	}
+	$a->content(
+		h::{'input[type=hidden]'}(
+			array(
+				'name'	=> 'mode',
+				'value'	=> $rc[2]
+			)
+		)
+	);
 } else {
 	$a->buttons		= false;
 	$u_db			= $User->db();
@@ -453,7 +437,7 @@ if (isset($rc[2], $rc[3])) {
 	$results_count	= $u_db->qf('SELECT COUNT(`id`) AS `count` FROM `[prefix]users` WHERE '.$where);
 	if ($results_count = $results_count['count']) {
 		$users_ids = $u_db->qfa(
-			'SELECT `id` FROM `[prefix]users` WHERE '.$where.' LIMIT '.($start*$limit).', '.$limit
+			'SELECT `id` FROM `[prefix]users` WHERE '.$where.' ORDER BY `id` LIMIT '.($start*$limit).', '.$limit
 		);
 	}
 	$users_list				= h::{'th.ui-widget-header.ui-corner-all'}(

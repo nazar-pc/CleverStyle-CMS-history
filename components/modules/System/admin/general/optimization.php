@@ -1,5 +1,5 @@
 <?php
-global $L, $Config, $Index, $Cache;
+global $L, $Config, $Index, $Cache, $API;
 $a = &$Index;
 $a->content(
 	h::table(
@@ -54,8 +54,8 @@ $a->content(
 						'add'			=> memcache() ? '' : ' disabled'
 				)
 			)
-		).
-*/		h::tr(
+		).*/
+		h::tr(
 			h::td(h::info('zlib_compression')).
 			h::td(
 				h::{'input[type=radio]'}(
@@ -151,7 +151,7 @@ $a->content(
 					array(
 						'onMouseDown'	=> $Cache->cache ? 'admin_cache('.
 							'\'#clean_cache\','.
-							'\''.$Config->server['base_url'].'/\'+api+\'/System/admin/cache/flush_cache\''.
+							'\''.$Config->server['base_url'].'/'.$API.'/System/admin/cache/flush_cache\''.
 						');' : '',
 						$Cache->cache ? '' : 'disabled'
 					)
@@ -163,7 +163,7 @@ $a->content(
 					array(
 						'onMouseDown'	=> $Config->core['cache_compress_js_css'] ? 'admin_cache('.
 							'\'#clean_pcache\','.
-							'\''.$Config->server['base_url'].'/\'+api+\'/System/admin/pcache/flush_pcache\''.
+							'\''.$Config->server['base_url'].'/'.$API.'/System/admin/cache/flush_pcache\''.
 						');' : '',
 						$Config->core['cache_compress_js_css'] ? '' : 'disabled'
 					)

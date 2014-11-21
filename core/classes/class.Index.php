@@ -90,13 +90,18 @@ class Index {
 				($this->parts && !in_array($rc[0], $this->parts)) ||
 				(!_file_exists(MFOLDER.DS.$rc[0]) && !_file_exists(MFOLDER.DS.$rc[0].'.php'))
 			) {
+				if (API) {
+					__finish();
+				}
 				$rc[0] = $this->parts[0];
 				if (isset($this->structure[$rc[0]]) && is_array($this->structure[$rc[0]])) {
 					$this->subparts = $this->structure[$rc[0]];
 				}
 			}
 			if (!$this->api) {
-				$Page->title($L->$rc[0]);
+				if (!HOME) {
+					$Page->title($L->$rc[0]);
+				}
 			}
 			if ($this->admin && !_include(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
 				_include(MFOLDER.DS.$this->savefile.'.php', true, false);
@@ -108,10 +113,15 @@ class Index {
 					($this->subparts && !in_array($rc[1], $this->subparts)) ||
 					!_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')
 				) {
+					if (API) {
+						__finish();
+					}
 					$rc[1] = $this->subparts[0];
 				}
 				if (!$this->api) {
-					$Page->title($L->$rc[1]);
+					if (!HOME) {
+						$Page->title($L->$rc[1]);
+					}
 					$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
 				}
 				_include(MFOLDER.DS.$rc[0].DS.$rc[1].'.php', true, false);

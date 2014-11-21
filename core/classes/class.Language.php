@@ -1,7 +1,6 @@
 <?php
 class Language {
 	public		$clanguage,								//Current language
-				$clang,									//Current language (short form)
 				$time = '';								//Closure for time processing
 	protected	$init = false,							//For single initialization
 				$translate = array(),					//Local cache of translations
@@ -124,7 +123,7 @@ class Language {
 					$this->init($Config->core['active_languages'], $language);
 				}
 				return true;
-			} elseif (_include(LANGUAGES.'/lang.'.$this->clanguage.'.json', false, false)) {
+			} elseif (_include(LANGUAGES.'/lang.'.$this->clanguage.'.php', false, false)) {
 				return true;
 			}
 		}

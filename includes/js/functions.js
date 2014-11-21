@@ -1,5 +1,4 @@
-var	save = false,
-	cache_interval;
+var	save = false;
 function menuadmin (item, direct_link) {
 	var url = direct_link ? item : current_base_url+'/'+item;
 	if (!save) {
@@ -19,7 +18,7 @@ function debug_window () {
 	$('#debug').dialog('open');
 }
 function admin_cache (element, action) {
-	cache_interval	= setInterval(function () {progress(element)}, 100);
+	var cache_interval	= setInterval(function () {progress(element)}, 100);
 	$(element).html('').progressbar(
 		{value: 1}
 	).load(
@@ -115,14 +114,14 @@ $(function () {
 					json_encode({
 						top:		$('#top_blocks_items').sortable('toArray'),
 						left:		$('#left_blocks_items').sortable('toArray'),
-						invisible:	$('#invisible_blocks_items').sortable('toArray'),
+						floating:	$('#floating_blocks_items').sortable('toArray'),
 						right:		$('#right_blocks_items').sortable('toArray'),
 						bottom:		$('#bottom_blocks_items').sortable('toArray')
 					})
 				);
 			}
 		);
-		$('#top_blocks_items, #left_blocks_items, #invisible_blocks_items, #right_blocks_items, #bottom_blocks_items').sortable({
+		$('#top_blocks_items, #left_blocks_items, #floating_blocks_items, #right_blocks_items, #bottom_blocks_items').sortable({
 			connectWith:	'.blocks_items',
 			placeholder:	'ui-state-default',
 			items:			'li:not(.ui-state-disabled)',
