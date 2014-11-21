@@ -151,7 +151,7 @@ if (isset($rc[2])) {
 				).
 				h::a(
 					h::{'button.compact'}(
-						h::icon('close'),
+						h::icon('trash'),
 						array(
 							'data-title'	=> $L->delete.' '.$L->storage
 						)

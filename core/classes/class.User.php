@@ -215,7 +215,7 @@ class User {
 			$result = $new_items = array();
 			//Пытаемся достать значения с локального кеша, иначе составляем массив недостающих значений
 			foreach ($item as $i) {
-				if (!in_array($i, $this->users_columns)) {
+				if (in_array($i, $this->users_columns)) {
 					if (($res = $this->get($i, $user, $_stop_key)) != $_stop_key) {
 						$result[$i] = $res;
 					} else {

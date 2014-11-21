@@ -168,7 +168,7 @@ a.nul:visited {
 }
 
 .info {
-	cursor : help;
+	/*cursor : help;*/
 }
 
 .pointer,
@@ -298,6 +298,9 @@ td.left_all {
 .block_add input[type=text],
 .storage_add input {
 	width : auto !important;
+}
+.user_edit {
+	width: 250px;
 }
 
 .php_components,

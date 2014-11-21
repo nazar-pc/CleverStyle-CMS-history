@@ -1,8 +1,8 @@
 <?php
 global $Config, $Index, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE, $ADMIN;
-$a = &$Index;
-$rc = &$Config->routing['current'];
-$test_dialog = false;
+$a				= &$Index;
+$rc				= &$Config->routing['current'];
+$test_dialog	= false;
 if (isset($rc[2])) {
 	$a->apply = false;
 	$a->cancel_back = true;
@@ -230,7 +230,7 @@ if (isset($rc[2])) {
 				).
 				h::a(
 					h::{'button.compact'}(
-						h::icon('close'),
+						h::icon('trash'),
 						array(
 							'data-title'	=> $L->delete.' '.$L->db
 						)
@@ -285,7 +285,7 @@ if (isset($rc[2])) {
 						).
 						h::a(
 							h::{'button.compact'}(
-								h::icon('close'),
+								h::icon('trash'),
 								array(
 									'data-title'	=> $L->delete.' '.$L->mirror.' '.$L->of_db
 								)
@@ -386,4 +386,3 @@ $test_dialog && $a->content(
 		)
 	)
 );
-?>

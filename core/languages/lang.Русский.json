@@ -401,6 +401,7 @@
 		"all_columns"				: "Все столбцы",
 		"founded_users"				: "Найдено %d пользователя(ей)",
 		"page_from"					: "Страница %d с %d",
+		"edit_user_data"			: "Редактировать данные пользователя",
 		//Groups
 		"groups"	: "Группы",
 		//Permissios
