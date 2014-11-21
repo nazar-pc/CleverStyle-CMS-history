@@ -82,7 +82,10 @@ if (USE_CUSTOM) {
 }
 //Автозагрузка необходимых классов
 function __autoload ($class) {
-	require_x(CLASSES.DS.'class.'.$class.'.php', true, false) || require_x(DB.DS.'db.'.$class.'.php', true, false) || require_x(STORAGE.DS.'storage.'.$class.'.php', true, false);
+	require_x(CLASSES.DS.'class.'.$class.'.php', true, false) ||
+	require_x(ENGINES.DS.'db.'.$class.'.php', true, false) ||
+	require_x(ENGINES.DS.'storage.'.$class.'.php', true, false) ||
+	require_x(ENGINES.DS.$class.'.php', true, false);
 }
 //Функция для корректной остановки выполнения из любого места движка
 function __finish () {
@@ -186,7 +189,7 @@ function flush_cache () {
 		if ($Cache->memcache) {
 			$ok = $Cache->flush() && $ok;
 		}
-		$Cache->disable();
+		//$Cache->disable();
 	}
 	return $ok;
 }

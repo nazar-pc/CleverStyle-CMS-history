@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['edit_settings'])) {
-	global $Config, $db, $Page, $L;
+	global $Config, $db, $Page, $L, $Admin;
 	$apply_error = false;
 	if ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save') {
 		foreach ($Config->admin_parts as $part) {
@@ -24,68 +24,30 @@ if (isset($_POST['edit_settings'])) {
 			}
 		}
 	}
-	if ($_POST['edit_settings'] == 'apply') {
+	if ($_POST['edit_settings'] == 'apply' && $Cache->cache) {
 		global $Cache;
-		if ($Config->rebuild_cache()) {
+		if ($Admin->applied($Config->rebuild_cache(false))) {
 			$Config->init();
 			if (isset($_POST['visual_style'])) {
 				flush_pcache();
 			}
-			$Page->title($L->settings_applied);
-			$Page->Top .= $Page->div(
-				$L->settings_applied.$L->check_applied,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
 			$Page->js("\$(document).ready(function(){save = true;});\n", 'code');
-			global $Admin;
 			$Admin->cancel = '';
 		} else {
-			$Page->title($L->settings_apply_error);
-			$Page->Top .= $Page->div(
-				$L->settings_apply_error,
-				array(
-					'class'	=> 'red ui-state-highlight'
-				)
-			);
 			$apply_error = true;
 		}
 	} elseif ($_POST['edit_settings'] == 'save' && isset($update)) {
-		if ($db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $update).' WHERE `domain` = '.sip(CDOMAIN))) {
-			$Page->title($L->settings_saved);
-			$Page->Top .= $Page->div(
-				$L->settings_saved,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
+		if ($Admin->saved($db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $update).' WHERE `domain` = '.sip(CDOMAIN)))) {
 			flush_cache();
 			$Config->rebuild_cache();
 			if (isset($_POST['visual_style'])) {
 				flush_pcache();
 			}
-		} else {
-			$Page->title($L->settings_save_error);
-			$Page->Top .= $Page->div(
-				$L->settings_save_error,
-				array(
-					'class'	=> 'red ui-state-highlight'
-				)
-			);
 		}
 	}
-	if ($_POST['edit_settings'] == 'cancel' || ($_POST['edit_settings'] == 'apply' && $apply_error)) {
+	if (($_POST['edit_settings'] == 'cancel' && $Cache->cache) || ($_POST['edit_settings'] == 'apply' && $Cache->cache && $apply_error)) {
 		flush_cache();
-		if (!$apply_error) {
-			$Page->title($L->settings_canceled);
-			$Page->Top .= $Page->div(
-				$L->settings_canceled,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
-		}
+		$Admin->canceled();
 	}
 }
 ?>

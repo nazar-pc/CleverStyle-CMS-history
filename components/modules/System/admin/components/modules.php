@@ -5,6 +5,7 @@ $rc = &$Config->routing['current'];
 $a->buttons = false;
 $mode = isset($rc[2], $rc[3]) && !empty($rc[2]) && !empty($rc[3]);
 if ($mode && $rc[2] == 'install') {
+	$a->cancel_back = true;
 	$a->content(
 		$a->p(
 			$L->installation_of_module.' '.$a->b($rc[3])
@@ -19,13 +20,6 @@ if ($mode && $rc[2] == 'install') {
 				'type'		=> 'submit'
 			)
 		).
-		$a->button(
-			$L->cancel,
-			array(
-				'type'		=> 'button',
-				'onClick'	=> 'history.go(-1);'
-			)
-		).
 		$a->input(
 			array(
 				'name'		=> 'module',
@@ -35,6 +29,7 @@ if ($mode && $rc[2] == 'install') {
 		)
 	);
 } elseif ($mode && $rc[2] == 'uninstall') {
+	$a->cancel_back = true;
 	$a->content(
 		$a->p(
 			$L->uninstallation_of_module.' '.$a->b($rc[3])
@@ -49,13 +44,6 @@ if ($mode && $rc[2] == 'install') {
 				'type'		=> 'submit'
 			)
 		).
-		$a->button(
-			$L->cancel,
-			array(
-				'type'		=> 'button',
-				'onClick'	=> 'history.go(-1);'
-			)
-		).
 		$a->input(
 			array(
 				'name'		=> 'module',
@@ -64,20 +52,20 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-} elseif ($mode && $rc[2] == 'db' && count($Config->db) > 1) {
+} elseif ($mode && $rc[2] == 'db' && isset($Config->components['modules'][$rc[3]]) && count($Config->db) > 1) {
 	$a->buttons = true;
 	$a->apply_button = false;
-	$Config->components['modules'][$rc[3]];
+	$a->cancel_back = true;
 	$dbs = array(0);
 	$dbsname = array($L->core_db);
 	foreach ($Config->db as $i => $db_data) {
 		if ($i) {
 			$dbs[] = $i;
-			$dbsname[] = $db_data['name'];
+			$dbsname[] = $db_data['name'].' ('.$db_data['host'].' / '.$db_data['type'].')';
 		}
 	}
 	unset($i, $db_data);
-	$db_list[] = $a->tr(
+	$db_list = $a->tr(
 		$a->td(
 			array(
 				$a->info('module_db'),
@@ -88,10 +76,10 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	$db_json = (array)json_decode(file_get_contents(MODULES.DS.$rc[3].DS.'admin'.DS.'db.json'));
+	$db_json = (array)json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
-		$db_list[] = $a->td(
+		$db_list .= $a->td(
 			array(
 				$L->$db_translate,
 				$a->select(
@@ -136,15 +124,78 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	$a->post_buttons = $a->button(
-		$L->cancel,
-		array(
-			'type'		=> 'button',
-			'onClick'	=> 'history.go(-1);'
+} elseif ($mode && $rc[2] == 'storage' && isset($Config->components['modules'][$rc[3]]) && count($Config->storage) > 1) {
+	$a->buttons = true;
+	$a->apply_button = false;
+	$a->cancel_back = true;
+	$storages = array(0);
+	$storagesname = array($L->core_storage);
+	foreach ($Config->storage as $i => $storage_data) {
+		if ($i) {
+			$storages[] = $i;
+			$storagesname[] = $storage_data['host'].'('.$storage_data['connection'].')';
+		}
+	}
+	unset($i, $db_data);
+	$storage_list = $a->tr(
+		$a->td(
+			array(
+				$a->info('module_storage'),
+				$a->info('system_storage')
+			),
+			array(
+				'class'	=> 'ui-widget-header ui-corner-all'
+			)
 		)
 	);
-} elseif ($mode && $rc[2] == 'storage' && count($Config->storage) > 1) {
-	
+	$storage_json = (array)json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
+	foreach ($storage_json as $storage) {
+		$storage_translate = $rc[3].'_storage_'.$storage;
+		$storage_list .= $a->td(
+			array(
+				$L->$storage_translate,
+				$a->select(
+					array(
+						'in'		=> $storagesname,
+						'value'		=> $storages
+					),
+					array(
+						'name'		=> 'db['.$storage.']',
+						'selected'	=> isset($Config->components['modules'][$rc[3]]['storage'][$storage]) ? $Config->components['modules'][$rc[3]]['storage'][$storage] : 0,
+						'size'		=> 5,
+						'class'		=> 'form_element'
+					)
+				)
+			),
+			array(
+				'class'	=> 'ui-state-highlight ui-corner-all'
+			)
+		);
+	}
+	unset($storage_json, $storagesname, $storages, $storage, $storage_translate);
+	global $Page;
+	$Page->Top .= $a->div(
+		$L->changing_settings_warning,
+		array(
+			'class'	=> 'red ui-state-highlight'
+		)
+	);
+	$a->content(
+		$a->table(
+			$a->tr($storage_list),
+			array(
+				'style'	=> 'width: 100%;',
+				'class'	=> 'admin_table'
+			)
+		).
+		$a->input(
+			array(
+				'name'		=> 'module',
+				'type'		=> 'hidden',
+				'value'		=> $rc[3]
+			)
+		)
+	);
 } else {
 	$db_users_data = $db->core()->columns('[prefix]users', false, MYSQL_ASSOC);
 	$db_users_items = array();
@@ -167,8 +218,8 @@ if ($mode && $rc[2] == 'install') {
 	foreach ($Config->components['modules'] as $module => $mdata) {
 		$addition_state = $action = '';
 		$db_json = array();
-		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.'admin'.DS.'db.json') && count($Config->db) > 1) {
-			$db_json = (array)json_decode(file_get_contents(MODULES.DS.$module.DS.'admin'.DS.'db.json'));
+		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
+			$db_json = (array)json_decode(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
 			$lost_columns = array();
 			foreach ($db_json['users'] as $db_users_item) {
 				if (!in_array($db_users_item, $db_users_items)) {
@@ -200,7 +251,7 @@ if ($mode && $rc[2] == 'install') {
 		}
 		//Когда модуль включен или отключен
 		if ($mdata['active'] == 1 || $mdata['active'] == 2) {
-			$action .= (file_exists(MODULES.DS.$module.DS.'admin'.DS.'storage.json') && count($Config->storage) > 1 ?
+			$action .= (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1 ?
 				$a->a(
 					$a->button(
 						$a->icon('disk'),
@@ -214,7 +265,7 @@ if ($mode && $rc[2] == 'install') {
 					)
 				) : '');
 			if (mb_strtolower($module) != 'system') {
-				$action .= $a->a(
+				$action .= (is_dir(MODULES.DS.$module.DS.$ADMIN) ? $a->a(
 					$a->button(
 						$a->icon('wrench'),
 						array(
@@ -222,10 +273,10 @@ if ($mode && $rc[2] == 'install') {
 						)
 					),
 					array(
-						'href'		=> ADMIN.'/'.$module,
+						'href'		=> $ADMIN.'/'.$module,
 						'class'		=> 'nul'
 					)
-				).
+				) : '').
 				$a->a(
 					$a->button(
 						$a->icon($mdata['active'] == 1 ? 'minusthick' : 'check'),

@@ -5,22 +5,9 @@ class Storage {
 				$false_connections		= array(),
 				$connections			= array();
 
-	function __construct () {
-		//Подключаем абстрактную модель хранилища
-		if (!class_exists('StorageAbstract')) {
-			include_x(DB.DS.'DatabaseAbstract.php', 1);
-		}
-		//Делаем ссылку на данный объект как на объект хранилища ядра
-		//Все функции будут работать через Storage::__call
-		$this->core = $this;
-	}
 	//Обработка подключений к хранилищам
 	function __get ($connection) {
 		return $this->connecting($connection);
-	}
-	//Обработка функций для хранилища ядра
-	function __call ($function, $parameters) {
-		return call_user_func_array($function, $parameters);
 	}
 	//Обработка всех подключений к хранилищам
 	protected function connecting($connection) {
@@ -96,5 +83,6 @@ class Storage {
 			return false;
 		}
 	}
+	
 }
 ?>

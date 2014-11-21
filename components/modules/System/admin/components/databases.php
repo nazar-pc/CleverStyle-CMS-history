@@ -1,10 +1,11 @@
 <?php
-global $Config, $Admin, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE;
+global $Config, $Admin, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE, $ADMIN;
 $a = &$Admin;
 $rc = &$Config->routing['current'];
 $test_dialog = true;
 if (isset($rc[2])) {
 	$a->apply_button = false;
+	$a->cancel_back = true;
 	if ($rc[2] == 'add' || ($rc[2] == 'edit' && isset($rc[3]))) {
 		if ($rc[2] == 'edit') {
 			if (isset($rc[4])) {
@@ -22,7 +23,7 @@ if (isset($rc[2])) {
 				}
 			}
 		}
-		$a->action = ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
+		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
 			$a->table(
 				$a->tr(
@@ -69,7 +70,7 @@ if (isset($rc[2])) {
 							),
 							$a->select(
 								array(
-									'in'		=> filter(get_list(DB, '/^db\.[0-9a-z_\-]*?\.php$/i', 'f'), 'substr', 3, -4)
+									'in'		=> filter(get_list(ENGINES, '/^db\.[0-9a-z_\-]*?\.php$/i', 'f'), 'substr', 3, -4)
 								),
 								array(
 									'name'		=> 'db[type]',
@@ -151,36 +152,30 @@ if (isset($rc[2])) {
 		}
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
-		$a->action = ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
+		$a->cancel_back = true;
+		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
-			$a->table(
-				$a->tr(
-					$a->td(
-						$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' <b>'.
-						(
-							isset($rc[4]) ?$Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']).
-							' ('.(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['host'] : $Config->db[$rc[3]]['host']).
-							'/'.(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['type'] : $Config->db[$rc[3]]['type']
-						).
-						')</b>?'
-					)
+			$a->p(
+				$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' '.
+				$a->b(
+					isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']
 				).
-				$a->tr(
-					$a->td(
-						$a->button(array('in'	=> $L->yes,		'type'	=> 'submit')).
-						$a->button(array('in'	=> $L->no,		'type'	=> 'button',	'onClick'	=> 'history.go(-1);')).
-						$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-						$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $rc[3])).
-						(isset($rc[4]) ?
-						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
-						: '')
-					)
-				),
+				' ('.
+				(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['host'] : $Config->db[$rc[3]]['host']).
+				'/'.
+				(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['type'] : $Config->db[$rc[3]]['type']).
+				')?'.
+				$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
+				$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $rc[3])).
+				(isset($rc[4]) ?
+					$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
+				: ''),
 				array(
 					'style'	=> 'width: 100%',
-					'class'	=> 'admin_table center_all'
+					'class'	=> 'center_all'
 				)
-			)
+			).
+			$a->button(array('in' => $L->yes, 'type' => 'submit'))
 		);
 	} elseif ($rc[2] == 'test') {
 		define('nointerface', true);
@@ -294,7 +289,7 @@ if (isset($rc[2])) {
 								)
 							),
 							array(
-								'href'		=> 'admin/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/edit/'.$i.'/'.$m,
+								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/edit/'.$i.'/'.$m,
 								'class'		=> 'nul'
 							)
 						).
@@ -306,7 +301,7 @@ if (isset($rc[2])) {
 								)
 							),
 							array(
-								'href'		=> 'admin/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/delete/'.$i.'/'.$m,
+								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/delete/'.$i.'/'.$m,
 								'class'		=> 'nul'
 							)
 						).
@@ -352,7 +347,7 @@ if (isset($rc[2])) {
 					$a->button(
 						$L->add_database,
 						array(
-							'onMouseDown' => 'javasript: location.href= \'admin/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/add\';'
+							'onMouseDown' => 'javasript: location.href= \''.$ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/add\';'
 						)
 					).$a->br(),
 					array(

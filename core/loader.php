@@ -1,5 +1,5 @@
 <?php
-global $timeload, $Classes, $loader_init_memory;
+global $Classes, $loader_init_memory;
 //error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
 //error_reporting(0);
@@ -8,23 +8,22 @@ ini_set('display_errors', 1);
 mb_internal_encoding("UTF-8");
 
 //Задание базовых констант с путями системных папок
-define('DOMAIN', $_SERVER['HTTP_HOST']);			//Доменное имя текущего сайта
-define('CORE', DIR.DS.'core');						//Папка ядра
-	define('CLASSES', CORE.DS.'classes');			//Папка с классами
-	define('CONFIG', CORE.DS.'config');				//Папка конфигурации
-	define('DB', CORE.DS.'db_engines');				//Папка с движками БД
-	define('STORAGE', CORE.DS.'storage_engines');	//Папка с движками хранилищ
-	define('LANGUAGES', CORE.DS.'languages');		//Папка с языковыми файлами
-define('INCLUDES', DIR.DS.'includes');				//Папка с включениями
-	define('PCACHE', INCLUDES.DS.'cache');			//Папка с публичным кешем (доступным пользователю извне)
-	define('CSS', INCLUDES.DS.'css');				//Папка с CSS включениями
-	define('JS', INCLUDES.DS.'js');					//Папка с JavaScript включениями
-define('LOGS', DIR.DS.'logs');						//Папка для логов
-define('COMPONENTS', DIR.DS.'components');			//Папка для компонентов
-define('BLOCKS', COMPONENTS.DS.'blocks');			//Папка для блоков
-define('MODULES', COMPONENTS.DS.'modules');			//Папка для модулей
-define('PLUGINS', COMPONENTS.DS.'plugins');			//Папка для плагинов
-define('THEMES', DIR.DS.'themes');					//Папка с темами
+define('DOMAIN', $_SERVER['HTTP_HOST']);		//Доменное имя текущего сайта
+define('CORE', DIR.DS.'core');					//Папка ядра
+	define('CLASSES', CORE.DS.'classes');		//Папка с классами
+	define('CONFIG', CORE.DS.'config');			//Папка конфигурации
+	define('ENGINES', CORE.DS.'engines');		//Папка с движками БД и хранилищ
+	define('LANGUAGES', CORE.DS.'languages');	//Папка с языковыми файлами
+define('INCLUDES', DIR.DS.'includes');			//Папка с включениями
+	define('PCACHE', INCLUDES.DS.'cache');		//Папка с публичным кешем (доступным пользователю извне)
+	define('CSS', INCLUDES.DS.'css');			//Папка с CSS включениями
+	define('JS', INCLUDES.DS.'js');				//Папка с JavaScript включениями
+define('LOGS', DIR.DS.'logs');					//Папка для логов
+define('COMPONENTS', DIR.DS.'components');		//Папка для компонентов
+define('BLOCKS', COMPONENTS.DS.'blocks');		//Папка для блоков
+define('MODULES', COMPONENTS.DS.'modules');		//Папка для модулей
+define('PLUGINS', COMPONENTS.DS.'plugins');		//Папка для плагинов
+define('THEMES', DIR.DS.'themes');				//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы
 require_x(CORE.DS.'required_verions.php');

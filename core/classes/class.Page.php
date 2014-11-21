@@ -109,16 +109,16 @@ class Page extends HTML {
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
-			$this->core_css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : "\n".$this->core_css[1], array('type' => 'text/css'));
+			$this->core_css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1], array('type' => 'text/css'));
 		}
 		if ($this->css[1]) {
-			$this->css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : "\n".$this->css[1], array('type' => 'text/css'));
+			$this->css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1], array('type' => 'text/css'));
 		}
 		if ($this->core_js[1]) {
-			$this->core_js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : "\n".$this->core_js[1]);
+			$this->core_js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1]);
 		}
 		if ($this->js[1]) {
-			$this->js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : "\n".$this->js[1]);
+			$this->js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1]);
 		}
 		$this->Head =	$this->swrap($this->Title[0], array('id' => 'page_title'), 'title').
 						$this->meta(array('http-equiv'	=> 'Content-Type',	'content'	=> 'text/html; charset=utf-8')).
@@ -213,13 +213,13 @@ class Page extends HTML {
 				if ($mode == 'file') {
 					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
 				} elseif ($mode == 'code') {
-					$this->core_js[1] .= $this->level($add);
+					$this->core_js[1] .= $add;
 				}
 			} else {
 				if ($mode == 'file') {
 					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
 				} elseif ($mode == 'code') {
-					$this->js[1] .= $this->level($add);
+					$this->js[1] .= $add;
 				}
 			}
 		}
@@ -405,8 +405,8 @@ class Page extends HTML {
 	protected function debug () {
 		global $Config, $L, $db;
 		$span = array(
-					0	=> $this->span(false, array('class'	=> 'ui-icon ui-icon-triangle-1-e',	'style'	=> 'display: inline-block;',	'level'	=> 0)),
-					1	=> $this->span(false, array('class'	=> 'ui-icon ui-icon-triangle-1-se',	'style'	=> 'display: inline-block;',	'level'	=> 0))
+					0	=> $this->span(array('class'	=> 'ui-icon ui-icon-triangle-1-e',	'style'	=> 'display: inline-block;',	'level'	=> 0)),
+					1	=> $this->span(array('class'	=> 'ui-icon ui-icon-triangle-1-se',	'style'	=> 'display: inline-block;',	'level'	=> 0))
 		);
 		//Объекты
 		if ($Config->core['show_objects_data']) {

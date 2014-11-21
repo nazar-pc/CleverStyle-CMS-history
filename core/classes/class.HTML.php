@@ -30,7 +30,7 @@ abstract class HTML {
 			$in = $data['in'];
 			unset($data['in']);
 		}	
-		if (isset($data['data-title'])) {
+		if (isset($data['data-title']) && $data['data-title']) {
 			$data_title = $data['data-title'];
 			if (isset($data['class'])) {
 				$data['class'] .= ' info';
@@ -116,7 +116,7 @@ abstract class HTML {
 			$in = $data['in'];
 			unset($data['in']);
 		}
-		if (isset($data['data-title'])) {
+		if (isset($data['data-title']) && $data['data-title']) {
 			$data_title = $data['data-title'];
 			unset($data['data-title']);
 		}

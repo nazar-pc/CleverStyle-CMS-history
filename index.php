@@ -9,7 +9,6 @@
 //Задаем время старта выполнения для использования при необходимости как текущего времени
 define('MICROTIME', microtime(true));		//Время в секундах (с плавающей точкой)
 define('TIME', round(MICROTIME));			//Время в секундах (целое число)
-global $timeload;
 $timeload = array();
 $timeload['start'] = MICROTIME;
 

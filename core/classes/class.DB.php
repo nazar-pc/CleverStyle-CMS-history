@@ -15,10 +15,6 @@ class DB {
 		$this->DB_USER = $DB_USER;
 		$this->DB_PASSWORD = $DB_PASSWORD;
 		unset($DB_USER, $DB_PASSWORD);
-		//Подключаем абстрактную модель БД
-		if (!class_exists('DatabaseAbstract')) {
-			include_x(DB.DS.'DatabaseAbstract.php', 1);
-		}
 	}
 	//Обработка запросов получения данных БД
 	//При соответствующей настройке срабатывает балансировка нагрузки на БД

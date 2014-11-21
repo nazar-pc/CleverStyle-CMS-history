@@ -84,7 +84,7 @@ class Config {
 			define('API', false);
 			if (mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
 				if (!defined('ADMIN')) {
-					define('ADMIN', $ADMIN);
+					define('ADMIN', true);
 				}
 				array_shift($r['current']);
 			} else {
@@ -101,7 +101,7 @@ class Config {
 					define('MODULE', 'System');
 				}
 			}
-			$this->server['current_url'] = (ADMIN ? ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
+			$this->server['current_url'] = (ADMIN ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
 		}
 		unset($r);
 	}
@@ -141,36 +141,34 @@ class Config {
 		unset($langlist, $langnames);
 	}
 	//Перестройка кеша настроек
-	function rebuild_cache ($query = '') {
+	function rebuild_cache ($query = true) {
 		global $Error, $Cache;
-		//Загрузка недостающих данных
-		global $db;
-		if (!is_array($query)) {
-			$query = $this->admin_parts;
-			foreach ($query as $id => $q) {
-				$query[$id] = '`'.$q.'`';
+		if ($query !== false) {//Загрузка недостающих данных
+			global $db;
+			if (!is_array($query)) {
+				$query = $this->admin_parts;
+				foreach ($query as $id => $q) {
+					$query[$id] = '`'.$q.'`';
+				}
 			}
-		}
-		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), false, 1);
-		foreach ($query as $q) {
-			$q = trim($q, '`');
-			if ($q == 'routing' && isset($this->routing['current'])) {
-				$current_routing = $this->routing['current'];
+			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), false, 1);
+			foreach ($query as $q) {
+				$q = trim($q, '`');
+				if ($q == 'routing' && isset($this->routing['current'])) {
+					$current_routing = $this->routing['current'];
+				}
+				$this->$q = unserialize($result[$q]);
 			}
-			$this->$q = unserialize($result[$q]);
-		}
-		if (isset($current_routing)) {
-			$this->routing['current'] = $current_routing;
-			unset($current_routing);
+			if (isset($current_routing)) {
+				$this->routing['current'] = $current_routing;
+				unset($current_routing);
+			}
 		}
 		$this->reload_themes();
 		$this->reload_languages();
 		$this->init();
 		//Перезапись кеша
 		if ((is_object($Error) && !$Error->num()) || !is_object($Error) && $Cache->cache) {
-			if (file_exists($this->cache_file)) {
-				unlink($this->cache_file);
-			}
 			foreach ($this->admin_parts as $part) {
 				$config[$part] = $this->$part;
 			}

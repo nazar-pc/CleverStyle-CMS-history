@@ -7,12 +7,12 @@ class Core {
 				$support;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
-		if (require_x(CONFIG.DS.DOMAIN.DS.'main.php', true)) {
+		if (require_x(CONFIG.DS.DOMAIN.DS.'main.php', true, false)) {
 			define('CACHE', CORE.DS.'cache'.DS.CDOMAIN);	//Папка с кешем
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_USER, $DB_PASSWORD, $DB_PREFIX, $DB_CODEPAGE, $KEY;
 			if(!is_dir(CACHE)) {
 				if (!mkdir(CACHE, 0600)) {
-					header("HTTP/1.0 404 Not Found");
+					header('HTTP/1.0 404 Not Found');
 					__finish();
 				}
 			}
@@ -22,7 +22,7 @@ class Core {
 			}
 			unset($KEY);
 		} else {
-			header("HTTP/1.0 404 Not Found");
+			header('HTTP/1.0 404 Not Found');
 			__finish();
 		}
 	}
