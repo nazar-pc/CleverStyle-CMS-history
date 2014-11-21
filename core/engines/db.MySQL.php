@@ -107,7 +107,7 @@ class MySQL extends DatabaseAbstract {
 	//Почти идеальная функция для защиты от SQL-инъекций
 	//Название sip - сокращено от SQL Injection Protection
 	function sip ($data) {
-		return "unhex('".bin2hex($data)."')";
+		return "unhex('".bin2hex((string)$data)."')";
 	}
 	//Информация о MySQL-сервере
 	function server () {

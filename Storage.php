@@ -54,11 +54,11 @@ switch ($data['function']) {
 		exit(_mkdir(STORAGE.DS.$data['pathname']));
 	case 'rmdir':
 		exit(_rmdir(STORAGE.DS.$data['dirname']));
-	case 'test':
-		exit('OK');
 	case 'is_file':
 		exit(_is_file(STORAGE.DS.$data['filename']));
 	case 'is_dir':
 		exit(_is_dir(STORAGE.DS.$data['filename']));
+	case 'test':
+		exit('OK');
 }
 ?>

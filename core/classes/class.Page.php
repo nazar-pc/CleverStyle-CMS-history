@@ -34,15 +34,8 @@ class Page extends HTML {
 					'post_Body'			=> 2
 				);
 
-	protected	$Search		= array(),
-				$Replace	= array(),
-				$CssMin		= array(
-					'convert-named-color-values'	=> true,
-					'convert-hsl-color-values'		=> true,
-					'convert-rgb-color-values'		=> true,
-					'compress-color-values'			=> true,
-					'compress-unit-values'			=> true
-				);
+	private		$Search		= array(),
+				$Replace	= array();
 	
 	function __construct () {
 		global $interface;
@@ -69,7 +62,7 @@ class Page extends HTML {
 			}
 		}
 		//Задание названия файлов кеша
-		$this->cache_list = $this->theme.'_'.$this->color_scheme.'.';
+		$this->cache_list = '_'.$this->theme.' '.$this->color_scheme.'.';
 		//Загрузка шаблона
 		if ($this->interface) {
 			ob_start();
@@ -281,20 +274,22 @@ class Page extends HTML {
 			}
 			$key = _file_get_contents(PCACHE.DS.'pcache_key');
 			//Подключение CSS стилей
-			$css_list = get_list(PCACHE, '/(.*)\.css$/i', 'f', 'storages/pcache');
+			$css_list = get_list(PCACHE, '/^[^_](.*)\.css$/i', 'f', 'storages/pcache');
 			if (DS != '/') {
 				$css_list = _str_replace(DS, '/', $css_list);
 			}
+			$css_list = array_merge(array('storages/pcache/'.$this->cache_list.'css'), $css_list);
 			foreach ($css_list as &$file) {
 				$file .= '?'.$key;
 			}
 			unset($file);
 			$this->css($css_list, 'file', true);
 			//Подключение JavaScript
-			$js_list = get_list(PCACHE, '/(.*)\.js$/i', 'f', 'storages/pcache');
+			$js_list = get_list(PCACHE, '/^[^_](.*)\.js$/i', 'f', 'storages/pcache');
 			if (DS != '/') {
 				$js_list = _str_replace(DS, '/', $js_list);
 			}
+			$js_list = array_merge(array('storages/pcache/'.$this->cache_list.'js'), $js_list);
 			foreach ($js_list as &$file) {
 				$file .= '?'.$key;
 			}
@@ -389,7 +384,7 @@ class Page extends HTML {
 		if (!$stop) {
 			$footer =	$this->div(
 							$L->page_generated.' <!--generate time--> '.
-							$L->sec.', '.(is_object($db) ? $db->queries : 0).' '.$L->queries_to_db.' '.$L->during.' '.(is_object($db) ? round($db->time, 5) : 0).' '.$L->sec.
+							', '.(is_object($db) ? $db->queries : 0).' '.$L->queries_to_db.' '.$L->during.' '.format_time((is_object($db) ? round($db->time, 5) : 0)).
 							', '.$L->peak_memory_usage.' <!--peak memory usage-->',
 							array('id'	=> 'execution_info')
 						).
@@ -406,7 +401,7 @@ class Page extends HTML {
 		);
 		//Объекты
 		if ($Config->core['show_objects_data']) {
-			global $Classes, $timeload, $loader_init_memory;
+			global $Objects, $timeload, $loader_init_memory;
 			$this->debug_info .= $this->p(
 				$span[0].$L->objects,
 				array(
@@ -415,30 +410,30 @@ class Page extends HTML {
 				)
 			);
 			$debug_info =	$this->p(
-								$L->total_list.': '.implode(', ', array_keys($Classes->ObjectsList))
+								$L->total_list.': '.implode(', ', array_keys($Objects->Loaded))
 							).$this->p(
 								$L->loader,
 								array('style' => 'font-weight: bold;')
 							).$this->p(
-								$L->creation_duration.': '.round($timeload['loader_init'] - $timeload['start'], 5).' '.$L->sec,
+								$L->creation_duration.': '.format_time(round($timeload['loader_init'] - $timeload['start'], 5)),
 								array('style' => 'padding-left: 20px;')
 							).$this->p(
-								$L->memory_usage.': '.formatfilesize($loader_init_memory, 5),
+								$L->memory_usage.': '.format_filesize($loader_init_memory, 5),
 								array('style' => 'padding-left: 20px;')
 							);
 			$last = $timeload['loader_init'];
-			foreach ($Classes->ObjectsList as $object => &$data) {
+			foreach ($Objects->Loaded as $object => &$data) {
 				$debug_info .=	$this->p(
 									$object,
 									array('style' => 'font-weight: bold;')
 								).$this->p(
-									$L->creation_duration.': '.round($data[0] - $last, 5).' '.$L->sec,
+									$L->creation_duration.': '.format_time(round($data[0] - $last, 5)),
 									array('style' => 'padding-left: 20px;')
 								).$this->p(
-									$L->time_from_start_execution.': '.round($data[0] - $timeload['start'], 5).' '.$L->sec,
+									$L->time_from_start_execution.': '.format_time(round($data[0] - $timeload['start'], 5)),
 									array('style' => 'padding-left: 20px;')
 								).$this->p(
-									$L->memory_usage.': '.formatfilesize($data[1], 5),
+									$L->memory_usage.': '.format_filesize($data[1], 5),
 									array('style' => 'padding-left: 20px;')
 								);
 				$last = $data[0];
@@ -458,7 +453,7 @@ class Page extends HTML {
 					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
 				)
 			);
-			global $Classes, $timeload, $loader_init_memory;
+			global $timeload, $loader_init_memory;
 			$this->debug_info .= $this->div(
 				'',
 				array(
@@ -498,14 +493,14 @@ class Page extends HTML {
 				$queries .= $this->p(
 					$name.
 					', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).
-					', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.round($database->time, 5).' '.$L->sec.':',
+					', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.format_time(round($database->time, 5)).':',
 					array('style' => 'padding-left: 20px;')
 				);
 				foreach ($database->queries['text'] as $i => &$text) {
 					$queries .= $this->code(
 						$text.
 						$this->br(2).
-						'#'.$this->i(round($database->queries['time'][$i], 5).' '.$L->sec).
+						'#'.$this->i(format_time(round($database->queries['time'][$i], 5))).
 						($error = (strtolower(substr($text, 0, 6)) == 'select' && !$database->queries['resource'][$i]) ? '('.$L->error.')' : ''),
 						array(
 							'style' => 'border-left: 1px solid; display: block; margin: 10px 5px 10px 20px; padding-left: 10px; text-align: left;',
@@ -518,7 +513,7 @@ class Page extends HTML {
 			unset($name, $database, $i, $text);
 			$debug_info =	$this->div(
 				$this->p(
-					$L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')
+					$L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.format_time(round($db->time, 5)).($db->queries ? ':' : '')
 				).
 				$queries,
 				array(
@@ -587,7 +582,7 @@ class Page extends HTML {
 	function __clone () {}
 	//Генерирование страницы
 	function __finish () {
-		global $Config, $Page;
+		global $Config;
 		//Очистка вывода для избежания вывода нежелательных данных
 		if (OUT_CLEAN) {
 			ob_end_clean();
@@ -634,8 +629,8 @@ class Page extends HTML {
 							),
 							$this->level['debug_info']
 						) : '',
-						round($timeload['end'] - $timeload['start'], 5),
-						formatfilesize(memory_get_peak_usage(), 5)
+						format_time(round($timeload['end'] - $timeload['start'], 5)),
+						format_filesize(memory_get_peak_usage(), 5)
 					),
 					$this->Html
 				);

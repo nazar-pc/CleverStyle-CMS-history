@@ -1,10 +1,10 @@
 <?php
 //Класс ядра
 class Core {
-	private	$iv,
-			$td,
-			$key,
-			$support = false;
+	protected	$iv,
+				$td,
+				$key,
+				$support = false;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
 		if (!_require(CONFIG.DS.CDOMAIN.DS.'main.php', true, false)) {

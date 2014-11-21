@@ -1,5 +1,5 @@
 <?php
-global $Classes, $timeload, $loader_init_memory, $interface;
+global $Objects, $timeload, $loader_init_memory, $interface;
 $timeload['start'] = MICROTIME;
 $interface = true;
 error_reporting(E_ALL | E_STRICT);
@@ -9,14 +9,14 @@ mb_internal_encoding(CHARSET);
 //Убиваем небезопасные глобальные переменные, использование GET метода для передачи переменных не рекомендуется
 //Вместо GET используйте POST
 unset(
-	$GLOBALS['HTTP_GET_VARS'],
-	$GLOBALS['_SERVER']['argv'],
-	$GLOBALS['_SERVER']['argc'],
-	$GLOBALS['HTTP_SERVER_VARS']['argv'],
-	$GLOBALS['HTTP_SERVER_VARS']['argc'],
+	$GLOBALS['_GET'],
 	$_GET,
 	$_REQUEST
 );
+//Защищаемся от NULL Byte уязвимости
+null_byte_filter($_POST);
+null_byte_filter($_COOKIE);
+null_byte_filter($_FILES);
 //Задание базовых констант с путями системных папок
 //DOMAIN - константа, содержащая базовый домен сайта
 //CDOMAIN - константа, содержащая домен текущего сайта
@@ -49,8 +49,8 @@ $loader_init_memory = memory_get_usage();
 //Запуск ядра и первичных классов, создание необходимых объектов
 //ВНИМАНИЕ: Отключение создания следующих объектов или изменение порядка почти на 100% приведет к полной неработоспособности движка!!!
 //При необходимости изменения логики работы первычных классов движка используйте пользовательские версии файлов, не изменяя порядок загрузки
-$Classes = new Classes;								//Объект подключения и выгрузки классов
-$Classes->load(
+$Objects = new Objects;								//Объект подключения и выгрузки классов
+$Objects->load(
 	array(
 		'Core',										//Объект ядра движка
 		'Cache',									//Объект системного кеша
@@ -66,5 +66,5 @@ $Classes->load(
 		'Index'										//Объект, который управляет обработкой компонентов
 	)
 );
-$Classes->__finish();								//Выгружает классы, отображает сгенерированный контент и корректно завершает работу
+$Objects->__finish();								//Выгружает классы, отображает сгенерированный контент и корректно завершает работу
 ?>

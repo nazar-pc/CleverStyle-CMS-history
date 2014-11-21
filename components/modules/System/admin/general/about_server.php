@@ -57,7 +57,7 @@ $a->content(
 
 				$a->td($L->allow_ram.':').$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('memory_limit'))),
 
-				$a->td($L->free_disk_space.':').$a->td(formatfilesize(disk_free_space('./'), 2)),
+				$a->td($L->free_disk_space.':').$a->td(format_filesize(disk_free_space('./'), 2)),
 
 				$a->td($L->version.' PHP:').
 				$a->td(
@@ -160,11 +160,11 @@ $a->content(
 
 							$a->td($L->post_max_size.':').$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('post_max_size'))),
 
-							$a->td($L->max_execution_time.':').$a->td(ini_get('max_execution_time').' '.$L->sec),
+							$a->td($L->max_execution_time.':').$a->td(format_time(ini_get('max_execution_time'))),
 
-							$a->td($L->max_input_time.':').$a->td(ini_get('max_input_time').' '.$L->sec),
+							$a->td($L->max_input_time.':').$a->td(format_time(ini_get('max_input_time'))),
 
-							$a->td($L->default_socket_timeout.':').$a->td(ini_get('default_socket_timeout').' '.$L->sec),
+							$a->td($L->default_socket_timeout.':').$a->td(format_time(ini_get('default_socket_timeout'))),
 
 							$a->td($L->module.' mod_rewrite:').
 							$a->td(

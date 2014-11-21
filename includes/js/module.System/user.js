@@ -15,7 +15,8 @@
 								type: 'post',
 								cache: false,
 								data: {
-									auth_hash: hash('sha512', hash('sha224', login)+hash('sha512', password)+navigator.userAgent+random_hash)
+									auth_hash: hash('sha512', hash('sha224', login)+hash('sha512', password)+navigator.userAgent+random_hash),
+									login: hash('sha224', login)
 								},
 								success: function(result) {
 									if (result == 'reload') {

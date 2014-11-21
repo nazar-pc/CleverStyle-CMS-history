@@ -1,7 +1,5 @@
 <?php
 class Text {
-	const	DELETE	= 100000;			//Число вставок, после которых будет произведена физическая очистка ненужных елементов
-										//Так, как операция удаления достаточно накладная в плане ресурсов - она делается периодически
 	private	$language,
 			$local_storage	= array(),	//Локальное хранилище, позволяет оптимизировать повторные запросы на получение текстов
 			$local_result	= array();	//Локальное хранилище результатов, хранит добавленные, или измененные тексты для
@@ -74,7 +72,7 @@ class Text {
 		if (empty($data)) {
 			return false;
 		}
-		global $db;
+		global $db, $Config;
 		$result = array();
 		if (is_array($data)) {
 			foreach ($data as $language => &$translate) {
@@ -101,7 +99,7 @@ class Text {
 					'('.$db->$database()->sip($relation).', '.$db->$database()->sip($relation_id).', '.$db->$database()->sip(_json_encode($result)).')'
 			)
 		);
-		if ($id && !($id % self::DELETE)) { //Чистим устаревшие тексты после каждых self::DELETE новых записей
+		if ($id && $id % $Config->core['inserts_limit'] == 0) { //Чистим устаревшие тексты
 			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
 		}
 		if ($id) {

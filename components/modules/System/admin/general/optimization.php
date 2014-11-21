@@ -128,6 +128,38 @@ $a->content(
 			)
 		).
 		$a->tr(
+			$a->td($a->info('inserts_limit')).
+			$a->td(
+				$a->input(
+					array(
+						'type'			=> 'number',
+						'name'			=> 'core[inserts_limit]',
+						'value'			=> $Config->core['inserts_limit'],
+						'min'			=> 1,
+						'style'			=> 'width: 90px;',
+						'class'			=> 'form_element'
+					)
+				)
+			)
+		).
+		$a->tr(
+			$a->td($a->info('update_ratio')).
+			$a->td(
+				$a->input(
+					array(
+						'type'			=> 'number',
+						'name'			=> 'core[update_ratio]',
+						'value'			=> $Config->core['update_ratio'],
+						'min'			=> 0,
+						'max'			=> 100,
+						'style'			=> 'width: 90px;',
+						'class'			=> 'form_element'
+					)
+				).
+				'%'
+			)
+		).
+		$a->tr(
 			$a->td($a->div(array('id'	=> 'clean_cache'))).
 			$a->td($a->div(array('id'	=> 'clean_pcache')))
 		).

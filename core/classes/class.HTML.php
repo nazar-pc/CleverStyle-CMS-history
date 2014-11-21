@@ -385,6 +385,12 @@ class HTML {
 					if (!isset($item['type'])) {
 						$item['type'] = 'text';
 					}
+					if (isset($item['min']) && $item['min'] < $value) {
+						$value = $item['min'];
+					}
+					if (isset($item['max']) && $item['max'] > $value) {
+						$value = $item['max'];
+					}
 					$item['tag'] = __FUNCTION__;
 					if (isset($item['value'])) {
 						$item['value'] = filter($item['value']);
@@ -395,6 +401,12 @@ class HTML {
 			} else {
 				if (!isset($in['type'])) {
 					$in['type'] = 'text';
+				}
+				if (isset($item['min']) && $item['min'] < $value) {
+					$value = $item['min'];
+				}
+				if (isset($item['max']) && $item['max'] > $value) {
+					$value = $item['max'];
 				}
 				$in['tag'] = __FUNCTION__;
 				if (isset($in['value'])) {

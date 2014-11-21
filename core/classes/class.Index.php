@@ -30,7 +30,7 @@ class Index extends HTML {
 			$api			= false;
 
 	function __construct () {
-		global $Config, $L, $Page, $User, $Classes;
+		global $Config, $L, $Page, $User;
 		if (
 			ADMIN && $User->is('admin') && _file_exists(MODULES.DS.MODULE.DS.'admin') &&
 			(_file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') || _file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json'))
@@ -83,7 +83,7 @@ class Index extends HTML {
 					$Page->title($L->$rc[1]);
 					$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
 				}
-				_include(MFOLDER.DS.$rc[0].DS.$rc[1].'.php');
+				_include(MFOLDER.DS.$rc[0].DS.$rc[1].'.php', true, false);
 			} elseif (!$this->api) {
 				$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0];
 			}

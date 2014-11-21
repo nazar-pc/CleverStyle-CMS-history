@@ -102,9 +102,9 @@
 	});
 	//Функция для корректной остановки выполнения из любого места движка
 	function __finish () {
-		global $Classes;
-		if (is_object($Classes)) {
-			$Classes->__finish();
+		global $Objects;
+		if (is_object($Objects)) {
+			$Objects->__finish();
 		}
 		exit;
 	}
@@ -471,17 +471,48 @@
 		}
 	}
 	//Функция форматирования размера файла из байтов в удобночитаемый вид
-	function formatfilesize ($size, $round = false) {
+	function format_time ($time) {
 		global $L;
-		if($size >= 1073741824) {
+		if (function_exists('format_time'.$L->clanguage)) {
+			$temp = 'format_time'.$L->clanguage;
+			return $temp($time);
+		}
+		$res = array();
+		if($time >= 86400) {
+			$time_x = round($time/86400);
+			$time -= $time_x*86400;
+			$res[] = $time_x.' '.$L->days;
+		}
+		if($time >= 3600) {
+			$time_x = round($time/3600);
+			$time -= $time_x*3600;
+			$res[] = $time_x.' '.$L->hours;
+		}
+		if ($time >= 60) {
+			$time_x = round($time/60);
+			$time -= $time_x*60;
+			$res[] = $time_x.' '.$L->minutes;
+		}
+		if ($time > 0 || empty($res)) {
+			$res[] = $time.' '.$L->seconds;
+		}
+		return implode(' ', $res);
+	}
+	//Функция форматирования размера файла из байтов в удобночитаемый вид
+	function format_filesize ($size, $round = false) {
+		global $L;
+		if($size >= 1099511627776) {
+			$size = $size/1099511627776;
+			$unit = ' '.$L->TB;
+		} elseif($size >= 1073741824) {
 			$size = $size/1073741824;
-			$unit = " ".$L->GB;
+			$unit = ' '.$L->GB;
 		} elseif ($size >= 1048576) {
 			$size = $size/1048576;
-			$unit = " ".$L->MB;
+			$unit = ' '.$L->MB;
 		} elseif ($size >= 1024) {
 			$size = $size/1024;
-			$unit = " ".$L->KB;
+			$unit = ' '.$L->KB;
 		} else {
 			$size = $size." ".$L->Bytes;
 		}
@@ -489,6 +520,16 @@
 			return round($size, $round).$unit;
 		} else {
 			return $size;
+		}
+	}
+	//Защита от NULL Byte уязвимости
+	function null_byte_filter (&$in) {
+		if (is_array($in)) {
+			foreach ($in as &$val) {
+				null_byte_filter($val);
+			}
+		} else {
+			$in = str_replace(chr(0), '', $in);
 		}
 	}
 	//Фильтрация и функции для рекурсивной обработки массивов
@@ -723,7 +764,7 @@
 		static $mcrypt_data;
 		if (empty($mcrypt_data)) {
 			ob_start();
-			phpinfo(8);
+			phpinfo(INFO_MODULES);
 			$mcrypt_version = ob_get_clean();
 			preg_match('/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)</', $mcrypt_version, $mcrypt_version);
 			$mcrypt_data[0] = $mcrypt_version[1] == 'enabled' ? trim($mcrypt_version[3]) : false;
@@ -752,7 +793,7 @@
 	function register_globals () {
 		global $L;
 		ob_start();
-		phpinfo(4);
+		phpinfo(INFO_CONFIGURATION);
 		$tmp = ob_get_clean();
 		preg_match('/register_globals<\/td><td class=\"v\">(On|Off)/', $tmp, $tmp);
 		return $tmp[1] == 'On';
@@ -765,7 +806,7 @@
 	function server_api () {
 		global $L;
 		ob_start();
-		phpinfo(5);
+		phpinfo(INFO_GENERAL);
 		$tmp = ob_get_clean();
 		preg_match('/Server API <\/td><td class=\"v\">(.*?) <\/td><\/tr>/', $tmp, $tmp);
 		if ($tmp[1]) {
