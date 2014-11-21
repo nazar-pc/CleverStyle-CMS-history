@@ -1,48 +1,63 @@
 @charset "utf-8";
+header * {
+	overflow: hidden;
+}
 #header {
 	margin-bottom: 10px;
-	height: 100px;
-	overflow-x: hidden;
+	height: 110px;
+	position: fixed;
 	width: 100%;
+	z-index: 3;
 }
 #header_green, #header_black, #header_dark_green {
 	border-radius: 0px 0px 10px 10px;
 	-moz-border-radius: 0px 0px 10px 10px;
-	position: absolute;
+	position: fixed;
 	top: 0px;
 	width: 100%;
 }
 #header_dark_green {
 	height: 20px;
 	margin-top: -19px;
-	z-index: -1;
+	z-index: 3;
 }
 #header_green {
 	height: 70px;
-	z-index: -2;
+	z-index: 2;
 }
 #header_black {
 	height: 110px;
-	z-index: -3;
+	z-index: 1;
 }
-#user {
-	position: absolute;
+#user_header {
+	border-radius: 7px;
+	-moz-border-radius: 7px;
+	height: 92px;
+	margin: 5px;
+	position: fixed;
 	right: 0px;
 	top: 0px;
-	width: 250px;
+	width: 252px;
 }
-#avatar {
-	border-radius: 10px;
-	-moz-border-radius: 10px;
-	margin: 10px;
-	min-height: 80px;
+#avatar_header {
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	display: inline-block;
+	margin: 5px;
+	height: 80px;
 	width: 80px;
+}
+#user_info_header {
+	display: inline-block;
+	margin: 5px 5px 5px 0px;
+	height: 82px;
+	width: 148px;
 }
 #main-menu {
 	height: 40px;
 	left: 0px;
 	line-height: 32px;
-	position: absolute;
+	position: fixed;
 	right: 250px;
 	text-align: left;
 	top: 0px;
@@ -50,11 +65,12 @@
 #main-menu > menu {
 	font-size: 40px;
 	margin: 0px;
-	padding-left: 5px;
-	padding-top: 5px;
+	padding: 5px 0px 0px 5px;
+	position: fixed;
 }
 #main-menu > menu > a {
 	border-bottom: none;
+	cursor: pointer;
 	font-size: 40px;
 	transition: all 0.3s linear;
 	-o-transition: all 0.3s linear;
@@ -65,15 +81,14 @@
 	height: 30px;
 	left: 0px;
 	line-height: 20px;
-	position: absolute;
+	position: fixed;
 	right: 250px;
 	text-align: left;
 	top: 40px;
 }
 #main-submenu > menu {
 	margin: 0px;
-	padding-left: 5px;
-	padding-top: 5px;
+	padding: 5px 0px 0px 5px;
 }
 #main-submenu > menu > a {
 	font-size: 24px;
@@ -87,15 +102,14 @@
 	height: 40px;
 	left: 0px;
 	line-height: 15px;
-	position: absolute;
+	position: fixed;
 	right: 250px;
 	text-align: left;
 	top: 70px;
 }
 #menu-more > menu {
 	margin: 0px;
-	padding-left: 5px;
-	padding-top: 5px;
+	padding: 5px 0px 0px 5px;
 }
 #menu-more > menu > a {
 	font-size: 14px;

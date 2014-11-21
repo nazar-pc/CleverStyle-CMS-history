@@ -119,6 +119,7 @@ class Config {
 		foreach ($this->core['themes'] as $theme) {
 			global $color_schemes, $color_schemes_name;
 			require_x(THEMES.'/'.$theme.'/config.php', 0, 0);
+			$this->core['color_schemes'][$theme] = array();
 			if (is_array($color_schemes) && !empty($color_schemes)) {
 				foreach ($color_schemes as $i => $scheme) {
 					$this->core['color_schemes'][$theme][$scheme] = $color_schemes_name[$i] ?: $scheme;

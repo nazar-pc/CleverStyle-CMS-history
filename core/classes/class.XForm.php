@@ -32,6 +32,14 @@ class XForm {
 			$Content = '<table'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n";
 		} elseif ($mode == 'c') {
 			$Content = "</table>\n";
+		} elseif (is_array($mode)) {
+			$Content = '';
+			foreach ($mode as $item) {
+				$Content .= $this->tr($this->td($item, true), true);
+			}
+			if (!empty($Content)) {
+				$Content = $this->table($Content, $id, true, $add, $class, $name);
+			}
 		} else {
 			$Content = '<table'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n".$this->Page->level($mode)."</table>\n";
 		}
@@ -113,6 +121,8 @@ class XForm {
 		}
 	}
 	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
+		static $n;
+		++$n;
 		if ($return == -1) {
 			$return = $this->return;
 		}
@@ -140,12 +150,14 @@ class XForm {
 			}
 			$Content = implode('', $Content);
 		} else {
-			if ($type == 'text' || $type == 'checkbox' || $type == 'radio') {
-				$Content = '<input name="'.$id.'"'.($type == 'radio' ? '' : ' id="'.$id.'"').(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($type == 'text' ? ' size="'.$array_if_size.'"' : ($values[0] == $values[1] && $array_if_size ? ' checked' : '')).($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
-			} else {
+			if ($type == 'text') {
+				$Content = '<input name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
+			} elseif ($type == 'checkbox' || $type == 'radio') {
+				$Content = '<input id="'.$n.'" name="'.$id.'"'.($type == 'radio' ? '' : ' id="'.$id.'"').(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, $n, $return).$devider."\n";
+			} else{
 				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[0]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			}
-			if ($label && $array_text) {
+			if ($type != 'checkbox' && $type != 'radio' && $label && $array_text) {
 				$Content = $this->label($Content).$devider;
 			}
 		}

@@ -30,6 +30,7 @@ class Admin extends Module {
 		}
 		include_x(MFOLDER.'/'.$r['current'][0].'/'.$r['current'][1].'.php');
 		unset($r);
+		$this->mainmenu();
 	}
 	function content ($Content) {
 		$this->Content .= $Content;
@@ -49,7 +50,11 @@ class Admin extends Module {
 	function generate () {
 		$this->mainsubmenu();
 		$this->menumore();
-		$this->Page->javascript("var save_before = '".$this->L->save_before."', continue_transfer = '".$this->L->continue_transfer."', base_url = '".$this->Config->core['url']."/admin/".MODULE.'/'.$this->Config->routing['current'][0]."';\n", 'code');
+		$this->Page->javascript(
+			"var save_before = '".$this->L->save_before."', continue_transfer = '".$this->L->continue_transfer."', base_url = '".$this->Config->core['url']."/admin/".MODULE.'/'.$this->Config->routing['current'][0]."';\n"
+			."\$(function () {\$('.admin_form *').change(function () {save = 1; \$('#reset').removeAttr('disabled');});});\n",
+			'code'
+		);
 		$this->Page->mainsubmenu = "<menu>\n".$this->mainsubmenu."</menu>\n";
 		$this->Page->menumore = "<menu>\n".$this->menumore."</menu>\n";
 		if ($this->form) {
@@ -67,7 +72,7 @@ class Admin extends Module {
 					$this->action,
 					'admin_form',
 					true,
-					' onChange="javascript: save = 1; $(\'#reset\').removeAttr(\'disabled\');" onReset="javascript: save = 0;"',
+					' onReset="javascript: save = 0; $(\'#reset\').attr(\'disabled\', \'disabled\');"',
 					'admin_form'
 				), 1
 			);

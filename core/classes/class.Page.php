@@ -16,6 +16,11 @@ class Page extends XForm {
 			$core_css = array(0 => '', 1 => ''),
 			$js = array(0 => '', 1 => ''),
 			$css = array(0 => '', 1 => ''),
+			
+			$user_avatar_image,
+			$user_avatar_text,
+			$user_info,
+			$debug_info,
 
 			$pre_Body,
 			$Header,
@@ -31,20 +36,22 @@ class Page extends XForm {
 			$post_Body,
 
 			$level = array (
-							'Head' => 2,
-							'pre_Body' => 2,
-							'Header' => 4,
-							'mainmenu' => 5,
-							'mainsubmenu' => 5,
-							'menumore' => 5,
-							'Left' => 3,
-							'Top' => 3,
-							'Content' => 8,
-							'Bottom' => 3,
-							'Right' => 3,
-							'Footer' => 4,
-							'post_Body' => 2
-							);
+						'Head' => 2,
+						'pre_Body' => 2,
+						'Header' => 4,
+						'mainmenu' => 5,
+						'mainsubmenu' => 5,
+						'menumore' => 5,
+						'user_avatar_text' => 6,
+						'user_info' => 6,
+						'Left' => 3,
+						'Top' => 3,
+						'Content' => 8,
+						'Bottom' => 3,
+						'Right' => 3,
+						'Footer' => 4,
+						'post_Body' => 2
+					);
 
 	protected	$Search = array(),
 				$Replace = array(),
@@ -98,7 +105,7 @@ class Page extends XForm {
 	}
 	//Обработка шаблона и подготовка данных к выводу
 	protected function prepare ($stop) {
-		global $copyright;
+		global $copyright, $User;
 		//Загрузка настроек оформления и шаблона темы
 		$this->load($stop);
 		//Загрузка стилей и скриптов
@@ -107,6 +114,8 @@ class Page extends XForm {
 		if ($this->rebuild_cache) {
 			$this->rebuild_cache();
 		}
+		//Загрузка данных о пользователе
+		$User->get_header_info();
 		//Формирование заголовка
 		if (!$stop) {
 			foreach ($this->Title as $i => $v) {
@@ -162,6 +171,9 @@ class Page extends XForm {
 								'<!--main-menu-->',
 								'<!--main-submenu-->',
 								'<!--menu-more-->',
+								'<!--user_avatar_image-->',
+								'<!--user_avatar_text-->',
+								'<!--user_info-->',
 								'<!--left_blocks-->',
 								'<!--top_blocks-->',
 								'<!--content-->',
@@ -178,6 +190,9 @@ class Page extends XForm {
 									$this->level($this->mainmenu, $this->level['mainmenu']),
 									$this->level($this->mainsubmenu, $this->level['mainsubmenu']),
 									$this->level($this->menumore, $this->level['menumore']),
+									$this->user_avatar_image,
+									$this->level($this->user_avatar_text, $this->level['user_avatar_text']),
+									$this->level($this->user_info, $this->level['user_info']),
 									$this->level($this->Left, $this->level['Left']),
 									$this->level($this->Top, $this->level['Top']),
 									$this->level($this->Content, $this->level['Content']),
@@ -356,11 +371,10 @@ class Page extends XForm {
 	//Фильтр лиших данных в CSS и JavaScript файлах
 	function filter ($content, $mode = 'css') {
 		if ($mode == 'js') {
-			$content = preg_replace( '/[\n\t]+/s', ' ', $content);
-		} else {
-			$content = preg_replace( '/(\/\*.*?\*\/)(^\s+)([\r\n\t]+)([\/\*][^[\*\/].]*?[\*\/])(@charset "utf-8";)/s', '', $content);
-			$content = preg_replace( '/[\s]*([\{\},;:])[\s]*/', '\1', $content);
+			$content = preg_replace('/([\s{2,}]*)(\/\*.*?\*\/)(^\s+)([\r]+)([\/\*][^[\*\/].]*?[\*\/])(@charset "utf-8";)/s', '', $content);
 		}
+		$content = preg_replace('/[\n\t]+/s', '', $content);
+		$content = preg_replace('/[\s]*([\{\},;:\[\]\(\)=><|&])[\s]*/', '\1', $content);
 		return $content;
 	}
 	//Генерирование страницы
@@ -394,8 +408,8 @@ class Page extends XForm {
 			}
 			$timeload['end'] = get_time();
 			echo str_replace(
-					array('<!--generate time-->', '<!--peak memory usage-->'),
-					array(round($timeload['end'] - $timeload['start'], 5), formatfilesize(memory_get_peak_usage(), 5)),
+					array('<!--debug_info-->', '<!--generate time-->', '<!--peak memory usage-->'),
+					array($this->debug_info, round($timeload['end'] - $timeload['start'], 5), formatfilesize(memory_get_peak_usage(), 5)),
 					$this->Html
 				);
 			/*global $timeload;

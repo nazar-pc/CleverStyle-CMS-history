@@ -13,7 +13,7 @@ $a->table(
 				array(intval($Config->core['site_mode']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green', 'form_element red'),
+				array('', 'form_element green noui', 'form_element red'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -80,7 +80,7 @@ $a->table(
 				'core[debug]',
 				array(intval($Config->core['debug']), 1, 0),
 				true,
-				array('', ' onClick="$(\'#debug_form\').css(\'display\', \'\');"', ' onClick="$(\'#debug_form\').css(\'display\', \'none\');"'),
+				array('', ' onClick="$(\'#debug_form\').show();"', ' onClick="$(\'#debug_form\').hide();"'),
 				array('', 'form_element green', 'form_element red'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
@@ -90,53 +90,56 @@ $a->table(
 	$a->tr(
 		$a->td('&nbsp;').
 		$a->td(
-			$a->input(
-				'radio',
-				'core[queries]',
-				array(intval($Config->core['queries']), 0, 1, 2, 3),
-				true,
-				'',
-				array('', 'form_element red', 'form_element green', 'form_element green', 'form_element green'),
-				true,
-				array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time, '&nbsp;'.$L->show_queries_extended),
-				true,
-				'<br>'
-			).'<br>'.
-			$a->input(
-				'checkbox',
-				'core[show_cookies]',
-				array(intval($Config->core['show_cookies']), 1),
-				true,
-				'',
-				'form_element',
-				true,
-				$L->show_cookies,
-				true,
-				'<br>'
-			).
-			$a->input(
-				'checkbox',
-				'core[show_user_data]',
-				array(intval($Config->core['show_user_data']), 1),
-				true,
-				'',
-				'form_element',
-				true,
-				$L->show_user_data,
-				true,
-				'<br>'
-			).
-			$a->input(
-				'checkbox',
-				'core[show_objects_data]',
-				array(intval($Config->core['show_objects_data']), 1),
-				true,
-				'',
-				'form_element',
-				true,
-				$L->show_objects_data,
-				true,
-				'<br>'
+			$a->table(
+				array(
+					$a->input(
+						'radio',
+						'core[queries]',
+						array(intval($Config->core['queries']), 0, 1, 2, 3),
+						true,
+						'',
+						array('', 'form_element red', 'form_element green', 'form_element green', 'form_element green'),
+						true,
+						array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time, '&nbsp;'.$L->show_queries_extended),
+						true
+					),
+					$a->input(
+						'checkbox',
+						'core[show_cookies]',
+						array(intval($Config->core['show_cookies']), 1),
+						true,
+						'',
+						'form_element',
+						true,
+						$L->show_cookies,
+						true,
+						'<br>'
+					),
+					$a->input(
+						'checkbox',
+						'core[show_user_data]',
+						array(intval($Config->core['show_user_data']), 1),
+						true,
+						'',
+						'form_element',
+						true,
+						$L->show_user_data,
+						true,
+						'<br>'
+					),
+					$a->input(
+						'checkbox',
+						'core[show_objects_data]',
+						array(intval($Config->core['show_objects_data']), 1),
+						true,
+						'',
+						'form_element',
+						true,
+						$L->show_objects_data,
+						true,
+						'<br>'
+					)
+				)
 			), true, ' style="'.($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;"', '', 'debug_form'
 		)
 	).
@@ -148,7 +151,7 @@ $a->table(
 				'core[zlib_compression]',
 				array(intval($Config->core['zlib_compression']), 1, 0),
 				true,
-				zlib() ? array('', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').css(\'display\', \'\');"', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').css(\'display\', \'none\');"') : '',
+				zlib() ? array('', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').show();"', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').hide();"') : '',
 				zlib() ? array('', 'form_element green', zlib_autocompression() ? 'form_element grey' : 'form_element red') : array('', 'form_element grey', 'form_element grey'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)

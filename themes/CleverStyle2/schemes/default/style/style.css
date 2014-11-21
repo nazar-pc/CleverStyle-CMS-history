@@ -1,25 +1,11 @@
 @charset "utf-8";
-body {
-	background-color: #666;
-}
 a {
 	color: #07f;
 	border-bottom: 1px dashed #07f;
 }
 .form_element, .form_element:hover, .form_element:focus {
 	background: #fff;
-	border-color: rgba(0,0,255,0.3);
-	color: #999;
-}
-.form_element:hover, .form_element:focus {
-	box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
-	-moz-box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
-	-webkit-box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
-	color: #333;
-}
-input.form_element[type=radio], input.form_element[type=radio]:hover, input.form_element[type=radio]:focus {
-	background: #fff;
-	color: rgba(0,0,255,0.5);
+	border-color: #6ebc00;
 }
 .green {
 	box-shadow: 0px 0px 7px #0f0;

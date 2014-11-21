@@ -1,12 +1,11 @@
-function string_trim (input) {
-	input = input.match(/^.*$/gm);
-	size = input.length;
-	result = '';
-	for (i = 0; i < size; i++) {
-		if (input[i]) {
-			input[i] = $.trim(input[i]);
-		}
-		result += input[i];
+$(
+	function() {
+		$(":radio, :checkbox").each(
+			function (index, element) {
+				if (!$(element).hasClass('noui')) {
+					$(element).parent().buttonset();
+				}
+			}
+		);
 	}
-	return result;
-}
+);

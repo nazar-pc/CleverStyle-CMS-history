@@ -111,8 +111,10 @@ function get_list ($dir, $mask=false, $mode='f', $with_path=false, $subfolders =
 			} elseif (is_dir($dir.$file) && $subfolders) {
 				if ($with_path == 1 || !$with_path) {
 					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders);
-					foreach ($get_list as $v) {
-						$list[] = $v;
+					if (is_array($get_list)) {
+						foreach ($get_list as $v) {
+							$list[] = $v;
+						}
 					}
 					unset($get_list);
 					if ($mode == 'd' || $mode == 'fd') {
@@ -120,8 +122,10 @@ function get_list ($dir, $mask=false, $mode='f', $with_path=false, $subfolders =
 					}
 				} elseif ($with_path) {
 					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders);
-					foreach ($get_list as $v) {
-						$list[] = $v;
+					if (is_array($get_list)) {
+						foreach ($get_list as $v) {
+							$list[] = $v;
+						}
 					}
 					unset($get_list);
 					if ($mode == 'd' || $mode == 'fd') {

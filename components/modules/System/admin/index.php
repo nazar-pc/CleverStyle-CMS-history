@@ -1,7 +1,7 @@
 <?php
 global $Admin;								//Подключаем объект администрирования
 $Admin->parts = array(						//Задаем список разделов администрирования
-					'common',
+					'general',
 					'components',
 					'users'
 					);
