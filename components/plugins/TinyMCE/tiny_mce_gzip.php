@@ -15,7 +15,7 @@ if (TinyMCE_Compressor::getParam("js")) {
 		"languages" => "",
 		"disk_cache" => true,
 		"expires" => "365d",
-		"cache_dir" => dirname(dirname(dirname(__DIR__))).'/includes/cache',
+		"cache_dir" => dirname(dirname(dirname(__DIR__))).'/storages/pcache',
 		"compress" => true,
 		"suffix" => ""
 	));

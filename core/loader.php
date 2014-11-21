@@ -4,7 +4,9 @@ $interface = true;
 //error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
 //error_reporting(0);
-ini_set('display_errors', 1);
+ini_get('display_errors')	== 'Off'	&& ini_set('display_errors',	'On');
+ini_get('magic_quotes_gpc')	== 'On'		&& ini_set('magic_quotes_gpc',	'Off');
+ini_get('register_globals')	== 'On'		&& ini_set('register_globals',	'Off');
 header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("utf-8");
 
@@ -19,13 +21,14 @@ define('CORE',			DIR.DS.'core');				//Папка ядра
 	define('ENGINES',	CORE.DS.'engines');			//Папка с движками БД и хранилищ
 	define('LANGUAGES',	CORE.DS.'languages');		//Папка с языковыми файлами
 define('INCLUDES',		DIR.DS.'includes');			//Папка с включениями
-	define('PCACHE',	INCLUDES.DS.'cache');		//Папка с публичным кешем (доступным пользователю извне)
 	define('CSS',		INCLUDES.DS.'css');			//Папка с CSS стилями
 	define('JS',		INCLUDES.DS.'js');			//Папка с JavaScript скриптами
 define('COMPONENTS',	DIR.DS.'components');		//Папка для компонентов
 	define('BLOCKS',	COMPONENTS.DS.'blocks');	//Папка для блоков
 	define('MODULES',	COMPONENTS.DS.'modules');	//Папка для модулей
 	define('PLUGINS',	COMPONENTS.DS.'plugins');	//Папка для плагинов
+define('STORAGES',		DIR.DS.'storages');			//Локальное хранилище
+	define('PCACHE',	STORAGES.DS.'pcache');		//Папка с публичным кешем (доступным пользователю извне)
 define('THEMES',		DIR.DS.'themes');			//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы

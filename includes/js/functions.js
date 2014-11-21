@@ -1,5 +1,4 @@
 var save = false;
-var stop_cache = true;
 var cache_interval;
 $(document).ready(
 	function() {
@@ -88,38 +87,32 @@ function debug_window () {
 	$('#debug').dialog('open');
 }
 function admin_cache (element, action) {
-	if (stop_cache) {
-		stop_cache		= false;
-		cache_interval	= setInterval(function () {progress_cache(element)}, 100);
-		$(element).html('').progressbar(
-			{value: 1}
-		).load(
-			action, function () {
-				clearInterval(cache_interval);
-				setTimeout(
-					function () {
-						$(element).progressbar('destroy');
-						stop_cache = true;
-					},
-					100
-				);
-			}
-		);
-	}
-}
-function progress_cache (element) {
-	if (!stop_cache) {
-		$(element).progressbar('value', $(element).progressbar('value')+1);
-		if ($(element).progressbar('value') == 100) {
-			$(element).progressbar('value', 1);
+	cache_interval	= setInterval(function () {progress(element)}, 100);
+	$(element).html('').progressbar(
+		{value: 1}
+	).load(
+		action, function () {
+			clearInterval(cache_interval);
+			setTimeout(
+				function () {
+					$(element).progressbar('destroy');
+				},
+				100
+			);
 		}
+	);
+}
+function progress (element) {
+	$(element).progressbar('value', $(element).progressbar('value')+1);
+	if ($(element).progressbar('value') == 100) {
+		$(element).progressbar('value', 1);
 	}
 };
 function db_test (url, added) {
 	$('#test_db').html('<div id="test_progress" style="width: 100%"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_db').dialog('open');
-	var test_interval = setInterval(function () {progress_cache(element)}, 100);
+	var test_interval	= setInterval(function () {progress('#test_progress')}, 100);
 	if (added == true) {
 		$.ajax({
 			url:		url,
@@ -153,7 +146,7 @@ function storage_test (url, added) {
 	$('#test_storage').html('<div id="test_progress" style="width: 100%"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_storage').dialog('open');
-	test_interval = setInterval(function () {progress_cache(element)}, 100);
+	test_interval	= setInterval(function () {progress('#test_progress')}, 100);
 	if (added == true) {
 		$.ajax({
 			url:		url,
@@ -164,16 +157,17 @@ function storage_test (url, added) {
 			}
 		});
 	} else {
-		var db = {
-			type:		document.getElementsByName('storage[connection]').item(0).value,
+		var storage = {
+			url:		document.getElementsByName('storage[url]').item(0).value,
+			host:		document.getElementsByName('storage[host]').item(0).value,
+			connection:	document.getElementsByName('storage[connection]').item(0).value,
 			user:		document.getElementsByName('storage[user]').item(0).value,
-			password:	document.getElementsByName('storage[password]').item(0).value,
-			host:		document.getElementsByName('storage[host]').item(0).value
+			password:	document.getElementsByName('storage[password]').item(0).value
 		};
 		$.ajax({
 			url:		url,
 			type:		'POST',
-			data:		'db=' + $.toJSON(db),
+			data:		'storage=' + $.toJSON(storage),
 			success:	function(result) {
 				clearInterval(test_interval);
 				$('#test_storage').html(result);

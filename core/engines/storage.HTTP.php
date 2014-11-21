@@ -1,23 +1,31 @@
 <?php
 class HTTP extends StorageAbstract {
-	protected	$socket,
+	protected	$host,
+				$socket,
 				$user,
 				$password;
 	//Создание подключения
 	function __construct ($base_url, $host, $user = '', $password = '') {
-		$host = explode($host);
-		$this->socket = fsockopen($host[0], isset($host[1]) ? $host[1] : 80, $errno, $errstr);
+		$this->host = $host;
+		$host = explode(':', $host);
+		if (count($host) > 2) {
+			$hostx[1] = array_pop($host);
+			$hostx[0] = implode(':', $host);
+			$host = &$hostx;
+			unset($hostx);
+		}
+		$this->socket = fsockopen($host[0], isset($host[1]) && !empty($host[1]) ? $host[1] : 80, $errno, $errstr);
 		if(!is_resource($this->socket)) {
 			global $Error;
-			$Error->process();
-			die('#'.$errno.' '.$errstr);
+			$Error->process('#'.$errno.' '.$errstr);
 			$this->connected = false;
-			return false;
+			return;
 		}
 		$this->user = $user;
 		$this->password = $password;
 		$this->base_url = $base_url;
-		$this->connected = true;
+		$result = $this->request(array('function' => 'test'));
+		$this->connected = $result[1] == 'OK';
 	}
 	//(массив_вида_ключ_значение)
 	//Возвращает массив из двух елементов:
@@ -26,19 +34,20 @@ class HTTP extends StorageAbstract {
 		if (empty($data)) {
 			return false;
 		} else {
-			$data['key'] = md5(md5(json_encode($data).$user).$password);
+			$data['key'] = md5(md5(json_encode_x($data).$this->user).$this->password);
 		}
 		time_limit_pause();
+		$data = 'data='.json_encode($data).'&domain='.DOMAIN;
 		fwrite(
 			$this->socket,
 			"POST /Storage.php HTTP/1.1\r\n".
-			'Host: '.$host[0]."\r\n".
+			'Host: '.$this->host."\r\n".
 			"Content-type: application/x-www-form-urlencoded\r\n".
-			"Content-length:".mb_strlen($data)."\r\n".
+			"Content-length:".(mb_strlen($data))."\r\n".
 			"Accept:*/*\r\n".
 			"User-agent: CleverStyle CMS\r\n".
 			'Authorization: Basic '.base64_encode($this->user.':'.$this->password)."\r\n\r\n".
-			'data='.json_encode($data)."\r\n\r\n"
+			$data."\r\n\r\n"
 		);
 		time_limit_pause(false);
 		unset($time_limit);
@@ -149,9 +158,6 @@ class HTTP extends StorageAbstract {
 			}
 		}
 		return false;
-	}
-	function base_url () {
-		return $this->base_url;
 	}
 	function __destruct () {
 		if (is_resource($this->socket)) {

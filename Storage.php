@@ -1,36 +1,36 @@
 <?php
+header('Content-Type: text/html; charset=utf-8');
 define('DS',		DIRECTORY_SEPARATOR);
 define('CORE',		__DIR__.DS.'core');
 chdir(__DIR__);
-
-require CORE.'functions.php';
+require CORE.DS.'functions.php';
 $DOMAIN = (string)$_POST['domain'];
-define('STORAGE',	__DIR__.DS.'storage'.DS.$DOMAIN);	//Для размещения на одном сервере с основным сайтом, или с другими хранилищами
-//define('STORAGE',	__DIR__);							//Для размещения на отдельном сервере
+define('STORAGE',	__DIR__.DS.'storages'.DS.$DOMAIN.DS.'storage');	//Для размещения на одном сервере с основным сайтом, или с другими хранилищами
+//define('STORAGE',	__DIR__);										//Для размещения на отдельном сервере
 if (
 	$_SERVER['HTTP_USER_AGENT'] == 'CleverStyle CMS' &&
 	strpos($DOMAIN, '\\') === false &&
 	strpos($DOMAIN, '/') === false &&
-	file_exists(__DIR__.DS.'storage'.DS.$DOMAIN.DS.'config.php')
+	file_exists(__DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php')
 ) {
-	include __DIR__.DS.'storage'.DS.$DOMAIN.DS.'config.php';
+	include __DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php';
 	global $STORAGE_USER, $STORAGE_PASSWORD;
-	$data = json_decode((string)$_POST['data']);
+	$data = json_decode(filter((string)$_POST['data'], 'form'), true);
 	$KEY = substr((string)$data['key'], 0, 32);
 	unset($data['key']);
-	if (md5(md5(json_encode($data).$STORAGE_USER).$STORAGE_PASSWORD) !== $KEY) {
-		exit('0');
+	if (md5(md5(json_encode_x($data).$STORAGE_USER).$STORAGE_PASSWORD) !== $KEY) {
+		exit;
 	}
 	define('DIR', __DIR__.DS.'storage'.DS.$DOMAIN);
 	chdir(DIR);
 	unset($STORAGE_USER, $STORAGE_PASSWORD, $GLOBALS['STORAGE_USER'], $GLOBALS['STORAGE_PASSWORD'], $KEY, $DOMAIN);
 } else {
-	exit('0');
+	exit;
 }
 global $BASE_URL;
 switch ($data['function']) {
 	default:
-		exit('0');
+		exit;
 	case 'get_list':
 		exit(json_encode_x(get_list(STORAGE.DS.$data['dir'], $data['mask'], $data['mode'], $data['with_path'], $data['subfolders'], $data['sort'])));
 	case 'file_get_contents':
@@ -51,5 +51,7 @@ switch ($data['function']) {
 		exit(mkdir(STORAGE.DS.$data['pathname']));
 	case 'rmdir':
 		exit(unlink(STORAGE.DS.$data['dirname']));
+	case 'test':
+		exit('OK');
 }
 ?>

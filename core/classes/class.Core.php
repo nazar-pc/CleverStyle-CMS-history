@@ -11,10 +11,10 @@ class Core {
 			header('HTTP/1.0 404 Not Found');
 			__finish();
 		}
-		define('CACHE',		CORE.DS.'cache'.DS.DOMAIN);		//Папка с кешем
-		define('LOGS',		CORE.DS.'logs'.DS.DOMAIN);		//Папка для логов
-		define('STORAGE',	DIR.DS.'storage'.DS.DOMAIN);	//Локальное хранилище
-		define('TEMP',		STORAGE.DS.'temp');				//Папка для временных файлов
+		define('STORAGE',	STORAGES.DS.DOMAIN.DS.'public');	//Локальное хранилище
+		define('CACHE',		STORAGES.DS.DOMAIN.DS.'cache');		//Папка с кешем
+		define('LOGS',		STORAGES.DS.DOMAIN.DS.'logs');		//Папка для логов
+		define('TEMP',		STORAGES.DS.DOMAIN.DS.'temp');		//Папка для временных файлов
 		global	$DB_HOST,
 				$DB_TYPE,
 				$DB_NAME,
@@ -24,11 +24,26 @@ class Core {
 				$DB_CODEPAGE,
 				
 				$KEY;
+		if(!is_dir(STORAGES.DS.DOMAIN)) {
+			@mkdir(STORAGES.DS.DOMAIN, 0600);
+		}
+		if(!is_dir(STORAGE)) {
+			@mkdir(STORAGE, 0777);
+			file_put_contents(STORAGE.DS.'.htaccess', 'Allow From All');
+		}
 		if(!is_dir(CACHE)) {
 			@mkdir(CACHE, 0600);
 		}
+		if(!is_dir(PCACHE)) {
+			@mkdir(PCACHE, 0777);
+			file_put_contents(PCACHE.DS.'.htaccess', "Allow From All\r\nAddEncoding gzip .js\r\nAddEncoding gzip .css");
+		}
 		if(!is_dir(LOGS)) {
 			@mkdir(LOGS, 0600);
+		}
+		if(!is_dir(TEMP)) {
+			@mkdir(TEMP, 0777);
+			file_put_contents(TEMP.DS.'.htaccess', 'Allow From All');
 		}
 		if ($this->support = check_mcrypt()) {
 			$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');

@@ -132,13 +132,11 @@ if (isset($rc[2])) {
 		interface_off();
 		$test_dialog = false;
 		$a->form = false;
-		global $Page, $db;
-		if (isset($rc[4])) {
-			$Page->Content = $Page->p($db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
-		} elseif (isset($rc[3])) {
-			$Page->Content = $Page->p($db->test(array($rc[3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+		global $Page, $Storage;
+		if (isset($rc[3])) {
+			$Page->Content = $Page->p($Storage->test(array($rc[3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
 		} else {
-			$Page->Content = $Page->p($db->test($_POST['db']) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+			$Page->Content = $Page->p($Storage->test($_POST['storage']) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
 		}
 	}
 } else {
@@ -242,7 +240,7 @@ $test_dialog && $a->content(
 		array(
 			'id'			=> 'test_storage',
 			'class'			=> 'dialog',
-			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"resizable":false,"show":"scale","width":"250"}',
+			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"show":"scale","width":"250"}',
 			'title'			=> $L->test_connection
 		)
 	)

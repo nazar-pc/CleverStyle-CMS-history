@@ -282,7 +282,7 @@ class Page extends HTML {
 		}
 	}
 	//Подключение JavaScript и CSS файлов
-	private function get_js_css () {
+	protected function get_js_css () {
 		global $Config;
 		if (!is_object($Config)) {
 			return;
@@ -296,15 +296,11 @@ class Page extends HTML {
 			$key = $Cache->pcache_key;
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
-				if (file_exists(PCACHE.DS.$file.'css')) {
-					$this->css('includes/cache/'.$file.'css?'.$key, 'file', true);
-				}
+				$this->css('storages/pcache/'.$file.'css?'.$key, 'file', true);
 			}
 			//Подключение JavaScript
 			foreach ($this->cache_list as $file) {
-				if (file_exists(PCACHE.DS.$file.'js')) {
-					$this->js('includes/cache/'.$file.'js?'.$key, 'file', true);
-				}
+				$this->js('storages/pcache/'.$file.'js?'.$key, 'file', true);
 			}
 			unset($key);
 		} else {
@@ -390,7 +386,7 @@ class Page extends HTML {
 		return $content;
 	}
 	//Генерирование информации о процессе загрузки страницы
-	private function footer ($stop) {
+	protected function footer ($stop) {
 		global $copyright, $L, $db;
 		if (!($copyright && is_array($copyright))) {
 			exit;
@@ -408,7 +404,7 @@ class Page extends HTML {
 		return $footer;
 	}
 	//Сбор и отображение отладочных данных
-	private function debug () {
+	protected function debug () {
 		global $Config, $L, $db;
 		$span = array(
 			0	=> $this->span(array('class'	=> 'ui-icon ui-icon-triangle-1-e',	'style'	=> 'display: inline-block;',	'level'	=> 0)),

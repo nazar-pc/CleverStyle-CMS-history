@@ -1,7 +1,7 @@
 <?php
 abstract class StorageAbstract {
-	public		$connected;
-	protected	$base_url = false;
+	public		$connected	= false;
+	protected	$base_url	= false;
 	//Создание подключения
 	//(хост [, пользователь [, пароль]])
 	abstract function __construct ($base_url, $host, $user = '', $password = '');
@@ -17,6 +17,9 @@ abstract class StorageAbstract {
 	abstract function rmdir ($dirname, $context = NULL);
 	abstract function url_by_source ($source);
 	abstract function source_by_url ($url);
+	function base_url () {
+		return $this->base_url;
+	}
 	//Запрет клонирования
 	final function __clone() {}
 }

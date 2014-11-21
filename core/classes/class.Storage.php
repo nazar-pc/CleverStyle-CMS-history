@@ -63,36 +63,21 @@ class Storage {
 	}
 	//Тестовое подключение к хранилищу
 	function test ($data = false) {
-		global $DB_HOST, $DB_CODEPAGE;
 		if (empty($data)) {
 			return false;
 		} elseif (is_array($data)) {
 			global $Config;
-			if (isset($data[1])) {
-				$db = $Config->db[$data[0]]['mirrors'][$data[1]];
-			} elseif (isset($data[0])) {
-				if ($data[0] == 0) {
-					global $DB_TYPE, $DB_PREFIX, $DB_NAME;
-					$db = array(
-								'type'		=> $DB_TYPE,
-								'host'		=> $DB_HOST,
-								'name'		=> $DB_NAME,
-								'user'		=> $this->DB_USER,
-								'password'	=> $this->DB_PASSWORD,
-								'codepage'	=> $DB_CODEPAGE
-					);
-				} else {
-					$db = $Config->db[$data[0]];
-				}
+			if (isset($data[0])) {
+				$storage = $Config->storage[$data[0]];
 			} else {
 				return false;
 			}
-		} else {
-			$db = json_decode(filter($data, 'form'), true);
+		} else {print_r($storage);
+			$storage = json_decode(filter($data, 'form'), true);
 		}
 		unset($data);
-		if (is_array($db)) {
-			$test = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'] ?: $DB_HOST, $db['codepage'] ?: $DB_CODEPAGE);
+		if (is_array($storage)) {
+			$test = new $storage['connection']($storage['url'], $storage['host'], $storage['user'], $storage['password']);
 			return $test->connected;
 		} else {
 			return false;

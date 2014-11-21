@@ -414,7 +414,7 @@ $test_dialog && $a->content(
 		array(
 			'id'			=> 'test_db',
 			'class'			=> 'dialog',
-			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"resizable":false,"show":"scale","width":"250"}',
+			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"show":"scale","width":"250"}',
 			'title'			=> $L->test_connection
 		)
 	)
