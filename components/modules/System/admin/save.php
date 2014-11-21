@@ -51,10 +51,9 @@ if (isset($_POST['edit_settings'])) {
 			$Page->title($L->settings_saved);
 			$Page->Top .= '<div class="green notice">'.$L->settings_saved.'</div>';
 			$Config->rebuild_cache();
-//			if ($Config->core['cache_compress_js_css']) {
-//				$Page->rebuild_cache('js');
-//				$Page->rebuild_cache('css');
-//			}
+			if (isset($_POST['visual_style'])) {
+				$Page->rebuild_cache = true;
+			}
 		} else {
 			$Page->title($L->settings_save_error);
 			$Page->Top .= '<div class="red notice">'.$L->settings_save_error.'</div>';

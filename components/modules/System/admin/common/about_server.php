@@ -53,8 +53,12 @@ $a->table(
 				) : '').
 				$a->tr(
 					$a->td($L->zlib.':').
-					$a->td($L->__get(zlib()), true, '', zlib() ? 'green' : 'red')
-				), false, true, '', 'left_table'
+					$a->td($L->__get(zlib()))
+				).(zlib() ?
+				$a->tr(
+					$a->td($L->zlib_autocompression, true, ' style="padding-left: 20px;"').
+					$a->td($L->__get(zlib_autocompression()))
+				) : ''), false, true, '', 'left_table'
 			)
 		)
 	).

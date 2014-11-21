@@ -13,7 +13,7 @@ $a->table(
 				array(intval($Config->core['site_mode']), 1, 0),
 				true,
 				'',
-				array('', 'green', 'red'),
+				array('', 'form_element green', 'form_element red'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -66,7 +66,7 @@ $a->table(
 				array(intval($Config->core['title_reverse']), 1, 0),
 				true,
 				'',
-				array('', 'green', 'red'),
+				array('', 'form_element green', 'form_element red'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -81,7 +81,7 @@ $a->table(
 				array(intval($Config->core['debug']), 1, 0),
 				true,
 				array('', ' onClick="$(\'#debug_form\').css(\'display\', \'\');"', ' onClick="$(\'#debug_form\').css(\'display\', \'none\');"'),
-				array('', 'green', 'red'),
+				array('', 'form_element green', 'form_element red'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -96,7 +96,7 @@ $a->table(
 				array(intval($Config->core['queries']), 0, 1, 2, 3),
 				true,
 				'',
-				array('', 'red', 'green', 'green', 'green'),
+				array('', 'form_element red', 'form_element green', 'form_element green', 'form_element green'),
 				true,
 				array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time, '&nbsp;'.$L->show_queries_extended),
 				true,
@@ -141,6 +141,35 @@ $a->table(
 		)
 	).
 	$a->tr(
+		$a->td($a->info('zlib_compression')).
+		$a->td(
+			$a->input(
+				'radio',
+				'core[zlib_compression]',
+				array(intval($Config->core['zlib_compression']), 1, 0),
+				true,
+				zlib() ? array('', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').css(\'display\', \'\');"', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').css(\'display\', \'none\');"') : '',
+				zlib() ? array('', 'form_element green', zlib_autocompression() ? 'form_element grey' : 'form_element red') : array('', 'form_element grey', 'form_element grey'),
+				true,
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+			)
+		)
+	).
+	$a->tr(
+		$a->td('&nbsp;').
+		$a->td(
+			$L->zlib_coompression_level.': '.
+			$a->input(
+				'number',
+				'core[zlib_compression_level]',
+				intval($Config->core['zlib_compression_level']),
+				true,
+				' min="1" max="9" style="width: 50px;"',
+				'form_element'
+			), true, ' style="'.($Config->core['zlib_compression'] || zlib_autocompression() ? '' : 'display: none; ').'padding-left: 20px;"', '', 'zlib_compression'
+		)
+	).
+	$a->tr(
 		$a->td($a->info('gzip_compression')).
 		$a->td(
 			$a->input(
@@ -148,8 +177,8 @@ $a->table(
 				'core[gzip_compression]',
 				array(intval($Config->core['gzip_compression']), 1, 0),
 				true,
-				'',
-				extension_loaded('zlib') ? array('', 'green', 'red') : array('', 'grey', 'grey'),
+				!zlib_autocompression() && !$Config->core['zlib_compression'] ? '' : ' disabled',
+				!zlib_autocompression() && !$Config->core['zlib_compression'] ? array('', 'form_element green', 'form_element red') : array('', 'form_element grey', 'form_element grey'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)

@@ -30,8 +30,6 @@ class Config {
 		if (isset($query) && is_array($query) && !empty($query)) {
 			$this->rebuild_cache($query);
 		}
-		//Определение браузера пользователя
-		//get_browser(null, true);
 		//Инициализация объекта кеша с использованием настроек движка
 		$Cache->init($this);
 		//Инициализация объекта страницы с использованием настроек движка

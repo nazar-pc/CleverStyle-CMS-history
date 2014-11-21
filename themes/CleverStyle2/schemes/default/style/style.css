@@ -12,11 +12,14 @@ a {
 	color: #999;
 }
 .form_element:hover, .form_element:focus {
-	background: #fff;
 	box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
 	-moz-box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
 	-webkit-box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
 	color: #333;
+}
+input.form_element[type=radio], input.form_element[type=radio]:hover, input.form_element[type=radio]:focus {
+	background: #fff;
+	color: rgba(0,0,255,0.5);
 }
 .green {
 	box-shadow: 0px 0px 7px #0f0;

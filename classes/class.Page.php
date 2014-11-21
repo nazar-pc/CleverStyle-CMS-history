@@ -4,6 +4,7 @@ class Page extends XForm {
 			$color_scheme,
 			$get_list,
 			$cache_list,
+			$rebuild_cache = false,
 
 			$Html,
 			$Keywords,
@@ -70,18 +71,6 @@ class Page extends XForm {
 				$this->color_scheme = strval($_COOKIE['color_scheme']);
 			}
 		}
-		$this->get_list = array(
-					'css' => array (
-						0 => get_list(INCLUDES.'/css', '/(.*)\.css$/i', 'f', 'includes/css', 1),
-						1 => get_list(THEMES.'/'.$this->theme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', 1),
-						2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', 1)
-									),
-					'js' => array (
-						0 => get_list(INCLUDES.'/js', '/(.*)\.js$/i', 'f', 'includes/js', 1),
-						1 => get_list(THEMES.'/'.$this->theme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', 1),
-						2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', 1)
-									)
-								);
 		$this->cache_list = array (0 => 'cache.', 1 => $this->theme.'.', 2 => $this->theme.'_'.$this->color_scheme.'.');
 		//Загрузка шаблона
 		ob_start();
@@ -114,6 +103,10 @@ class Page extends XForm {
 		$this->load($stop);
 		//Загрузка стилей и скриптов
 		$this->get_js_css();
+		//Перестроение кеша при необходимости
+		if ($this->rebuild_cache) {
+			$this->rebuild_cache();
+		}
 		//Формирование заголовка
 		if (!$stop) {
 			foreach ($this->Title as $i => $v) {
@@ -284,22 +277,27 @@ class Page extends XForm {
 		}
 		return preg_replace('/^(.*)$/m', $padding.'$1', $in);
 	}
+	//Загрузка списка JavaScript и CSS файлов
+	function get_list () {
+		$this->get_list = array(
+				'css' => array (
+					0 => get_list(INCLUDES.'/css', '/(.*)\.css$/i', 'f', 'includes/css', 1),
+					1 => get_list(THEMES.'/'.$this->theme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', 1),
+					2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', 1)
+				),
+				'js' => array (
+					0 => get_list(INCLUDES.'/js', '/(.*)\.js$/i', 'f', 'includes/js', 1),
+					1 => get_list(THEMES.'/'.$this->theme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', 1),
+					2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', 1)
+				)
+		);
+	}
 	//Подключение JavaScript и CSS файлов
 	protected function get_js_css () {
 		if (!is_object($this->Config)) {
 			return;
 		}
 		if ($this->Config->core['cache_compress_js_css']) {
-			//Проверка текущего кеша
-			if ((!file_exists(PCACHE.'/'.$this->cache_list[0].'css') && $this->get_list['css'][0]) || (!file_exists(PCACHE.'/'.$this->cache_list[0].'js') && $this->get_list['js'][0])) {
-				$this->rebuild_cache('base');
-			}
-			if ((!file_exists(PCACHE.'/'.$this->cache_list[1].'css') && $this->get_list['css'][1]) || (!file_exists(PCACHE.'/'.$this->cache_list[1].'js') && $this->get_list['js'][1])) {
-				$this->rebuild_cache('theme');
-			}
-			if ((!file_exists(PCACHE.'/'.$this->cache_list[2].'css') && $this->get_list['css'][2]) || (!file_exists(PCACHE.'/'.$this->cache_list[2].'js') && $this->get_list['js'][2])) {
-				$this->rebuild_cache('scheme');
-			}
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.'/'.$file.'css')) {
@@ -313,6 +311,7 @@ class Page extends XForm {
 				}
 			}
 		} else {
+			$this->get_list();
 			//Подключение CSS стилей
 			foreach ($this->get_list['css'] as $file) {
 				$this->css($file, 'file', true);
@@ -324,22 +323,21 @@ class Page extends XForm {
 		}
 	}
 	//Перестройка кеша JavaScript и CSS
-	function rebuild_cache ($mode = 0) {
+	function rebuild_cache () {
+		$this->rebuild_cache = false;
+		$this->get_list();
 		$get_list = array();
 		foreach ($this->get_list as $part => $array) {
 			$get_list[$part] = array();
-			foreach ($array as $i => $v) {
+			foreach ($array as $i => $files) {
 				$get_list[$part][$i] = '';
-				if (($mode == 'base' && $i != 0) || ($mode == 'theme' && $i != 1) || ($mode == 'scheme' && $i != 2) || !is_array($this->get_list[$part][$i])) {
+				if (!is_array($files)) {
 					continue;
 				}
-				foreach ($this->get_list[$part][$i] as $file) {
+				foreach ($files as $file) {
 					if (file_exists($file)) {
 						$get_list[$part][$i] .= file_get_contents($file);
 					}
-				}
-				if (($mode == 'base' && $i != 0) || ($mode == 'theme' && $i != 1) || ($mode == 'scheme' && $i != 2) || !$get_list[$part][$i]) {
-					continue;
 				}
 				$file = PCACHE.'/'.$this->cache_list[$i].$part;
 				if (file_exists($file)) {
@@ -356,11 +354,7 @@ class Page extends XForm {
 		if ($mode == 'js') {
 			$content = preg_replace( '/[\n\t]+/s', ' ', $content);
 		} else {
-			$content = preg_replace( '#/\*.*?\*/#', '', $content);
-			$content = preg_replace( '/[\r\n\t]+/s', '', $content);
-			$content = preg_replace( '/^\s+/' , '', $content);
-			$content = preg_replace( '/[\/\*][^[\*\/].]*?[\*\/]/' , '', $content);
-			$content = preg_replace( '/@charset "utf-8";/' , '', $content);
+			$content = preg_replace( '/(\/\*.*?\*\/)(^\s+)([\r\n\t]+)([\/\*][^[\*\/].]*?[\*\/])(@charset "utf-8";)/s', '', $content);
 			$content = preg_replace( '/[\s]*([\{\},;:])[\s]*/', '\1', $content);
 		}
 		return $content;
@@ -384,10 +378,14 @@ class Page extends XForm {
 			//Обработка замены контента
 			$this->Html = str_replace($this->Search, $this->Replace, $this->Html);
 			//Вывод сгенерированной страницы
-			if ($this->Config->core['gzip_compression'] && zlib() && !$Error->num()) {
+			if (!zlib_autocompression() && $this->Config->core['gzip_compression'] && zlib() && !$Error->num()) {
 				ob_start('ob_gzhandler');
 				$ob = true;
 			} else {
+				if ($this->Config->core['zlib_compression'] && $this->Config->core['zlib_compression_level']) {
+					ini_set('zlib.output_compression', 'On');
+					ini_set('zlib.output_compression_level', $this->Config->core['zlib_compression_level']);
+				}
 				$ob = false;
 			}
 			$timeload['end'] = get_time();

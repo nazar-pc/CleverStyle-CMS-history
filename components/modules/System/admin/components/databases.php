@@ -252,7 +252,7 @@ if (isset($Config->routing['current'][2])) {
 					array(intval($Config->core['db_balance']), 1, 0),
 					true,
 					'',
-					array('', 'green', 'red'),
+					array('', 'form_element green', 'form_element red'),
 					true,
 					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 				), true, ' colspan="3"'
@@ -267,7 +267,7 @@ if (isset($Config->routing['current'][2])) {
 					array(intval($Config->core['maindb_for_write']), 1, 0),
 					true,
 					'',
-					array('', 'green', 'red'),
+					array('', 'form_element green', 'form_element red'),
 					true,
 					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 				).

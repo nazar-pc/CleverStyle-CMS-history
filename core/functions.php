@@ -264,6 +264,10 @@ function memcached () {
 function zlib () {
 	return extension_loaded('zlib');
 }
+//Проверка автоматического сжатия страниц с помощью zlib
+function zlib_autocompression () {
+	return zlib() && strtolower(ini_get('zlib.output_compression')) == 'on';
+}
 //Проверка состояния директивы register_globals
 function register_globals () {
 	global $L;

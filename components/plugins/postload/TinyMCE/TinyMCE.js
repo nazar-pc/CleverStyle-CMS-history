@@ -6,7 +6,7 @@ $(
 			theme : "advanced",
 			skin : "o2k7",
 			//skin_variant : "black",
-			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave,advlist,autoresize",
+			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave,advlist",
 			// Theme options
 			theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 			theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
@@ -47,8 +47,6 @@ $(
 			theme : "simple",
 			skin : "o2k7"
 		});
-		$('textarea').autoResize({
-			extraSpace : 0
-		});
+		$('textarea').autoResize();
 	}
 );

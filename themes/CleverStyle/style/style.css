@@ -64,6 +64,11 @@ a[href^="http://"]::after {
 	border: solid 1px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-spacing: 0px;
+}
+input.form_element[type=radio] {
+	height: 13px;
+	width: 13px;
 }
 header, footer {
 	width: 100%;

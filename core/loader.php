@@ -17,9 +17,10 @@ define('JS', DIR.'/includes/js');					//Папка с JavaScript включен�
 define('CSS', DIR.'/includes/css');					//Папка с CSS включениями
 define('PCACHE', DIR.'/includes/cache');			//Папка с публичным кешем (доступным пользователю)
 define('LOGS', DIR.'/logs');						//Папка для логов
-define('MODULES', DIR.'/modules');					//Папка для модулей
-define('PLUGINS', DIR.'/plugins');					//Папка для плагинов
-define('BLOCKS', DIR.'/blocks');					//Папка для блоков
+define('COMPONENTS', DIR.'/components');			//Папка для компонентов
+define('BLOCKS', COMPONENTS.'/blocks');					//Папка для блоков
+define('MODULES', COMPONENTS.'/modules');					//Папка для модулей
+define('PLUGINS', COMPONENTS.'/plugins');					//Папка для плагинов
 define('THEMES', DIR.'/themes');					//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы
