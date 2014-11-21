@@ -39,7 +39,7 @@ if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == '
 			if ($db->core()->q('UPDATE `[prefix]config` SET `db` = '.sip(serialize($Config->db)).' WHERE `domain` = '.sip(CDOMAIN))) {
 				$Page->title($L->settings_saved);
 				$Page->Top .= '<div class="green notice">'.$L->settings_saved.'</div>';
-				empty_cache();
+				flush_cache();
 			} else {
 				$Page->title($L->settings_save_error);
 				$Page->Top .= '<div class="red notice">'.$L->settings_save_error.'</div>';

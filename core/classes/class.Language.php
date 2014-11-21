@@ -1,16 +1,14 @@
 <?php
 class Language {
 	public		$clanguage;
-	protected	$Config = false,
-				$translate = array();
+	protected	$translate = array();
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
 		$this->change($LANGUAGE);
 	}
 	function init ($Config) {
-		$this->Config = $Config;
-		if ($this->Config->core['allow_change_language'] && isset($_COOKIE['language']) && in_array(strval($_COOKIE['language']), $this->Config->core['active_languages'])) {
+		if ($Config->core['allow_change_language'] && isset($_COOKIE['language']) && in_array(strval($_COOKIE['language']), $Config->core['active_languages'])) {
 			$this->change(strval($_COOKIE['language']));
 		} else {
 			$this->change($Config->core['language']);
@@ -29,10 +27,11 @@ class Language {
 		}
 	}
 	function change ($language) {
+		global $Config;
 		if ($language === $this->clanguage) {
 			return true;
 		}
-		if ($this->Config === false || ($this->Config->core['allow_change_language'] && in_array($language, $this->Config->core['active_languages']))) {
+		if (!is_object($Config) || ($Config->core['allow_change_language'] && in_array($language, $Config->core['active_languages']))) {
 			global $Cache;
 			$this->clanguage = $language;
 			if ($translate = $Cache->get('lang.'.$this->clanguage)) {

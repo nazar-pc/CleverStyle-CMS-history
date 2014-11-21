@@ -41,7 +41,7 @@ $a->content(
 					).(memcache() && $Cache->memcache ?
 					$a->tr(
 						$a->td($L->version.' memcache:', array('style' => 'padding-left: 20px;')).
-						$a->td($Cache->memcache['object']->getVersion(), array('class' => 'green'))
+						$a->td($Cache->memcache_getversion(), array('class' => 'green'))
 					) : '').
 /*					$a->tr(
 						$a->td($L->memcached_lib.':').

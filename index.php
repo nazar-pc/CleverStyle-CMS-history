@@ -24,6 +24,6 @@ chdir(DIR);
 //Подключение библиотеки базовых функций
 require DIR.DS.'core'.DS.'functions.php';
 
-//Запуск загрузчика движка
+//Подключение загрузчика движка
 require_x(DIR.DS.'core'.DS.'loader.php');
 ?>

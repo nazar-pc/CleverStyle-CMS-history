@@ -55,29 +55,24 @@ class Page extends XForm {
 									);
 
 	protected	$Search				= array(),
-				$Replace			= array(),
-				$Config,
-				$Page;
+				$Replace			= array();
 	
 	function init ($Config) {
-		global $L;
-		$this->Config = $Config;
-		$this->L = $L;
-		$this->Title[0] = $this->Config->core['name'];
-		$this->Keywords = $this->Config->core['keywords'];
-		$this->Description = $this->Config->core['description'];
-		$this->theme = $this->Config->core['theme'];
-		$this->color_scheme = $this->Config->core['color_scheme'];
-		$this->Page = $this;
+		$this->Title[0] = $Config->core['name'];
+		$this->Keywords = $Config->core['keywords'];
+		$this->Description = $Config->core['description'];
+		$this->theme = $Config->core['theme'];
+		$this->color_scheme = $Config->core['color_scheme'];
 	}
 	//Загрузка и обработка темы оформления, подготовка шаблона
 	protected function load($stop) {
+		global $Config;
 		//Определение темы оформления
-		if ($this->Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $this->Config->core['active_themes'])) {
+		if ($Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $Config->core['active_themes'])) {
 			$this->theme = strval($_COOKIE['theme']);
 		}
-		if ($this->Config->core['site_mode']) {
-			if ($this->Config->core['allow_change_theme'] && isset($_COOKIE['color_scheme']) && in_array(strval($_COOKIE['color_scheme']), $this->Config->core['color_schemes'])) {
+		if ($Config->core['site_mode']) {
+			if ($Config->core['allow_change_theme'] && isset($_COOKIE['color_scheme']) && in_array(strval($_COOKIE['color_scheme']), $Config->core['color_schemes'])) {
 				$this->color_scheme = strval($_COOKIE['color_scheme']);
 			}
 		}
@@ -86,7 +81,7 @@ class Page extends XForm {
 		//Загрузка шаблона
 		if ($this->interface) {
 			ob_start();
-			if (!$stop && $this->Config->core['site_mode'] && (file_exists(THEMES.DS.$this->theme.DS.'index.html') || file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
+			if (!$stop && $Config->core['site_mode'] && (file_exists(THEMES.DS.$this->theme.DS.'index.html') || file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
 				require_x(THEMES.DS.$this->theme.DS.'prepare.php', true, false);
 				if (!include_x(THEMES.DS.$this->theme.DS.'index.php', true, false)) {
 					include_x(THEMES.DS.$this->theme.DS.'index.html', true);
@@ -111,7 +106,7 @@ class Page extends XForm {
 	}
 	//Обработка шаблона и подготовка данных к выводу
 	protected function prepare ($stop) {
-		global $copyright, $User, $L;
+		global $copyright, $User, $L, $Config;
 		//Загрузка настроек оформления и шаблона темы
 		$this->load($stop);
 		//Загрузка стилей и скриптов
@@ -129,21 +124,21 @@ class Page extends XForm {
 					$this->Title[$i] = trim($v);
 				}
 			}
-			$this->Title = $this->Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
-			$this->Title[0] = implode(' '.trim($this->Config->core['title_delimiter']).' ', $this->Title);
+			$this->Title = $Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
+			$this->Title[0] = implode(' '.trim($Config->core['title_delimiter']).' ', $this->Title);
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
-			$this->core_css[1] = '<style type="text/css">'.($this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : "\n".$this->core_css[1])."</style>\n";
+			$this->core_css[1] = '<style type="text/css">'.($Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : "\n".$this->core_css[1])."</style>\n";
 		}
 		if ($this->css[1]) {
-			$this->css[1] = '<style type="text/css">'.($this->Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : "\n".$this->css[1])."</style>\n";
+			$this->css[1] = '<style type="text/css">'.($Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : "\n".$this->css[1])."</style>\n";
 		}
 		if ($this->core_js[1]) {
-			$this->core_js[1] = '<script>'.($this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : "\n".$this->core_js[1])."</script>\n";
+			$this->core_js[1] = '<script>'.($Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : "\n".$this->core_js[1])."</script>\n";
 		}
 		if ($this->js[1]) {
-			$this->js[1] = '<script>'.($this->Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : "\n".$this->js[1])."</script>\n";
+			$this->js[1] = '<script>'.($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : "\n".$this->js[1])."</script>\n";
 		}
 		$this->Head = "<title>".$this->Title[0]."</title>\n"
 						."<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
@@ -155,7 +150,7 @@ class Page extends XForm {
 						."<meta name=\"revisit-after\" content=\"1 days\">\n"
 						."<meta name=\"generator\" content=\"$copyright[1]\">\n"
 						."<link rel=\"shortcut icon\" href=\"".(file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ? 'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' : file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ? 'themes/'.$this->theme.'/img/favicon.ico' : 'includes/img/favicon.ico')."\">\n"
-						.(is_object($this->Config) ? "<base href=\"".$this->Config->server['base_url']."\">\n" : '')
+						.(is_object($Config) ? "<base href=\"".$Config->server['base_url']."\">\n" : '')
 						.$this->Head
 						.implode('', $this->core_css)
 						.implode('', $this->css)
@@ -296,10 +291,11 @@ class Page extends XForm {
 	}
 	//Подключение JavaScript и CSS файлов
 	protected function get_js_css () {
-		if (!is_object($this->Config)) {
+		global $Config;
+		if (!is_object($Config)) {
 			return;
 		}
-		if ($this->Config->core['cache_compress_js_css']) {
+		if ($Config->core['cache_compress_js_css']) {
 			//Проверка текущего кеша
 			if (!file_exists(PCACHE.DS.$this->cache_list[0].'css') && !file_exists(PCACHE.DS.$this->cache_list[0].'js') && !file_exists(PCACHE.DS.$this->cache_list[1].'css') && !file_exists(PCACHE.DS.$this->cache_list[1].'js') && !file_exists(PCACHE.DS.$this->cache_list[2].'css') && !file_exists(PCACHE.DS.$this->cache_list[2].'js')) {
 				$this->rebuild_cache();
@@ -413,11 +409,11 @@ class Page extends XForm {
 	}
 	//Сбор и отображение отладочных данных
 	protected function debug () {
-		global $L;
+		global $Config, $L, $db;
 		//Объекты
-		if ($this->Config->core['show_objects_data']) {
-			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\'); ">►'.$L->objects."</p>\n";
+		if ($Config->core['show_objects_data']) {
 			global $Classes, $timeload, $loader_init_memory;
+			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\'); ">►'.$L->objects."</p>\n";
 			$debug_info =	$this->p(
 								$L->total_list.': '.implode(', ', array_keys($Classes->ObjectsList))
 							).$this->p(
@@ -454,14 +450,14 @@ class Page extends XForm {
 			unset($loader_init_memory, $last, $object, $data, $debug_info);
 		}
 		//Данные пользователя
-		if ($this->Config->core['show_user_data']) {
+		if ($Config->core['show_user_data']) {
 			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\'); ">►'.$L->user_data."</p>\n";
 			global $Classes, $timeload, $loader_init_memory;
-			$this->debug_info .= "<div id=\"debug_user\" style=\"display: none;\">\n".$this->level($debug_info)."</div>\n";
-			unset($loader_init_memory, $last, $object, $data, $debug_info);
+			$this->debug_info .= "<div id=\"debug_user\" style=\"display: none;\">\n".$this->level(0)."</div>\n";
+			unset($loader_init_memory, $last, $object, $data);
 		}
 		//Запросы в БД
-		if ($this->Config->core['show_queries']) {
+		if ($Config->core['show_queries']) {
 			$this->debug_info .= $this->p(
 									'►'.$L->queries,
 									array(
@@ -469,9 +465,8 @@ class Page extends XForm {
 										'onClick' => 'javascript: $(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
 									)
 								);
-			global $db;
 			//Показываем только запросы в БД
-			if ($this->Config->core['show_queries'] == 1) {
+			if ($Config->core['show_queries'] == 1) {
 				$queries = array();
 				foreach ($db->connections as $database) {
 					foreach ($database->queries['text'] as $query) {
@@ -485,12 +480,12 @@ class Page extends XForm {
 								);
 				unset($queries);
 			//Показываем запросы в БД и время выполнения запросов
-			} elseif ($this->Config->core['show_queries'] == 2) {
+			} elseif ($Config->core['show_queries'] == 2) {
 				$queries = array();
 				foreach ($db->connections as $database) {
 					foreach ($database->queries['text'] as $i => $text) {
-						if ($database->queries['time'][$i] < 0.1) {
-							$queries[] = '<hr>'.$text.'; #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>';
+						if ($database->queries['time'][$i] > 0.1) {
+							$queries[] = '<hr>'.$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>';
 						} else {
 							$queries[] = $this->div(
 											'<hr>'.$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
@@ -506,7 +501,7 @@ class Page extends XForm {
 							);
 				unset($queries);
 			//Показываем детальную информацию о запросах в БД
-			} elseif ($this->Config->core['show_queries'] == 3) {
+			} elseif ($Config->core['show_queries'] == 3) {
 				$queries = array(
 								$L->false_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->false_connections)) ?: $L->no).'</b>',
 								$L->succesful_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->succesful_connections)) ?: $L->no).'</b>',
@@ -529,10 +524,10 @@ class Page extends XForm {
 					
 					foreach ($database->queries['text'] as $i => $text) {
 						$queries[] = $this->div(
-										'<hr>'.$text.'; #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
+										'<hr>'.$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
 										array(
-											'style' => 'padding-left: 40px;'.($database->queries['time'][$i] < 0.1 ? ' text-align: left;' : ''),
-											'class' => $database->queries['time'][$i] < 0.1 ? 'notice red' : ''
+											'style' => 'padding-left: 40px;'.($database->queries['time'][$i] > 0.1 ? ' text-align: left;' : ''),
+											'class' => $database->queries['time'][$i] > 0.1 ? 'notice red' : ''
 										)
 									);
 					}
@@ -554,7 +549,7 @@ class Page extends XForm {
 			unset($i, $v, $debug_info);
 		}
 		//Cookies
-		if ($this->Config->core['show_cookies']) {
+		if ($Config->core['show_cookies']) {
 			$this->debug_info .= $this->p(
 									'►'.$L->cookies,
 									array(
@@ -580,14 +575,15 @@ class Page extends XForm {
 		}
 	}
 	//Генерирование страницы
-	function generate () {
+	function finish () {
+		global $Config, $Page;
 		//Очистка вывода для избежания вывода нежелательных данных
 		if (OUT_CLEAN) {
 			ob_end_clean();
 		}
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
-		if (mb_strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
+		if (mb_strtolower($Config->routing['current'][count($Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
 			//Обработка замены контента
 			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			echo $this->Content;
@@ -598,18 +594,18 @@ class Page extends XForm {
 			//Обработка замены контента
 			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			//Вывод сгенерированной страницы
-			if (!zlib_autocompression() && $this->Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
+			if (!zlib_autocompression() && $Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
 				ob_start('ob_gzhandler');
 				$ob = true;
 			} else {
-				if ($this->Config->core['zlib_compression'] && $this->Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
+				if ($Config->core['zlib_compression'] && $Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
 					ini_set('zlib.output_compression', 'On');
-					ini_set('zlib.output_compression_level', $this->Config->core['zlib_compression_level']);
+					ini_set('zlib.output_compression_level', $Config->core['zlib_compression_level']);
 				}
 				$ob = false;
 			}
 			$timeload['end'] = microtime(true);
-			if ($this->Config->core['debug']) {
+			if ($Config->core['debug']) {
 				$this->debug();
 			}
 			echo str_replace(
@@ -621,7 +617,7 @@ class Page extends XForm {
 					array(
 						$this->debug_info ? $this->level('<div id="debug" title="'.$L->debug."\" style=\"display: none;\">\n".$this->level($this->debug_info)."</div>\n", $this->level['debug_info']) : '',
 						round($timeload['end'] - $timeload['start'], 5),
-						formatfilesize(memory_get_peak_usage(), 5)
+						formatfilesize(memory_get_peak_usage(true), 5)
 					),
 					$this->Html
 				);

@@ -14,7 +14,7 @@ class Core {
 					@trigger_error('{%CREATE_CACHE_DIR_ERROR%}', 'stop');
 					global $Classes, $stop;
 					$stop = 2;
-					$Classes->__destruct();
+					$Classes->finish();
 				}
 			}
 			$check_mcrypt = check_mcrypt();
@@ -77,7 +77,7 @@ class Core {
 		}
 	}
 	//Отключений функций шифрования
-	function __destruct () {
+	function finish () {
 		if ($this->support) {
 			foreach ($this->td as $td) {
 				mcrypt_module_close($td);

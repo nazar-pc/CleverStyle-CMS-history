@@ -38,14 +38,14 @@ class Classes {
 								$this->LoadedObjects[$class[2]] = $class[2];
 								$$class[2] = new $class[0]();
 							}
-							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
+							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage(true));
 						} else {
 							global $$class[0];
 							if (!is_object($$class[0])) {
 								$this->LoadedObjects[$class[0]] = $class[0];
 								$$class[0] = new $class[0]();
 							}
-							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
+							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage(true));
 						}
 					} else {
 						$this->LoadedObjects[$class[0]] = $class[0];
@@ -66,19 +66,19 @@ class Classes {
 			}
 		} else {
 			global $$class;
-			unset($this->LoadedObjects[$class], $$class);
+			unset($this->LoadedObjects[$class]);
+			method_exists($$class, 'finish') && $$class->finish();
+			$$class = NULL;
 		}
 	}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
-	function __destruct () {
+	function finish () {
 		foreach ($this->LoadedObjects as $class) {
 			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config' && $class != 'User' && $class != 'Error' && $class != 'L') {
 				$this->unload($class);
 			}
 		}
 		if (isset($this->LoadedObjects['Page'])) {
-			global $Page;
-			$Page->generate();
 			$this->unload('Page');
 		}
 		if (isset($this->LoadedObjects['db'])) {

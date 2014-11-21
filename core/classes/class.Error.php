@@ -1,10 +1,8 @@
 <?php
 class Error {
-	protected	$num = 0,
-				$Page,
-				$Config;
+	protected	$num = 0;
 	function __construct () {
-		set_error_handler(array(&$this, 'show'));
+		//set_error_handler(array(&$this, 'show'));
 	}
 	function show ($errno, $errstr='', $errfile=true, $errline='', $log=0) {
 		global $L, $Page, $Config;
@@ -25,7 +23,7 @@ class Error {
 						: '')
 					);
 					global $Classes;
-					$Classes->__destruct();
+					$Classes->finish();
 				break;
 				
 				case E_USER_WARNING:
@@ -75,7 +73,7 @@ class Error {
 			if ($errstr == 'stop') {
 				global $Classes, $stop;
 				$stop = 2;
-				$Classes->__destruct();
+				$Classes->finish();
 			}
 		}
 	}

@@ -145,7 +145,7 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 	}
 }
 //Очистка системного кеша
-function empty_cache () {
+function flush_cache () {
 	$ok = true;
 	$list = get_list(CACHE);
 	foreach ($list as $item) {
@@ -156,10 +156,14 @@ function empty_cache () {
 		}
 	}
 	unset($list);
+	global $Cache;
+	if (is_object($Cache) && $Cache->memcache) {
+		$ok = $Cache->flush() && $ok;
+	}
 	return $ok;
 }
 //Очисистка публичного кеша
-function empty_pcache () {
+function flush_pcache () {
 	$ok = true;
 	$list = get_list(PCACHE);
 	foreach ($list as $item) {

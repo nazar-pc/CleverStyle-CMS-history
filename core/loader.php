@@ -35,7 +35,7 @@ require_x(CLASSES.DS.'class.Classes.php');
 
 $stop = 0;
 $timeload['loader_init'] = microtime(true);
-$loader_init_memory = memory_get_usage();
+$loader_init_memory = memory_get_usage(true);
 //Запуск ядра и первичных классов, создание необходимых объектов
 //ВНИМАНИЕ: Отключение создания следующих объектов или изменение порядка почти на 100% приведет к полной неработоспособности движка!!!
 //При необходимости изменения логики работы движка используйте пользовательские версии файлов
@@ -54,5 +54,5 @@ $Classes->load(
 		array('Component', true)				//Создание объекта, который управляет обработкой компонентов
 	)
 );
-$Classes->__destruct();
+$Classes->finish();
 ?>

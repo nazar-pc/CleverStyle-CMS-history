@@ -4,13 +4,13 @@ if (isset($Config->routing['current'][2])) {
 	global $Page;
 	$Admin->form = false;
 	if ($Config->routing['current'][2] == 'cache') {
-		if (empty_cache()) {
+		if (flush_cache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
 		} else {
 			$Page->Content = '<div class="green">'.$L->error.'</div>';
 		}
 	} elseif ($Config->routing['current'][2] == 'pcache') {
-		if (empty_pcache()) {
+		if (flush_pcache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
 		} else {
 			$Page->Content = '<div class="green">'.$L->error.'</div>';

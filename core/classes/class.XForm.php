@@ -187,13 +187,14 @@ abstract class XForm {
 		return $this->swrap($in, $data, 'label');
 	}
 	function info ($in = '', $data = array()) {
+		global $L;
 		$info = $in.'_info';
 		if (isset($data['class'])) {
 			$data['class'] .= ' info';
 		} else {
 			$data['class'] = 'info';
 		}
-		return $this->label($this->L->$in, array_merge(array('data-title' => $this->L->$info), $data));
+		return $this->label($L->$in, array_merge(array('data-title' => $L->$info), $data));
 	}
 	function input ($in = '') {
 		if (isset($in['type']) && $in['type'] == 'radio') {
@@ -333,14 +334,15 @@ abstract class XForm {
 		}
 	}
 	function textarea ($in = '', $data = array()) {
+		global $Page;
 		$uniqid = uniqid('textarea_');
 		if (is_array($in)) {
 			if (isset($in['in'])) {
-				$this->Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
 				$in['in'] = $uniqid;
 			}
 		} else {
-			$this->Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+			$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
 			$in = $uniqid;
 		}
 		$data['level'] = false;
