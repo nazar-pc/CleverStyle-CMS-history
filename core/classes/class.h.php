@@ -40,9 +40,11 @@ class h {
 		}
 		if (isset($data['src'])) {
 			$data['src'] = str_replace(' ', '%20', $data['src']);
+			$data['src'] = self::url($data['src']);
 		}
 		if (isset($data['href'])) {
 			$data['href'] = str_replace(' ', '%20', $data['href']);
+			$data['href'] = self::url($data['href']);
 		}
 		if (isset($data['tag'])) {
 			$tag = $data['tag'];
@@ -74,6 +76,24 @@ class h {
 			}
 		}
 		return true;
+	}
+	/**
+	 * Adds, if necessary, slash or domain at the beginning of the url, provides correct relative url
+	 *
+	 * @static
+	 * @param string $url
+	 * @param bool $absolute	Returns absolute url
+	 * @return string
+	 */
+	static function url ($url, $absolute = false) {
+		if (substr($url, 0, 1) != '/' && substr($url, 0, 4) != 'http') {
+			global $Config;
+			if (is_object($Config)) {
+				return $Config->server['base_url'].'/'.$url;
+			}
+			return '/'.$url;
+		}
+		return $url;
 	}
 	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
 	//Используется наследуемыми классами

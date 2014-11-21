@@ -25,11 +25,11 @@ $(function() {
 	});
 	$('.ui-button').disableSelection();
 	$('#debug').dialog({
-			autoOpen:	false,
-			height:		'400',
-			hide:		'puff',
-			show:		'scale',
-			width:		'700'
+		autoOpen:	false,
+		height:		'400',
+		hide:		'puff',
+		show:		'scale',
+		width:		'700'
 	});
 	$('.dialog').each(function () {
 		if ($(this).attr('data-dialog')) {
@@ -149,10 +149,10 @@ $(function() {
 	$('#debug_objects_toggle').click(function () {
 		$('#debug_objects').toggle(500);
 		if($(this).hasClass('open')){
-			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+			var add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
 			$(this).removeClass('open');
-		}else{
-			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+		} else {
+			var add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
 			$(this).addClass('open');
 		}
 		$(this).html(add+objects);
@@ -160,32 +160,32 @@ $(function() {
 	$('#debug_user_toggle').click(function () {
 		$('#debug_user').toggle(500);
 		if($(this).hasClass('open')){
-			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+			var add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
 			$(this).removeClass('open');
-		}else{
-			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+		} else {
+			var add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
 			$(this).addClass('open');
 		}
 		$(this).html(add+user_data);
 	});
 	$('#debug_queries_toggle').click(function () {
 		$('#debug_queries').toggle(500);
-		if($(this).hasClass('open')){
-			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+		if($(this).hasClass('open')) {
+			var add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
 			$(this).removeClass('open');
-		}else{
-			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+		} else {
+			var add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
 			$(this).addClass('open');
 		}
 		$(this).html(add+queries);
 	});
 	$('#debug_cookies_toggle').click(function () {
 		$('#debug_cookies').toggle(500);
-		if($(this).hasClass('open')){
-			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+		if($(this).hasClass('open')) {
+			var add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
 			$(this).removeClass('open');
 		}else{
-			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+			var add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
 			$(this).addClass('open');
 		}
 		$(this).html(add+cookies);

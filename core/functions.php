@@ -165,7 +165,8 @@
 			$with_path = rtrim($with_path, DS).DS;
 		}
 		$dirc = _opendir($dir);
-		while ($file = _readdir($dirc)) {
+		while (($file = _readdir($dirc)) || $file === '0') {	//If file name if '0', it considered as boolean false, that's why,
+																//I have added $file === '0'
 			if (
 				(
 					$mask && !preg_match($mask, $file) &&
@@ -198,13 +199,13 @@
 			}
 			if ($subfolders && _is_dir($dir.$file)) {
 				if ($with_path == 1) {
-					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort);
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort, $exclusion);
 					if (is_array($get_list)) {
 						$list = array_merge($list, $get_list);
 					}
 					unset($get_list);
 				} elseif ($with_path) {
-					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $sort);
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $sort, $exclusion);
 					if (is_array($get_list)) {
 						$list = array_merge($list, $get_list);
 					}

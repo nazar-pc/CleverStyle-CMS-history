@@ -38,7 +38,7 @@ function progress (element) {
 	if ($(element).progressbar('value') == 100) {
 		$(element).progressbar('value', 1);
 	}
-};
+}
 function db_test (url, added) {
 	$('#test_db').html('<div id="test_progress"></div>');
 	$($('#test_progress')).progressbar({value: 1});

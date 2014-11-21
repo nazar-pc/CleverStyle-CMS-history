@@ -586,7 +586,7 @@ class Page {
 		global $User, $L;
 		if (is_object ($User) && $User->is('user')) {
 			if ($User->avatar) {
-				$this->user_avatar_image = 'url('.$User->avatar.')';
+				$this->user_avatar_image = 'url('.h::url($User->avatar, true).')';
 			} else {
 				$this->user_avatar_text = '?';
 				$this->user_avatar_image = 'none';

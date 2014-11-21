@@ -469,7 +469,7 @@ class User {
 	 * @param int $group
 	 * @return array
 	 */
-	function get_group_permissions ($group) {
+	function get_group_permissions ($group) {//file_put_contents(DIR.DS.'test', $group."\n".MICROTIME."\n".print_r(debug_backtrace(), true)."\n\n\n\n", FILE_APPEND);
 		global $Cache;
 		$group = (int)$group;
 		if (($group_permissions = $Cache->{'groups/permissions/'.$group}) === false) {
