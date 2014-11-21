@@ -30,14 +30,19 @@ class Index extends HTML {
 			$api			= false;
 
 	function __construct () {
-		global $Config, $L, $Page, $User, $Classes, $ADMIN, $API;
-		$Page->js('var language = "'.$L->clanguage.'", lang = "'.$L->clang.'";', 'code');
-		if (ADMIN && $User->is('admin')) {
-			define('MFOLDER', MODULES.DS.MODULE.DS.$ADMIN);
+		global $Config, $L, $Page, $User, $Classes;
+		if (
+			ADMIN && $User->is('admin') && file_exists(MODULES.DS.MODULE.DS.'admin') &&
+			(file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') || file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json'))
+		) {
+			define('MFOLDER', MODULES.DS.MODULE.DS.'admin');
 			$this->form = true;
 			$this->admin = true;
-		} elseif (API) {
-			define('MFOLDER', MODULES.DS.MODULE.DS.$API);
+		} elseif (
+			API && file_exists(MODULES.DS.MODULE.DS.'api') &&
+			(file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.php') || file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.json'))
+		) {
+			define('MFOLDER', MODULES.DS.MODULE.DS.'api');
 			$this->api = true;
 		} else {
 			define('MFOLDER', MODULES.DS.MODULE);
@@ -52,7 +57,7 @@ class Index extends HTML {
 			$this->parts = json_decode_x(file_get_contents(MFOLDER.DS.'index.json'));
 		}
 		include_x(MFOLDER.DS.'index.php', true, false);
-		global $Config, $L, $Page, $ADMIN;
+		global $Config, $L, $Page;
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
 			$Page->title($L->get(HOME ? 'home' : MODULE));
@@ -63,7 +68,7 @@ class Index extends HTML {
 				$rc[0] = $this->parts[0];
 			}
 			!$this->api && $Page->title($L->$rc[0]);
-			if (!include_x(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
+			if ($this->admin && !include_x(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
 				include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
 			}
 			if (file_exists(MFOLDER.DS.$rc[0].'.json')) {
@@ -76,11 +81,11 @@ class Index extends HTML {
 				}
 				if (!$this->api) {
 					$Page->title($L->$rc[1]);
-					$this->action = ($this->admin ? $ADMIN.'/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
+					$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
 				}
 				include_x(MFOLDER.DS.$rc[0].DS.$rc[1].'.php');
 			} elseif (!$this->api) {
-				$this->action = ($this->admin ? $ADMIN.'/' : '').MODULE.'/'.$rc[0];
+				$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0];
 			}
 			unset($rc);
 		} elseif (!$this->api) {
@@ -103,13 +108,13 @@ class Index extends HTML {
 		if (!is_array($this->parts)) {
 			return;
 		}
-		global $Config, $L, $ADMIN;
+		global $Config, $L;
 		foreach ($this->parts as $part) {
 			$this->mainsubmenu .= $this->a(
 				$L->$part,
 				array(
 					'id'		=> $part.'_a',
-					'href'		=> $ADMIN.'/'.MODULE.'/'.$part,
+					'href'		=> ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$part,
 					'class'		=> isset($Config->routing['current'][0]) && $Config->routing['current'][0] == $part ? 'active' : ''
 				)
 			);
@@ -119,7 +124,7 @@ class Index extends HTML {
 		if (!is_array($this->subparts)) {
 			return;
 		}
-		global $Config, $L, $ADMIN;
+		global $Config, $L;
 		foreach ($this->subparts as $subpart) {
 			$onClick = '';
 			if ($this->savecross && $this->form) {
@@ -129,7 +134,7 @@ class Index extends HTML {
 				$L->$subpart,
 				array(
 					'id'		=> $subpart.'_a',
-					'href'		=> $ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
+					'href'		=> ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
 					'class'		=> $Config->routing['current'][1] == $subpart ? 'active' : '',
 					'onClick'	=>	$onClick
 				)
@@ -137,13 +142,24 @@ class Index extends HTML {
 		}
 	}
 	function generate () {
-		global $Config, $L, $Page, $Cache, $ADMIN;
+		global $Config, $L, $Page, $Cache;
 		$this->method('mainmenu');
 		$this->method('mainsubmenu');
 		$this->method('menumore');
-		if (!API) {
+		if (!$this->api) {
+			global $API, $ADMIN, $User;
 			$Page->js(
-				'var save_before = "'.$L->save_before.'", continue_transfer = "'.$L->continue_transfer.'", base_url = "'.$Config->server['base_url'].(ADMIN ? '/'.$ADMIN : '').'/'.MODULE.(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'";',
+				'var save_before = "'.$L->save_before.'",'.
+					'continue_transfer = "'.$L->continue_transfer.'",'.
+					'base_url = "'.$Config->server['base_url'].'",'.
+					'current_base_url = "'.$Config->server['base_url'].'/'.
+										($this->admin ? ADMIN.'/' : '').
+										MODULE.
+										(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
+					'language = "'.$L->clanguage.'",'.
+					'lang = "'.$L->clang.'",'.
+					($User->is('admin') ? 'admin = "'.$ADMIN.'";' : '').
+					'api = "'.$API.'";',
 				'code'
 			);
 		}
@@ -157,13 +173,13 @@ class Index extends HTML {
 			$Page->content(
 				$this->form(
 					$this->Content.
-					$this->input(
+					(isset($Config->routing['current'][1]) ? $this->input(
 						array(
 							'type'	=> 'hidden',
 							'name'	=> 'subpart',
 							'value'	=> $Config->routing['current'][1]
 						)
-					).
+					) : '').
 					//Кнопка применить
 					($this->apply && $this->buttons ?
 						$this->button(

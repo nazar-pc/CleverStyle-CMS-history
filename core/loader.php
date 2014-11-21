@@ -15,7 +15,7 @@ define('CORE',			DIR.DS.'core');				//Папка ядра
 	define('CONFIG',	CORE.DS.'config');			//Папка конфигурации
 	define('ENGINES',	CORE.DS.'engines');			//Папка с движками БД и хранилищ
 	define('LANGUAGES',	CORE.DS.'languages');		//Папка с языковыми файлами
-define('INCLUDES',		DIR.DS.'includes');			//Папка с включениями
+define('INCLUDES',		PDIR.DS.'includes');		//Папка с включениями
 	define('CSS',		INCLUDES.DS.'css');			//Папка с CSS стилями
 	define('IMG',		INCLUDES.DS.'img');			//Папка с изображениями
 	define('JS',		INCLUDES.DS.'js');			//Папка с JavaScript скриптами
@@ -24,7 +24,7 @@ define('COMPONENTS',	DIR.DS.'components');		//Папка для компонен
 	define('BLOCKS',	COMPONENTS.DS.'blocks');	//Папка для блоков
 	define('MODULES',	COMPONENTS.DS.'modules');	//Папка для модулей
 	define('PLUGINS',	COMPONENTS.DS.'plugins');	//Папка для плагинов
-define('STORAGES',		DIR.DS.'storages');			//Локальное хранилище
+define('STORAGES',		PDIR.DS.'storages');		//Локальное хранилище
 	define('PCACHE',	STORAGES.DS.'pcache');		//Папка с публичным кешем (доступным пользователю извне)
 define('THEMES',		DIR.DS.'themes');			//Папка с темами
 

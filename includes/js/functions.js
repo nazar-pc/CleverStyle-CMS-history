@@ -61,7 +61,7 @@ $(function() {
 	);
 });
 function menuadmin (item, direct_link) {
-	var url = direct_link ? item : base_url+'/'+item;
+	var url = direct_link ? item : current_base_url+'/'+item;
 	if (!save) {
 		document.location.href = url;
 	} else {

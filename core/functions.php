@@ -356,7 +356,7 @@ function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 		} elseif ($mode == 'form') {
 			return function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($text, 'stripslashes') : $text;
 		} else {
-			return str_replace(array('"', '<', '>'), array('&quot;', '&lt;', '&gt;'), trim($text));
+			return str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), trim($text));
 		}
 	}
 }

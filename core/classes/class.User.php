@@ -5,7 +5,6 @@ class User {
 				$data_set			= array(),
 				$data_others		= array(),
 				$data_others_set	= true,
-				$admin				= true,
 				$db					= false,
 				$db_prime			= false;
 	function __construct () {
@@ -13,7 +12,7 @@ class User {
 		$this->current['is']['admin']	= true;
 		$this->current['is']['bot']		= false;
 		$this->current['is']['user']	= false;
-		$this->current['is']['guest']	= false;
+		$this->current['is']['guest']	= true;
 		//Пользователь может устанавливать cookies
 		if (setcookie($test = uniqid(), 'test')) {
 			setcookie($test, '');
@@ -120,44 +119,57 @@ class User {
 		//$Page->user_avatar_image = '1.jpg';
 		$Page->user_avatar_text = '?';
 		//$Page->user_info = '<b>Приветствую, nazar-pc!</b>';
-		$Page->user_info = $Page->input(
+		$Page->user_info = $Page->div(
+			$Page->input(
+				array(
+					'type'			=> 'text',
+					'id'			=> 'user_login',
+					'placeholder'	=> $L->login_or_email
+				)
+			).
+			$Page->input(
+				array(
+					'type'			=> 'password',
+					'id'			=> 'user_password',
+					'placeholder'	=> $L->password
+				)
+			).
+			$Page->icon(
+				'locked',
+				array(
+					'onClick'		=> 'if ($(\'#user_password\').prop(\'type\') == \'password\') {'.
+											'$(\'#user_password\').prop(\'type\', \'text\');'.
+											'$(this).addClass(\'ui-icon-unlocked\');'.
+											'$(this).removeClass(\'ui-icon-locked\');'.
+										'} else {'.
+											'$(\'#user_password\').prop(\'type\', \'password\');'.
+											'$(this).addClass(\'ui-icon-locked\');'.
+											'$(this).removeClass(\'ui-icon-unlocked\');'.
+										'}'
+				)
+			).
+			$Page->button(
+				$Page->icon('check').$L->log_in,
+				array(
+					'id'		=> 'log_in',
+					'onClick'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());'
+				)
+			).
+			$Page->button(
+				$Page->icon('closethick'),
+				array(
+					'style'	=> 'float: right;'
+				)
+			).
+			$Page->button(
+				$Page->icon('help'),
+				array(
+					'style'	=> 'float: right;'
+				)
+			),
 			array(
-				'type'			=> 'text',
-				'id'			=> 'user_login',
-				'placeholder'	=> $L->login_or_email
-			)
-		).
-		$Page->input(
-			array(
-				'type'			=> 'password',
-				'id'			=> 'user_password',
-				'placeholder'	=> $L->password
-			)
-		).
-		$Page->icon(
-			'locked',
-			array(
-				'onClick'		=> 'if ($(\'#user_password\').prop(\'type\') == \'password\') {'.
-										'$(\'#user_password\').prop(\'type\', \'text\');'.
-										'$(this).addClass(\'ui-icon-unlocked\');'.
-										'$(this).removeClass(\'ui-icon-locked\');'.
-									'} else {'.
-										'$(\'#user_password\').prop(\'type\', \'password\');'.
-										'$(this).addClass(\'ui-icon-locked\');'.
-										'$(this).removeClass(\'ui-icon-unlocked\');'.
-									'}'
-			)
-		).
-		$Page->button(
-			$Page->icon('check').$L->log_in,
-			array(
-				'id'	=> 'log_in'
-			)
-		).
-		$Page->button(
-			$Page->icon('triangle-1-s'),
-			array(
-				'style'	=> 'float: right;'
+				'id'	=> 'login_header_form',
+				//'style'	=> 'display: none;'
 			)
 		);
 	}

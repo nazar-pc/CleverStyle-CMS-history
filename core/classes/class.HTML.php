@@ -33,7 +33,7 @@ class HTML {
 			unset($data['in']);
 		}	
 		if (isset($data['data-title']) && $data['data-title']) {
-			$data['data-title'] = str_replace(array('&lt;br&gt;', '&'), array('<br>', '&amp;'), filter($data['data-title']));
+			$data['data-title'] = filter($data['data-title']);
 			if (isset($data['class'])) {
 				$data['class'] .= ' info';
 			} else {

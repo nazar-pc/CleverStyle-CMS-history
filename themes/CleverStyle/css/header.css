@@ -50,19 +50,22 @@
 	position: fixed;
 	width: 157px;
 }
-#user_info_header > input[type=text], #user_info_header > input[type=password] {
+#user_info_header > * > input[type=text], #user_info_header > * > input[type=password] {
 	background: #ddd;
 	border: #fff solid 1px;
 	float: left;
 	margin: 0px 0px 5px 3px;
 	width: 150px;
 }
-#user_info_header > .ui-icon {
+#user_info_header > * > .ui-icon {
 	margin: 26px 0px 0px -20px;
 }
-#user_info_header > button {
+#user_info_header > * > button {
 	margin-left: 3px;
 	float: left;
+}
+#user_info_header > * > button > span {
+	padding: 2px 3px;
 }
 #main-menu, #main-submenu, #menu-more {
 	height: 40px;

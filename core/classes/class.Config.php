@@ -103,13 +103,13 @@ class Config {
 		//Если адрес похож на адрес админки
 		if (isset($rc[0]) && mb_strtolower($rc[0]) == mb_strtolower($ADMIN)) {
 			if (!defined('ADMIN')) {
-				define('ADMIN', true);
+				define('ADMIN', $ADMIN);
 			}
 			array_shift($rc);
 		//Если адрес похож на запрос к API
 		} elseif (isset($rc[0]) && mb_strtolower($rc[0]) == mb_strtolower($API)) {
 			if (!defined('API')) {
-				define('API', true);
+				define('API', $API);
 			}
 			array_shift($rc);
 		}
@@ -130,7 +130,7 @@ class Config {
 		}
 		!defined('HOME')	&& define('HOME', false);
 		//Скорректированный путь страницы (рекомендуемый к использованию)
-		$this->server['current_url'] = (ADMIN ? $ADMIN.'/' : '').MODULE.(API ? $API.'/' : '').'/'.implode('/', $rc);
+		$this->server['current_url'] = (ADMIN ? ADMIN.'/' : '').MODULE.(API ? $API.'/' : '').'/'.implode('/', $rc);
 		//Определение необходимости отключить интерфейс
 		if (isset($_POST['nonterface']) || API) {
 			interface_off();

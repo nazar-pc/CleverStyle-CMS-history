@@ -11,10 +11,10 @@ class Core {
 			header('HTTP/1.0 404 Not Found');
 			__finish();
 		}
-		define('STORAGE',	STORAGES.DS.DOMAIN.DS.'public');	//Локальное хранилище
-		define('CACHE',		STORAGES.DS.DOMAIN.DS.'cache');		//Папка с кешем
-		define('LOGS',		STORAGES.DS.DOMAIN.DS.'logs');		//Папка для логов
-		define('TEMP',		STORAGES.DS.DOMAIN.DS.'temp');		//Папка для временных файлов
+		define('STORAGE',	STORAGES.DS.DOMAIN.DS.'public');	//Локальное публичное хранилище домена
+		define('CACHE',		STORAGES.DS.DOMAIN.DS.'cache');		//Папка с кешем домена
+		define('LOGS',		STORAGES.DS.DOMAIN.DS.'logs');		//Папка для логов домена
+		define('TEMP',		STORAGES.DS.DOMAIN.DS.'temp');		//Папка для временных файлов домена
 		global	$DB_HOST,
 				$DB_TYPE,
 				$DB_NAME,
