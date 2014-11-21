@@ -52,6 +52,5 @@ $(document).ready(
 			skin_variant : typeof(tinymce_skin_variant_mini) != 'undefined' ? tinymce_skin_variant_mini : '',
 			language: typeof(lang) != 'undefined' ? lang : 'en'
 		});
-		$('textarea').autoResize();
 	}
 );

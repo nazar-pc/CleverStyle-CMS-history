@@ -5,7 +5,7 @@ class Config {
 			$array_list;
 	//Инициализация параметров системы
 	function __construct () {
-		global $Page, $Cache, $db;
+		global $Page, $Cache, $db, $L;
 		$this->admin_parts = array('db', 'core', 'components', 'replace', 'routing');
 		$this->array_list = array('mirrors', 'themes_list');
 		//Считывание настроек с кеша и определение недостающих данных
@@ -24,12 +24,14 @@ class Config {
 				$query[$id] = '`'.$q.'`';
 			}
 		}
-		//Инициализация объекта БД с использованием настроек движка
-		$db->init($this);
-		//Перестройка кеша
+		//Перестройка кеша при необходимости
 		if (isset($query) && is_array($query) && !empty($query)) {
 			$this->rebuild_cache($query);
 		}
+		//Инициализация объекта языков с использованием настроек движка
+		$L->init($this);
+		//Инициализация объекта БД с использованием настроек движка
+		$db->init($this);
 		//Инициализация объекта кеша с использованием настроек движка
 		$Cache->init($this);
 		//Инициализация объекта страницы с использованием настроек движка

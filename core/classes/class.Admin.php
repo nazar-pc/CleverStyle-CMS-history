@@ -38,21 +38,20 @@ class Admin extends Module {
 	function mainsubmenu () {
 		$this->mainsubmenu = '';
 		foreach ($this->parts as $part) {
-			$this->mainsubmenu .= "	<a href=\"admin/".MODULE."/".$part."\" title=\"".$this->L->$part."\" class=\"".(isset($this->Config->routing['current'][0]) && $this->Config->routing['current'][0] == $part ? 'main-submenu_active' : 'none')."\">".$this->L->$part."</a>\n";
+			$this->mainsubmenu .= '	<a id="'.$part.'_a" href="admin/'.MODULE.'/'.$part.'" onMouseOver="javascript: $(this).removeAttr(\'href\');" onMouseDown="javascript: menuadmin(\''.$part.'\', \'admin/'.MODULE.'/'.$part.'\')" title="'.$this->L->$part.'"'.(isset($this->Config->routing['current'][0]) && $this->Config->routing['current'][0] == $part ? ' class="active"' : '').">".$this->L->$part."</a>\n";
 		}
 	}
 	function menumore () {
 		$this->menumore = '';
 		foreach ($this->subparts as $subpart) {
-			$this->menumore .= "	<a id=\"".$subpart."_a\" onClick=\"javascript: menuadmin('".$subpart."')\" class=\"".($this->Config->routing['current'][1] == $subpart ? 'menu-more_active' : 'none')."\" title=\"".$this->L->$subpart."\">".$this->L->$subpart."</a>\n";
+			$this->menumore .= '	<a id="'.$subpart.'_a" href="admin/'.MODULE.'/'.$this->Config->routing['current'][0].'/'.$subpart.'" onMouseOver="javascript: $(this).removeAttr(\'href\');" onMouseDown="javascript: menuadmin(\''.$subpart.'\', false)"'.($this->Config->routing['current'][1] == $subpart ? ' class="active"' : '').' title="'.$this->L->$subpart.'">'.$this->L->$subpart."</a>\n";
 		}
 	}
 	function generate () {
 		$this->mainsubmenu();
 		$this->menumore();
 		$this->Page->javascript(
-			"var save_before = '".$this->L->save_before."', continue_transfer = '".$this->L->continue_transfer."', base_url = '".$this->Config->core['url']."/admin/".MODULE.'/'.$this->Config->routing['current'][0]."';\n"
-			."\$(function () {\$('.admin_form *').change(function () {save = 1; \$('#reset').removeAttr('disabled');});});\n",
+			"var save_before = '".$this->L->save_before."', continue_transfer = '".$this->L->continue_transfer."', base_url = '".$this->Config->core['url']."/admin/".MODULE.'/'.$this->Config->routing['current'][0]."';\n",
 			'code'
 		);
 		$this->Page->mainsubmenu = "<menu>\n".$this->mainsubmenu."</menu>\n";
@@ -60,19 +59,29 @@ class Admin extends Module {
 		if ($this->form) {
 			$this->Page->content(
 				$this->form(
-					$this->Content
-					.$this->Page->level($this->input('hidden', 'edit_settings'))
-					.($this->buttons ?
-						($this->apply_button ? "	<button id=\"apply_settings\" type=\"submit\" onClick=\"javascript: \$('#edit_settings').val('apply');\">".$this->L->apply."</button>\n" : '')
-						."	<button id=\"save_settings\" type=\"submit\" onClick=\"javascript: \$('#edit_settings').val('save');\">".$this->L->save."</button>\n"
-						.($this->apply_button ? "	<button id=\"cancel_settings\" type=\"submit\" onClick=\"javascript: \$('#edit_settings').val('cancel');\"".$this->cancel.">".$this->L->cancel."</button>\n" : '')
-						."	<button id=\"reset\" type=\"reset\" disabled>".$this->L->reset."</button>\n"
+					$this->Content.
+					$this->Page->level(
+						$this->input(
+							'hidden',
+							$this->Config->routing['current'][1]
+						).
+						$this->input(
+							'hidden',
+							'edit_settings',
+							'save'
+						)
+					).
+					($this->buttons ?
+						($this->apply_button ? "	<button id=\"apply_settings\" type=\"submit\">".$this->L->apply."</button>\n" : '')
+						."	<button id=\"save_settings\" type=\"submit\">".$this->L->save."</button>\n"
+						.($this->apply_button ? "	<button id=\"cancel_settings\" type=\"submit\"".$this->cancel.">".$this->L->cancel."</button>\n" : '')
+						."	<button type=\"reset\">".$this->L->reset."</button>\n"
 					: ''),
 					'post',
 					$this->action,
 					'admin_form',
 					true,
-					' onReset="javascript: save = 0; $(\'#reset\').attr(\'disabled\', \'disabled\');"',
+					' onReset="javascript: save = 0;"',
 					'admin_form'
 				), 1
 			);

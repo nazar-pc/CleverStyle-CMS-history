@@ -29,36 +29,24 @@
 	text-shadow:  0px 0px 20px #fff;
 	vertical-align: top;
 }
-#main-menu > menu {
+#main-menu > menu, #main-menu > menu > a, #main-submenu > menu > a {
 	color: #fff;
 }
 #main-menu > menu > a {
-	color: #fff;
-	text-shadow: 0px 0px 10px #999;
+	text-shadow: 0px 0px 7px rgba(0, 0, 0, 0.5);
 }
-#main-menu > menu > a:hover {
+#main-menu > menu > a:hover, #main-submenu > menu > a:hover, #main-submenu > menu > a.active {
 	color: #000;
-	text-shadow: 0px 0px 10px #fff;
+	text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.7);
 }
-#main-submenu > menu > a.none {
-	color: #fff;
-	text-shadow: 0px 0px  10px #999;
-}
-#main-submenu > menu > a.none:hover {
-	color: #ffa;
-}
-#menu-more > menu > a.none {
-	border-top: 3px solid #6ebc00;
+#menu-more > menu {
 	color: #6ebc00;
 }
-#menu-more > menu > a.none:hover {
-	border-top: 3px solid #999;
-	color: #999;
+#menu-more > menu > a {
+	border-top: 2px solid #6ebc00;
+	color: #6ebc00;
 }
-#menu-more > menu > a.menu-more_active {
-	color: #ccc;
-	border-top: 3px solid #ccc;
-}
-#main-submenu > menu > a.main-submenu_active {
-	color: #ff3;
+#menu-more > menu > a:hover, #menu-more > menu > a.active {
+	border-top-color: #ddd;
+	color: #ddd;
 }

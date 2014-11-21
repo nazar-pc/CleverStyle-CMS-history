@@ -15,7 +15,7 @@ class Error {
 				case E_ERROR:
 					$Page->title($L->fatal.' #'.$errno.': '.$errstr.' '.$L->page_generation_aborted.'...');
 					$Page->content(
-						'<p><b>'.$L->fatal.' #'.$errno.':</b> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
+						'<p><span style="text-transform: uppercase; font-weight: bold;">'.$L->fatal.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
 						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>\n"
 						.$L->page_generation_aborted."...<br>\n"
 						.$L->report_to_admin."<br>\n"
@@ -34,7 +34,7 @@ class Error {
 						$Page->title($L->error.' #'.$errno.': '.$errstr);
 					}
 					$Page->content(
-						'<b>'.$L->error.' #'.$errno.':</b> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
+						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
 						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>"
 						.$L->report_to_admin."<br>\n"
 						.(is_object($Config) ?
@@ -51,7 +51,7 @@ class Error {
 						$Page->title($L->warning.' #'.$errno.': '.$errstr);
 					}
 					$Page->content(
-						'<b>'.$L->warning.' #'.$errno.':</b> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
+						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->warning.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
 						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>"
 					);
 				break;
@@ -61,17 +61,17 @@ class Error {
 						$Page->title($L->error.' #'.$errno.': '.$errstr);
 					}
 					$Page->content(
-						'<b>'.$L->error.' #'.$errno.':</b> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
+						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
 						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>\n");
 				break;
 			}
 		} else {
 			if ($errstr != 'stop') {
 				$Page->title($L->error.': '.$errno);
-				$Page->content('<b>'.$L->error.':</b> '.$errno."<br>\n");
+				$Page->content('<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br>\n");
 			} else {
 				$Page->Title = array($L->error.': '.$errno);
-				$Page->Content = '<h2 align="center"><b>'.$L->error.':</b> '.$errno."<br></h2>\n";
+				$Page->Content = '<h2 align="center"><span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br></h2>\n";
 			}
 			if ($errstr == 'stop') {
 				global $Classes, $stop;

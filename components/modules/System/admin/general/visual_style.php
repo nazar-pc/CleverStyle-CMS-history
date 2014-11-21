@@ -67,10 +67,6 @@ $a->table(
 				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
-			).
-			$a->input(
-				'hidden',
-				'visual_style'
 			)
 		)
 	), '', false, '', 'admin_table'

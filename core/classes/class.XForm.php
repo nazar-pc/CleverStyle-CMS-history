@@ -1,6 +1,7 @@
 <?php
 class XForm {
-	public $return = false;
+	public	$return = false;
+	private	$n = 0;
 	function form ($mode, $method = 'post', $action = '', $id = false, $return = -1, $add = '', $class = '', $name = false) {
 		if ($return == -1) {
 			$return = $this->return;
@@ -121,8 +122,7 @@ class XForm {
 		}
 	}
 	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
-		static $n;
-		++$n;
+		++$this->n;
 		if ($return == -1) {
 			$return = $this->return;
 		}
@@ -153,8 +153,8 @@ class XForm {
 			if ($type == 'text') {
 				$Content = '<input name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			} elseif ($type == 'checkbox' || $type == 'radio') {
-				$Content = '<input id="'.$n.'" name="'.$id.'"'.($type == 'radio' ? '' : ' id="'.$id.'"').(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, $n, $return).$devider."\n";
-			} else{
+				$Content = '<input id="'.$this->n.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, $this->n, $return).$devider."\n";
+			} else {
 				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[0]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			}
 			if ($type != 'checkbox' && $type != 'radio' && $label && $array_text) {
@@ -218,7 +218,7 @@ class XForm {
 		if (!$value) {
 			return;
 		}
-		$Content = '<button'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').' type="'.$type.'"'.($class ? ' class="'.$class.'"' : '').$add.'>'.$value."</button>\n";
+		$Content = '<button id="'.($id ?: $name).'"'.($name ? ' name="'.$name.'"' : '').' type="'.$type.'"'.($class ? ' class="'.$class.'"' : '').$add.'>'.$value."</button>\n";
 		if ($return) {
 			return $Content;
 		} else {

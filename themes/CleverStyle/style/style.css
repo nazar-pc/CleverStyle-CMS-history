@@ -17,6 +17,12 @@ a[href^="http://"]::after {
 	-moz-border-radius: 5px;
 	border-spacing: 0px;
 }
+input, textarea {
+	outline: none;
+}
+textarea {
+	overflow-x: auto;
+}
 header, footer {
 	width: 100%;
 	text-align: center;

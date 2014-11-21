@@ -26,7 +26,8 @@ header * {
 	z-index: 2;
 }
 #header_black {
-	height: 110px;
+	height: 115px;
+	right: 0px;
 	z-index: 1;
 }
 #user_header {
@@ -53,12 +54,11 @@ header * {
 	height: 82px;
 	width: 148px;
 }
-#main-menu {
+#main-menu, #main-submenu, #menu-more {
 	height: 40px;
 	left: 0px;
 	line-height: 32px;
 	position: fixed;
-	right: 250px;
 	text-align: left;
 	top: 0px;
 }
@@ -66,56 +66,31 @@ header * {
 	font-size: 40px;
 	margin: 0px;
 	padding: 5px 0px 0px 5px;
-	position: fixed;
 }
-#main-menu > menu > a {
+#main-menu > menu > a, #main-submenu > menu > a, #menu-more > menu > a {
 	border-bottom: none;
 	cursor: pointer;
-	font-size: 40px;
 	transition: all 0.3s linear;
 	-o-transition: all 0.3s linear;
 	-moz-transition: all 0.3s linear;
 	-webkit-transition: all 0.3s linear;
 }
 #main-submenu {
-	height: 30px;
-	left: 0px;
 	line-height: 20px;
-	position: fixed;
-	right: 250px;
-	text-align: left;
 	top: 40px;
 }
 #main-submenu > menu {
+	font-size: 24px;
 	margin: 0px;
 	padding: 5px 0px 0px 5px;
 }
-#main-submenu > menu > a {
-	font-size: 24px;
-	border-bottom-style: none;
-	transition: all 0.5s linear;
-	-o-transition: all 0.5s linear;
-	-moz-transition: all 0.5s linear;
-	-webkit-transition: all 0.5s linear;
-}
 #menu-more {
-	height: 40px;
-	left: 0px;
-	line-height: 15px;
-	position: fixed;
-	right: 250px;
-	text-align: left;
+	font-size: 14px;
+	line-height: 14px;
+	right: 260px;
 	top: 70px;
 }
 #menu-more > menu {
 	margin: 0px;
-	padding: 5px 0px 0px 5px;
-}
-#menu-more > menu > a {
-	font-size: 14px;
-	border-bottom-style: none;
-	transition: all 1s linear;
-	-o-transition: all 1s linear;
-	-moz-transition: all 1s linear;
-	-webkit-transition: all 1s linear;
+	padding: 5px 0px 0px 10px;
 }

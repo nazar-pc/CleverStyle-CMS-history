@@ -1,13 +1,9 @@
 <?php
 //Интерфейс для работы с классами
 class Classes {
-	public		$ObjectsList = array(	//Массив со списком объектов, и данными о занятом объеме памяти после их объектов,
-					0 => array()		//и длительностью их содания
-				);
+	public	$ObjectsList = array();	//Массив со списком объектов, и данными о занятом объеме памяти после их объектов,
+									//и длительностью их содания
 	protected	$LoadedObjects = array();
-	function __construct () {
-		$this->ClassesList[0] = array(get_time(), memory_get_usage());
-	}
 	//Метод добавления объектов в список для их разрушения в конце работы
 	function add ($name) {
 		$this->LoadedObjects[$name] = $name;
@@ -40,14 +36,14 @@ class Classes {
 							if (!is_object($$class[2])) {
 								$$class[2] = new $class[0]();
 							}
-							$this->ClassesList[$class[2]] = array(get_time(), memory_get_usage());
+							$this->ObjectsList[$class[2]] = array(get_time(), memory_get_usage());
 						} else {
 							global $$class[0];
 							$this->LoadedObjects[$class[0]] = $class[0];
 							if (!is_object($$class[0])) {
 								$$class[0] = new $class[0]();
 							}
-							$this->ClassesList[$class[0]] = array(get_time(), memory_get_usage());
+							$this->ObjectsList[$class[0]] = array(get_time(), memory_get_usage());
 						}
 					} else {
 						$this->LoadedObjects[$class[0]] = $class[0];

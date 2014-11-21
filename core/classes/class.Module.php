@@ -11,16 +11,12 @@ class Module extends XForm {
 		$this->L = $L;
 		$this->Page = $Page;
 		$this->User = $User;
+		$this->Page->javascript(
+			"var language = '".$this->L->clanguage."', lang = '".$L->clang."';\n",
+			'code'
+		);
 		if ($this->Config->core['debug']) {
-			$this->Page->javascript(
-				"\$(document).ready(function() {\$('#debug').dialog({autoOpen: false, width: '600', height: '300', hide: 'puff', show: 'scale', title: '".$this->L->debug."'});});\n"
-				."function debug_window () {\$('#debug').dialog('open');}\n"
-				."var language = '".$L->clanguage."', lang = '".$L->clang."';",
-				'code'
-			);
-			$this->Page->content(
-				"<div id=\"debug\"><!--debug_info--></div>\n"
-			);
+			$this->Page->Content .= "<div id=\"debug\" title=\"".$this->L->debug."\" style=\"display: none;\"><!--debug_info-->\n</div>\n";
 		}
 	}
 	function init () {

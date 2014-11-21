@@ -1,9 +1,8 @@
 <?php
-global $timeload, $Classes;
-$timeload['loader_init'] = get_time();
+global $timeload, $Classes, $loader_init_memory;
 error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
-ini_set("display_errors", 1);
+ini_set('display_errors', 1);
 header('Content-Type: text/html; charset=utf-8');
 
 //Задание базовых констант с путями системных папок
@@ -31,7 +30,8 @@ require_x(CORE.'/required_verions.php');
 require_x(CLASSES.'/class.Classes.php');
 
 $stop = 0;
-$timeload['core_init'] = get_time();
+$timeload['loader_init'] = get_time();
+$loader_init_memory = memory_get_usage();
 //Запуск ядра и первичных классов
 //ВНИМАНИЕ: Отключение создания следующих объектов почти на 100% приведет к полной неработоспособности движка!!!
 //При необходимости изменения логики работы движка используйте пользовательские версии файлов

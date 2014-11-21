@@ -37,10 +37,9 @@ $a->table(
 				'core[mirrors]',
 				$Config->core['mirrors'],
 				true,
-				'',
+				' style="width: 98%; height: 5em;" wrap="off"',
 				'form_element',
-				39,
-				3
+				false
 			)
 		)
 	).
