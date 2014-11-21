@@ -64,7 +64,7 @@ $a->table(
 				array(intval($Config->core['allow_change_theme']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			).

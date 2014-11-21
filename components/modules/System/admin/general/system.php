@@ -13,7 +13,7 @@ $a->table(
 				array(intval($Config->core['site_mode']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green noui', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -66,7 +66,7 @@ $a->table(
 				array(intval($Config->core['title_reverse']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -81,7 +81,7 @@ $a->table(
 				array(intval($Config->core['debug']), 1, 0),
 				true,
 				array('', ' onClick="$(\'#debug_form\').show();"', ' onClick="$(\'#debug_form\').hide();"'),
-				array('', 'form_element green', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -98,7 +98,7 @@ $a->table(
 						array(intval($Config->core['queries']), 0, 1, 2, 3),
 						true,
 						'',
-						array('', 'form_element red', 'form_element green', 'form_element green', 'form_element green'),
+						'',
 						true,
 						array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time, '&nbsp;'.$L->show_queries_extended),
 						true
@@ -109,7 +109,7 @@ $a->table(
 						array(intval($Config->core['show_cookies']), 1),
 						true,
 						'',
-						'form_element',
+						'',
 						true,
 						$L->show_cookies,
 						true,
@@ -121,7 +121,7 @@ $a->table(
 						array(intval($Config->core['show_user_data']), 1),
 						true,
 						'',
-						'form_element',
+						'',
 						true,
 						$L->show_user_data,
 						true,
@@ -133,7 +133,7 @@ $a->table(
 						array(intval($Config->core['show_objects_data']), 1),
 						true,
 						'',
-						'form_element',
+						'',
 						true,
 						$L->show_objects_data,
 						true,
@@ -152,7 +152,7 @@ $a->table(
 				array(intval($Config->core['zlib_compression']), 1, 0),
 				true,
 				zlib() ? array('', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').show();"', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').hide();"') : '',
-				zlib() ? array('', 'form_element green', zlib_autocompression() ? 'form_element grey' : 'form_element red') : array('', 'form_element grey', 'form_element grey'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -181,7 +181,7 @@ $a->table(
 				array(intval($Config->core['gzip_compression']), 1, 0),
 				true,
 				!zlib_autocompression() && !$Config->core['zlib_compression'] ? '' : ' disabled',
-				!zlib_autocompression() && !$Config->core['zlib_compression'] ? array('', 'form_element green', 'form_element red') : array('', 'form_element grey', 'form_element grey'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)

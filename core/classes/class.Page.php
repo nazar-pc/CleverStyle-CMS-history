@@ -78,7 +78,7 @@ class Page extends XForm {
 				$this->color_scheme = strval($_COOKIE['color_scheme']);
 			}
 		}
-		$this->cache_list = array (0 => 'cache.', 1 => $this->theme.'.', 2 => $this->theme.'_'.$this->color_scheme.'.');
+		$this->cache_list = array (0 => 'a-cache.', 1 => $this->theme.'.', 2 => $this->theme.'_'.$this->color_scheme.'.');
 		//Загрузка шаблона
 		ob_start();
 		if (!$stop && $this->Config->core['site_mode'] && (file_exists(THEMES.'/'.$this->theme.'/index.html') || file_exists(THEMES.'/'.$this->theme.'/index.php'))) {
@@ -130,20 +130,16 @@ class Page extends XForm {
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
-			$this->core_css[1] = "<style type=\"text/css\">\n".$this->core_css[1]."</style>\n";
-			$this->core_css[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1];
+			$this->core_css[1] = "<style type=\"text/css\">\n".($this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1])."</style>\n";
 		}
 		if ($this->css[1]) {
-			$this->css[1] = "<style type=\"text/css\">\n".$this->css[1]."</style>\n";
-			$this->css[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1];
+			$this->css[1] = "<style type=\"text/css\">\n".($this->Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1])."</style>\n";
 		}
 		if ($this->core_js[1]) {
-			$this->core_js[1] = "<script>\n".$this->core_js[1]."</script>\n";
-			$this->core_js[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1];
+			$this->core_js[1] = "<script>\n".($this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1])."</script>\n";
 		}
 		if ($this->js[1]) {
-			$this->js[1] = "<script>\n".$this->js[1]."</script>\n";
-			$this->js[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1];
+			$this->js[1] = "<script>\n".($this->Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1])."</script>\n";
 		}
 		$this->Head = "<title>".$this->Title[0]."</title>\n"
 						."<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
@@ -296,14 +292,14 @@ class Page extends XForm {
 	function get_list () {
 		$this->get_list = array(
 				'css' => array (
-					0 => get_list(INCLUDES.'/css', '/(.*)\.css$/i', 'f', 'includes/css', 1),
-					1 => get_list(THEMES.'/'.$this->theme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', 1),
-					2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', 1)
+					0 => get_list(INCLUDES.'/css', '/(.*)\.css$/i', 'f', 'includes/css', true),
+					1 => get_list(THEMES.'/'.$this->theme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', true),
+					2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', true)
 				),
 				'js' => array (
-					0 => get_list(INCLUDES.'/js', '/(.*)\.js$/i', 'f', 'includes/js', 1),
-					1 => get_list(THEMES.'/'.$this->theme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', 1),
-					2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', 1)
+					0 => get_list(INCLUDES.'/js', '/(.*)\.js$/i', 'f', 'includes/js', true),
+					1 => get_list(THEMES.'/'.$this->theme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', true),
+					2 => get_list(THEMES.'/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', true)
 				)
 		);
 	}
@@ -345,36 +341,71 @@ class Page extends XForm {
 	function rebuild_cache () {
 		$this->rebuild_cache = false;
 		$this->get_list();
-		$get_list = array();
 		foreach ($this->get_list as $part => $array) {
-			$get_list[$part] = array();
 			foreach ($array as $i => $files) {
-				$get_list[$part][$i] = '';
 				if (!is_array($files)) {
 					continue;
 				}
+				$temp_cache = '';
 				foreach ($files as $file) {
 					if (file_exists($file)) {
-						$get_list[$part][$i] .= file_get_contents($file);
+						$current_cache = file_get_contents($file);
+						if ($part == 'css') {
+							$this->images_substitution($current_cache, $file);
+						}
+						$temp_cache .= $current_cache;
+						unset($current_cache);
 					}
 				}
 				$file = PCACHE.'/'.$this->cache_list[$i].$part;
 				if (file_exists($file)) {
 					unlink($file);
 				}
-				$cache = fopen($file, 'w');
-				fwrite($cache, $this->filter($get_list[$part][$i], $part));
-				fclose($cache);
+				$temp_cache = $this->filter($temp_cache, $part);
+				/*$cache = fopen($file, 'w');
+				fwrite($cache, $temp_cache);
+				fclose($cache);*/
+				$file = PCACHE.'/'.$this->cache_list[$i]/*.'gz.'*/.$part;
+				if (file_exists($file)) {
+					unlink($file);
+				}
+				$cache = gzopen($file, 'w9');
+				gzwrite($cache, $temp_cache);
+				gzclose($cache);
+				unset($temp_cache);
 			}
 		}
+	}
+	//Подстановка изображений при сжатии CSS
+	function images_substitution (&$data, $file) {
+		preg_match_all('/url\((.*?)\)/', $data, $images);
+		chdir(substr($file, 0, strrpos($file, '/')));
+		unset($format, $images[0]);
+		foreach ($images[1] as $image) {
+			$format = substr($image, -3);
+			if ($format == 'peg') {
+				$format == 'jpg';
+			} elseif (!($format == 'jpg' || $format == 'png' || $format == 'gif')) {
+				continue;
+			}
+			$data = str_replace($image, 'data:image/'.$format.';base64,'.base64_encode(file_get_contents($image)), $data);
+		}
+		unset($format, $images);
+		chdir(DIR);
 	}
 	//Фильтр лиших данных в CSS и JavaScript файлах
 	function filter ($content, $mode = 'css') {
 		if ($mode == 'js') {
-			$content = preg_replace('/([\s{2,}]*)(\/\*.*?\*\/)(^\s+)([\r]+)([\/\*][^[\*\/].]*?[\*\/])(@charset "utf-8";)/s', '', $content);
+			$content = preg_replace('/\/\*[\!\s\n\r].*?\*\//s', ' ', $content);
+			//$content = preg_replace('/[\s\t]*[^:]\/\/.*/m', ' ', $content);
+			$content = preg_replace('/[\s]*([\-])[\s]*/', '\1', $content);
+			$content = preg_replace('/[\s\n\r]+/', ' ', $content);
+		} elseif ($mode == 'css') {
+			$content = preg_replace('/\/\*.*?\*\//s', ' ', $content);
+			$content = preg_replace('/([\s]*)(\/\*.*?\*\/)(^\s+)([\r]+)([\/\*][^[\*\/].]*?[\*\/])(@charset "utf-8";)/', '', $content);
+			$content = preg_replace('/[\s]*([\[\]])[\s]*/', '\1', $content);
 		}
-		$content = preg_replace('/[\n\t]+/s', '', $content);
-		$content = preg_replace('/[\s]*([\{\},;:\[\]\(\)=><|&])[\s]*/', '\1', $content);
+		$content = preg_replace('/[\s]*([\{\},;:\(\)=><|&])[\s]*/', '\1', $content);
 		return $content;
 	}
 	//Генерирование страницы

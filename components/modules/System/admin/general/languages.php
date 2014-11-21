@@ -54,7 +54,7 @@ $a->table(
 				array(intval($Config->core['multilanguage']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -69,7 +69,7 @@ $a->table(
 				array(intval($Config->core['allow_change_language']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)

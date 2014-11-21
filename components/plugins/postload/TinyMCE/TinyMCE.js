@@ -1,13 +1,17 @@
-$(
+$(document).ready(
 	function() {
-		$('.EDITOR').tinymce({
-			// General options
-			doctype : '<!doctype html>',
-			theme : "advanced",
-			skin : "o2k7",
-			skin_variant : "black",
+		tinyMCE_GZ.init({
 			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave,advlist",
-			// Theme options
+			themes : "simple,advanced",
+			languages : "en,ru,uk"
+		});
+		$('.EDITOR').tinymce({
+			doctype : '<!doctype html>',
+			theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
+			skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
+			skin_variant : typeof(tinymce_skin_variant) != 'undefined' ? tinymce_skin_variant : '',
+			language: typeof(lang) != 'undefined' ? lang : 'en',
+			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave,advlist",
 			theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 			theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
 			theme_advanced_buttons3 : "insertlayer,moveforward,movebackward,absolute,|,advhr,cleanup,removeformat,visualaid,|,ltr,rtl,|,outdent,indent,blockquote,cite,abbr,acronym,del,ins,insertdate,inserttime,attribs,|,preview,fullscreen",
@@ -19,13 +23,12 @@ $(
 			file_browser_callback : typeof(AjexFileManager) == 'object' ? 'AjexFileManager.open' : ''
 		});
 		$('.EDITORH').tinymce({
-			// General options
 			doctype : '<!doctype html>',
-			theme : "advanced",
-			skin : "o2k7",
-			//skin_variant : "black",
+			theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
+			skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
+			skin_variant : typeof(tinymce_skin_variant) != 'undefined' ? tinymce_skin_variant : '',
+			language: typeof(lang) != 'undefined' ? lang : 'en',
 			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave",
-			// Theme options
 			theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 			theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
 			theme_advanced_buttons3 : "insertlayer,moveforward,movebackward,absolute,|,advhr,cleanup,removeformat,visualaid,|,ltr,rtl,|,outdent,indent,blockquote,cite,abbr,acronym,del,ins,insertdate,inserttime,attribs,|,preview,fullscreen",
@@ -44,8 +47,10 @@ $(
 		}
 		$('.SEDITOR').tinymce({
 			doctype : '<!doctype html>',
-			theme : "simple",
-			skin : "o2k7"
+			theme : typeof(tinymce_theme_mini) != 'undefined' ? tinymce_theme_mini : "simple",
+			skin : typeof(tinymce_skin_mini) != 'undefined' ? tinymce_skin_mini : "o2k7",
+			skin_variant : typeof(tinymce_skin_variant_mini) != 'undefined' ? tinymce_skin_variant_mini : '',
+			language: typeof(lang) != 'undefined' ? lang : 'en'
 		});
 		$('textarea').autoResize();
 	}

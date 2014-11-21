@@ -1,4 +1,4 @@
-$(
+$(document).ready(
 	function() {
 		$(":radio, :checkbox").each(
 			function (index, element) {

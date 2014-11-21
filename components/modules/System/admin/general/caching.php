@@ -13,7 +13,7 @@ $a->table(
 				array(intval($Config->core['disk_cache']), 1, 0),
 				true,
 				'',
-				array('', memcache() || memcached() ? 'form_element red' : 'form_element green', memcache() || memcached() ? 'form_element green' : 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -41,7 +41,7 @@ $a->table(
 				array(intval($Config->core['memcache']), 1, 0),
 				true,
 				memcache() ? '' : ' disabled',
-				memcache() ? array('', 'form_element green', 'form_element red') : array('', 'form_element grey', 'form_element grey'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -56,7 +56,7 @@ $a->table(
 				array(intval($Config->core['memcached']), 1, 0),
 				true,
 				memcached() ? '' : ' disabled',
-				memcached() ? array('', 'form_element green', 'form_element red') : array('', 'form_element grey', 'form_element grey'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
@@ -71,7 +71,7 @@ $a->table(
 				array(intval($Config->core['cache_compress_js_css']), 1, 0),
 				true,
 				'',
-				array('', 'form_element green', 'form_element red'),
+				'',
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)

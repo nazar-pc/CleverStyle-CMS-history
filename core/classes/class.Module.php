@@ -13,12 +13,13 @@ class Module extends XForm {
 		$this->User = $User;
 		if ($this->Config->core['debug']) {
 			$this->Page->javascript(
-				"\$(function() {\$('#debug').dialog({autoOpen: false, width: '600', height: '300', hide: 'puff', show: 'scale'});});\n"
-				."function debug_window () {\$('#debug').dialog('open');}\n",
+				"\$(document).ready(function() {\$('#debug').dialog({autoOpen: false, width: '600', height: '300', hide: 'puff', show: 'scale', title: '".$this->L->debug."'});});\n"
+				."function debug_window () {\$('#debug').dialog('open');}\n"
+				."var language = '".$L->clanguage."', lang = '".$L->clang."';",
 				'code'
 			);
 			$this->Page->content(
-				"<div id=\"debug\" title=\"".$this->L->debug."\"><!--debug_info--></div>\n"
+				"<div id=\"debug\"><!--debug_info--></div>\n"
 			);
 		}
 	}

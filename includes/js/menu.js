@@ -1,6 +1,6 @@
 var save = false;
 function menuadmin (item) {
-	url = base_url+'/'+item
+	url = base_url+'/'+item;
 	if (!save) {
 		document.location.href = url;
 	} else {

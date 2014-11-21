@@ -1,6 +1,6 @@
 <?php
 class Language {
-	public		$clang;
+	public		$clanguage;
 	protected	$Config,
 				$translate = array();
 	function __construct () {

@@ -1,0 +1,2 @@
+AddEncoding gzip .js
+AddEncoding gzip .css
