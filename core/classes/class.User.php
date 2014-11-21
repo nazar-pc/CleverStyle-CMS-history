@@ -12,12 +12,13 @@ class User {
 					)
 				),
 				$id						= false,	//id текущего пользователя
-				$update_cache			= false,	//Нужно ли обновлять кеш данных текущего пользователя
+				$update_cache			= array(),	//Нужно ли обновлять кеш данных текущего пользователя
 				$data					= array(),	//Локальный кеш данных пользователя
 				$data_set				= array(),	//Измененные данные пользователя, которыми по завершению нужно обновить данные в БД
 				$db						= false,	//Ссылка на объект БД
 				$db_prime				= false,	//Ссылка на объект основной БД
-				$cache					= array();	//Кеш с некоторыми временными данными
+				$cache					= array(),	//Кеш с некоторыми временными данными
+				$init					= false;	//Текущее состояние инициализации
 
 	function __construct () {
 		global $Cache, $Config, $Page, $L, $Key;
@@ -185,6 +186,8 @@ class User {
 			date_default_timezone_set($this->timezone);
 			$L->change($this->language);
 		}
+		$this->init = true;
+		$this->db_prime();
 	}
 	/**
 	 * @param array|string $item
@@ -283,7 +286,11 @@ class User {
 				$this->set($i, $v, $user);
 			}
 		} else {
-			$this->data_set[$user][$item] = $this->data[$user][$item] = $value;
+			$this->update_cache[$user] = true;
+			$this->data[$user][$item] = $value;
+			if ($this->init) {
+				$this->data_set[$user][$item] = $this->data[$user][$item];
+			}
 		}
 	}
 	function __get ($item) {
@@ -346,7 +353,7 @@ class User {
 				'`email_hash` = '.$this->db()->sip((string)$login_hash).' '.
 				'LIMIT 1'
 		);
-		return is_array($data) ? $data['id'] : false;
+		return is_array($data) && $data['id'] != 1 ? $data['id'] : false;
 	}
 	/**
 	 * Find the session by id, and return id of owner (user)
@@ -506,13 +513,15 @@ class User {
 		global $Page, $L;
 		if ($this->is('user')) {
 			if ($this->avatar) {
-				$Page->user_avatar_image = $this->avatar;
+				$Page->user_avatar_image = 'url('.$this->avatar.')';
 			} else {
 				$Page->user_avatar_text = '?';
+				$Page->user_avatar_image = 'none';
 			}
 			$Page->user_info = $Page->b($L->hello.', '.($this->username ?: $this->login ?: $this->email).'!').$Page->br();
 		} else {
 			$Page->user_avatar_text = '?';
+			$Page->user_avatar_image = 'none';
 			$Page->user_info = $Page->div(
 				$Page->b($L->hello.', '.$L->guest.'!').$Page->br().
 				$Page->button(
@@ -648,6 +657,7 @@ class User {
 	 */
 	function registration ($email) {
 		//TODO Registration processing
+		//$this->db_prime()->q('INSERT INTO')
 	}
 	/**
 	 * Saving cache changing, and users data
@@ -657,13 +667,14 @@ class User {
 		/**
 		 * Update cache users
 		 */
-		if ($this->update_cache && is_array($this->data) && !empty($this->data)) {
-			foreach ($this->data as $id => &$data) {
+		foreach ($this->data as $id => &$data) {
+			if (isset($this->update_cache[$id]) && $this->update_cache[$id]) {
 				$data['id'] = $id;
 				$Cache->{'users/'.$id} = $data;
 			}
-			unset($id, $data);
 		}
+		$this->update_cache = array();
+		unset($id, $data);
 		/**
 		 * Update data users
 		 */
@@ -677,6 +688,7 @@ class User {
 				unset($i, $val, $data);
 			}
 		}
+		$this->data_set = array();
 	}
 }
 ?>

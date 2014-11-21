@@ -11,6 +11,8 @@ if ($User->is('system') && isset($rc[2], $rc[3])) {
 	global $Page, $L;
 	if ($rc[2] == 'flush_cache') {
 		if (flush_cache()) {
+			global $Cache;
+			$Cache->disable();
 			$Page->Content = $Page->div($L->done, array('class' =>'green'));
 		} else {
 			$Page->Content = $Page->div($L->error, array('class' =>'red'));

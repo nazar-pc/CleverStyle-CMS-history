@@ -1,6 +1,9 @@
 <?php
 class Key {
 	function get ($database, $id_key, $get_data = false) {
+		if (!$id_key) {
+			return false;
+		}
 		global $db;
 		$result = $db->$database->qf(
 			'SELECT `id`'.($get_data ? ', `data`' : '').' FROM `[prefix]keys` WHERE '.
@@ -39,7 +42,7 @@ class Key {
 	function del ($database, $id_key) {
 		global $db;
 		$id_key = $db->$database()->sip($id_key);
-		return $db->$database()->q('UPDATE `[prefix]keys` SET `expire` = 0, `data` = \'\' WHERE (`id` = '.$id_key.' OR `key` = '.$id_key.')');
+		return $db->$database()->q('UPDATE `[prefix]keys` SET `expire` = 0, `data` = null, key=null WHERE (`id` = '.$id_key.' OR `key` = '.$id_key.')');
 	}
 	//Запрет клонирования
 	function __clone () {}

@@ -219,34 +219,8 @@ function registration (email) {
 			data: {
 				email: email
 			},
-			success: function(random_hash) {//TODO Registration continuation (popup)
-				if (random_hash.length == 56) {
-					$.ajax(
-						base_url+"/"+api+"/user/login",
-						{
-							type: 'post',
-							cache: false,
-							data: {
-								auth_hash: hash('sha512', hash('sha224', login)+hash('sha512', password)+navigator.userAgent+random_hash),
-								email: hash('sha224', login)
-							},
-							success: function(result) {
-								if (result == 'reload') {
-									location.reload();
-								} else {
-									alert(result);
-								}
-							},
-							error: function() {
-								alert(auth_error_connection);
-							}
-						}
-					);
-				} else if (random_hash == 'reload') {
-					location.reload();
-				} else {
-					alert(random_hash);
-				}
+			success: function(html) {//TODO Registration continuation (popup)
+
 			},
 			error: function() {
 				alert(auth_error_connection);

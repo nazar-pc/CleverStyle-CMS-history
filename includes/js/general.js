@@ -40,11 +40,7 @@ $(function() {
 		save = false;
 	});
 	$('textarea').each(function (index, element) {
-		if (!$(element).hasClass('EDITOR') &&
-			!$(element).hasClass('EDITORH') &&
-			!$(element).hasClass('SEDITOR') &&
-			!$(element).hasClass('noresize')
-		) {
+		if (!$(element).is('.EDITOR, .EDITORH, .SEDITOR, .noresize')) {
 			$(element).autoResize();
 		}
 	});
@@ -68,11 +64,6 @@ $(function() {
 		}
 	});
 	$('#user_login, #user_password').keypress(function (event) {
-		if (event.which == 13) {
-			$('#login_process').click();
-		}
-	});
-	$('#user_password, #user_login').keypress(function (event) {
 		if (event.which == 13) {
 			$('#login_process').click();
 		}

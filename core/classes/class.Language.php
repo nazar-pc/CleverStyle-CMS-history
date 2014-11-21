@@ -43,7 +43,7 @@ class Language {
 		if (empty($language)) {
 			return false;
 		}
-		if ($language === $this->clanguage) {
+		if ($language == $this->clanguage) {
 			return true;
 		}
 		global $Config, $Cache, $Text;

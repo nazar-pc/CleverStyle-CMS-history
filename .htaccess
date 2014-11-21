@@ -5,7 +5,6 @@ Options -All -Multiviews +FollowSymLinks
 IndexIgnore *.php *.pl *.cgi *.htaccess *.htpasswd
 
 RewriteEngine On
-RewriteRule .* index.php
 
 <Files *.jpg> 
 	RewriteEngine Off
@@ -19,3 +18,9 @@ RewriteRule .* index.php
 <Files readme.html> 
 	RewriteEngine Off
 </Files>
+<Files favicon.ico> 
+	RewriteEngine Off
+</Files>
+
+RewriteRule .* index.php
+
