@@ -40,5 +40,11 @@ class StorageLocal extends StorageAbstract {
 	function source_by_url ($url) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
+	function is_file ($filename) {
+		return call_user_func_array(__FUNCTION__, func_get_args());
+	}
+	function is_dir ($filename) {
+		return call_user_func_array(__FUNCTION__, func_get_args());
+	}
 }
 ?>

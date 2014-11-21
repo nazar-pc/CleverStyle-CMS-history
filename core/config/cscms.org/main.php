@@ -8,7 +8,6 @@ global	$DB_HOST,
 		$DB_CODEPAGE,
 		
 		$LANGUAGE,
-		$MULTIDOMAIN,
 		$ADMIN,
 		$API,
 		
@@ -16,20 +15,9 @@ global	$DB_HOST,
 		$MEMCACHE_PORT,
 		
 		$KEY;
-if (defined('DOMAIN')) {
-	$MULTIDOMAIN_CURRENT = 'f40fbea2ee5a24ce581fb53510883dfcf40fbea2ee5a24ce581fb535';
-	if ($MULTIDOMAIN !== $MULTIDOMAIN_CURRENT) {
-		header("HTTP/1.0 404 Not Found");
-		exit;
-	}
-	unset($MULTIDOMAIN_CURRENT, $GLOBALS['MULTIDOMAIN']);
-} else {
-	define('DOMAIN', 'cscms.org');
-}
-if (DOMAIN !== 'cscms.org') {
-	header("HTTP/1.0 404 Not Found");
-	exit;
-}
+
+define('DOMAIN', 'cscms.org');
+
 $ADMIN			= 'admin';
 $API			= 'api';
 $DB_HOST		= 'localhost';

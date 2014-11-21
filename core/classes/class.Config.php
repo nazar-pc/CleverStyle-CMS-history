@@ -12,7 +12,8 @@ class Config {
 				'url'			=> false,
 				'protocol'		=> false,
 				'base_url'		=> false,
-				'all_mirrors'	=> array(	//Массив всех адресов, по которым разрешен доступ к сайту
+				'mirrors'	=> array(	//Массив всех адресов, по которым разрешен доступ к сайту
+					'count'		=> 0,
 					'http'		=> array(),
 					'https'		=> array()
 				),
@@ -21,7 +22,8 @@ class Config {
 					'protocol'	=> false,
 					'host'		=> false,
 					'local'		=> false
-				)
+				),
+				'ajax'			=> false
 			),
 			$mirror_index	= -1;	//Индекс текущего адреса сайта в списке зеркал ('-1' - не зеркало, а основной домен)
 
@@ -82,7 +84,7 @@ class Config {
 				}
 			}
 		}
-		$this->server['all_mirrors'][$core_url[0]] = array_merge($this->server['all_mirrors'][$core_url[0]], $core_url[1]);
+		$this->server['mirrors'][$core_url[0]] = array_merge($this->server['mirrors'][$core_url[0]], $core_url[1]);
 		unset($core_url, $url);
 		//Если это не главный домен - ищем совпадение в зерказах
 		if (!isset($url_replace) && !empty($this->core['mirrors_url'])) {
@@ -117,12 +119,13 @@ class Config {
 		}
 		$mirrors_url = explode("\n", $this->core['mirrors_url']);
 		foreach ($mirrors_url as $mirror_url) {
-			$mirror_url										= explode('://', $mirror_url, 2);
-			$this->server['all_mirrors'][$mirror_url[0]]	= array_merge(
-				$this->server['all_mirrors'][$mirror_url[0]],
+			$mirror_url									= explode('://', $mirror_url, 2);
+			$this->server['mirrors'][$mirror_url[0]]	= array_merge(
+				$this->server['mirrors'][$mirror_url[0]],
 				explode(';', $mirror_url[1])
 			);
 		}
+		$this->server['mirrors']['count'] = count($this->server['mirrors']['http'])+count($this->server['mirrors']['https']);
 		unset($mirrors_url, $mirror_url);
 		//Подготавливаем адрес страницы без базовой части
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace, '', $this->server['url']), ' /\\'));
@@ -163,11 +166,8 @@ class Config {
 		//Скорректированный путь страницы (рекомендуемый к использованию)
 		$this->server['current_url'] = (ADMIN ? ADMIN.'/' : '').MODULE.(API ? $API.'/' : '').'/'.implode('/', $rc);
 		//Определение необходимости отключить интерфейс
-		if (isset($_POST['nonterface']) || API) {
+		if (API) {
 			interface_off();
-		} elseif (isset($rc[count($rc) - 1]) && mb_strtolower($rc[count($rc) - 1]) == 'nointerface') {
-			interface_off();
-			array_pop($rc);
 		}
 		unset($rc, $r);
 		if (isset($_SERVER['HTTP_REFERER'])) {
@@ -178,9 +178,10 @@ class Config {
 			$ref['protocol']	= $referer[0];
 			$ref['host']		= $referer[1];
 			unset($referer);
-			$ref['local']		= in_array($ref['host'], $this->server['all_mirrors'][$ref['protocol']]);
+			$ref['local']		= in_array($ref['host'], $this->server['mirrors'][$ref['protocol']]);
 			unset($ref);
 		}
+		$this->server['ajax'] = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
 	}
 	//Обновление информации о текущем наборе тем оформления
 	function reload_themes () {

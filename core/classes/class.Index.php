@@ -152,10 +152,12 @@ class Index extends HTML {
 				'var save_before = "'.$L->save_before.'",'.
 					'continue_transfer = "'.$L->continue_transfer.'",'.
 					'base_url = "'.$Config->server['base_url'].'",'.
-					'current_base_url = "'.$Config->server['base_url'].'/'.
-										($this->admin ? ADMIN.'/' : '').
-										MODULE.
-										(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
+					'current_base_url = "'.$Config->server['base_url'].'/'.($this->admin ? ADMIN.'/' : '').MODULE.
+						(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
+					($User->is('guest') ?
+						'auth_error_login = "'.$L->auth_error_login.'",'.
+						'auth_error_connection = "'.$L->auth_error_connection.'",'
+					: '').
 					'language = "'.$L->clanguage.'",'.
 					'lang = "'.$L->clang.'",'.
 					'module = "'.MODULE.'",'.

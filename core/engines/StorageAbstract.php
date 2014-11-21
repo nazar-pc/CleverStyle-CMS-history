@@ -16,7 +16,8 @@ abstract class StorageAbstract {
 	abstract function mkdir ($pathname, $mode = 0777, $recursive = false, $context = NULL);
 	abstract function rmdir ($dirname, $context = NULL);
 	abstract function url_by_source ($source);
-	abstract function source_by_url ($url);
+	abstract function is_file ($filename);
+	abstract function is_dir ($filename);
 	function base_url () {
 		return $this->base_url;
 	}

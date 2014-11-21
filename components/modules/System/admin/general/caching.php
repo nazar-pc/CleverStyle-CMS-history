@@ -4,12 +4,14 @@ if (isset($Config->routing['current'][2])) {
 	global $Page;
 	$Index->form = false;
 	if ($Config->routing['current'][2] == 'cache') {
+		interface_off();
 		if (flush_cache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
 		} else {
 			$Page->Content = '<div class="red">'.$L->error.'</div>';
 		}
 	} elseif ($Config->routing['current'][2] == 'pcache') {
+		interface_off();
 		if (flush_pcache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
 		} else {
@@ -152,13 +154,13 @@ if (isset($Config->routing['current'][2])) {
 				$a->td(
 					$a->button(
 						$L->clean_settings_cache,
-						array('onMouseDown' => 'admin_cache(\'#clean_cache\', \''.$a->action.'/cache/nointerface\');')
+						array('onMouseDown' => 'admin_cache(\'#clean_cache\', \''.$a->action.'/cache\');')
 					)
 				).
 				$a->td(
 					$a->button(
 						$L->clean_scripts_styles_cache,
-						array('onMouseDown' => 'admin_cache(\'#clean_pcache\', \''.$a->action.'/pcache/nointerface\');')
+						array('onMouseDown' => 'admin_cache(\'#clean_pcache\', \''.$a->action.'/pcache\');')
 					)
 				)
 			).

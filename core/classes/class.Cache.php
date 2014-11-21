@@ -37,13 +37,13 @@ class Cache {
 		}
 		global $Core;
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$item)) {
-			if ($cache = @_json_decode($Core->decrypt($result))) {
+			if ($cache = (CACHE_ENCRYPT ? $Core->decrypt($cache) : @_json_decode($cache))) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
 			}
 		}
-		if (file_exists(CACHE.DS.$item) && is_readable(CACHE.DS.$item)) {
-			if (($cache = $Core->decrypt(file_get_contents(CACHE.DS.$item, FILE_BINARY))) !== false) {
+		if (file_exists(CACHE.DS.$item) && is_readable(CACHE.DS.$item) && $cache = file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
+			if ($cache = (CACHE_ENCRYPT ? $Core->decrypt($cache) : @_json_decode($cache))) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
 			} else {
@@ -55,33 +55,33 @@ class Cache {
 	}
 	function set ($item, $data, $time = 0) {
 		global $Core;
-		if (strpos($item, '/') !== false) {
-			$subitems = explode('/', $item);
-			$item = str_replace('/', DS, $item);
-			$max = count($subitems) - 1;
-			foreach ($subitems as $i => $subitem) {
-				if ($i == $max) {
-					break;
-				}
-				if(!is_dir(CACHE.DS.$subitem)) {
-					@mkdir(CACHE.DS.$subitem, 0600);
-				}
-			}
-			unset($subitems, $max, $i, $subitem);
-		}
 		$this->local_storage[$item] = $data;
+		$data = (CACHE_ENCRYPT ? $Core->encrypt($data) : @_json_encode($data));
 		if (is_object($this->memcache)) {
 			global $Config;
 			$this->memcache->set(
 				DOMAIN.$item,
-				$Core->encrypt(_json_encode($data)),
+				$data,
 				zlib() && ($Config->core['zlib_compression'] || $Config->core['gzip_compression']) ? MEMCACHE_COMPRESSED : false,
 				$time
 			);
 		}
 		if ($this->disk) {
+			if (strpos($item, '/') !== false) {
+				$subitems = explode('/', $item);
+				$item = str_replace('/', DS, $item);
+				$max = count($subitems) - 1;
+				foreach ($subitems as $i => $subitem) {
+					if ($i == $max) {
+						break;
+					}
+					if(!is_dir(CACHE.DS.$subitem)) {
+						@mkdir(CACHE.DS.$subitem, 0600);
+					}
+				}
+				unset($subitems, $max, $i, $subitem);
+			}
 			if (!file_exists(CACHE.DS.$item) || is_writable(CACHE.DS.$item)) {
-				$data = $Core->encrypt($data);
 				if ($this->disk_size > 0) {
 					if (($dsize = strlen($data)) > $this->disk_size) {
 						return false;

@@ -51,5 +51,9 @@ switch ($data['function']) {
 		exit(_rmdir(STORAGE.DS.$data['dirname']));
 	case 'test':
 		exit('OK');
+	case 'is_file':
+		exit(_file_exists(STORAGE.DS.$data['filename']));
+	case 'is_dir':
+		exit(_file_exists(STORAGE.DS.$data['filename']));
 }
 ?>

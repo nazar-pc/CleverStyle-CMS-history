@@ -1,6 +1,11 @@
 <?php
 class User {
-	protected	$current			= array(),
+	protected	$current			= array(
+					'admin'	=> false,
+					'user'	=> false,
+					'bot'	=> false,
+					'guest'	=> false
+				),
 				$data				= array(),
 				$data_set			= array(),
 				$data_others		= array(),
@@ -10,31 +15,36 @@ class User {
 	function __construct () {
 		global $Cache, $Config;
 		$this->current['is']['admin']	= true;
-		$this->current['is']['bot']		= false;
-		$this->current['is']['user']	= false;
-		$this->current['is']['guest']	= true;
 		//Пользователь может устанавливать cookies
 		if (setcookie($test = uniqid(), 'test')) {
 			setcookie($test, '');
 			unset($test);
+			if (false) {
+				
+			} else {
+				$this->data = 'guest';
+			}
 		//Не может установивить cookie - значит (вероятнее всего) бот
 		} else {
 			unset($test);
+			//Устанавливаем метку, что это бот. В любом случае изменение любых настроек,
+			//в том числе и языка и интерфейса для него недоступно
+			$this->current['is']['bot'] = true;
 			//Для бота символически логином является $_SERVER['HTTP_USER_AGENT'] (название робота),
 			//а электронной почтой  - $_SERVER['REMOTE_ADDR'] (IP робота)
 			$login_hash = hash('sha224', $this->current['user_agent']	= trim($_SERVER['HTTP_USER_AGENT']));
 			$email_hash = hash('sha224', $this->current['ip']			= $_SERVER['REMOTE_ADDR']);
-			if (!$this->data = $Cache->get('users/'.$login_hash)) {
+			$full_hash = substr($login_hash, 0, 28).substr($email_hash, 28, 56);
+			if (!$this->data = $Cache->get('users/'.$full_hash)) {
 				if ($this->data = $this->db()->qf(
 					'SELECT `id`, `permissions`, `language`, `languages`, `timezone` FROM `[prefix]users` WHERE '.
 						'`group` = \'3\' AND (`login_hash` = \''.$login_hash.'\' OR `email_hash` = \''.$email_hash.'\') LIMIT 1'
 				)) {
-					$Cache->set('users/'.$login_hash, $this->data);
-					$this->current['is']['bot'] = true;
+					$Cache->set('users/'.$full_hash, $this->data);
 					if (!$group_data = $Cache->get('users_groups/3')) {
 						$Cache->set(
 							'users_groups/3',
-							$group_data = $this->db()->qf('SELECT * FROM `[prefix]users_groups` WHERE `id` = \'3\' LIMIT 1')
+							$group_data = $this->db()->qf('SELECT `permissions` FROM `[prefix]users_groups` WHERE `id` = \'3\' LIMIT 1')
 						);
 					}
 					//Определяем права доступа, с учётом индивидуальных прав.
@@ -44,9 +54,10 @@ class User {
 					unset($group_data);
 				//Если такого бота в БД нет - определяем, как гостя
 				} else {
-					$Cache->set('users/'.$login_hash, $this->data = 'guest');
+					$Cache->set('users/'.$full_hash, $this->data = 'guest');
 				}
 			}
+			unset($login_hash, $email_hash);
 		}
 		if ($this->data === 'guest') {
 			$this->current['is']['guest'] = true;
@@ -57,7 +68,8 @@ class User {
 				);
 			}
 		}
-		date_default_timezone_set('Europe/Kiev');
+		date_default_timezone_set($this->timezone);
+		
 	}
 	function get ($item, $user = false) {
 		if ($user === false) {
@@ -111,13 +123,22 @@ class User {
 	function is ($mode = 'user') {
 		return $this->current['is'][strtolower($mode)];
 	}
-	function login_check ($login_hash) {
-		return (bool)$this->db()->qf(
+	//Возвращает id пользователя
+	//(sha224_хеш_логина)
+	function get_id ($login_hash) {
+		$data = $this->db()->qf(
 			'SELECT `id` FROM [prefix]users WHERE '.
 				'`login_hash` = \''.$this->db()->sip($login_hash).'\' OR '.
 				'`email_hash` = \''.$this->db()->sip($login_hash).'\' '.
 				'LIMIT 1'
 		);
+		return is_array($data['id']) ? $data['id'] : false;
+	}
+	function user_agent () {
+		return $_SERVER['HTTP_USER_AGENT'];
+	}
+	function ip () {
+		return $_SERVER['REMOTE_ADDR'];
 	}
 	function get_header_info () {
 		global $Config, $Page, $L;

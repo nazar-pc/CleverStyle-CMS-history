@@ -75,7 +75,7 @@ class Core {
 			return $data;
 		}
 		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
-		$encrypted = mcrypt_generic($this->td[$name], serialize(array('key' => $this->key[$name], 'data' => $data)));
+		$encrypted = mcrypt_generic($this->td[$name], @serialize(array('key' => $this->key[$name], 'data' => $data)));
 		mcrypt_generic_deinit($this->td[$name]);
 		if ($encrypted) {
 			return $encrypted;
@@ -90,7 +90,7 @@ class Core {
 		}
 		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
 		errors_off();
-		$decrypted = unserialize(mdecrypt_generic($this->td[$name], $data));
+		$decrypted = @unserialize(mdecrypt_generic($this->td[$name], $data));
 		errors_on();
 		mcrypt_generic_deinit($this->td[$name]);
 		if (is_array($decrypted) && $decrypted['key'] == $this->key[$name]) {

@@ -7,7 +7,7 @@ class Key {
 		global $db;
 		$id_key = $db->$database()->sip($id_key);
 		$result = $db->$database->qf('SELECT `id`'.($get_data ? ', `data`' : '').' FROM `[prefix]keys` WHERE (`id` = '.$id_key.' OR `key` = '.$id_key.') AND `expire` >= '.time().' LIMIT 1');
-		if (!is_array($result) || empty($result)) {
+		if (!$result || !is_array($result) || empty($result)) {
 			return false;
 		} elseif ($get_data) {
 			return $result['data'];

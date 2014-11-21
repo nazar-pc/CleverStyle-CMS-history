@@ -178,5 +178,13 @@ class HTTP extends StorageAbstract {
 			fclose($this->socket);
 		}
 	}
+	function is_file ($filename) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
+		return (bool)$result[1];
+	}
+	function is_dir ($filename) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
+		return (bool)$result[1];
+	}
 }
 ?>

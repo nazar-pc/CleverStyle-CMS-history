@@ -114,7 +114,7 @@ if ($mode && $rc[2] == 'settings') {
 	$a->post_buttons .= $a->button(
 		$L->reset,
 		array(
-			'onClick'	=> 'window.location.reload();'
+			'onClick'	=> 'location.reload();'
 		)
 	);
 	$blocks_array = array(
