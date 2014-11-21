@@ -57,6 +57,19 @@ $a->content(
 			)
 		).
 		$a->tr(
+			$a->td($a->info('cookie_prefix')).
+			$a->td(
+				$a->input(
+					array(
+						'name'	=> 'core[cookie_prefix]',
+						'value' => $Config->core['cookie_prefix'],
+						'class'	=> 'form_element',
+						'size'	=> 40
+					)
+				)
+			)
+		).
+		$a->tr(
 			$a->td($a->info('mirrors')).
 			$a->td(
 				$a->table(

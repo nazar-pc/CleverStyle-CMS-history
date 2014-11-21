@@ -1,7 +1,7 @@
 <?php
 class Storage {
 	public		$time					= 0,
-				$succesful_connections	= array(),
+				$successful_connections	= array(),
 				$false_connections		= array(),
 				$connections			= array();
 
@@ -37,7 +37,7 @@ class Storage {
 		$this->connections[$connection] = new $storage['connection']($storage['url'], $storage['host'], $storage['user'], $storage['password']);
 		//В случае успешного подключения - заносим в общий список подключений, и возвращаем ссылку на подключение
 		if (is_object($this->connections[$connection]) && $this->connections[$connection]->connected) {
-			$this->succesful_connections[] = $connection.'/'.$storage['host'].'/'.$storage['connection'];
+			$this->successful_connections[] = $connection.'/'.$storage['host'].'/'.$storage['connection'];
 			unset($storage);
 			//Ускоряем повторную операцию доступа к этому хранилищу
 			if ($connection == 'core') {

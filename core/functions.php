@@ -1,8 +1,8 @@
 <?php
-//Основные системные функции, не редактируйте этот файл, или подходите к редактированию крайне оснорожно,
+//Основные системные функции, не редактируйте этот файл, или подходите к редактированию крайне осторожно,
 //иначе работоспособность движка может быть нарушена
 	//Специальные функции для обработки подключения пользовательских файлов ядра
-	//Являются расширенными аналогами стандартных функций
+	//Являются расширенными аналогами стандартных функций, настоятельно рекомендуются к использованию вместо стандартных
 		if (USE_CUSTOM) {
 			function _require ($file, $once = false, $show_errors = true) {
 				$file = str_to_path($file);
@@ -470,31 +470,37 @@
 			}
 		}
 	}
-	//Функция форматирования размера файла из байтов в удобночитаемый вид
+	//Функция форматирования времени из секунд в удобночитаемый вид
 	function format_time ($time) {
 		global $L;
-		if (function_exists('format_time'.$L->clanguage)) {
-			$temp = 'format_time'.$L->clanguage;
-			return $temp($time);
-		}
 		$res = array();
+		if ($time >= 31536000) {
+			$time_x = round($time/31536000);
+			$time -= $time_x*31536000;
+			$res[] = $L->time($time_x, 'y');
+		}
+		if ($time >= 2592000) {
+			$time_x = round($time/2592000);
+			$time -= $time_x*2592000;
+			$res[] = $L->time($time_x, 'M');
+		}
 		if($time >= 86400) {
 			$time_x = round($time/86400);
 			$time -= $time_x*86400;
-			$res[] = $time_x.' '.$L->days;
+			$res[] = $L->time($time_x, 'd');
 		}
 		if($time >= 3600) {
 			$time_x = round($time/3600);
 			$time -= $time_x*3600;
-			$res[] = $time_x.' '.$L->hours;
+			$res[] = $L->time($time_x, 'h');
 		}
 		if ($time >= 60) {
 			$time_x = round($time/60);
 			$time -= $time_x*60;
-			$res[] = $time_x.' '.$L->minutes;
+			$res[] = $L->time($time_x, 'm');
 		}
 		if ($time > 0 || empty($res)) {
-			$res[] = $time.' '.$L->seconds;
+			$res[] = $L->time($time, 's');
 		}
 		return implode(' ', $res);
 	}
@@ -614,7 +620,7 @@
 		function _mb_strtoupper ($string, $encoding = false) {
 			return filter($string, 'mb_strtoupper', $encoding ?: mb_internal_encoding());
 		}
-	//Аналог системной функции json_encode, корректно и более экономно в плане длинны результирующей строки
+	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче
 	//настоятельно рекомендуется к использованию вместо стандартной!
 	function _json_encode ($in) {
 		return html_entity_decode(
@@ -636,10 +642,13 @@
 		return @json_decode($in, true, $depth);
 	}
 	//Функция для выставления cookies на все зеркала сайта, параметры как у стандартной функции setcookie(),
-	//только упущены параметры $path и $domain
+	//только упущены параметры $path и $domain, они обрабатываются системой
 	function _setcookie ($name, $value, $expire = 0, $secure = false, $httponly = false) {
 		static $domains = false, $paths = false, $prefix = false;
 		global $Config;
+		if ($prefix === false) {
+			$prefix = is_object($Config) && $Config->core['cookie_prefix'] ? $Config->core['cookie_prefix'].'_' : '';
+		}
 		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
 			if (!$domains) {
 				$domains	= array_merge((array)$Config->core['cookie_domain'], explode("\n", $Config->core['mirrors_cookie_domain']));
@@ -650,28 +659,25 @@
 					}
 				}
 				unset($i, $domain);
-				$prefix = substr(md5($Config->core['url']), 0, 5).'_';
 			}
 			$return = true;
 			foreach ($domains as $i => $domain) {
+				$_COOKIE[$prefix.$name] = $value;
 				$return = $return && setcookie($prefix.$name, $value, $expire, isset($paths[$i]) ? $paths[$i] : '/', $domain, $secure, $httponly);
 			}
 			return $return;
 		} else {
-			return setcookie($name, $value, $expire, '/', $_SERVER['HTTP_HOST'], $secure, $httponly);
+			$_COOKIE[$prefix.$name] = $value;
+			return setcookie($prefix.$name, $value, $expire, '/', $_SERVER['HTTP_HOST'], $secure, $httponly);
 		}
 	}
 	function _getcookie ($name) {
 		static $prefix = false;
-		global $Config;
-		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
-			if (!$prefix) {
-				$prefix = substr(md5($Config->core['url']), 0, 5).'_';
-			}
-			return isset($_COOKIE[$prefix.$name]) ? $_COOKIE[$prefix.$name] : false;
-		} else {
-			return isset($_COOKIE[$name]) ? $_COOKIE[$name] : false;
+		if ($prefix === false) {
+			global $Config;
+			$prefix = is_object($Config) && $Config->core['cookie_prefix'] ? $Config->core['cookie_prefix'].'_' : '';
 		}
+		return isset($_COOKIE[$prefix.$name]) ? $_COOKIE[$prefix.$name] : false;
 	}
 	//Почти идеальная функция для защиты от XSS-атак
 	//Название xap - сокращено от XSS Attack Protection
@@ -778,9 +784,9 @@
 		return function_exists('memcache_add');
 	}
 	//Проверка наличия memcached
-	function memcached () {
+	/*function memcached () {
 		return function_exists('memcached_add');
-	}
+	}*/
 	//Проверка наличия zlib
 	function zlib () {
 		return extension_loaded('zlib');

@@ -144,7 +144,7 @@ class Cache {
 	function del ($item) {
 		unset($this->local_storage[$item]);
 		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$item)) {
-			$this->memcache->delete(DOMAIN.$item, $time);
+			$this->memcache->delete(DOMAIN.$item);
 		}
 		if (_is_writable(CACHE.DS.$item)) {
 			if ($this->disk_size > 0) {

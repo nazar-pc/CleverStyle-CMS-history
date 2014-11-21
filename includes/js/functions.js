@@ -178,8 +178,8 @@ var cache_interval;
 	function hash (algo, data) {
 		return new jsSHA(data).getHash(algo);
 	}
-	function setcookie (name, value, expire, path, domain, secure) {
-		return $.cookie(name, value, {expire: expire, path: path ? path : '/', domain: domain, secure: secure});
+	function setcookie (name, value, expires, path, domain, secure) {
+		return $.cookie(name, value, {expires: expires, path: path ? path : '/', domain: domain, secure: secure});
 	}
 	function getcookie (name) {
 		return $.cookie(name);

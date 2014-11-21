@@ -13,11 +13,12 @@ class User {
 				$update_cache			= false,	//Нужно ли обновлять кеш данных текущего пользователя
 				$data					= array(),	//Локальный кеш данных пользователя
 				$data_set				= array(),	//Измененные данные пользователя, которыми по завершению нужно обновить данные в БД
-				$update_others_cache	= array(),	//Нужно ли обновлять кеш данных других пользователей
+				$update_cache_others	= array(),	//Нужно ли обновлять кеш данных других пользователей
 				$data_others			= array(),	//Локальный кеш данных других пользователей
-				$data_others_set		= array(),	//Измененные данные других пользователей
+				$data_set_others		= array(),	//Измененные данные других пользователей
 				$db						= false,	//Ссылка на объект БД
-				$db_prime				= false;	//Ссылка на объект основной БД
+				$db_prime				= false,	//Ссылка на объект основной БД
+				$cache					= array();	//Кеш с некоторыми временными данными
 
 	function __construct () {
 		global $Cache, $Config, $Page, $L, $Key;
@@ -44,7 +45,7 @@ class User {
 			}
 		}
 		unset($key_data, $key, $rc);
-		$this->current['is']['admin']	= true;///////////////////////////////////////////////////////////////////////////////////////
+		//$this->current['is']['admin']	= true;///////////////////////////////////////////////////////////////////////////////////////
 		//Пользователь может устанавливать cookies
 		if (setcookie($test = uniqid(), 'test')) {
 			setcookie($test, '');
@@ -152,11 +153,13 @@ class User {
 		} else {
 			//Определяем типы пользователей
 			$groups = explode(',', $this->data['groups']);
-			if (in_array(2, $groups)) {
-				$this->current['is']['user'] = true;
-			}
 			if (in_array(1, $groups)) {
-				$this->current['is']['admin'] = true;
+				$this->current['is']['admin']	= true;
+				$this->current['is']['user']	= true;
+			} elseif (in_array(2, $groups)) {
+				$this->current['is']['user']	= true;
+			} elseif (in_array(3, $groups)) {
+				$this->current['is']['bot']		= true;
 			}
 			//Определяем права доступа, с учётом индивидуальных прав.
 			//Цифра 2 в маске пользователя прав означает перепись любого предыдущего значения права доступа запретом,
@@ -169,13 +172,13 @@ class User {
 				if (!($group_data = $Cache->get('users_groups/'.$group_id))) {
 					$Cache->set(
 						'users_groups/'.$group_id,
-						$group_data = $this->db()->qf('SELECT * FROM `[prefix]users_groups` WHERE `id` = '.$group_id.' LIMIT 1')
+						$group_data = $this->db()->qf('SELECT `permissions`, `data` FROM `[prefix]users_groups` WHERE `id` = '.$group_id.' LIMIT 1')
 					);
 				}
-				$permissions = str_replace(2, 0, $permissions | $group_data['permissions']);
+				$permissions = strtr($permissions | $group_data['permissions'], 2, 0);
 			}
 			unset($groups, $group_id, $group_data);
-			$this->data['permissions'] = str_replace(2, 0, $this->data['permissions'] | $permissions);
+			$this->data['permissions'] = strtr($this->data['permissions'] | $permissions, 2, 0);
 		}
 		//Если не гость - применяем некоторые индивидуальные настройки
 		if ($this->id != 1) {
@@ -189,7 +192,6 @@ class User {
 		if ($_stop_key === false) {
 			$_stop_key = uniqid();
 		}
-		global $Cache;
 		if ($item == 'user_agent') {
 			return $_SERVER['HTTP_USER_AGENT'];
 		} elseif ($item == 'ip') {
@@ -204,10 +206,10 @@ class User {
 			$update_cache = &$this->update_cache;
 			$data = &$this->data;
 		} else {
-			if (!isset($this->update_others_cache[(int)$user])) {
-				$this->update_others_cache[(int)$user] = false;
+			if (!isset($this->update_cache_others[(int)$user])) {
+				$this->update_cache_others[(int)$user] = false;
 			}
-			$update_cache = &$this->update_others_cache[(int)$user];
+			$update_cache = &$this->update_cache_others[(int)$user];
 			$data = &$this->data_others[(int)$user];
 		}
 		//Если получаем массив значений
@@ -225,7 +227,7 @@ class User {
 				return $result;
 			}
 			//Если есть недостающие значения - достаем их из БД
-			$res = $this->db()->qf('SELECT `'.implode('`, `', $new_items).'` FROM [prefix]users WHERE `id` = '.$user.' LIMIT 1');
+			$res = $this->db()->qf('SELECT `'.implode('`, `', $new_items).'` FROM `[prefix]users` WHERE `id` = '.$user ?: $this->id.' LIMIT 1');
 			if (is_array($res)) {
 				$update_cache = true;
 				$data = array_merge($data, $res);
@@ -247,7 +249,7 @@ class User {
 			if (isset($data[$item])) {
 				return $data[$item];
 			//Иначе если из кеша данные не доставали - пробуем достать
-			} elseif (!isset($new_data) && $new_data = $Cache->get('users/'.$user) && is_array($new_data)) {
+			} elseif (!isset($new_data) && ($new_data = $Cache->get('users/'.$user)) && is_array($new_data)) {
 				//Обновляем локальный кеш
 				if (is_array($new_data)) {
 					$data = $new_data;
@@ -257,7 +259,7 @@ class User {
 			} elseif ($stop_key == $_stop_key) {
 				return $stop_key;
 			} else {
-				$new_data = $this->db()->qf('SELECT `'.$item.'` FROM [prefix]users WHERE `id` = '.$user.' LIMIT 1');
+				$new_data = $this->db()->qf('SELECT `'.$item.'` FROM `[prefix]users` WHERE `id` = '.($user ?: $this->id).' LIMIT 1');
 				if (is_array($new_data)) {
 					$update_cache = true;
 					return $data[$item] = &$new_data[$item];
@@ -276,7 +278,7 @@ class User {
 			if ($user === false) {
 				$this->data_set[$item] = $this->data[$item] = $value;
 			} else {
-				$this->data_others_set[$user][$item] = $this->data_others[$user][$item] = $value;
+				$this->data_set_others[$user][$item] = $this->data_others[$user][$item] = $value;
 			}
 		}
 	}
@@ -328,25 +330,34 @@ class User {
 	function get_session ($session_id = false) {
 		$this->current['session'] = _getcookie('session');
 		$session_id = $session_id ?: $this->current['session'];
-		global $Cache;
+		global $Cache, $Config;
+		$result = false;
 		if ($session_id && !($result = $Cache->get('sessions/'.$session_id))) {
 			$result = $this->db()->qf(
-				'SELECT `user` '.
+				'SELECT `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip` '.
 				'FROM `[prefix]sessions` '.
 				'WHERE '.
 					'`id` = '.$this->db()->sip($session_id).' AND '.
 					'`expire` > '.TIME.' AND '.
-					'`user_agent` = \''.$this->db()->sip($this->user_agent).'\' AND '.
+					'`user_agent` = '.$this->db()->sip($this->user_agent).' AND '.
 					'`ip` = \''.ip2hex($this->ip).'\' AND'.
 					'`forwarded_for` = \''.ip2hex($this->forwarded_for).'\' AND '.
 					'`client_ip` = \''.ip2hex($this->client_ip).'\''
 			);
+			$Cache->set('sessions/'.$session_id, $result);
 		}
-		if (!($return = $session_id && is_array($result) ? $result['user'] : 0)) {
+		if (!$session_id || !is_array($result)) {
 			$this->add_session(1);
 			return $this->get_session();
 		}
-		return $return;
+		if ($result['expire'] - TIME < $Config->core['session_expire'] * $Config->core['update_ratio'] / 100) {
+			$this->db_prime()->q(
+				'UPDATE `[prefix]sessions` SET `expire` = '.(TIME + $Config->core['session_expire']).' WHERE `id` = \''.$session_id.'\''
+			);
+			$result['expire'] = TIME + $Config->core['session_expire'];
+			$Cache->set('sessions/'.$session_id, $result);
+		}
+		return $result['user'];
 	}
 	//Создаем сессию для пользователя с указанным id
 	function add_session ($id) {
@@ -388,8 +399,10 @@ class User {
 	}
 	//Удаляем сессию
 	function del_session ($session_id = false) {
+		global $Cache;
 		$session_id = $session_id ?: $this->current['session'];
 		_setcookie('session', '');
+		$Cache->del('sessions/'.$session_id);
 		return $session_id ? $db->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `id` = \''.$session_id.'\'') : false;
 	}
 	//Удаляем все сессии пользователя
@@ -400,6 +413,9 @@ class User {
 	}
 	//Проверяем количество попыток входа
 	function login_attempts ($login = false) {
+		if (isset($cache['login_attempts'])) {
+			return $cache['login_attempts'];
+		}
 		global $Config;
 		$return = $this->db()->qf(
 			'SELECT COUNT(`expire`) FROM `[prefix]user_logins` '.
@@ -409,7 +425,7 @@ class User {
 			false,
 			MYSQL_NUM
 		);
-		return $return[0] < $Config->core['login_attempts_block_count'];
+		return $cache['login_attempts'] = $return[0];
 	}
 	//Обрабатываем разультат входа
 	function login_result ($result, $login = false) {
@@ -430,6 +446,9 @@ class User {
 						'VALUES '.
 					'('.(TIME + $Config->core['login_attempts_block_time']).', '.$this->db_prime()->sip($login ?: $_POST['login']).', \''.ip2hex($this->ip).'\')'
 			);
+			if (isset($cache['login_attempts'])) {
+				++$cache['login_attempts'];
+			}
 			global $Config;
 			if ($this->db_prime()->insert_id() % $Config->core['inserts_limit'] == 0) {
 				$this->db_prime()->q('DELETE FROM `[prefix]user_logins` WHERE `expire` < '.TIME);
@@ -570,6 +589,41 @@ class User {
 	}
 	//Запрет клонирования
 	function __clone () {}
-	function __finish () {}
+	//Сохранение изменений кеша, и данных пользоветелей
+	function __finish () {
+		global $Cache;
+		//Обновление кеша текущего пользователя
+		if ($this->update_cache && !empty($this->data)) {
+			$Cache->set('users/'.$this->id, $this->data);
+		}
+		//Обновление кеша других пользователей
+		if ($this->update_cache_others && !empty($this->data_others)) {
+			foreach ($this->data_others as $id => &$data) {
+				$Cache->set('users/'.$id, $data);
+			}
+			unset($id, $data);
+		}
+		//Обновление данных текущего пользователя
+		if (!empty($this->data_set)) {
+			$data = array();
+			foreach ($this->data_set as $i => &$val) {
+				$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
+			}
+			$this->db_prime()->q('UPDATE `[prefix]users` SET '.implode(', ', $data).' WHERE `id` = '.$this->id);
+			unset($i, $val, $data);
+		}
+		//Обновление данных других пользователей
+		if (!empty($this->data_set_others)) {
+			foreach ($this->data_set_others as $id => &$data_set) {
+				$data = array();
+				foreach ($data_set as $i => &$val) {
+					$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
+				}
+				$this->db_prime()->q('UPDATE `[prefix]users` SET '.implode(', ', $data).' WHERE `id` = '.$id);
+				unset($i, $val, $data);
+			}
+			unset($id, $data_set);
+		}
+	}
 }
 ?>

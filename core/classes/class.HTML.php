@@ -17,7 +17,8 @@ class HTML {
 
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
-		if ($level < 1) {
+		global $Config;
+		if ($level < 1 || !$Config->core['debug']) {
 			return $in;
 		}
 		return preg_replace('/^(.*)$/m', str_repeat("\t", $level).'$1', $in);
@@ -44,7 +45,13 @@ class HTML {
 			}
 			$in = $data['in'];
 			unset($data['in']);
-		}	
+		}
+		if (isset($data['src'])) {
+			$data['src'] = str_replace(' ', '%20', $data['src']);
+		}
+		if (isset($data['href'])) {
+			$data['href'] = str_replace(' ', '%20', $data['href']);
+		}
 		if (isset($data['data-title']) && $data['data-title']) {
 			$data['data-title'] = filter($data['data-title']);
 			if (isset($data['class'])) {
@@ -95,7 +102,15 @@ class HTML {
 			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
-		return '<'.$tag.$add.'>'.($level ? "\n" : '').$this->level($in ? $in.($level ? "\n" : '') : ($in === false ? '' : ($level ? "&nbsp;\n" : '')), $level).'</'.$tag.'>'.($level ? "\n" : '');
+		return	'<'.$tag.$add.'>'.
+				($level ? "\n" : '').
+				$this->level(
+					$in ?
+						$in.($level ? "\n" : '') : 
+						($in === false ? '' : ($level ? "&nbsp;\n" : '')),
+				$level).
+				'</'.$tag.'>'.
+				($level ? "\n" : '');
 	}
 	//Метод для простой обертки контента парными тегами
 	function swrap ($in = '', $data = '', $tag = 'div') {
@@ -129,6 +144,12 @@ class HTML {
 			}
 			$in = $data['in'];
 			unset($data['in']);
+		}
+		if (isset($data['src'])) {
+			$data['src'] = str_replace(' ', '%20', $data['src']);
+		}
+		if (isset($data['href'])) {
+			$data['href'] = str_replace(' ', '%20', $data['href']);
 		}
 		if (isset($data['data-title']) && $data['data-title']) {
 			$data_title = $data['data-title'];

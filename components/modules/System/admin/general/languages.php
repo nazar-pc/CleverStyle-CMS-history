@@ -10,11 +10,11 @@ $a->content(
 				$a->select(
 					$Config->core['active_languages'],
 					array(
-						'name' => 'core[language]',
-						'selected' => $Config->core['language'],
-						'size' => 5,
-						'add' => ' onClick="$(\'#apply_settings\').click();"',
-						'class' => 'form_element'
+						'name'		=> 'core[language]',
+						'selected'	=> $Config->core['language'],
+						'size'		=> 5,
+						'onClick'	=>'$(\'#apply_settings\').click();',
+						'class'		=> 'form_element'
 					)
 				)
 			)
@@ -25,12 +25,12 @@ $a->content(
 				$a->select(
 					$Config->core['languages'],
 					array(
-						'name' => 'core[active_languages][]',
-						'selected' => $Config->core['active_languages'],
-						'size' => 5,
-						'add' => ' multiple',
-						'onChange' => '$(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').prop(\'selected\', true);',
-						'class' => 'form_element'
+						'name'		=> 'core[active_languages][]',
+						'selected'	=> $Config->core['active_languages'],
+						'size'		=> 5,
+						'multiple'	=> '',
+						'onChange'	=> '$(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').prop(\'selected\', true);',
+						'class'		=> 'form_element'
 					)
 				)
 			)

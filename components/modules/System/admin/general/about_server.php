@@ -176,7 +176,7 @@ $a->content(
 
 							$a->td($L->allow_url_fopen.':').$a->td($L->get(ini_get('allow_url_fopen')), array('class' => ini_get('allow_url_fopen') ? 'green' : 'red')),
 
-							$a->td($L->display_errors.':').$a->td($L->get(display_errors()), array('class' => display_errors() ? 'green' : 'red')),
+							$a->td($L->display_errors.':').$a->td($L->get(display_errors()), array('class' => display_errors() ? 'red' : 'green')),
 
 							$a->td($L->directive.' register_globals:').$a->td($L->get(register_globals()), array('class' => !register_globals() ? 'green' : 'red'))
 						)

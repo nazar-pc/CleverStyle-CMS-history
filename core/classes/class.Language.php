@@ -1,9 +1,10 @@
 <?php
 class Language {
-	public		$clanguage;						//Текущий язык
-	protected	$translate = array(),			//Локальный кеш переводов
-				$need_to_rebuild_cache = false,	//Требуется пересобрать кеш
-				$initialized = false;			//Состояние инициализации
+	public		$clanguage,								//Текущий язык
+				$time = false;
+	protected	$translate = array(),					//Локальный кеш переводов
+				$need_to_rebuild_cache = false,			//Требуется пересобрать кеш
+				$initialized = false;					//Состояние инициализации
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
@@ -83,6 +84,45 @@ class Language {
 			}
 		}
 		return false;
+	}
+	//Обрабатывет время, добавляя слова с правильными окончаниями
+	//$type = s|m|h|d|M|y
+	function time ($in, $type = false) {
+		if ($this->time instanceof Closure) {
+			$tmp = $this->time;
+			return $tmp($in, $type);
+		} else {
+			global $L;
+			switch ($type) {
+				default:
+					return $in;
+				break;
+				
+				case 's':
+					return $in.' '.$L->seconds;
+				break;
+				
+				case 'm':
+					return $in.' '.$L->minutes;
+				break;
+				
+				case 'h':
+					return $in.' '.$L->hours;
+				break;
+				
+				case 'd':
+					return $in.' '.$L->days;
+				break;
+				
+				case 'M':
+					return $in.' '.$L->months;
+				break;
+				
+				case 'y':
+					return $in.' '.$L->years;
+				break;
+			}
+		}
 	}
 	//Запрет клонирования
 	function __clone () {}

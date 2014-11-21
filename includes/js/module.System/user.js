@@ -30,7 +30,7 @@
 								}
 							}
 						);
-					} else if (result == 'reload') {
+					} else if (random_hash == 'reload') {
 						location.reload();
 					} else {
 						alert(random_hash);

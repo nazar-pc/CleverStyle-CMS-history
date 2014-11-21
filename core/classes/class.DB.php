@@ -1,13 +1,13 @@
 <?php
 class DB {
-	public	$queries				= 0,
-			$time					= 0,
-			$succesful_connections	= array(),
-			$false_connections		= array(),
-			$connections			= array(),
-			$mirrors				= array();
-	private	$DB_USER,
-			$DB_PASSWORD;
+	public		$queries				= 0,
+				$time					= 0,
+				$successful_connections	= array(),
+				$false_connections		= array(),
+				$connections			= array(),
+				$mirrors				= array();
+	protected	$DB_USER,
+				$DB_PASSWORD;
 	//Для безопасности глобальные переменные с именем пользователя и паролем главной БД забираются во внутренние переменные объекта,
 	//глобальные переменные уничтожаются
 	function __construct () {
@@ -27,7 +27,7 @@ class DB {
 		} elseif (isset($this->connections[$connection])) {
 			return $this->connections[$connection];
 		//Проверяем, включена ли функция балансировки нагрузки и количество зеркал БД, подключаемся к БД
-		} elseif (isset($Config->core['db_balance']) && $Config->core['db_balance'] && $mirrors = count($Config->db[$connection]['mirrors'])) {
+		} elseif ($Config->core['db_balance'] && $mirrors = count($Config->db[$connection]['mirrors'])) {
 			$select = mt_rand(0, $Config->core['maindb_for_write'] ? $mirrors - 1 : $mirrors);
 			if ($select < $mirrors) {
 				$mirror = $Config->db[$connection]['mirrors'][--$select];
@@ -65,7 +65,7 @@ class DB {
 		if (isset($this->connections[$connection])) {
 			return $this->connections[$connection];
 		}
-		global $Config;
+		global $Config, $L, $DB_NAME;
 		//Если подключается БД ядра
 		if (($connection == 'core' || $connection == 0) && !is_array($mirror)) {
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_PREFIX, $DB_CODEPAGE;
@@ -95,7 +95,7 @@ class DB {
 		errors_on();
 		//В случае успешного подключения - заносим в общий список подключений, и возвращаем ссылку на подключение
 		if (is_object($this->connections[$connection]) && $this->connections[$connection]->connected) {
-			$this->succesful_connections[] = $connection.'/'.$db['host'].'/'.$db['type'];
+			$this->successful_connections[] = ($connection == 'core' || $connection == 0 ? $L->core_db.'('.$DB_NAME.')' : $connection).'/'.$db['host'].'/'.$db['type'];
 			//Устанавливаем текущую БД
 			if ($this->connections[$connection]->database != $connection) {
 				$this->connections[$connection]->select_db($connection);
@@ -118,7 +118,7 @@ class DB {
 		} else {
 			unset($this->$connection, $db);
 			//Добавляем подключение в список неудачных
-			$this->false_connections[$connection] = $connection.'/'.$db['host'].'/'.$db['type'];
+			$this->false_connections[$connection] = ($connection == 'core' || $connection == 0 ? $L->core_db.'('.$DB_NAME.')' : $connection).'/'.$db['host'].'/'.$db['type'];
 			//Если допускается подключение к зеркалу БД, и зеркала доступны
 			if (
 				$mirror === true && 

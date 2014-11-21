@@ -473,13 +473,13 @@ class Page extends HTML {
 				)
 			);
 			$queries =	$this->p(
-				$L->false_connections.': '.$this->b(implode(', ', str_replace('core', $L->core_db, $db->false_connections)) ?: $L->no)
+				$L->false_connections.': '.$this->b(implode(', ', $db->false_connections) ?: $L->no)
 			).
 			$this->p(
-				$L->succesful_connections.': '.$this->b(implode(', ', str_replace('core', $L->core_db, $db->succesful_connections)) ?: $L->no)
+				$L->successful_connections.': '.$this->b(implode(', ', $db->successful_connections) ?: $L->no)
 			).
 			$this->p(
-				$L->mirrors_connections.': '.$this->b(implode(', ', str_replace('core', $L->core_db, $db->mirrors)) ?: $L->no)
+				$L->mirrors_connections.': '.$this->b(implode(', ', $db->mirrors) ?: $L->no)
 			).
 			$this->p(
 				$L->active_connections.': '.(count($db->connections) ? '' : $this->b($L->no))
@@ -488,7 +488,7 @@ class Page extends HTML {
 				if ($name == 'core') {
 						$name = $L->core_db;
 				} else {
-					$name = ($name != 'core' ? $name : $L->core_db).'('.$database->database.')';
+					$name = ($name != 'core' && $name != 0 ? $name : $L->core_db.'('.$DB_NAME.')').'('.$database->database.')';
 				}
 				$queries .= $this->p(
 					$name.
