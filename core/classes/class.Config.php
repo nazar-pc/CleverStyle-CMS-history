@@ -38,8 +38,6 @@ class Config {
 		$Cache->init($this);
 		//Инициализация объекта языков с использованием настроек движка
 		$L->init($this);
-		//Инициализация объекта мультиязычного текстового контента
-		$L->init($this);
 		//Инициализация объекта страницы с использованием настроек движка
 		$Page->init($this);
 	}
@@ -231,6 +229,7 @@ class Config {
 	}
 	//Сохранение и применение изменений
 	function save ($parts = NULL) {
+		global $db;
 		if ($parts === NULL || empty($parts)) {
 			$parts = $this->admin_parts;
 		} elseif (!is_array($parts)) {
@@ -242,14 +241,13 @@ class Config {
 				if ($part == 'routing') {
 					$temp = $this->routing;
 					unset($temp['current']);
-					$query[] = '`'.$part.'` = '.sip(json_encode_x($temp));
+					$query[] = '`'.$part.'` = '.$db->core()->sip(json_encode_x($temp));
 					continue;
 				}
-				$query[] = '`'.$part.'` = '.sip(json_encode_x($this->$part));
+				$query[] = '`'.$part.'` = '.$db->core()->sip(json_encode_x($this->$part));
 			}
 		}
 		unset($parts, $part, $temp);
-		global $db;
 		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $query).' WHERE `domain` = \''.DOMAIN.'\' LIMIT 1')) {
 			$this->apply();
 			return true;

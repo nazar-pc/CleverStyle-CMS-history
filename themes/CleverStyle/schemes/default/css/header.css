@@ -1,31 +1,31 @@
 #header_green {
-	background: rgb(110, 188, 0);
-	background: -ms-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
-	background: -moz-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
-	background: -o-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
-	background: -webkit-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
-	background: linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background-color: rgb(110, 188, 0);
+	background-image: -ms-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background-image: -moz-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background-image: -o-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background-image: -webkit-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background-image: linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
 }
 #header_black {
-	background: rgb(0, 0, 0);
-	background: -ms-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
-	background: -moz-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
-	background: -o-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
-	background: -webkit-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
-	background: linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background-color: rgb(0, 0, 0);
+	background-image: -ms-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background-image: -moz-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background-image: -o-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background-image: -webkit-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background-image: linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
 	box-shadow: 0px 0px 20px #000;
 	-moz-box-shadow: 0px 0px 20px #000;
 	-webkit-box-shadow: 0px 0px 20px #000;
 }
 #user_header {
-	background: rgba(255, 255, 255, 0.5);
+	background-color: rgba(255, 255, 255, 0.5);
 	border: 1px solid rgba(255, 255, 255, 0.6);
 	box-shadow: 0px 0px 7px #fff;
 	-moz-box-shadow: 0px 0px 7px #fff;
 	-webkit-box-shadow: 0px 0px 7px #fff;
 }
 #avatar_header {
-	background: rgba(0, 0, 0, 0.15);
+	background-color: rgba(0, 0, 0, 0.15);
 	border: 1px solid rgba(0, 0, 0, 0.6);
 	color: #fff;
 	text-shadow:  0px 0px 20px #fff;

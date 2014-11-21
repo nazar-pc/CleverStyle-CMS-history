@@ -12,7 +12,7 @@ if (isset($_POST['update_modules_list'])) {
 	}
 } elseif (isset($_POST['install'], $_POST['module']) && !empty($_POST['module'])) {
 	if (!include_x(MODULES.DS.$_POST['module'].DS.$ADMIN.DS.'install'.DS.'process.php', false, false)) {
-		$modules[$_POST['module']]['active'] = 1;
+		$modules[$_POST['module']]['active'] = 0;
 		if (isset($_POST['db']) && is_array($_POST['db'])) {
 			$modules[$_POST['module']]['db'] = $_POST['db'];
 		}

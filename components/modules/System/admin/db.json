@@ -1,5 +1,9 @@
 {
-	"db": ["users"],
+	"db":		[
+					"keys",
+					"users",
+					"texts"
+				],
 	"users" :	[
 					"id",
 					"key",

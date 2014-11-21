@@ -550,11 +550,11 @@ class HTML {
 		$uniqid = uniqid('pre_');
 		if (is_array($in)) {
 			if (isset($in['in'])) {
-				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$Page->replace($uniqid, $in['in']);
 				$in['in'] = $uniqid;
 			}
 		} else {
-			$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+			$Page->replace($uniqid, $in);
 			$in = $uniqid;
 		}
 		$data['level'] = false;
@@ -565,11 +565,11 @@ class HTML {
 		$uniqid = uniqid('code_');
 		if (is_array($in)) {
 			if (isset($in['in'])) {
-				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$Page->replace($uniqid, $in['in']);
 				$in['in'] = $uniqid;
 			}
 		} else {
-			$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+			$Page->replace($uniqid, $in);
 			$in = $uniqid;
 		}
 		$data['level'] = false;

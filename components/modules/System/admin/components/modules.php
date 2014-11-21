@@ -65,21 +65,19 @@ if ($mode && $rc[2] == 'install') {
 		}
 	}
 	unset($i, $db_data);
-	$db_list = $a->tr(
-		$a->td(
-			array(
-				$a->info('module_db'),
-				$a->info('system_db')
-			),
-			array(
-				'class'	=> 'ui-widget-header ui-corner-all'
-			)
+	$db_list[] = $a->td(
+		array(
+			$a->info('module_db'),
+			$a->info('system_db')
+		),
+		array(
+			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	);
 	$db_json = json_decode_x(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
-		$db_list .= $a->td(
+		$db_list[] = $a->td(
 			array(
 				$L->$db_translate,
 				$a->select(
@@ -138,21 +136,19 @@ if ($mode && $rc[2] == 'install') {
 		}
 	}
 	unset($i, $storage_data);
-	$storage_list = $a->tr(
-		$a->td(
-			array(
-				$a->info('module_storage'),
-				$a->info('system_storage')
-			),
-			array(
-				'class'	=> 'ui-widget-header ui-corner-all'
-			)
+	$storage_list[] = $a->td(
+		array(
+			$a->info('module_storage'),
+			$a->info('system_storage')
+		),
+		array(
+			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	);
 	$storage_json = json_decode_x(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
 	foreach ($storage_json as $storage) {
 		$storage_translate = $rc[3].'_storage_'.$storage;
-		$storage_list .= $a->td(
+		$storage_list[] = $a->td(
 			array(
 				$L->$storage_translate,
 				$a->select(

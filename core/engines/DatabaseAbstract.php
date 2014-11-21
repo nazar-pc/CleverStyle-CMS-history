@@ -1,6 +1,8 @@
 <?php
 abstract class DatabaseAbstract {
 	public		$connected	= false,				//Метка наличия соединения
+				$engine		= false,				//Тип движка БД, может использоваться при построении запросов,
+													//чтобы учитывать особенности конкретного движка (название в нижнем регистре)
 				$database,							//Текущая БД
 				$prefix,							//Текущий префикс
 				$time,								//Массив для хранения общей длительности выполнения запросов
@@ -95,6 +97,9 @@ abstract class DatabaseAbstract {
 			return $this->qfa('SHOW TEBLES FROM `'.$this->database.'`', $result_type);
 		}
 	}
+	//Подготовка строки для использования в SQL запросе
+	//Название sip - сокращено от SQL Injection Protection
+	abstract function sip ($data);
 	//Информация о сервере
 	abstract function server ();
 	//Запрет клонирования

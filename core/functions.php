@@ -2,6 +2,7 @@
 //Специальные функции для обработки подключения пользовательских файлов ядра
 if (USE_CUSTOM) {
 	function require_x ($file, $once = false, $show_errors = true) {
+		$file = str_to_path($file);
 		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
 				return require_once $file_x;
@@ -24,6 +25,7 @@ if (USE_CUSTOM) {
 		}
 	}
 	function include_x ($file, $once = false, $show_errors = true) {
+		$file = str_to_path($file);
 		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
 				return include_once $file_x;
@@ -47,6 +49,7 @@ if (USE_CUSTOM) {
 	}
 } else {
 	function require_x ($file, $once = false, $show_errors = true) {
+		$file = str_to_path($file);
 		if (file_exists($file)) {
 			if ($once) {
 				return require_once $file;
@@ -63,6 +66,7 @@ if (USE_CUSTOM) {
 		}
 	}
 	function include_x ($file, $once = false, $show_errors = true) {
+		$file = str_to_path($file);
 		if (file_exists($file)) {
 			if ($once) {
 				return include_once $file;
@@ -147,9 +151,13 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		$sort = mb_strtolower($sort);
 		$sort_x = explode('|', $sort);
 	}
-	if (isset($sort_x) && $sort_x[0] == 'date') {
+	if (isset($sort_x) && $sort_x[0] == 'datea') {
 		$prepare = function (&$list, &$tmp, $link) {
-			$list[filectime($link)] = $tmp;
+			$list[fileatime($link) ?: filemtime($link)] = $tmp;
+		};
+	} if (isset($sort_x) && $sort_x[0] == 'datem') {
+		$prepare = function (&$list, &$tmp, $link) {
+			$list[filemtime($link)] = $tmp;
 		};
 	} else {
 		$prepare = function (&$list, &$tmp, $link) {
@@ -158,7 +166,7 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 	}
 	$list = array();
 	$l = 0;
-	$dirc = opendir($dir);
+	$dirc = opendir(str_to_path($dir));
 	if (mb_substr($dir, -1, 1) != DS) {
 		$dir .= DS;
 	}
@@ -207,6 +215,10 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 	}
 	closedir($dirc);
 	unset($prepare);
+	foreach ($list as &$str) {
+		$str = path_to_str($str);
+	}
+	unset($str);
 	if (empty($list)) {
 		return $list;
 	} else {
@@ -229,6 +241,18 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		}
 		return $list;
 	}
+}
+//Функции str_to_path() и path_to_str() являются обратными, и используются при работе с файловой системой.
+//Так, как в разных операционных системах названия одних и тех же файлов с Unicode символами php может отображать по разному,
+//эти две функции обеспечивают кроссплатформенность работы с адресами файлов и папок в Unicode кодировке, и их настоятельно
+//рекомендуется использовать везде, где нет уверенности в том, что Unicode символы не встретятся в пути к файлу или папке.
+	//Функция подготавливает строку, которая должна использоваться как путь для файловой системы
+function str_to_path ($str) {
+	return CHARSET == FS_CHARSET ? $str : iconv(CHARSET, FS_CHARSET, $str);
+}
+	//Функция подготавливает строку, которая была получена как путь в файловой системе, для использования в движке
+function path_to_str ($path) {
+	return CHARSET == FS_CHARSET ? $path : iconv(FS_CHARSET, CHARSET, $path);
 }
 //Получить URL файла по его расположению в файловой системе
 function url_by_source ($source) {
@@ -292,7 +316,7 @@ function flush_pcache () {
 //Обработка замыканий
 function closure_process (&$functions) {
 	$functions = (array)$functions;
-	foreach ($functions as $function) {
+	foreach ($functions as &$function) {
 		if ($function instanceof Closure) {
 			$function();
 		}
@@ -373,21 +397,16 @@ function json_encode_x ($in) {
 			)
 		),
 		ENT_NOQUOTES,
-		'utf-8'
+		CHARSET
 	);
 }
 //Аналог json_decode, сразу возвращает ассоциативный массив
 function json_decode_x ($in, $depth = 512) {
 	return @json_decode($in, true, $depth);
 }
-//Почти идеальная функция для защиты от SQL-инъекций
-//Название sip - сокращено от SQL Injection Protection
-function sip ($in) {
-	return "unhex('".bin2hex($in)."')";
-}
 //Почти идеальная функция для защиты от XSS-атак
 //Название xap - сокращено от XSS Attack Protection
-function xap ($in, $format=false) {
+function xap ($in, $format = false) {
 	if ($format == 'html') {
 		//Делаем безопасный html
 		$in = preg_replace('/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i', '', $in); //Удаляем скрипты, фреймы и flash

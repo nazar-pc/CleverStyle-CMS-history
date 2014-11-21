@@ -39,10 +39,10 @@ class Page extends HTML {
 	function __construct () {
 		global $interface;
 		$this->interface = (bool)$interface;
-		unset($interface);
+		unset($GLOBALS['interface']);
 	}
 	function init ($Config) {
-		$this->Title[0] = htmlentities($Config->core['name'], ENT_COMPAT, 'utf-8');
+		$this->Title[0] = htmlentities($Config->core['name'], ENT_COMPAT, CHARSET);
 		$this->Keywords = $Config->core['keywords'];
 		$this->Description = $Config->core['description'];
 		$this->theme = $Config->core['theme'];
@@ -143,7 +143,6 @@ class Page extends HTML {
 			);
 		}
 		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
-						$this->meta(array('http-equiv'	=> 'Content-Type',		'content'	=> 'text/html; charset=utf-8')).
 						$this->meta(array('name'		=> 'keywords',			'content'	=> $this->Keywords)).
 						$this->meta(array('name'		=> 'description',		'content'	=> $this->Description)).
 						$this->meta(array('name'		=> 'generator',			'content'	=> $copyright[0])).
@@ -263,23 +262,59 @@ class Page extends HTML {
 	}
 	//Добавление данных в заголовок страницы (для избежания случайной перезаписи всего заголовка)
 	function title ($add) {
-		$this->Title[] = htmlentities($add, ENT_COMPAT, 'utf-8');
+		$this->Title[] = htmlentities($add, ENT_COMPAT, CHARSET);
 	}
 	//Загрузка списка JavaScript и CSS файлов
-	function get_list () {
+	function get_list ($for_cache = false) {
 		$this->get_list = array(
 				'css' => array (
-					0 => get_list(INCLUDES.DS.'css', '/(.*)\.css$/i', 'f', 'includes/css', true),
-					1 => get_list(THEMES.DS.$this->theme.DS.'css', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/css', true),
-					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'css', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/css', true)
+					0 => get_list(
+							INCLUDES.DS.'css',
+							'/(.*)\.css$/i',
+							'f',
+							$for_cache ? true : 'includes/css',
+							true
+					),
+					1 => get_list(
+							THEMES.DS.$this->theme.DS.'css',
+							'/(.*)\.css$/i',
+							'f',
+							$for_cache ? true : 'themes/'.$this->theme.'/css',
+							true
+					),
+					2 => get_list(
+							THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'css',
+							'/(.*)\.css$/i',
+							'f',
+							$for_cache ? true : 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/css',
+							true
+					)
 				),
 				'js' => array (
-					0 => get_list(INCLUDES.DS.'js', '/(.*)\.js$/i', 'f', 'includes/js', true),
-					1 => get_list(THEMES.DS.$this->theme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/js', true),
-					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', true)
+					0 => get_list(
+							INCLUDES.DS.'js', 
+							'/(.*)\.js$/i',
+							'f',
+							$for_cache ? true : 'includes/js',
+							true
+					),
+					1 => get_list(
+							THEMES.DS.$this->theme.DS.'js',
+							'/(.*)\.js$/i',
+							'f',
+							$for_cache ? true : 'themes/'.$this->theme.'/js',
+							true
+					),
+					2 => get_list(
+							THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'js',
+							'/(.*)\.js$/i',
+							'f',
+							$for_cache ? true : 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js',
+							true
+					)
 				)
 		);
-		if (DS != '/') {
+		if (!$for_cache && DS != '/') {
 			$this->get_list = filter($this->get_list, 'str_replace', DS, '/');
 		}
 		for ($i = 0; $i <= 2; ++$i) {
@@ -325,7 +360,7 @@ class Page extends HTML {
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {
-		$this->get_list();
+		$this->get_list(true);
 		$key = '';
 		foreach ($this->get_list as $part => &$array) {
 			foreach ($array as $i => &$files) {
@@ -359,7 +394,7 @@ class Page extends HTML {
 	}
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
-		chdir(dirname(realpath($file)));
+		chdir(dirname($file));
 		preg_replace_callback(
 			'/url\((.*?)\)/',
 			function ($link) use (&$data) {
@@ -369,9 +404,9 @@ class Page extends HTML {
 					$format = 'jpg';
 				}
 				if (($format == 'jpg' || $format == 'png' || $format == 'gif') && file_exists(realpath($link[0]))) {
-					$data = str_replace($link[1], 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(realpath($link[0]))), $data);
+					$data = str_replace($link[1], 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(realpath(str_to_path($link[0])))), $data);
 				} elseif ($format == 'css' && file_exists(realpath($link[0]))) {
-					$data = str_replace($link[1], 'data:text/'.$format.';base64,'.base64_encode(file_get_contents(realpath($link[0]))), $data);
+					$data = str_replace($link[1], 'data:text/'.$format.';base64,'.base64_encode(file_get_contents(realpath(str_to_path($link[0])))), $data);
 				}
 			},
 			$data
@@ -432,7 +467,7 @@ class Page extends HTML {
 								$L->loader,
 								array('style' => 'font-weight: bold;')
 							).$this->p(
-								$L->initialisation_duration.': '.round($timeload['loader_init'] - $timeload['start'], 5).' '.$L->sec,
+								$L->creation_duration.': '.round($timeload['loader_init'] - $timeload['start'], 5).' '.$L->sec,
 								array('style' => 'padding-left: 20px;')
 							).$this->p(
 								$L->memory_usage.': '.formatfilesize($loader_init_memory, 5),
@@ -444,7 +479,7 @@ class Page extends HTML {
 									$object,
 									array('style' => 'font-weight: bold;')
 								).$this->p(
-									$L->initialisation_duration.': '.round($data[0] - $last, 5).' '.$L->sec,
+									$L->creation_duration.': '.round($data[0] - $last, 5).' '.$L->sec,
 									array('style' => 'padding-left: 20px;')
 								).$this->p(
 									$L->time_from_start_execution.': '.round($data[0] - $timeload['start'], 5).' '.$L->sec,

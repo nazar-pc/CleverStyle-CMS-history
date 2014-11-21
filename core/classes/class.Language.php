@@ -48,7 +48,7 @@ class Language {
 			$this->clanguage = $language;
 			if ($translate = $Cache->get('lang.'.$this->clanguage)) {
 				$this->set($translate);
-				$Text->language($this->clanguage);
+				$Text->language($this->clang);
 				return true;
 			} elseif (include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
 				if (file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
@@ -60,7 +60,7 @@ class Language {
 					$this->clang = strtolower(mb_substr($this->clanguage, 0, 2));
 					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $this->clang.'_'.strtoupper($this->clang)) : setlocale(LC_TIME, $this->clang.'_'.strtoupper($this->clang));
 				}
-				$Text->language($this->clanguage);
+				$Text->language($this->clang);
 				$this->need_to_rebuild_cache = true;
 				if ($this->initialized) {
 					$this->init();

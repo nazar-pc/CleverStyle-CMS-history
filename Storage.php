@@ -1,5 +1,5 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+header('Content-Type: text/html; charset='.CHARSET);
 define('DS',		DIRECTORY_SEPARATOR);
 define('CORE',		__DIR__.DS.'core');
 chdir(__DIR__);

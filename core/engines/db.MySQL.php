@@ -22,6 +22,7 @@ class MySQL extends DatabaseAbstract {
 		$this->connecting_time = microtime(true) - $this->connecting_time;
 		global $db;
 		$db->time += $this->connecting_time;
+		$this->engine = 'mysql';
 		return $this->id;
 	}
 	//Смена текущей БД
@@ -105,6 +106,12 @@ class MySQL extends DatabaseAbstract {
 		} else {
 			return true;
 		}
+	}
+	//Подготовка строки для использования в SQL запросе
+	//Почти идеальная функция для защиты от SQL-инъекций
+	//Название sip - сокращено от SQL Injection Protection
+	function sip ($data) {
+		return "unhex('".bin2hex($data)."')";
 	}
 	//Информация о MySQL-сервере
 	function server () {

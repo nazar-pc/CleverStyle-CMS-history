@@ -3,59 +3,52 @@
 class Classes {
 	public	$ObjectsList		= array(),	//Массив со списком объектов, и данными о занятом объеме памяти
 											//после их создания, и длительностью содания
-			$unload_priority	= array('Page', 'Config', 'User', 'db', 'Error', 'L', 'Text', 'Cache', 'Core');
+			$unload_priority	= array('Key', 'Page', 'Config', 'User', 'db', 'Error', 'L', 'Text', 'Cache', 'Core');
 	private	$LoadedObjects = array();
 	//Метод добавления объектов в список для их разрушения в конце работы
 	function add ($name) {
 		$this->LoadedObjects[$name] = $name;
 	}
 	//Метод подключения классов
-	function load ($class, $create = false, $custom = false) {
+	function load ($class, $custom_name = false) {
 		global $stop;
 		if (empty($class)) {
 			return false;
-		} elseif (!$stop && is_array($class)) {
-			if (is_array($class[0])) {
-				foreach ($class as $c) {
-					if (!isset($c[1])) {
-						$c[1] = false;
+		} elseif (!$stop && !is_array($class)) {
+			global $timeload, $Config;
+			if (class_exists($class)) {
+				//Используем кастомное имя для объекта
+				if ($custom_name !== false) {
+					global $$custom_name;
+					if (!is_object($$custom_name)) {
+						$this->LoadedObjects[$custom_name] = $custom_name;
+						$$custom_name = new $class();
+						$this->ObjectsList[$custom_name] = array(microtime(true), memory_get_usage());
 					}
-					if (!isset($c[2])) {
-						$c[2] = false;
+					return $$custom_name;
+				//Для имени объекта используем название класса
+				} else {
+					global $$class;
+					if (!is_object($$class)) {
+						$this->LoadedObjects[$class] = $class;
+						$$class = new $class();
+						$this->ObjectsList[$class] = array(microtime(true), memory_get_usage());
 					}
-					$this->load($c);
+					return $$class;
 				}
 			} else {
-				global $timeload, $Config;
-				if (file_exists(CLASSES.DS.'class.'.$class[0].'.php')) {
-					//Если второй параметр true - создаем глобальный объект
-					if ($class[1]) {
-						if (isset($class[2]) && $class[2]) {
-							global $$class[2];
-							if (!is_object($$class[2])) {
-								$this->LoadedObjects[$class[2]] = $class[2];
-								$$class[2] = new $class[0]();
-							}
-							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
-							return $$class[2];
-						} else {
-							global $$class[0];
-							if (!is_object($$class[0])) {
-								$this->LoadedObjects[$class[0]] = $class[0];
-								$$class[0] = new $class[0]();
-							}
-							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
-							return $$class[0];
-						}
-					}
+				global $Error, $L, $Page;
+				$Error->process($L->class.' '.$Page->b($class).' '.$L->not_exists, 'stop');
+				return false;
+			}
+		} elseif (!$stop && is_array($class)) {
+			foreach ($class as $c) {
+				if (is_array($c)) {
+					$this->load($c[0], isset($c[1]) ? $c[1] : false);
 				} else {
-					global $Error, $L, $Page;
-					$Error->process($L->class.' '.$Page->b($class[0]).' '.$L->not_exists);
-					return false;
+					$this->load($c);
 				}
 			}
-		} else {
-			return $this->load(array($class, $create, $custom));
 		}
 	}
 	//Метод уничтожения объектов

@@ -72,7 +72,7 @@ class Storage {
 			} else {
 				return false;
 			}
-		} else {print_r($storage);
+		} else {
 			$storage = json_decode_x(filter($data, 'form'));
 		}
 		unset($data);

@@ -10,7 +10,7 @@ class Cache {
 	function init ($Config) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
 		$this->disk			= $Config->core['disk_cache'];
-		$this->disk_size	= $Config->core['disk_cache_size']*1024;
+		$this->disk_size	= $Config->core['disk_cache_size']*1048576;
 		$this->memcache		= $Config->core['memcache'];
 		if ($this->memcache) {
 			$this->memcache = new Memcache;
@@ -97,7 +97,7 @@ class Cache {
 					}
 					$this->size += $dsize;
 					if ($this->size > $this->disk_size) {
-						$cache_list = get_list(CACHE, fasle, 'f', true, true, 'date|desc');
+						$cache_list = get_list(CACHE, fasle, 'f', true, true, 'datea|desc');
 						foreach ($cache_list as $file) {
 							$this->size -= filesize($file);
 							unlink($file);
