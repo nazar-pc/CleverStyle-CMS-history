@@ -161,7 +161,7 @@ class Config {
 				if ($q == 'routing' && isset($this->routing['current'])) {
 					$current_routing = $this->routing['current'];
 				}
-				$this->$q = unserialize($result[$q]);
+				$this->$q = json_decode($result[$q], true);
 			}
 			if (isset($current_routing)) {
 				$this->routing['current'] = $current_routing;

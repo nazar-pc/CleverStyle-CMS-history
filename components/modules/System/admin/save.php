@@ -19,7 +19,7 @@ if (isset($_POST['edit_settings'])) {
 						}
 					}
 				}
-				$update[] = '`'.$part.'` = '.sip(serialize($temp));
+				$update[] = '`'.$part.'` = '.sip(json_encode_x($temp));
 				unset($temp);
 			}
 		}

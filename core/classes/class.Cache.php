@@ -29,13 +29,13 @@ class Cache {
 		}
 		global $Core;
 		if (is_object($this->memcache) && $cache = $this->memcache->get(CDOMAIN.$label)) {
-			if ($cache = @unserialize($Core->decrypt($result))) {
+			if ($cache = @json_decode($Core->decrypt($result), true)) {
 				$this->local_storage[$label] = $cache;
 				return $cache;
 			}
 		}
 		if (file_exists(CACHE.DS.$label) && is_readable(CACHE.DS.$label)) {
-			if ($cache = @unserialize($Core->decrypt(file_get_contents(CACHE.DS.$label)))) {
+			if ($cache = @json_decode($Core->decrypt(file_get_contents(CACHE.DS.$label)), true)) {
 				$this->local_storage[$label] = $cache;
 				return $cache;
 			} else {
@@ -48,12 +48,12 @@ class Cache {
 	function set ($label, $data, $time = 0) {
 		global $Core, $L;
 		$this->local_storage[$label] = $data;
-		if (is_object($this->memcache) && $this->memcache->set(CDOMAIN.$label, $Core->encrypt(serialize($data)), zlib() ? MEMCACHE_COMPRESSED : false, $time)) {
+		if (is_object($this->memcache) && $this->memcache->set(CDOMAIN.$label, $Core->encrypt(json_encode_x($data)), zlib() ? MEMCACHE_COMPRESSED : false, $time)) {
 			return true;
 		}
 		if ($this->disk) {
 			if (!file_exists(CACHE.DS.$label) || (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label))) {
-				file_put_contents(CACHE.DS.$label, $Core->encrypt(serialize($data)), LOCK_EX);
+				file_put_contents(CACHE.DS.$label, $Core->encrypt(json_encode_x($data)), LOCK_EX);
 				return true;
 			} else {
 				global $Error;

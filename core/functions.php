@@ -309,6 +309,10 @@ function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 		}
 	}
 }
+//Исправленная функция json_encode, настоятельно рекомендуется к использованию вместо стандартной
+function json_encode_x ($in) {
+	return html_entity_decode(preg_replace('/\\\&#x([0-9a-fA-F]{3});/', '\\\\\u0$1', preg_replace('/\\\u0([0-9a-fA-F]{3})/', '&#x$1;', json_encode($in))), ENT_NOQUOTES, 'utf-8');
+}
 //Идеальная функция для 100% защиты от SQL-инъекций
 //Название sip - сокращено от SQL Injection Protection
 //Copyright © by Мокринський Назар aka nazar-pc, 2011
