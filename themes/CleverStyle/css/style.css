@@ -23,9 +23,6 @@ body {
 	margin: auto auto 15px;
 	width: 100%;
 }
-.admin_table > tbody > tr > td:nth-child(1) {
-	width: 40%;
-}
 .admin_table > tbody > tr > td.ui-widget-shadow {
 	opacity: 1;
 }

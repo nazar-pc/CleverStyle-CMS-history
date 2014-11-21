@@ -222,14 +222,29 @@ function registration (email) {
 			data: {
 				email: email
 			},
-			success: function(result) {//TODO Registration continuation (popup)
+			success: function(result) {
 				if (result == 'reg_confirmation') {
-					//TODO
+					$('<div>'+reg_confirmation+'</div>')
+						.appendTo('body')
+						.dialog({
+							autoOpen    : true,
+							modal       : true,
+							draggable   : false,
+							resizable   : false,
+							close       : function () { $(this).remove(); }
+						});
 				} else if (result == 'reg_success') {
-					//TODO popup congratulation
-					location.reload();
+					$('<div>'+reg_success+'</div>')
+						.appendTo('body')
+						.dialog({
+							autoOpen    : true,
+							modal       : true,
+							draggable   : false,
+							resizable   : false,
+							close       : function () { location.reload(); }
+						});
 				} else {
-					//TODO error:(
+					alert(result);
 				}
 			},
 			error: function() {

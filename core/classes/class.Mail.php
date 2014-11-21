@@ -6,17 +6,19 @@ class Mail extends PHPMailer {
 			if ($Config->core['smtp']) {
 				$this->Mailer		= 'smtp';
 				$this->Host			= $Config->core['smtp_host'];
-				$this->Port			= $Config->core['smtp_port'];
+				$this->Port			= $Config->core['smtp_port'] ?: $Config->core['smtp_secure'] ? 465 : 25;
 				$this->SMTPSecure	= $Config->core['smtp_secure'];
-				if ($Config->smtp_auth) {
+				if ($Config->core['smtp_auth']) {
 					$this->SMTPAuth	= true;
 					$this->Username	= $Config->core['smtp_user'];
 					$this->Password	= $Config->core['smtp_password'];
 				}
 			}
 		}
+		$this->From		= $Config->core['mail_from'];
 		$this->FromName	= $Config->core['mail_from_name'];
 		$this->CharSet	= CHARSET;
+		$this->IsHTML();
 	}
 	/**
 	 * @param array|string $email				if adresses without names - string or 1-dimentional array<br>
@@ -53,7 +55,11 @@ class Mail extends PHPMailer {
 		$this->Subject = $subject;
 		global $Config;
 		if ($signature === true) {
-			$signature = $this->LE.'-- '.$this->LE.$Config->core['mail_signature'];
+			if ($Config->core['mail_signature']) {
+				$signature = $this->LE.'-- '.$this->LE.$Config->core['mail_signature'];
+			} else {
+				$signature = '';
+			}
 		} elseif ($signature) {
 			$signature = $this->LE.'-- '.$this->LE.xap($signature, true);
 		} else {

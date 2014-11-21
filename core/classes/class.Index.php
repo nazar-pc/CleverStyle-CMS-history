@@ -1,12 +1,17 @@
 <?php
 class Index extends HTML {
-	public	$parts			= false,
-			$subparts		= false,
+	public	$structure		= array(),
+			$parts			= array(),
+			$subparts		= array(),
 
 			$mainmenu		= '',
 			$mainsubmenu	= '',
 			$menumore		= '',
 			$savecross		= false,
+
+			$menu_auto		= true,
+			$submenu_auto	= false,
+			$menumore_auto	= false,
 
 			$savefile		= 'save',
 			$form			= false,
@@ -52,29 +57,43 @@ class Index extends HTML {
 		}
 	}
 	function init () {
+		global $Config, $L, $Page;
+		$rc = &$Config->routing['current'];
 		if (_file_exists(MFOLDER.DS.'index.json')) {
-			$this->parts = _json_decode(_file_get_contents(MFOLDER.DS.'index.json'));
+			$this->structure	= _json_decode(_file_get_contents(MFOLDER.DS.'index.json'));
+			if (is_array($this->structure)) {
+				foreach ($this->structure as $item => $value) {
+					$this->parts[] = $item;
+					if (isset($rc[0]) && $item == $rc[0] && is_array($value)) {
+						$this->subparts = $value;
+					}
+				}
+			}
 		}
 		_include(MFOLDER.DS.'index.php', true, false);
-		global $Config, $L, $Page;
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
 			$Page->title($L->{HOME ? 'home' : MODULE});
 		}
-		if ($this->parts !== false) {
-			$rc = &$Config->routing['current'];
-			if (!isset($rc[0]) || ($this->parts && !in_array($rc[0], $this->parts)) || (!_file_exists(MFOLDER.DS.$rc[0].'.json') && !_file_exists(MFOLDER.DS.$rc[0].'.php'))) {
+		if ($this->parts) {
+			if (
+				!isset($rc[0]) ||
+				($this->parts && !in_array($rc[0], $this->parts)) ||
+				(!_file_exists(MFOLDER.DS.$rc[0]) && !_file_exists(MFOLDER.DS.$rc[0].'.php'))
+			) {
 				$rc[0] = $this->parts[0];
+				if (isset($this->structure[$rc[0]]) && is_array($this->structure[$rc[0]])) {
+					$this->subparts = $this->structure[$rc[0]];
+				}
 			}
-			!$this->api && $Page->title($L->$rc[0]);
+			if (!$this->api) {
+				$Page->title($L->$rc[0]);
+			}
 			if ($this->admin && !_include(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
 				_include(MFOLDER.DS.$this->savefile.'.php', true, false);
 			}
-			if (_file_exists(MFOLDER.DS.$rc[0].'.json')) {
-				$this->subparts = _json_decode(_file_get_contents(MFOLDER.DS.$rc[0].'.json'));
-			}
 			_include(MFOLDER.DS.$rc[0].'.php', true, false);
-			if (is_array($this->subparts)) {
+			if ($this->subparts) {
 				if (!isset($rc[1]) || ($this->subparts && !in_array($rc[1], $this->subparts)) || !_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
 					$rc[1] = $this->subparts[0];
 				}
@@ -97,14 +116,32 @@ class Index extends HTML {
 		$Page->mainmenu = '';
 		if ($User->is('admin')) {
 			if ($Config->core['debug']) {
-				$Page->mainmenu .= '<a onClick="debug_window();" title="'.$L->debug.'">'.mb_substr($L->debug, 0, 1).'</a>&nbsp;';
+				$Page->mainmenu .= $this->a(
+					mb_substr($L->debug, 0, 1),
+					array(
+						 'onClick'	=> 'debug_window();',
+						 'title'	=> $L->debug
+					)
+				);
 			}
-			$Page->mainmenu .= '<a href="'.$ADMIN.'" title="'.$L->administration.'">'.mb_substr($L->administration, 0, 1).'</a>&nbsp;';
+			$Page->mainmenu .= $this->a(
+				mb_substr($L->administration, 0, 1),
+				array(
+					 'href'		=> $ADMIN,
+					 'title'	=> $L->administration
+				)
+			);
 		}
-		$Page->mainmenu .= '<a href="/" title="'.$L->home.'">'.$L->home.'</a>';
+		$Page->mainmenu .= $this->a(
+			$L->home,
+			array(
+				 'href'		=> '/',
+				 'title'	=> $L->home
+			)
+		);
 	}
 	function mainsubmenu () {
-		if (!is_array($this->parts)) {
+		if (!is_array($this->parts) || !$this->parts || !$this->submenu_auto) {
 			return;
 		}
 		global $Config, $L;
@@ -120,22 +157,18 @@ class Index extends HTML {
 		}
 	}
 	function menumore () {
-		if (!is_array($this->subparts)) {
+		if (!is_array($this->subparts) || !$this->subparts || !$this->menumore_auto) {
 			return;
 		}
 		global $Config, $L;
 		foreach ($this->subparts as $subpart) {
-			$onClick = '';
-			if ($this->savecross && $this->form) {
-				$onClick = 'menuadmin(\''.$subpart.'\', false); return false;';
-			}
 			$this->menumore .= $this->a(
 				$L->$subpart,
 				array(
 					'id'		=> $subpart.'_a',
 					'href'		=> ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$Config->routing['current'][0].'/'.$subpart,
 					'class'		=> $Config->routing['current'][1] == $subpart ? 'active' : '',
-					'onClick'	=>	$onClick
+					'onClick'	=> $this->savecross && $this->form ? 'menuadmin(\''.$subpart.'\', false); return false;' : ''
 				)
 			);
 		}
@@ -159,10 +192,10 @@ class Index extends HTML {
 						'please_type_your_email = "'.$L->please_type_your_email.'",'.
 						'please_type_correct_email = "'.$L->please_type_correct_email.'",'.
 						'reg_success = "'.$L->reg_success.'",'.
+						'reg_confirmation = "'.$L->reg_confirmation.'",'.
 						'reg_agreement = "'.$L->reg_agreement.'",'.
 						'reg_success = "'.$L->reg_success.'",'.
 						'reg_success_confirmation = "'.$L->reg_success_confirmation.'",'
-
 					: '').
 					'language = "'.$L->clanguage.'",'.
 					'language_en = "'.$L->clanguage_en.'",'.

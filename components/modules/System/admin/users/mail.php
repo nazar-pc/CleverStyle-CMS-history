@@ -36,7 +36,7 @@ $a->content(
 						)
 					).
 					$a->tr(
-						$a->td($L->smtp_port).
+						$a->td($a->info('smtp_port')).
 						$a->td(
 							$a->input(
 								array(
@@ -105,7 +105,7 @@ $a->content(
 						),
 						array(
 							'id'	=> 'smtp_password',
-							'style' => ($Config->core['smtp_auth'] == 0 ? 'display: none; ' : '')
+							'style' => $Config->core['smtp_auth'] == 0 ? 'display: none; ' : ''
 						)
 					)
 				),
@@ -116,16 +116,28 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($L->mail_from_name).
+			$a->td($a->info('mail_from')).
 			$a->td(
 				$a->input(
 					array(
-						'name'	=> 'core[mail_from_name]',
-						'value' => $Config->core['mail_from_name'],
+						'name'	=> 'core[mail_from]',
+						'value' => $Config->core['mail_from'],
 						'class'	=> 'form_element'
 					)
 				)
 			)
+		).
+		$a->tr(
+			$a->td($L->mail_from_name).
+				$a->td(
+					$a->input(
+						array(
+							 'name'	=> 'core[mail_from_name]',
+							 'value' => $Config->core['mail_from_name'],
+							 'class'	=> 'form_element'
+						)
+					)
+				)
 		).
 		$a->tr(
 			$a->td($a->info('mail_signature')).

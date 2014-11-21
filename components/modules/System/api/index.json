@@ -1,4 +1,11 @@
-[
-	"user",
-	"admin"
-]
+{
+	"user"	: [
+		"blank",
+		"login",
+		"logout",
+		"registration"
+	],
+	"admin"	: [
+		"cache"
+	]
+}

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Дек 28 2011 г., 03:00
+-- Время создания: Дек 28 2011 г., 22:57
 -- Версия сервера: 5.1.58
 -- Версия PHP: 5.4.0RC3-dev
 
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `prefix_config` (
 --
 
 INSERT INTO `prefix_config` (`domain`, `core`, `db`, `storage`, `components`, `replace`, `routing`) VALUES
-('cscms.org', '{"name":"CleverStyle CMS","url":"http:\\/\\/cscms.org","keywords":"CleverStyle, CMS, content management system","description":"Мощная и масштабируемая система для построения современных сайтов","admin_mail":"admin@cscms.org","admin_phone":"+380939358975","closed_title":"Заголовок сайта при отключении","closed_text":"<p>Сайт отключен для проведения плановых работ<img title=\\"Хмурюсь\\" src=\\"..\\/..\\/..\\/components\\/plugins\\/TinyMCE\\/plugins\\/emotions\\/img\\/smiley-frown.gif\\" alt=\\"Хмурюсь\\" border=\\"0\\" \\/><\\/p>","site_mode":"1","title_delimiter":"::","title_reverse":"0","debug":"1","show_queries":"1","show_cookies":"1","show_user_data":"1","show_objects_data":"1","gzip_compression":"0","cache_compress_js_css":"1","theme":"CleverStyle","allow_change_theme":"0","allow_change_theme_scheme":"1","disk_cache_size":"1024","disk_cache":"1","memcache":"0","memcached":"0","themes":["CleverStyle"],"color_schemes":{"CleverStyle":{"1":"Green (default)","0":"Green (strict)"},"CleverStyle2":{"default":"Green (default)","green_strict":"Green (strict)"}},"color_scheme":"Green (strict)","language":"Русский","allow_change_language":"0","multilanguage":"0","db_balance":"0","maindb_for_write":"0","active_themes":["CleverStyle"],"active_languages":["Русский","English"],"zlib_compression":"0","zlib_compression_level":"9","cookie_domain":"cscms.org","cookie_path":"\\/","mirrors_url":"http:\\/\\/www.cscms.org","mirrors_cookie_domain":"www.cscms.org","mirrors_cookie_path":"\\/","languages":{"1":"English","0":"Русский"},"inserts_limit":"1000","key_expire":"120","session_expire":"2592000","update_ratio":"75","login_attempts_block_count":"0","login_attempts_block_time":"5","cookie_prefix":"","timezone":"Europe\\/Kiev","password_min_length":"4","password_min_strength":"0","smtp":"0","smtp_host":"","smtp_port":"","smtp_secure":"","smtp_auth":"0","smtp_user":"","smtp_password":"","mail_from_name":"Администратор cscms.org","allow_user_registration":"1","require_registration_confirmation":"0","autologin_after_registration":"1","registration_confirmation_time":"1","mail_signature":""}', '{"0":{"mirrors":[{"mirror":"0","host":"localhost","type":"MySQL","prefix":"prefix_","name":"CleverStyle","user":"CleverStyle","password":"1111","codepage":"utf8","mirrors":[]}]},"2":{"mirrors":[],"host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS3","user":"CS3","password":"CS3","codepage":"utf8","mirror":"-1"},"3":{"mirrors":[{"mirror":"3","host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS2-mirror","user":"CS2-mirror","password":"CS2-mirror","codepage":"utf8","mirrors":[]},{"mirror":"3","host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS2-mirror2","user":"CS2-mirror2","password":"CS2-mirror2","codepage":"utf8","mirrors":[]}],"host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS2","user":"CS2","password":"CS2","codepage":"utf8"}}', '["0",{"host":"storage1.cscms.org","connection":"HTTP","user":"CleverStyle","password":"CleverStyle","url":"http:\\/\\/storage1.cscms.org"}]', '{"modules":{"System":{"active":1,"db":{"keys":"0","users":"0","texts":"0"}}},"plugins":["TinyMCE"],"blocks":{"Test1":{"title":"Проверка1","active":"1","position":"top","position_id":0,"template":"default.html","permissions":"","start":727912800,"expire":0,"update":0,"data":""},"Test2":{"title":"Test2","active":1,"position":"left","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""},"Test3":{"title":"Test3","active":0,"position":"invisible","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""},"Test4":{"title":"Test4","active":1,"position":"right","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""},"Test5":{"title":"Test5","active":0,"position":"bottom","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""}}}', '{"in":[],"out":[]}', '{"in":[],"out":[]}');
+('cscms.org', '{"name":"CleverStyle CMS","url":"http:\\/\\/cscms.org","keywords":"CleverStyle, CMS, content management system","description":"Мощная и масштабируемая система для построения современных сайтов","admin_mail":"admin@cscms.org","admin_phone":"+380939358975","closed_title":"Заголовок сайта при отключении","closed_text":"<p>Сайт отключен для проведения плановых работ<img title=\\"Хмурюсь\\" src=\\"..\\/..\\/..\\/components\\/plugins\\/TinyMCE\\/plugins\\/emotions\\/img\\/smiley-frown.gif\\" alt=\\"Хмурюсь\\" border=\\"0\\" \\/><\\/p>","site_mode":"1","title_delimiter":"::","title_reverse":"0","debug":"1","show_queries":"1","show_cookies":"1","show_user_data":"1","show_objects_data":"1","gzip_compression":"0","cache_compress_js_css":"1","theme":"CleverStyle","allow_change_theme":"0","allow_change_theme_scheme":"1","disk_cache_size":"1024","disk_cache":"0","memcache":"0","memcached":"0","themes":["CleverStyle"],"color_schemes":{"CleverStyle":{"1":"Green (default)","0":"Green (strict)"},"CleverStyle2":{"default":"Green (default)","green_strict":"Green (strict)"}},"color_scheme":"Green (strict)","language":"Русский","allow_change_language":"0","multilanguage":"0","db_balance":"0","maindb_for_write":"0","active_themes":["CleverStyle"],"active_languages":["Русский","English"],"zlib_compression":"0","zlib_compression_level":"9","cookie_domain":"cscms.org","cookie_path":"\\/","mirrors_url":"http:\\/\\/www.cscms.org","mirrors_cookie_domain":"www.cscms.org","mirrors_cookie_path":"\\/","languages":{"1":"English","0":"Русский"},"inserts_limit":"1000","key_expire":"120","session_expire":"2592000","update_ratio":"75","login_attempts_block_count":"0","login_attempts_block_time":"5","cookie_prefix":"","timezone":"Europe\\/Kiev","password_min_length":"4","password_min_strength":"0","smtp":"1","smtp_host":"smtp.yandex.ru","smtp_port":"465","smtp_secure":"ssl","smtp_auth":"1","smtp_user":"test@cleverstyle.org","smtp_password":"cstest","mail_from_name":"Администратор cscms.org","allow_user_registration":"1","require_registration_confirmation":"1","autologin_after_registration":"1","registration_confirmation_time":"1","mail_signature":"","mail_from":"test@cleverstyle.org"}', '{"0":{"mirrors":[{"mirror":"0","host":"localhost","type":"MySQL","prefix":"prefix_","name":"CleverStyle","user":"CleverStyle","password":"1111","codepage":"utf8","mirrors":[]}]},"2":{"mirrors":[],"host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS3","user":"CS3","password":"CS3","codepage":"utf8","mirror":"-1"},"3":{"mirrors":[{"mirror":"3","host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS2-mirror","user":"CS2-mirror","password":"CS2-mirror","codepage":"utf8","mirrors":[]},{"mirror":"3","host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS2-mirror2","user":"CS2-mirror2","password":"CS2-mirror2","codepage":"utf8","mirrors":[]}],"host":"localhost","type":"MySQL","prefix":"prefix_","name":"CS2","user":"CS2","password":"CS2","codepage":"utf8"}}', '["0",{"host":"storage1.cscms.org","connection":"HTTP","user":"CleverStyle","password":"CleverStyle","url":"http:\\/\\/storage1.cscms.org"}]', '{"modules":{"System":{"active":1,"db":{"keys":"0","users":"0","texts":"0"}}},"plugins":["TinyMCE"],"blocks":{"Test1":{"title":"Проверка1","active":"1","position":"top","position_id":0,"template":"default.html","permissions":"","start":727912800,"expire":0,"update":0,"data":""},"Test2":{"title":"Test2","active":1,"position":"left","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""},"Test3":{"title":"Test3","active":0,"position":"invisible","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""},"Test4":{"title":"Test4","active":1,"position":"right","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""},"Test5":{"title":"Test5","active":0,"position":"bottom","position_id":0,"template":"default.html","permissions":"","start":1309208804,"expire":0,"update":0,"data":""}}}', '{"in":[],"out":[]}', '{"in":[],"out":[]}');
 
 -- --------------------------------------------------------
 
@@ -292,6 +292,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('03ec502e706040b85d4f52823e86f819', 1, 1321807439, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('0444b7e0c7ec0ce87a84aaf95d802824', 1, 1321492809, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('050fb06587e7aff7f43705aa8c657f63', 1, 1321888588, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('06bad196157370a9a32647abc8dc273a', 1, 1327699502, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('0722fdde6e2847330aaa7a1ae61c5672', 1, 1322004534, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('0750837f1962556593217445a8de6fb1', 1, 1321538282, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('0795a3f0b69b160079a0cb593df2f797', 1, 1321694551, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -319,6 +320,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('0f4419032ba68a237980fccc60ff34bb', 1, 1321538551, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('1020edd6daad4805f059d78fb858d9e2', 1, 1321667824, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('11d420a0fa7e7c4ec254248f44472e88', 1, 1322004382, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('11fa5e8d775ce579041eba6a9e659433', 1, 1327674553, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.15 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.984.0 Chrome/18.0.984.0 Safari/535.15', '0000000000000000000000007f000001', '', ''),
 ('127906ccadfd70ebc21bc6a087e18cb3', 1, 1322004371, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('12d127d04d97bfcd5f359081729c4ba0', 1, 1321536381, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('131e4cc46e6c58d98a641c849f12f31d', 1, 1321922015, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -383,6 +385,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('2a0b2fedb0e42f8a02297c0d659ed1f3', 1, 1322090682, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('2b350b8eda3994bc1606a9ca27e9a339', 1, 1322088069, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('2b9d8bc01ea987f637f8bd3b2916f8ef', 1, 1321817795, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('2bc1c4c31017e8b9d711c1b29fa7e7ce', 1, 1327699540, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('2bd61c20d1230cf852856135e2ff5357', 1, 1321702006, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('2bd998e3287589ac4d5161035d2160fd', 1, 1321921815, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('2c1025ad63bcc02ddf4c11214622ef54', 1, 1321493184, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -398,6 +401,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('3183f1cf47f5b1b62c98810ba3a3cc0f', 1, 1321538554, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('31d48f5bac21b8086648fe2c5f73cc3a', 1, 1321888572, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('321181d427e4242305a52cba57f6e989', 1, 1321821004, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('3339718fdeeddf3fe8624eefd1de21fc', 1, 1327699600, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('33607f4e880a126ae7ae08ca5422f70c', 1, 1321888296, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('33fe090d42eeff50ad118b2a39fd9f02', 1, 1321920590, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3470c337d10fef0509bf1613ceb75252', 1, 1321570360, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -425,11 +429,13 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('3ac1811092d72017536f97b191e74b79', 1, 1321921990, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3c3ab436e25e3c7f64840108b806dae9', 1, 1322089067, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3cc2d2369cca3f1544271d1a421de206', 1, 1321921197, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('3ceb476249efedfc5b42b84a8d38cfe8', 1, 1327680673, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3de6b487b575fd925654564db6f9c57e', 1, 1327540677, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3e205759fa5899c5b267582c09a7fd38', 1, 1321921294, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3ea8e5d148a42e80e3366d80111b0014', 1, 1322000511, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3ef9325009b779381c85b7fc99cadb92', 1, 1321665909, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('3feb18071645d1f0a3551cbb108e7a27', 1, 1321538632, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('405b1275d0f67b1cab3d5ee09b52f5f2', 1, 1327699498, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('40a658d9e5649fad5eea79da8cf99e9f', 1, 1322003735, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('41dc55c8cd937f14adde5e7c3010c8df', 1, 1321999299, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('423e20864ae4a8ab5dfed3dae3d072fe', 1, 1322089852, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -553,15 +559,15 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('78632d51470e57904f9653473bee1672', 1, 1321492806, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('787c8805e893928465bfa7d1c642505a', 1, 1322090717, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('79b7a68cef38b8b07a5d94233e0648d1', 1, 1321656049, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
-('7a16c18382617ab3b8f8d4b1cc995aec', 1, 1321492627, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('7a16c18382617ab3b8f8d4b1cc995aec', 1, 1321492627, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', '');
+INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`) VALUES
 ('7a1da47fc530eda7bee9b3da9a1182d6', 1, 1324162738, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.14 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.972.0 Chrome/18.0.972.0 Safari/535.14', '0000000000000000000000007f000001', '', ''),
 ('7ab38e23257efa3d658633472a7ad5d3', 1, 1322001688, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('7b20528b18e8e41cca81c544b0d8435b', 1, 1321922234, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('7b4e416889d58a894840b858d5a721f2', 1, 1321702878, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('7c3ebf8f543b0fe01b5f63cf92897ca4', 1, 1327284167, 'Mozilla/5.0 (Ubuntu; X11; Linux x86_64; rv:8.0) Gecko/20100101 Firefox/8.0', '0000000000000000000000007f000001', '', ''),
 ('7c710f4e5bfc903a56e109cd74a153e8', 1, 1321493181, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
-('7cbb8b2179da7cf28089b22cbfbb36ae', 1, 1321825367, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', '');
-INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`) VALUES
+('7cbb8b2179da7cf28089b22cbfbb36ae', 1, 1321825367, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('7cccf3bfa4f4c8d6495b6e157f7d6fe7', 1, 1322090551, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('7e0b7a85eb9a78a381a4e351c2da9835', 1, 1321701498, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('7e9523e01ac46182d44b6f8ca8c265c4', 1, 1322001948, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -571,6 +577,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('814b33c9898dd91034663af158698aea', 1, 1321792435, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('815abbf58fae12d8a2bed19ffda3fff3', 1, 1321821042, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('81966e1b880c0ac84bc964bd61987138', 1, 1321922432, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('82c378d09aa4927834688bd17ad89c54', 1, 1327700588, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('82d9062d73268ad867c68fb4d9273fb0', 1, 1322001354, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('839f9eb775eb0fd8e55d994e2866a904', 1, 1321820662, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('8453589b65bb9c37f6376550f814bff6', 1, 1322088973, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -612,11 +619,13 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('91a1fbe96bafef3e405ec052f027523a', 1, 1322003941, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('921c8870b7e5aacb510cf0c497752fd2', 1, 1321538282, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('93619f98a0b59c2f42bd9d508d2ae2a1', 1, 1321812699, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('9382ae70a10a9958058fbc592008066e', 1, 1327681298, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.15 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.984.0 Chrome/18.0.984.0 Safari/535.15', '0000000000000000000000007f000001', '', ''),
 ('946eec93f639f81509b75ceb97e86e2e', 1, 1321921173, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('94f010939f8488e0c35a7f142e746f3d', 1, 1321667680, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('95026370accd9a848999960c67394156', 1, 1321817091, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('95aa9709fef97ac5942fce257b0a433c', 1, 1321807579, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('95e2c8e8f34e120ebf8e3e51c63f5a52', 1, 1321921074, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('95f15cf9826867db0309ad85255ddde0', 1, 1327673565, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('9648cd6456a1f9dc1c1810854a4fe3f9', 1, 1321807524, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('96810810178129439afc41f791ce38ee', 1, 1322001744, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('96e0aa5d262864fb41049d49201fb644', 1, 1322089268, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -641,6 +650,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('a21c14c13583f6ab1410709dc2c3f435', 1, 1321663786, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('a3883b572f569c3068a28b79ec384937', 1, 1321492810, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('a39b6bcd6df73d84e3dfdec85ed3a7fc', 1, 1321921130, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('a3d28def6289940839182d204e8d1797', 1, 1327680672, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('a3dbf938f9c2e670c098f9690350a358', 1, 1321535633, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('a3e0d12a8534529f6cae85b88b55fd08', 1, 1322000242, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('a425167926af9da8f449cb0da632a244', 1, 1322001392, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -663,6 +673,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('aa9f89510e75f1e1a7f3ef67f1eed509', 1, 1321816650, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('aae67fa0138d1f8b174ac568353dfb88', 1, 1322001818, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('ab78fc068a7b8567524d20c7aea3cf82', 1, 1321821080, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('ac1fe1e4c2c81399363cd67e5ab66645', 1, 1327700028, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('ac4364bac482052bc7f9b28f19bdff43', 1, 1326761133, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('acf0f59ead42aed114fde2ed99fbb1b8', 1, 1321788142, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('ad1f968c91eb2e880770a7b8f08b47e3', 1, 1321922455, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -808,6 +819,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('e00338614cf8e29a1b9c9200cdc98cf7', 1, 1322005121, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e03598be4836951a7a026519a531c151', 1, 1322088718, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e074362a312e7794cacc7e708e53fe60', 1, 1322088957, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('e0f9ac625ab76deef14f2927b9a62fa7', 1, 1327699504, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e1be6f372688f1b77e250c732e5935ac', 1, 1326760841, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e2f5489b2eea3a4db842f8d641474a3a', 1, 1322090794, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e3a4e799d43ac3f40248cb1facb62e3b', 1, 1321999902, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -818,11 +830,13 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('e50f42a3340c56a561a0eb279d32d73b', 1, 1321998968, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e53c0156aec4c32578c7cec85db35d51', 1, 1321492810, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e556b69e4fa07b0bb75e1115b45ce0d2', 1, 1321535624, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('e589bd34b0408636ca418f2c6dbe9e05', 1, 1327691026, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e6788f4ed9d517a94787e45891f0125f', 1, 1321493007, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e6b1b765c989039a22d6b40293c53d11', 1, 1321656303, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e6b45db5353971c3d17d39ff4fb8bf1d', 1, 1321921051, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e7357ccfd72396ef0772e548f7da7605', 1, 1321816913, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
-('e7f3b25b1a4be5f94f25acac378044c7', 1, 1322088680, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('e7f3b25b1a4be5f94f25acac378044c7', 1, 1322088680, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', '');
+INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`) VALUES
 ('e82b78512308eba9dff7c61eb140894b', 1, 1322090876, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e8b41b2c213003e85285e7d3b50f8fd6', 1, 1321819745, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('e8de2fb79f2d27855404fe0297bb199f', 1, 1321701570, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -837,8 +851,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('ed92db62221b189e1895d6aac686a39b', 1, 1321658560, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('eda3e8440db3a861b2493fdc6006acd7', 1, 1321667824, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('eddf4d5113819be6f4fd19c659322770', 1, 1322090888, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
-('ee7e0a82bae8306a134196647870773e', 1, 1321664497, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', '');
-INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`) VALUES
+('ee7e0a82bae8306a134196647870773e', 1, 1321664497, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('eec002d57987fbc1ba0cb07e8b93f5e6', 1, 1326802068, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.14 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.974.0 Chrome/18.0.974.0 Safari/535.14', '0000000000000000000000007f000001', '', ''),
 ('eedbd581f236ec720627eabbd74cd1ad', 1, 1322004242, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('ef17c3f4ee1d34e33b4d158221d95b2c', 1, 1321493119, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -846,6 +859,7 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('ef7b3490e27492d6e18fa815911e2f90', 1, 1321531438, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('ef9eb5ec716ee5c6c4de3384e6b93306', 1, 1322087587, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('efff413e7e62c13da78cf9bcada1956f', 1, 1322001970, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('f07deb47d90072d8ca45bedcc5e9e5b4', 1, 1327699601, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('f0a0910939305cc4d96285ef64f55b03', 1, 1322000998, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('f0a86377c9be581820292d6129376fbf', 1, 1322090929, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('f131edf3ba368089e84a2baca00bd7e5', 1, 1322086045, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
@@ -930,7 +944,10 @@ INSERT INTO `prefix_sessions` (`id`, `user`, `expire`, `user_agent`, `ip`, `forw
 ('f3db254723c5eb298c3e55cb77e70cc2', 2, 1321701418, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('f857e5da640a322ce9947b5408950757', 2, 1327511602, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.10.238 Version/12.00', '0000000000000000000000007f000001', '', ''),
 ('fa29315948a8253f85569eb83f99bbb7', 2, 1326802464, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.14 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.974.0 Chrome/18.0.974.0 Safari/535.14', '0000000000000000000000007f000001', '', ''),
-('fb7f0b287c39d05c8b2b83ea55596ed3', 2, 1321788107, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', '');
+('fb7f0b287c39d05c8b2b83ea55596ed3', 2, 1321788107, 'Opera/9.80 (X11; Linux x86_64; U; Edition Next; ru) Presto/2.9.220 Version/12.00', '0000000000000000000000007f000001', '', ''),
+('74b1010db60817802f80416a71040e5b', 4, 0, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.15 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.984.0 Chrome/18.0.984.0 Safari/535.15', '0000000000000000000000007f000001', '', ''),
+('551878d6a194a0a6214506f2771fbc49', 5, 0, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.15 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.984.0 Chrome/18.0.984.0 Safari/535.15', '0000000000000000000000007f000001', '', ''),
+('83fb650d8a8d14391cb8af27e82e520a', 6, 1327681124, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.15 (KHTML, like Gecko) Ubuntu/11.10 Chromium/18.0.984.0 Chrome/18.0.984.0 Safari/535.15', '0000000000000000000000007f000001', '', '');
 
 -- --------------------------------------------------------
 
@@ -1002,7 +1019,7 @@ CREATE TABLE IF NOT EXISTS `prefix_users` (
   KEY `icq` (`icq`),
   KEY `skype` (`skype`),
   KEY `groups` (`groups`(255))
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=34 ;
 
 --
 -- Дамп данных таблицы `prefix_users`
@@ -1011,7 +1028,29 @@ CREATE TABLE IF NOT EXISTS `prefix_users` (
 INSERT INTO `prefix_users` (`id`, `login`, `login_hash`, `username`, `password_hash`, `email`, `email_hash`, `groups`, `permissions`, `language`, `timezone`, `regdate`, `regip`, `regkey`, `status`, `block_until`, `rating`, `lastlogin`, `lastip`, `sex`, `country`, `region`, `district`, `city`, `birthday`, `avatar`, `website`, `icq`, `skype`, `about`, `data`) VALUES
 (1, 'guest', '', '', '', '', '', '', '', '', '', 0, '', '', 1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
 (2, 'Назар', '07f1fea87effe36dcb75a60d4d7796f205d0d912e5055ed52ce06e50', 'Назар', '33275a8aa48ea918bd53a9181aa975f15ab0d0645398f5918a006d08675c1cb27d5c645dbd084eee56e675e25ba4019f2ecea37ca9e2995b49fcb12c096a032e', 'nazar-pc@yandex.ru', 'a3b1008912667683e5628fe94ccd0ec3ba149c98964b426351351b5a', '1,2', '', 'russian', 'Europe/Kiev', 0, '', '', 1, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, '1.jpg', '', 0, '', '', ''),
-(3, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', '');
+(3, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(4, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(5, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(7, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(8, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(9, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(13, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(17, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(18, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(19, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(20, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(21, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(22, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(23, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(24, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(25, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(26, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(27, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(28, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(29, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(30, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(31, '', '', 'deleted', '', '', '', '', '', '', '', 0, '', '', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', ''),
+(33, 'test@cleverstyle.org', '4ed734681458ef79d1cbf5f12cec58ee886b83dc2146e7acd30948be', '', '3aa99a38be4b2b45d44eb1ad7df832c2f8adc32af483fe6cfa045136', 'test@cleverstyle.org', '4ed734681458ef79d1cbf5f12cec58ee886b83dc2146e7acd30948be', '2', '', '', '', 1325098003, '0000000000000000000000007f000001', 'c9c9b9e6ceef39255e7efc308645df83', -1, 0, 0, 0, '', -1, 0, 0, 0, 0, 0, '', '', 0, '', '', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

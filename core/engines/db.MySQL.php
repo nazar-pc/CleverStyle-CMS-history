@@ -103,11 +103,19 @@ class MySQL extends DatabaseAbstract {
 			return true;
 		}
 	}
-	//Подготовка строки для использования в SQL запросе
-	//Почти идеальная функция для защиты от SQL-инъекций
-	//Название sip - сокращено от SQL Injection Protection
+	/**
+	 * Preparing string for using in SQL query
+	 * SQL Injection Protection
+	 * @param $data
+	 * @return string
+	 */
 	function sip ($data) {
-		return "unhex('".bin2hex((string)$data)."')";
+		if (is_int($data)) {
+			return $data;
+		} else {
+			//return '\''.mysql_real_escape_string($data).'\'';
+			return 'unhex(\''.bin2hex((string)$data).'\')';
+		}
 	}
 	//Информация о MySQL-сервере
 	function server () {

@@ -96,8 +96,12 @@ abstract class DatabaseAbstract {
 			return $this->qfa('SHOW TEBLES FROM `'.$this->database.'`', $result_type);
 		}
 	}
-	//Подготовка строки для использования в SQL запросе
-	//Название sip - сокращено от SQL Injection Protection
+	/**
+	 * Preparing string for using in SQL query
+	 * SQL Injection Protection
+	 * @param $data
+	 * @return string
+	 */
 	abstract function sip ($data);
 	//Информация о сервере
 	abstract function server ();

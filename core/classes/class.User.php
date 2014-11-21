@@ -554,7 +554,6 @@ class User {
 					array(
 						'id'			=> 'register',
 						'placeholder'	=> $L->email_or,
-						'data-title'	=> $L->email_or_description,
 						'tabindex'		=> 1
 					)
 				).
@@ -688,7 +687,7 @@ class User {
 				'.$this->db_prime()->sip($email).',
 				\''.$email_.'\',
 				\''.hash('sha224', $password).'\',
-				\''.$this->db_prime()->sip($email).'\',
+				'.$this->db_prime()->sip($email).',
 				\''.$email_.'\',
 				2,
 				'.TIME.',
@@ -733,9 +732,7 @@ class User {
 	 */
 	function __finish () {
 		global $Cache;
-		/**
-		 * Update cache users
-		 */
+		//Update users cache
 		foreach ($this->data as $id => &$data) {
 			if (isset($this->update_cache[$id]) && $this->update_cache[$id]) {
 				$data['id'] = $id;
@@ -744,9 +741,7 @@ class User {
 		}
 		$this->update_cache = array();
 		unset($id, $data);
-		/**
-		 * Update data users
-		 */
+		//Update users data
 		if (is_array($this->data_set) && !empty($this->data_set)) {
 			foreach ($this->data_set as $id => &$data_set) {
 				$data = array();
