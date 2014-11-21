@@ -42,7 +42,7 @@ class Page extends HTML {
 		unset($interface);
 	}
 	function init ($Config) {
-		$this->Title[0] = $Config->core['name'];
+		$this->Title[0] = htmlentities($Config->core['name'], ENT_COMPAT, 'utf-8');
 		$this->Keywords = $Config->core['keywords'];
 		$this->Description = $Config->core['description'];
 		$this->theme = $Config->core['theme'];
@@ -108,8 +108,12 @@ class Page extends HTML {
 					$this->Title[$i] = trim($v);
 				}
 			}
-			is_object($Config) && $this->Title = $Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
-			is_object($Config) && $this->Title[0] = implode(' '.trim($Config->core['title_delimiter']).' ', $this->Title);
+			if (is_object($Config)) {
+				$this->Title = $Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
+				$this->Title = implode(' '.trim($Config->core['title_delimiter']).' ', $this->Title);
+			} else {
+				$this->Title = $this->Title[0];
+			}
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
@@ -124,7 +128,7 @@ class Page extends HTML {
 		if ($this->js[1]) {
 			$this->js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1]);
 		}
-		$this->Head =	$this->swrap($this->Title[0], array('id' => 'page_title'), 'title').
+		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
 						$this->meta(array('http-equiv'	=> 'Content-Type',		'content'	=> 'text/html; charset=utf-8')).
 						$this->meta(array('http-equiv'	=> 'Content-Language',	'content'	=> $L->clang)).
 						$this->meta(array('name'		=> 'author',			'content'	=> $copyright[0])).
@@ -149,7 +153,6 @@ class Page extends HTML {
 		//Подстановка контента в шаблон
 		$construct['in'] = array(
 								'<!--html_lang-->',
-								'<!--title-->',
 								'<!--head-->',
 								'<!--pre_Body-->',
 								'<!--header-->',
@@ -169,7 +172,6 @@ class Page extends HTML {
 							);
 		$construct['out'] = array(
 									$L->clang,
-									$this->Title[0],
 									$this->level($this->Head, $this->level['Head']),
 									$this->level($this->pre_Body, $this->level['pre_Body']),
 									$this->level($this->Header, $this->level['Header']),
@@ -253,7 +255,7 @@ class Page extends HTML {
 	}
 	//Добавление данных в заголовок страницы (для избежания случайной перезаписи всего заголовка)
 	function title ($add) {
-		$this->Title[] = $add;
+		$this->Title[] = htmlentities($add, ENT_COMPAT, 'utf-8');
 	}
 	//Загрузка списка JavaScript и CSS файлов
 	function get_list () {
@@ -581,7 +583,7 @@ class Page extends HTML {
 			//Обработка замены контента
 			echo preg_replace($this->Search, $this->Replace, $this->Content);
 		} else {
-			global $stop, $Error, $L, $timeload;
+			global $stop, $Error, $L, $timeload, $User;
 			//Обработка шаблона, наполнение его содержимым
 			$this->prepare($stop);
 			//Обработка замены контента
@@ -598,7 +600,7 @@ class Page extends HTML {
 				$ob = false;
 			}
 			$timeload['end'] = time_x(true);
-			if (is_object($Config) && $Config->core['debug']) {
+			if ($User->is_admin() && is_object($Config) && $Config->core['debug']) {
 				$this->debug();
 			}
 			echo str_replace(

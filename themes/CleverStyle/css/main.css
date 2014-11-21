@@ -22,9 +22,9 @@ body {
 .admin_table {
 	margin: auto;
 }
-.left_odd > tbody > tr > td:nth-child(odd), .left_even > tbody > tr > td:nth-child(even), .left_all > tbody > tr > td, tr.left_all > td, td.left_all {
-	text-align: left;
-	vertical-align: top;
+.center_odd > tbody > tr > td:nth-child(odd), .center_even > tbody > tr > td:nth-child(even), .center_all > tbody > tr > td, tr.center_all > td, td.center_all {
+	text-align: center;
+	vertical-align: middle;
 	padding: 2px;
 }
 .right_odd > tbody > tr > td:nth-child(odd), .right_even > tbody > tr > td:nth-child(even), .right_all > tbody > tr > td, tr.right_all > td, td.right_all {
@@ -32,9 +32,9 @@ body {
 	vertical-align: top;
 	padding: 2px;
 }
-.center_odd > tbody > tr > td:nth-child(odd), .center_even > tbody > tr > td:nth-child(even), .center_all > tbody > tr > td, tr.center_all > td, td.center_all {
-	text-align: center;
-	vertical-align: middle;
+.left_odd > tbody > tr > td:nth-child(odd), .left_even > tbody > tr > td:nth-child(even), .left_all > tbody > tr > td, tr.left_all > td, td.left_all {
+	text-align: left;
+	vertical-align: top;
 	padding: 2px;
 }
 td#main_content {

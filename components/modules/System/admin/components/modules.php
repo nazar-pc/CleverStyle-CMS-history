@@ -382,7 +382,8 @@ if ($mode && $rc[2] == 'install') {
 			$a->td(
 				$action,
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all left_all'
+					'class'	=> 'ui-state-highlight ui-corner-all',
+					'style'	=> 'text-align: left;'
 				)
 			)
 		);

@@ -68,7 +68,7 @@ class Index extends HTML {
 				include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
 			}
 			if (file_exists(MFOLDER.DS.$rc[0].'.json')) {
-				$this->parts = json_decode_x(file_get_contents(MFOLDER.DS.$rc[0].'.json'));
+				$this->subparts = json_decode_x(file_get_contents(MFOLDER.DS.$rc[0].'.json'));
 			}
 			include_x(MFOLDER.DS.$rc[0].'.php', true, false);
 			if (is_array($this->subparts)) {

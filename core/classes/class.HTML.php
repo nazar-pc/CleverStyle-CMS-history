@@ -279,6 +279,17 @@ class HTML {
 			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
+	function th			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
 	function td			($in = '', $data = array()) {
 		if (is_array($in)) {
 			$temp = '';

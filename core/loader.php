@@ -1,7 +1,6 @@
 <?php
-global $Classes, $loader_init_memory, $interface;
+global $Classes, $timeload, $loader_init_memory, $interface;
 $interface = true;
-//error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
 //error_reporting(0);
 header('Content-Type: text/html; charset=utf-8');

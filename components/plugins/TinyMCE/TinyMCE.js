@@ -11,7 +11,7 @@ $(document).ready(
 			skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
 			skin_variant : typeof(tinymce_skin_variant) != 'undefined' ? tinymce_skin_variant : '',
 			language: typeof(lang) != 'undefined' ? lang : 'en',
-			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave,advlist",
+			plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,template,visualchars,xhtmlxtras",
 			theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 			theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
 			theme_advanced_buttons3 : "insertlayer,moveforward,movebackward,absolute,|,advhr,cleanup,removeformat,visualaid,|,ltr,rtl,|,outdent,indent,blockquote,cite,abbr,acronym,del,ins,insertdate,inserttime,attribs,|,preview,fullscreen",
@@ -28,7 +28,7 @@ $(document).ready(
 			skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
 			skin_variant : typeof(tinymce_skin_variant) != 'undefined' ? tinymce_skin_variant : '',
 			language: typeof(lang) != 'undefined' ? lang : 'en',
-			plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave",
+			plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,template,visualchars,xhtmlxtras",
 			theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 			theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
 			theme_advanced_buttons3 : "insertlayer,moveforward,movebackward,absolute,|,advhr,cleanup,removeformat,visualaid,|,ltr,rtl,|,outdent,indent,blockquote,cite,abbr,acronym,del,ins,insertdate,inserttime,attribs,|,preview,fullscreen",
@@ -39,12 +39,6 @@ $(document).ready(
 			theme_advanced_resizing : true,
 			file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''
 		});
-		/*if (typeof(AjexFileManager) == 'object') {
-			AjexFileManager.init({
-				returnTo: 'tinymce',
-				height: 550
-			});
-		}*/
 		$('textarea.SEDITOR').tinymce({
 			doctype : '<!doctype html>',
 			theme : typeof(tinymce_theme_mini) != 'undefined' ? tinymce_theme_mini : "simple",
