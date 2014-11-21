@@ -71,7 +71,7 @@ class DB {
 		}
 		global $Config;
 		//Если создается подключение ядра
-		if ($connection == 'core' && !is_array($mirror)) {
+		if (($connection == 'core' || $connection == 0) && !is_array($mirror)) {
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_PREFIX, $DB_CODEPAGE;
 			$db['type']		= $DB_TYPE;
 			$db['name']		= $DB_NAME;
@@ -94,7 +94,9 @@ class DB {
 			}
 		}
 		//Создаем новое подключение к БД
+		errors_off();
 		$this->connections[$connection] = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'], $db['codepage']);
+		errors_on();
 		//В случае успешного подключения - заносим в общий список подключений, и возвращаем ссылку на подключение
 		if (is_object($this->connections[$connection]) && $this->connections[$connection]->connected) {
 			$this->succesful_connections[] = $connection.'/'.$db['host'].'/'.$db['type'];
@@ -111,6 +113,9 @@ class DB {
 				$zero = 0;
 				$this->$zero = $this->$connection;
 				unset($zero);
+			}
+			if ($connection == 0) {
+				$this->core = $this->$connection;
 			}
 			return $this->connections[$connection];
 		//Если подключение не удалось - разрушаем соединение и пытаемся подключится к зеркалу
@@ -182,9 +187,9 @@ class DB {
 		}
 		unset($data);
 		if (is_array($db)) {
-			errors(false);
+			errors_off();
 			$test = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'] ?: $DB_HOST, $db['codepage'] ?: $DB_CODEPAGE);
-			errors();
+			errors_on();
 			return $test->connected;
 		} else {
 			return false;

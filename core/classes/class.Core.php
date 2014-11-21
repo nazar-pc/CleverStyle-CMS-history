@@ -59,9 +59,9 @@ class Core {
 			return $data;
 		}
 		mcrypt_generic_init($this->td[$name], $this->key[$name], $this->iv[$name]);
-		errors(false);
+		errors_off();
 		$decrypted = unserialize(mdecrypt_generic($this->td[$name], $data));
-		errors();
+		errors_on();
 		mcrypt_generic_deinit($this->td[$name]);
 		if (is_array($decrypted) && $decrypted['key'] == $this->key[$name]) {
 			return $decrypted['data'];

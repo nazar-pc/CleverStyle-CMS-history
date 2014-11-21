@@ -1,20 +1,150 @@
 <?php
-global $Config, $Admin, $L, $db;
+global $Config, $Admin, $L, $db, $ADMIN;
 $a = &$Admin;
-if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current'][2])) {
-	if ($Config->routing['current'][2] == 'install') {
-		
-	} elseif ($Config->routing['current'][2] == 'uninstall') {
-		
-	} elseif ($Config->routing['current'][2] == 'enable') {
-		
-	} elseif ($Config->routing['current'][2] == 'disable') {
-		
-	} elseif ($Config->routing['current'][2] == 'databases') {
-		
-	} elseif ($Config->routing['current'][2] == 'storages') {
-		
+$rc = &$Config->routing['current'];
+$a->buttons = false;
+$mode = isset($rc[2], $rc[3]) && !empty($rc[2]) && !empty($rc[3]);
+if ($mode && $rc[2] == 'install') {
+	$a->content(
+		$a->p(
+			$L->installation_of_module.' '.$a->b($rc[3])
+		)
+	);
+	include_x(MODULES.DS.$rc[3].DS.$ADMIN.DS.'install'.DS.'form.php', false, false);
+	$a->content(
+		$a->button(
+			$L->install,
+			array(
+				'name'		=> 'install',
+				'type'		=> 'submit'
+			)
+		).
+		$a->button(
+			$L->cancel,
+			array(
+				'type'		=> 'button',
+				'onClick'	=> 'history.go(-1);'
+			)
+		).
+		$a->input(
+			array(
+				'name'		=> 'module',
+				'type'		=> 'hidden',
+				'value'		=> $rc[3]
+			)
+		)
+	);
+} elseif ($mode && $rc[2] == 'uninstall') {
+	$a->content(
+		$a->p(
+			$L->uninstallation_of_module.' '.$a->b($rc[3])
+		)
+	);
+	include_x(MODULES.DS.$rc[3].DS.$ADMIN.DS.'uninstall'.DS.'form.php', false, false);
+	$a->content(
+		$a->button(
+			$L->uninstall,
+			array(
+				'name'		=> 'uninstall',
+				'type'		=> 'submit'
+			)
+		).
+		$a->button(
+			$L->cancel,
+			array(
+				'type'		=> 'button',
+				'onClick'	=> 'history.go(-1);'
+			)
+		).
+		$a->input(
+			array(
+				'name'		=> 'module',
+				'type'		=> 'hidden',
+				'value'		=> $rc[3]
+			)
+		)
+	);
+} elseif ($mode && $rc[2] == 'db' && count($Config->db) > 1) {
+	$a->buttons = true;
+	$a->apply_button = false;
+	$Config->components['modules'][$rc[3]];
+	$dbs = array(0);
+	$dbsname = array($L->core_db);
+	foreach ($Config->db as $i => $db_data) {
+		if ($i) {
+			$dbs[] = $i;
+			$dbsname[] = $db_data['name'];
+		}
 	}
+	unset($i, $db_data);
+	$db_list[] = $a->tr(
+		$a->td(
+			array(
+				$a->info('module_db'),
+				$a->info('system_db')
+			),
+			array(
+				'class'	=> 'ui-widget-header ui-corner-all'
+			)
+		)
+	);
+	$db_json = (array)json_decode(file_get_contents(MODULES.DS.$rc[3].DS.'admin'.DS.'db.json'));
+	foreach ($db_json['db'] as $database) {
+		$db_translate = $rc[3].'_db_'.$database;
+		$db_list[] = $a->td(
+			array(
+				$L->$db_translate,
+				$a->select(
+					array(
+						'in'		=> $dbsname,
+						'value'		=> $dbs
+					),
+					array(
+						'name'		=> 'db['.$database.']',
+						'selected'	=> isset($Config->components['modules'][$rc[3]]['db'][$database]) ? $Config->components['modules'][$rc[3]]['db'][$database] : 0,
+						'size'		=> 5,
+						'class'		=> 'form_element'
+					)
+				)
+			),
+			array(
+				'class'	=> 'ui-state-highlight ui-corner-all'
+			)
+		);
+	}
+	unset($db_json, $dbsname, $dbs, $database, $db_translate);
+	global $Page;
+	$Page->Top .= $a->div(
+		$L->changing_settings_warning,
+		array(
+			'class'	=> 'red ui-state-highlight'
+		)
+	);
+	$a->content(
+		$a->table(
+			$a->tr($db_list),
+			array(
+				'style'	=> 'width: 100%;',
+				'class'	=> 'admin_table'
+			)
+		).
+		$a->input(
+			array(
+				'name'		=> 'module',
+				'type'		=> 'hidden',
+				'value'		=> $rc[3]
+			)
+		)
+	);
+	$a->post_buttons = $a->button(
+		$L->cancel,
+		array(
+			'type'		=> 'button',
+			'onClick'	=> 'history.go(-1);'
+		)
+	);
+} elseif ($mode && $rc[2] == 'storage' && count($Config->storage) > 1) {
+	
 } else {
 	$db_users_data = $db->core()->columns('[prefix]users', false, MYSQL_ASSOC);
 	$db_users_items = array();
@@ -37,7 +167,7 @@ if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current']
 	foreach ($Config->components['modules'] as $module => $mdata) {
 		$addition_state = $action = '';
 		$db_json = array();
-		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.'admin'.DS.'db.json')) {
+		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.'admin'.DS.'db.json') && count($Config->db) > 1) {
 			$db_json = (array)json_decode(file_get_contents(MODULES.DS.$module.DS.'admin'.DS.'db.json'));
 			$lost_columns = array();
 			foreach ($db_json['users'] as $db_users_item) {
@@ -57,36 +187,36 @@ if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current']
 			}
 			$action .= $a->a(
 				$a->button(
-					$a->span(array('class'	=> 'ui-icon ui-icon-gear')),
+					$a->icon('gear'),
 					array(
 						'data-title'	=> $L->databases
 					)
 				),
 				array(
-					'href'		=> $a->action.'/databases/'.$module,
+					'href'		=> $a->action.'/db/'.$module,
 					'class'		=> 'nul'
 				)
 			);
 		}
 		//Когда модуль включен или отключен
 		if ($mdata['active'] == 1 || $mdata['active'] == 2) {
-			$action .= (file_exists(MODULES.DS.$module.DS.'admin'.DS.'storage.json') ?
+			$action .= (file_exists(MODULES.DS.$module.DS.'admin'.DS.'storage.json') && count($Config->storage) > 1 ?
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-disk')),
+						$a->icon('disk'),
 						array(
 							'data-title'	=> $L->storages
 						)
 					),
 					array(
-						'href'		=> $a->action.'/storages/'.$module,
+						'href'		=> $a->action.'/storage/'.$module,
 						'class'		=> 'nul'
 					)
 				) : '');
 			if (mb_strtolower($module) != 'system') {
 				$action .= $a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-wrench')),
+						$a->icon('wrench'),
 						array(
 							'data-title'	=> $L->settings
 						)
@@ -98,7 +228,7 @@ if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current']
 				).
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-'.($mdata['active'] == 1 ? 'minusthick' : 'check'))),
+						$a->icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
 						array(
 							'data-title'	=> $mdata['active'] == 1 ? $L->disable : $L->enable
 						)
@@ -110,7 +240,7 @@ if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current']
 				).
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-trash')),
+						$a->icon('trash'),
 						array(
 							'data-title'	=> $L->uninstall
 						)
@@ -125,7 +255,7 @@ if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current']
 		} else {
 			$action .= $a->a(
 				$a->button(
-					$a->span(array('class'	=> 'ui-icon ui-icon-arrowthickstop-1-s')),
+					$a->icon('arrowthickstop-1-s'),
 					array(
 						'data-title'	=> $L->install
 					)
@@ -176,13 +306,12 @@ if (!isset($Config->routing['current'][2]) && !empty($Config->routing['current']
 			$L->update_modules_list,
 			array(
 				'data-title'	=> $L->update_modules_list_info,
-				'name'			=> 'edit_settings',
-				'type'			=> 'submit',
-				'value'			=> 'update_modules_list'
+				'name'			=> 'update_modules_list',
+				'type'			=> 'submit'
 			)
 		)
 	);
 	unset($modules_list);
 }
-unset($a);
+unset($a, $rc, $mode);
 ?>

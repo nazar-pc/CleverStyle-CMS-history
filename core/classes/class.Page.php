@@ -376,7 +376,7 @@ class Page extends HTML {
 			$content = preg_replace('/\/\*[\!\s\n\r\*].*?\*\//s', ' ', $content);
 			$content = preg_replace('/[\s]*([\-])[\s]*/', '\1', $content);
 			$content = preg_replace('/([^:]\/\/\s)[^\n]*/s', ' ', $content);
-			$content = preg_replace('/[\s\n\r]+/', ' ', $content);
+			/*$content = preg_replace('/[\s\n\r]+/', ' ', $content);*/
 		} elseif ($mode == 'css') {
 			$content = preg_replace('/(\/\*.*?\*\/)|(^\s+)|([\r]+)|(\/\*.*?\*\/)/', '', $content);
 		}
@@ -414,7 +414,7 @@ class Page extends HTML {
 			$this->debug_info .= $this->p(
 				$span[0].$L->objects,
 				array(
-					'class' => 'notice',
+					'class' => 'ui-state-highlight',
 					'onClick' => '$(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
 				)
 			);
@@ -458,7 +458,7 @@ class Page extends HTML {
 			$this->debug_info .= $this->p(
 				$span[0].$L->user_data,
 				array(
-					'class' => 'notice',
+					'class' => 'ui-state-highlight',
 					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
 				)
 			);
@@ -477,7 +477,7 @@ class Page extends HTML {
 			$this->debug_info .= $this->p(
 				$span[0].$L->queries,
 				array(
-					'class' => 'notice',
+					'class' => 'ui-state-highlight',
 					'onClick' => '$(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
 				)
 			);
@@ -505,7 +505,7 @@ class Page extends HTML {
 						} else {
 							$queries[] = $this->div(
 								$this->hr().$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
-								array('class' => 'notice red', 'style' => 'text-align: left;')
+								array('class' => 'red ui-state-highlight', 'style' => 'text-align: left;')
 							);
 						}
 					}
@@ -542,7 +542,7 @@ class Page extends HTML {
 							$this->hr().$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
 							array(
 								'style' => 'padding-left: 40px;'.($database->queries['time'][$i] > 0.1 ? ' text-align: left;' : ''),
-								'class' => $database->queries['time'][$i] > 0.1 ? 'notice red' : ''
+								'class' => $database->queries['time'][$i] > 0.1 ? 'red ui-state-highlight' : ''
 							)
 						);
 					}
@@ -568,7 +568,7 @@ class Page extends HTML {
 			$this->debug_info .= $this->p(
 				$span[0].$L->cookies,
 				array(
-					'class' => 'notice',
+					'class' => 'ui-state-highlight',
 					'onClick' => '$(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
 				)
 			);
@@ -631,7 +631,7 @@ class Page extends HTML {
 					array(
 						$this->debug_info ? $this->level('<div id="debug" title="'.$L->debug."\" style=\"display: none;\">\n".$this->level($this->debug_info)."</div>\n", $this->level['debug_info']) : '',
 						round($timeload['end'] - $timeload['start'], 5),
-						formatfilesize(memory_get_peak_usage(true), 5)
+						formatfilesize(memory_get_peak_usage(), 5)
 					),
 					$this->Html
 				);

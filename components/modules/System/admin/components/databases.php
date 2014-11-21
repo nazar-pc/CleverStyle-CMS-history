@@ -1,17 +1,18 @@
 <?php
 global $Config, $Admin, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE;
 $a = &$Admin;
+$rc = &$Config->routing['current'];
 $test_dialog = true;
-if (isset($Config->routing['current'][2])) {
+if (isset($rc[2])) {
 	$a->apply_button = false;
-	if ($Config->routing['current'][2] == 'add' || ($Config->routing['current'][2] == 'edit' && isset($Config->routing['current'][3]))) {
-		if ($Config->routing['current'][2] == 'edit') {
-			if (isset($Config->routing['current'][4])) {
-				$database = &$Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]];
+	if ($rc[2] == 'add' || ($rc[2] == 'edit' && isset($rc[3]))) {
+		if ($rc[2] == 'edit') {
+			if (isset($rc[4])) {
+				$database = &$Config->db[$rc[3]]['mirrors'][$rc[4]];
 			} else {
-				$database = &$Config->db[$Config->routing['current'][3]];
+				$database = &$Config->db[$rc[3]];
 			}
-		} elseif ($Config->routing['current'][2] == 'add') {
+		} elseif ($rc[2] == 'add') {
 			$dbs = array(-1, 0);
 			$dbsname = array($L->separate_db, $L->core_db);
 			foreach ($Config->db as $i => $db) {
@@ -21,13 +22,13 @@ if (isset($Config->routing['current'][2])) {
 				}
 			}
 		}
-		$a->action = ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1];
+		$a->action = ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
 			$a->table(
 				$a->tr(
 					$a->td(
 						array(
-							$Config->routing['current'][2] == 'add' ? $a->info('db_mirror') : false,
+							$rc[2] == 'add' ? $a->info('db_mirror') : false,
 							$a->info('db_host'),
 							$a->info('db_type'),
 							$a->info('db_prefix'),
@@ -44,7 +45,7 @@ if (isset($Config->routing['current'][2])) {
 				$a->tr(
 					$a->td(
 						array(
-							($Config->routing['current'][2] == 'add' ? 
+							($rc[2] == 'add' ? 
 							$a->select(
 								array(
 									'in'		=> $dbsname,
@@ -52,7 +53,7 @@ if (isset($Config->routing['current'][2])) {
 								),
 								array(
 									'name'		=> 'db[mirror]',
-									'selected'	=> isset($Config->routing['current'][3]) ? $Config->routing['current'][3] : -1,
+									'selected'	=> isset($rc[3]) ? $rc[3] : -1,
 									'size'		=> 5,
 									'class'		=> 'form_element'
 								)
@@ -61,7 +62,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->input(
 								array(
 									'name'		=> 'db[host]',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? $database['host'] : $DB_HOST,
+									'value'		=> $rc[2] == 'edit' ? $database['host'] : $DB_HOST,
 									'class'		=> 'form_element',
 									'size'		=> 10
 								)
@@ -72,7 +73,7 @@ if (isset($Config->routing['current'][2])) {
 								),
 								array(
 									'name'		=> 'db[type]',
-									'selected'	=> $Config->routing['current'][2] == 'edit' ? $database['type'] : $DB_TYPE,
+									'selected'	=> $rc[2] == 'edit' ? $database['type'] : $DB_TYPE,
 									'size'		=> 5,
 									'class'		=> 'form_element'
 								)
@@ -80,7 +81,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->input(
 								array(
 									'name'		=> 'db[prefix]',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? $database['prefix'] : $DB_PREFIX,
+									'value'		=> $rc[2] == 'edit' ? $database['prefix'] : $DB_PREFIX,
 									'class'		=> 'form_element',
 									'size'		=> 10
 								)
@@ -88,7 +89,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->input(
 								array(
 									'name'		=> 'db[name]',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? $database['name'] : '',
+									'value'		=> $rc[2] == 'edit' ? $database['name'] : '',
 									'class'		=> 'form_element',
 									'size'		=> 10
 								)
@@ -96,7 +97,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->input(
 								array(
 									'name'		=> 'db[user]',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? $database['user'] : '',
+									'value'		=> $rc[2] == 'edit' ? $database['user'] : '',
 									'class'		=> 'form_element',
 									'size'		=> 10
 								)
@@ -104,7 +105,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->input(
 								array(
 									'name'		=> 'db[password]',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? $database['password'] : '',
+									'value'		=> $rc[2] == 'edit' ? $database['password'] : '',
 									'class'		=> 'form_element',
 									'size'		=> 10
 								)
@@ -112,7 +113,7 @@ if (isset($Config->routing['current'][2])) {
 							$a->input(
 								array(
 									'name'		=> 'db[codepage]',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? $database['codepage'] : $DB_CODEPAGE,
+									'value'		=> $rc[2] == 'edit' ? $database['codepage'] : $DB_CODEPAGE,
 									'class'		=> 'form_element',
 									'size'		=> 10
 								)
@@ -121,11 +122,11 @@ if (isset($Config->routing['current'][2])) {
 								array(
 									'type'		=> 'hidden',
 									'name'		=> 'mode',
-									'value'		=> $Config->routing['current'][2] == 'edit' ? 'edit' : 'add'
+									'value'		=> $rc[2] == 'edit' ? 'edit' : 'add'
 								)
 							).
-							(isset($Config->routing['current'][3]) ? $a->input(array('type' => 'hidden', 'name' => 'database', 'value' => $Config->routing['current'][3])) : '').
-							(isset($Config->routing['current'][4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $Config->routing['current'][4])) : '')
+							(isset($rc[3]) ? $a->input(array('type' => 'hidden', 'name' => 'database', 'value' => $rc[3])) : '').
+							(isset($rc[4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $rc[4])) : '')
 						),
 						array(
 							'class'	=> 'ui-state-highlight ui-corner-all'
@@ -148,17 +149,19 @@ if (isset($Config->routing['current'][2])) {
 		if (isset($database)) {
 			unset($database);
 		}
-	} elseif ($Config->routing['current'][2] == 'delete' && isset($Config->routing['current'][3])) {
+	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
-		$a->action = ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1];
+		$a->action = ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
 			$a->table(
 				$a->tr(
 					$a->td(
-						$L->sure_to_delete.' '.(isset($Config->routing['current'][4]) ? $L->mirror.' '.$a->b($Config->routing['current'][3] ? $L->db.' '.$Config->db[$Config->routing['current'][3]]['name'] : $L->core_db).', ' : $L->db).' <b>'.
-						(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['name'] : $Config->db[$Config->routing['current'][3]]['name']).
-						' ('.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['host'] : $Config->db[$Config->routing['current'][3]]['host']).
-						'/'.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['type'] : $Config->db[$Config->routing['current'][3]]['type']).
+						$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' <b>'.
+						(
+							isset($rc[4]) ?$Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']).
+							' ('.(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['host'] : $Config->db[$rc[3]]['host']).
+							'/'.(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['type'] : $Config->db[$rc[3]]['type']
+						).
 						')</b>?'
 					)
 				).
@@ -167,9 +170,9 @@ if (isset($Config->routing['current'][2])) {
 						$a->button(array('in'	=> $L->yes,		'type'	=> 'submit')).
 						$a->button(array('in'	=> $L->no,		'type'	=> 'button',	'onClick'	=> 'history.go(-1);')).
 						$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-						$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $Config->routing['current'][3])).
-						(isset($Config->routing['current'][4]) ?
-						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $Config->routing['current'][4]))
+						$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $rc[3])).
+						(isset($rc[4]) ?
+						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
 						: '')
 					)
 				),
@@ -179,15 +182,15 @@ if (isset($Config->routing['current'][2])) {
 				)
 			)
 		);
-	} elseif ($Config->routing['current'][2] == 'test') {
+	} elseif ($rc[2] == 'test') {
 		define('nointerface', true);
 		$test_dialog = false;
 		$a->form = false;
 		global $Page, $db;
-		if (isset($Config->routing['current'][4])) {
-			$Page->content($Page->p($db->test(array($Config->routing['current'][3], $Config->routing['current'][4])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
-		} elseif (isset($Config->routing['current'][3])) {
-			$Page->content($Page->p($db->test(array($Config->routing['current'][3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
+		if (isset($rc[4])) {
+			$Page->content($Page->p($db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
+		} elseif (isset($rc[3])) {
+			$Page->content($Page->p($db->test(array($rc[3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
 		} else {
 			$Page->content($Page->p($db->test($_POST['db']) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
 		}
@@ -214,7 +217,7 @@ if (isset($Config->routing['current'][2])) {
 			$a->td(
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-plus')),
+						$a->icon('plus'),
 						array(
 							'data-title'	=> $L->add.' '.$L->mirror
 						)
@@ -226,7 +229,7 @@ if (isset($Config->routing['current'][2])) {
 				).($i ? 
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-wrench')),
+						$a->icon('wrench'),
 						array(
 							'data-title'	=> $L->edit.' '.$L->db
 						)
@@ -238,7 +241,7 @@ if (isset($Config->routing['current'][2])) {
 				).
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-minus')),
+						$a->icon('minus'),
 						array(
 							'data-title'	=> $L->delete.' '.$L->db
 						)
@@ -250,7 +253,7 @@ if (isset($Config->routing['current'][2])) {
 				) : '').
 				$a->a(
 					$a->button(
-						$a->span(array('class'	=> 'ui-icon ui-icon-signal-diag')),
+						$a->icon('signal-diag'),
 						array(
 							'data-title'	=> $L->test_connection
 						)
@@ -285,31 +288,31 @@ if (isset($Config->routing['current'][2])) {
 					$a->td(
 						$a->a(
 							$a->button(
-								$a->span(array('class'	=> 'ui-icon ui-icon-wrench')),
+								$a->icon('wrench'),
 								array(
 									'data-title'	=> $L->edit.' '.$L->mirror
 								)
 							),
 							array(
-								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m,
+								'href'		=> 'admin/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/edit/'.$i.'/'.$m,
 								'class'		=> 'nul'
 							)
 						).
 						$a->a(
 							$a->button(
-								$a->span(array('class'	=> 'ui-icon ui-icon-minus')),
+								$a->icon('minus'),
 								array(
 									'data-title'	=> $L->delete.' '.$L->mirror
 								)
 							),
 							array(
-								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
+								'href'		=> 'admin/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/delete/'.$i.'/'.$m,
 								'class'		=> 'nul'
 							)
 						).
 						$a->a(
 							$a->button(
-								$a->span(array('class'	=> 'ui-icon ui-icon-signal-diag')),
+								$a->icon('signal-diag'),
 								array(
 									'data-title'	=> $L->test_connection
 								)
@@ -349,7 +352,7 @@ if (isset($Config->routing['current'][2])) {
 					$a->button(
 						$L->add_database,
 						array(
-							'onMouseDown' => 'javasript: location.href= \'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add\';'
+							'onMouseDown' => 'javasript: location.href= \'admin/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/add\';'
 						)
 					).$a->br(),
 					array(
@@ -412,5 +415,5 @@ if (isset($Config->routing['current'][2])) {
 	);
 }
 $test_dialog && $a->content($a->div(array('id' => 'test_db', 'style' => 'display: none;', 'title' => $L->test_connection)));
-unset($a);
+unset($a, $rc);
 ?>

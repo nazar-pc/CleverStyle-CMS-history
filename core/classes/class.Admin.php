@@ -10,7 +10,8 @@ class Admin extends Module {
 				$buttons = true,
 				$apply_button = true,
 				$cancel = ' disabled',
-				$save = false;
+				$save = false,
+				$post_buttons = '';
 				
 	function init ($save_file = false) {
 		global $Config, $L, $Page;
@@ -27,7 +28,7 @@ class Admin extends Module {
 			if (!include_x(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
 				include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
 			}
-			include_x(MFOLDER.DS.$Config->routing['current'][0].'.php');
+			include_x(MFOLDER.DS.$rc[0].'.php');
 			if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
 				$rc[1] = $this->subparts[0];
 			}
@@ -106,7 +107,8 @@ class Admin extends Module {
 							$this->button($L->cancel,	array('name' => 'edit_settings', 'data-title'	=> $L->cancel_info, 'id' => 'cancel_settings', 'type' => 'submit', 'value' => 'cancel',	'add'	=> $this->cancel))
 						: '')
 							.$this->button($L->reset,	array('id'	=> 'reset_settings', 'data-title'	=> $L->reset_info, 'type'	=> 'reset'))
-					: ''),
+					: '').
+					$this->post_buttons,
 					array(
 						'method'	=> 'post',
 						'action'	=> $this->action,

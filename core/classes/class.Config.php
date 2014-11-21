@@ -141,29 +141,27 @@ class Config {
 		unset($langlist, $langnames);
 	}
 	//Перестройка кеша настроек
-	function rebuild_cache ($query = false) {
+	function rebuild_cache ($query = '') {
 		global $Error, $Cache;
 		//Загрузка недостающих данных
-		if ($query) {
-			global $db;
-			if (!is_array($query)) {
-				$query = $this->admin_parts;
-				foreach ($query as $id => $q) {
-					$query[$id] = '`'.$q.'`';
-				}
+		global $db;
+		if (!is_array($query)) {
+			$query = $this->admin_parts;
+			foreach ($query as $id => $q) {
+				$query[$id] = '`'.$q.'`';
 			}
-			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), false, 1);
-			foreach ($query as $q) {
-				$q = trim($q, '`');
-				if ($q == 'routing' && isset($this->routing['current'])) {
-					$current_routing = $this->routing['current'];
-				}
-				$this->$q = unserialize($result[$q]);
+		}
+		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), false, 1);
+		foreach ($query as $q) {
+			$q = trim($q, '`');
+			if ($q == 'routing' && isset($this->routing['current'])) {
+				$current_routing = $this->routing['current'];
 			}
-			if (isset($current_routing)) {
-				$this->routing['current'] = $current_routing;
-				unset($current_routing);
-			}
+			$this->$q = unserialize($result[$q]);
+		}
+		if (isset($current_routing)) {
+			$this->routing['current'] = $current_routing;
+			unset($current_routing);
 		}
 		$this->reload_themes();
 		$this->reload_languages();
