@@ -1,12 +1,12 @@
 <?php
 class Cache {
-	private	$disk = false,
-			$disk_size = -1,
-			$memcache = false,
-			/*$memcached = false,*/
-			$local_storage = array(),	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
-			$cache = true,				//Состояние кеша (вкл/выкл)
-			$size = false;				//Размер кеша
+	protected	$disk = false,
+				$disk_size = -1,
+				$memcache = false,
+				/*$memcached = false,*/
+				$local_storage = array(),	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
+				$cache = true,				//Состояние кеша (вкл/выкл)
+				$size = false;				//Размер кеша
 	function init ($Config) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
 		$this->disk			= $Config->core['disk_cache'];
@@ -80,22 +80,25 @@ class Cache {
 			);
 		}
 		if ($this->disk) {
-			if (!file_exists(CACHE.DS.$item) || (file_exists(CACHE.DS.$item) && is_writable(CACHE.DS.$item))) {
+			if (!file_exists(CACHE.DS.$item) || is_writable(CACHE.DS.$item)) {
 				$data = $Core->encrypt($data);
-				if ($this->disk_size != 0 && ($dsize = strlen($data)) > $this->disk_size) {
-					return false;
-				}
 				if ($this->disk_size > 0) {
-					$handle = fopen(CACHE.DS.'size', 'c+b');
-					flock($handle, LOCK_EX);
+					if (($dsize = strlen($data)) > $this->disk_size) {
+						return false;
+					}
+					$size_file = fopen(CACHE.DS.'size', 'c+b');
+					flock($size_file, LOCK_EX);
 					if ($this->size === false) {
 						$this->size = '';
-						while (!feof($handle)) {
-							$this->size .= fread($handle, 20);
+						while (!feof($size_file)) {
+							$this->size .= fread($size_file, 20);
 						}
 						$this->size = (int)$this->size;
 					}
 					$this->size += $dsize;
+					if (file_exists(CACHE.DS.$item)) {
+						$this->size -= filesize(CACHE.DS.$item);
+					}
 					if ($this->size > $this->disk_size) {
 						$cache_list = get_list(CACHE, fasle, 'f', true, true, 'datea|desc');
 						foreach ($cache_list as $file) {
@@ -108,15 +111,15 @@ class Cache {
 						unset($cache_list, $file);
 					}
 					if (file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY) !== false) {
-						ftruncate($handle, 0);
-						fseek($handle, 0);
-						fwrite($handle, $this->size > 0 ? $this->size : 0);
+						ftruncate($size_file, 0);
+						fseek($size_file, 0);
+						fwrite($size_file, $this->size > 0 ? $this->size : 0);
 					} else {
 						$this->size -= $dsize;
 					}
 					unset($dsize);
-					flock($handle, LOCK_UN);
-					fclose($handle);
+					flock($size_file, LOCK_UN);
+					fclose($size_file);
 				} else {
 					file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY);
 				}
@@ -135,23 +138,23 @@ class Cache {
 		}
 		if (file_exists(CACHE.DS.$item) && is_writable(CACHE.DS.$item)) {
 			if ($this->disk_size > 0) {
-				$handle = fopen(CACHE.DS.'size', 'c+b');
-				flock($handle, LOCK_EX);
+				$size_file = fopen(CACHE.DS.'size', 'c+b');
+				flock($size_file, LOCK_EX);
 				if ($this->size === false) {
 					$this->size = '';
-					while (!feof($handle)) {
-						$this->size .= fread($handle, 20);
+					while (!feof($size_file)) {
+						$this->size .= fread($size_file, 20);
 					}
 					$this->size = (int)$this->size;
 				}
 				$this->size -= filesize(CACHE.DS.$item);
 				if (unlink(CACHE.DS.$item)) {
-					ftruncate($handle, 0);
-					fseek($handle, 0);
-					fwrite($handle, $this->size > 0 ? $this->size : 0);
+					ftruncate($size_file, 0);
+					fseek($size_file, 0);
+					fwrite($size_file, $this->size > 0 ? $this->size : 0);
 				}
-				flock($handle, LOCK_UN);
-				fclose($handle);
+				flock($size_file, LOCK_UN);
+				fclose($size_file);
 			} else {
 				unlink(CACHE.DS.$item);
 			}

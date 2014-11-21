@@ -141,27 +141,24 @@ class Config {
 	//Обновление информации о текущем наборе тем оформления
 	function reload_themes () {
 		$this->core['themes'] = get_list(THEMES, false, 'd');
-		global $color_schemes, $color_schemes_name;
-		unset($color_schemes, $color_schemes_name);
 		asort($this->core['themes']);
 		foreach ($this->core['themes'] as $theme) {
-			global $color_schemes, $color_schemes_name;
-			require_x(THEMES.'/'.$theme.'/config.php', 0, 0);
 			$this->core['color_schemes'][$theme] = array();
-			if (is_array($color_schemes) && !empty($color_schemes)) {
-				foreach ($color_schemes as $i => $scheme) {
-					$this->core['color_schemes'][$theme][$scheme] = $color_schemes_name[$i] ?: $scheme;
+			if (
+				file_exists(THEMES.'/'.$theme.'/schemes.json') &&
+				($schemes = json_decode_x(file_get_contents(THEMES.'/'.$theme.'/schemes.json'))) &&
+				is_array($schemes)
+			) {
+				foreach ($schemes as $scheme => $name) {
+					$this->core['color_schemes'][$theme][$scheme] = $name;
 				}
-				unset($i, $scheme);
 			} else {
-				$color_schemes = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
-				foreach ($color_schemes as $scheme) {
-					$this->core['color_schemes'][$theme][$scheme] = $scheme;
+				$schemes = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
+				foreach ($schemes as $scheme) {
+					$this->core['color_schemes'][$theme][$scheme] = ucfirst($scheme);
 				}
-				unset($scheme);
 			}
 			asort($this->core['color_schemes'][$theme]);
-			$color_schemes = $color_schemes_name = array();
 		}
 	}
 	//Обновление списка текущих языков

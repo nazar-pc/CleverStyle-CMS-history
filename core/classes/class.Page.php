@@ -1,40 +1,48 @@
 <?php
 class Page extends HTML {
-	public	$theme, $color_scheme, $get_list, $cache_list, $interface = true,
+	public		$theme, $color_scheme, $get_list, $cache_list, $interface = true,
+	
+				$Html, $Keywords, $Description, $Title = array(),
+	
+				$Head,
+				$core_js	= array(0 => '', 1 => ''),
+				$core_css	= array(0 => '', 1 => ''),
+				$js			= array(0 => '', 1 => ''),
+				$css		= array(0 => '', 1 => ''),
+	
+				$user_avatar_image, $user_avatar_text, $user_info,
+				$debug_info,
+	
+				$pre_Body, $Header, $mainmenu, $mainsubmenu, $menumore, $Left, $Top, $Bottom, $Right, $Footer, $post_Body,
+	
+				$level		= array (
+								'Head'				=> 2,
+								'pre_Body'			=> 2,
+								'Header'			=> 4,
+								'mainmenu'			=> 3,
+								'mainsubmenu'		=> 3,
+								'menumore'			=> 3,
+								'user_avatar_text'	=> 5,
+								'user_info'			=> 5,
+								'debug_info'		=> 3,
+								'Left'				=> 3,
+								'Top'				=> 3,
+								'Content'			=> 8,
+								'Bottom'			=> 3,
+								'Right'				=> 3,
+								'Footer'			=> 4,
+								'post_Body'			=> 2
+				);
 
-			$Html, $Keywords, $Description, $Title = array(),
-
-			$Head,
-			$core_js				= array(0 => '', 1 => ''),
-			$core_css				= array(0 => '', 1 => ''),
-			$js						= array(0 => '', 1 => ''),
-			$css					= array(0 => '', 1 => ''),
-
-			$user_avatar_image, $user_avatar_text, $user_info,
-			$debug_info,
-
-			$pre_Body, $Header, $mainmenu, $mainsubmenu, $menumore, $Left, $Top, $Bottom, $Right, $Footer, $post_Body,
-
-			$level					= array (
-										'Head'				=> 2,
-										'pre_Body'			=> 2,
-										'Header'			=> 4,
-										'mainmenu'			=> 3,
-										'mainsubmenu'		=> 3,
-										'menumore'			=> 3,
-										'user_avatar_text'	=> 5,
-										'user_info'			=> 5,
-										'debug_info'		=> 3,
-										'Left'				=> 3,
-										'Top'				=> 3,
-										'Content'			=> 8,
-										'Bottom'			=> 3,
-										'Right'				=> 3,
-										'Footer'			=> 4,
-										'post_Body'			=> 2
-									);
-
-	private	$Search = array(), $Replace = array();
+	protected	$Search		= array(),
+				$Replace	= array(),
+				$CssMin		= array(
+								'convert-named-color-values'	=> true,
+								'convert-hsl-color-values'		=> true,
+								'convert-rgb-color-values'		=> true,
+								'compress-color-values'			=> true,
+								'compress-unit-values'			=> true
+				);
 	
 	function __construct () {
 		global $interface;
@@ -60,8 +68,8 @@ class Page extends HTML {
 				$this->color_scheme = $_COOKIE['color_scheme'];
 			}
 		}
-		//Задание названий файлов кеша
-		$this->cache_list = array (0 => '.cache.', 1 => $this->theme.'.', 2 => $this->theme.'_'.$this->color_scheme.'.');
+		//Задание названия файлов кеша
+		$this->cache_list = $this->theme.'_'.$this->color_scheme.'.';
 		//Загрузка шаблона
 		if ($this->interface) {
 			ob_start();
@@ -118,7 +126,7 @@ class Page extends HTML {
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
 			$this->core_css[1] = $this->style(
-				$Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1],
+				$Config->core['cache_compress_js_css'] ? CssMin::minify($this->core_css[1], $this->CssMin) : $this->core_css[1],
 				array(
 					'type' => 'text/css'
 				)
@@ -126,7 +134,7 @@ class Page extends HTML {
 		}
 		if ($this->css[1]) {
 			$this->css[1] = $this->style(
-				$Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1],
+				$Config->core['cache_compress_js_css'] ? CssMin::minify($this->css[1], $this->CssMin) : $this->css[1],
 				array(
 					'type' => 'text/css'
 				)
@@ -134,12 +142,12 @@ class Page extends HTML {
 		}
 		if ($this->core_js[1]) {
 			$this->core_js[1] = $this->script(
-				$Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1]
+				$Config->core['cache_compress_js_css'] ? JsMin::minify($this->core_js[1]) : $this->core_js[1]
 			);
 		}
 		if ($this->js[1]) {
 			$this->js[1] = $this->script(
-				$Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1]
+				$Config->core['cache_compress_js_css'] ? JsMin::minify($this->js[1]) : $this->js[1]
 			);
 		}
 		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
@@ -265,66 +273,29 @@ class Page extends HTML {
 		$this->Title[] = htmlentities($add, ENT_COMPAT, CHARSET);
 	}
 	//Загрузка списка JavaScript и CSS файлов
-	function get_list ($for_cache = false) {
+	protected function get_list ($for_cache = false) {
+		$theme_folder	= THEMES.DS.$this->theme;
+		$scheme_folder	= $theme_folder.DS.'schemes'.DS.$this->color_scheme;
+		$theme_pfolder	= 'themes/'.$this->theme;
+		$scheme_pfolder	= $theme_pfolder.'/schemes/'.$this->color_scheme;
 		$this->get_list = array(
-				'css' => array (
-					0 => get_list(
-							INCLUDES.DS.'css',
-							'/(.*)\.css$/i',
-							'f',
-							$for_cache ? true : 'includes/css',
-							true
-					),
-					1 => get_list(
-							THEMES.DS.$this->theme.DS.'css',
-							'/(.*)\.css$/i',
-							'f',
-							$for_cache ? true : 'themes/'.$this->theme.'/css',
-							true
-					),
-					2 => get_list(
-							THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'css',
-							'/(.*)\.css$/i',
-							'f',
-							$for_cache ? true : 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/css',
-							true
-					)
-				),
-				'js' => array (
-					0 => get_list(
-							INCLUDES.DS.'js', 
-							'/(.*)\.js$/i',
-							'f',
-							$for_cache ? true : 'includes/js',
-							true
-					),
-					1 => get_list(
-							THEMES.DS.$this->theme.DS.'js',
-							'/(.*)\.js$/i',
-							'f',
-							$for_cache ? true : 'themes/'.$this->theme.'/js',
-							true
-					),
-					2 => get_list(
-							THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'js',
-							'/(.*)\.js$/i',
-							'f',
-							$for_cache ? true : 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js',
-							true
-					)
-				)
+			'css' => array_merge(
+				(array)get_list(INCLUDES.DS.'css',			'/(.*)\.css$/i', 'f', $for_cache ? true : 'includes/css', true),
+				(array)get_list($theme_folder.DS.'css',		'/(.*)\.css$/i', 'f', $for_cache ? true : $theme_pfolder.'/css', true),
+				(array)get_list($scheme_folder.DS.'css',	'/(.*)\.css$/i', 'f', $for_cache ? true : $scheme_pfolder.'/css', true)
+			),
+			'js' => array_merge(
+				(array)get_list(INCLUDES.DS.'js',		'/(.*)\.js$/i', 'f', $for_cache ? true : 'includes/js', true ),
+				(array)get_list($theme_folder.DS.'js',	'/(.*)\.js$/i', 'f', $for_cache ? true : $theme_pfolder.'/js', true),
+				(array)get_list($scheme_folder.DS.'js',	'/(.*)\.js$/i', 'f', $for_cache ? true : $scheme_pfolder.'/js', true)
+			)
 		);
+		unset($theme_folder, $scheme_folder, $theme_pfolder, $scheme_pfolder);
 		if (!$for_cache && DS != '/') {
 			$this->get_list = filter($this->get_list, 'str_replace', DS, '/');
 		}
-		for ($i = 0; $i <= 2; ++$i) {
-			if (is_array($this->get_list['css'][$i])) {
-				sort($this->get_list['css'][$i]);
-			}
-			if (is_array($this->get_list['js'][$i])) {
-				sort($this->get_list['js'][$i]);
-			}
-		}
+		sort($this->get_list['css']);
+		sort($this->get_list['js']);
 	}
 	//Подключение JavaScript и CSS файлов
 	protected function get_js_css () {
@@ -334,18 +305,18 @@ class Page extends HTML {
 		}
 		if ($Config->core['cache_compress_js_css']) {
 			//Проверка текущего кеша
-			if (!(file_exists(PCACHE.DS.$this->cache_list[0].'css') || file_exists(PCACHE.DS.$this->cache_list[0].'js') || file_exists(PCACHE.DS.$this->cache_list[1].'css') || file_exists(PCACHE.DS.$this->cache_list[1].'js') || file_exists(PCACHE.DS.$this->cache_list[2].'css') || file_exists(PCACHE.DS.$this->cache_list[2].'js')) || !file_exists(PCACHE.DS.'pcache_key')) {
+			if (
+				!file_exists(PCACHE.DS.$this->cache_list.'css') ||
+				!file_exists(PCACHE.DS.$this->cache_list.'js') ||
+				!file_exists(PCACHE.DS.'pcache_key')
+			) {
 				$this->rebuild_cache();
 			}
 			$key = file_get_contents(PCACHE.DS.'pcache_key');
 			//Подключение CSS стилей
-			foreach ($this->cache_list as $file) {
-				file_exists(realpath('storages/pcache/'.$file.'css')) && $this->css('storages/pcache/'.$file.'css?'.$key, 'file', true);
-			}
+			$this->css('storages/pcache/'.$this->cache_list.'css?'.$key, 'file', true);
 			//Подключение JavaScript
-			foreach ($this->cache_list as $file) {
-				file_exists(realpath('storages/pcache/'.$file.'js')) && $this->js('storages/pcache/'.$file.'js?'.$key, 'file', true);
-			}
+			$this->js('storages/pcache/'.$this->cache_list.'js?'.$key, 'file', true);
 		} else {
 			$this->get_list();
 			//Подключение CSS стилей
@@ -362,33 +333,26 @@ class Page extends HTML {
 	function rebuild_cache () {
 		$this->get_list(true);
 		$key = '';
-		foreach ($this->get_list as $part => &$array) {
-			foreach ($array as $i => &$files) {
-				if (!is_array($files)) {
-					continue;
-				}
-				$temp_cache = '';
-				foreach ($files as $file) {
-					if (file_exists($file)) {
-						$current_cache = file_get_contents($file);
-						if ($part == 'css') {
-							$this->images_substitution($current_cache, $file);
-						}
-						$temp_cache .= $current_cache;
-						unset($current_cache);
+		foreach ($this->get_list as $extension => &$files) {
+			$temp_cache = '';
+			foreach ($files as $file) {
+				if (file_exists($file)) {
+					$current_cache = file_get_contents($file);
+					if ($extension == 'css') {
+						$this->images_substitution($current_cache, $file);
 					}
+					$temp_cache[] = $current_cache;
+					unset($current_cache);
 				}
-				$file = PCACHE.DS.$this->cache_list[$i].$part;
-				if (file_exists($file)) {
-					unlink($file);
-				}
-				if (file_exists($file)) {
-					unlink($file);
-				}
-				file_put_contents($file, gzencode($this->filter($temp_cache, $part), 9), LOCK_EX|FILE_BINARY);
-				$key .= md5($temp_cache);
-				unset($temp_cache, $cache);
 			}
+			$temp_cache = implode("\n", $temp_cache);
+			if ($extension == 'js') {
+				$temp_cache = JsMin::minify($temp_cache);
+			} elseif ($extension == 'css') {
+				$temp_cache = CssMin::minify($temp_cache, $this->CssMin);
+			}
+			file_put_contents(PCACHE.DS.$this->cache_list.$extension, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
+			$key .= md5($temp_cache);
 		}
 		file_put_contents(PCACHE.DS.'pcache_key', mb_substr(md5($key), 0, 5), LOCK_EX|FILE_BINARY);
 	}
@@ -412,19 +376,6 @@ class Page extends HTML {
 			$data
 		);
 		chdir(DIR);
-	}
-	//Фильтр лиших данных в CSS и JavaScript файлах
-	function filter ($content, $mode = 'css') {
-		if ($mode == 'js') {
-			$content = preg_replace('/\/\*[\!\s\n\r\*].*?\*\//s', ' ', $content);
-			$content = preg_replace('/[\s]*([\-])[\s]*/', '\1', $content);
-			$content = preg_replace('/([^:]\/\/\s)[^\n]*/s', ' ', $content);
-			/*$content = preg_replace('/[\s\n\r]+/', ' ', $content);*/
-		} elseif ($mode == 'css') {
-			$content = preg_replace('/(\/\*.*?\*\/)|(^\s+)|([\r]+)|(\/\*.*?\*\/)/', '', $content);
-		}
-		$content = preg_replace('/[\s]+([\{\},;:\(\)=><|&])[\s]+/', '\1', $content);
-		return $content;
 	}
 	//Генерирование информации о процессе загрузки страницы
 	protected function footer ($stop) {
