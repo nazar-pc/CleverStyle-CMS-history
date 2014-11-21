@@ -20,7 +20,7 @@ if (
 ) {
 	include __DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php';
 	global $STORAGE_USER, $STORAGE_PASSWORD;
-	$data = _json_decode(filter((string)$_POST['data'], 'form'));
+	$data = _json_decode((string)$_POST['data']);
 	$KEY = substr($data['key'], 0, 32);
 	unset($data['key']);
 	if (md5(_json_encode($data).$STORAGE_USER.$STORAGE_PASSWORD) !== $KEY) {

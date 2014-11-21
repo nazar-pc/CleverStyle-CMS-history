@@ -13,9 +13,9 @@ if ($mode && $rc[2] == 'enable') {
 } elseif ($mode && $rc[2] == 'edit') {
 	$block_new = &$_POST['block'];
 	$block = &$Config->components['blocks'][$rc[3]];
-	$block['title']			= filter($block_new['title'], 'form');
+	$block['title']			= $block_new['title'];
 	$block['active']		= $block_new['active'];
-	$block['template']		= filter($block_new['template'], 'form');
+	$block['template']		= $block_new['template'];
 	$block['start']			= $block_new['start'];
 	$start		= &$block_new['start'];
 	$start		= explode('T', $start);
@@ -40,7 +40,7 @@ if ($mode && $rc[2] == 'enable') {
 }
 unset($mode);
 if ((!isset($rc[2]) || $rc[2] != 'edit') && isset($_POST['edit_settings']) && ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save')) {
-	$_POST['position'] = _json_decode(filter($_POST['position'], 'form'));
+	$_POST['position'] = _json_decode($_POST['position']);
 	foreach ($_POST['position'] as $position => $items) {
 		foreach ($items as $position_id => $item) {
 			$Config->components['blocks'][$item]['position'] = $position;

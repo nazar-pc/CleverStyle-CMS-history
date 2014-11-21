@@ -22,8 +22,8 @@ $a->content(
 					$a->button(
 						$L->information_about_system,
 						array(
-							'data-title'	=> $L->click_to_view_details,
-							'onClick'		=> '$(\'#system_readme\').dialog(\'open\');'
+							'id'			=> 'system_readme_open',
+							'data-title'	=> $L->click_to_view_details
 						)
 					).
 					$a->pre(
@@ -38,8 +38,8 @@ $a->content(
 					$a->button(
 						$L->license,
 						array(
-							'data-title'	=> $L->click_to_view_details,
-							'onClick'		=> '$(\'#system_license\').dialog(\'open\');'
+							'id'			=> 'system_license_open',
+							'data-title'	=> $L->click_to_view_details
 						)
 					),
 					array(
@@ -61,7 +61,7 @@ $a->content(
 
 				$a->td($L->version.' PHP:').
 				$a->td(
-					phpversion().(!check_php() ? ' ('.$L->required.' '.$PHP.' '.$L->or_higher.')' : ''), 
+					PHP_VERSION.(!check_php() ? ' ('.$L->required.' '.$PHP.' '.$L->or_higher.')' : ''), 
 					array('class' => check_php() ? 'green' : 'red')
 				)
 			)
@@ -76,7 +76,7 @@ $a->content(
 							$a->td($L->get(memcache()), array('class' => memcache() ? 'green' : 'red')),
 
 							memcache() && $Cache->memcache ?
-								$a->td($L->version.' memcache:', array('style' => 'padding-left: 20px;')).
+								$a->td($L->version.' memcache:').
 								$a->td($Cache->memcache_getversion(), array('class' => 'green'))
 							: false,
 /*
@@ -90,7 +90,7 @@ $a->content(
 							),
 
 							check_mcrypt() ?
-								$a->td($L->version.' mcrypt:', array('style' => 'padding-left: 20px;')).
+								$a->td($L->version.' mcrypt:').
 								$a->td(
 									check_mcrypt().(!check_mcrypt(1) ? ' ('.$L->required.' '.$mcrypt.' '.$L->or_higher.')' : ''),
 									array('class' => check_mcrypt(1) ? 'green' : 'red')
@@ -101,12 +101,12 @@ $a->content(
 							$a->td($L->get(zlib())),
 
 							zlib() ?
-								$a->td($L->zlib_autocompression.':', array('style' => 'padding-left: 20px;')).
+								$a->td($L->zlib_autocompression.':').
 								$a->td($L->get(zlib_autocompression()), array('class' => zlib_autocompression() ? 'red' : 'green'))
 							: false
 						)
 					),
-					array('class' => 'left_odd', 'style' => 'width: 100%;')
+					array('class' => 'left_odd php_components')
 				)
 			)
 		).
@@ -138,11 +138,10 @@ $a->content(
 						$a->td(
 							$a->table(
 								get_sql_info(), array('class' => 'left_odd')
-							),
-							array('style' => 'padding-left: 20px;')
+							)
 						)
 					),
-					array('class' => 'left_odd', 'style' => 'width: 100%;')
+					array('class' => 'left_odd sql_properties')
 				)
 			)
 		).(function_exists('apache_get_version') ?
@@ -171,21 +170,16 @@ $a->content(
 								$L->get(function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules())),
 								array('class' => function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules()) ? 'green' : 'red')
 							),
-	
-							$a->td($L->directive.' magic_quotes_gpc:').$a->td($L->get(get_magic_quotes_gpc()), array('class' => !get_magic_quotes_gpc() ? 'green' : 'red')),
-
 							$a->td($L->allow_url_fopen.':').$a->td($L->get(ini_get('allow_url_fopen')), array('class' => ini_get('allow_url_fopen') ? 'green' : 'red')),
 
 							$a->td($L->display_errors.':').$a->td($L->get(display_errors()), array('class' => display_errors() ? 'red' : 'green')),
-
-							$a->td($L->directive.' register_globals:').$a->td($L->get(register_globals()), array('class' => !register_globals() ? 'green' : 'red'))
 						)
 					),
-					array('class' => 'left_odd', 'style' => 'width: 100%;')
+					array('class' => 'left_odd php_ini_settings')
 				)
 			)
 		) : ''),
-		array('class' => 'admin_table left_even right_odd', 'style' => 'width: 100%;')
+		array('class' => 'admin_table left_even right_odd')
 	)
 );
 unset($a);

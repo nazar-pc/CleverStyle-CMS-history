@@ -12,8 +12,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[site_mode]',
 						'checked'		=> $Config->core['site_mode'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off)
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on)
 					)
 				)
 			)
@@ -24,7 +24,6 @@ $a->content(
 				$a->input(
 					array(
 						'name'			=> 'core[closed_title]',
-						'size'			=> 40,
 						'value'			=> $Config->core['closed_title'],
 						'class'			=> 'form_element'
 					)
@@ -37,9 +36,9 @@ $a->content(
 				$a->textarea(
 					$Config->core['closed_text'],
 					array(
-						'name' => 'core[closed_text]',
-						'style' => 'width: 100%;',
-						'class' => 'EDITORH form_element'
+						'id'			=> 'closed_text',
+						'name'			=> 'core[closed_text]',
+						'class'			=> 'EDITORH form_element'
 					)
 				)
 			)
@@ -50,7 +49,6 @@ $a->content(
 				$a->input(
 					array(
 						'name'			=> 'core[title_delimiter]',
-						'size'			=> 40,
 						'value'			=> $Config->core['title_delimiter'],
 						'class'			=> 'form_element'
 					)
@@ -65,8 +63,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[title_reverse]',
 						'checked'		=> $Config->core['title_reverse'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off)
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on)
 					)
 				)
 			)
@@ -79,9 +77,9 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[debug]',
 						'checked'		=> $Config->core['debug'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off),
-						'OnClick'		=> array('$(\'#debug_form\').show();', '$(\'#debug_form\').hide();')
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on),
+						'OnClick'		=> array('$(\'#debug_form\').hide();', '$(\'#debug_form\').show();')
 					)
 				)
 			)
@@ -147,7 +145,10 @@ $a->content(
 						)
 					)
 				),
-				array('id' => 'debug_form', 'style' => ($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;', 'class' => 'debug_form')
+				array(
+					'id' => 'debug_form',
+					'style' => ($Config->core['debug'] == 0 ? 'display: none;' : '')
+				)
 			)
 		).
 		$a->tr(
@@ -163,30 +164,22 @@ $a->content(
 							$a->textarea(
 								$Config->routing['in'],
 								array(
-									'name' => 'routing[in]',
-									'style' => 'height: 5em; white-space: nowrap;',
-									'class' => 'form_element',
-									'cols' => 30,
-									'rows' => 3
+									'name'			=> 'routing[in]',
+									'class'			=> 'form_element'
 								)
-							),
-							array('style' => 'width: 50%;')
+							)
 						).
 						$a->td(
 							$a->textarea(
 								$Config->routing['out'],
 								array(
-									'name' => 'routing[out]',
-									'style' => 'height: 5em; white-space: nowrap;',
-									'class' => 'form_element',
-									'cols' => 30,
-									'rows' => 3
+									'name'			=> 'routing[out]',
+									'class'			=> 'form_element'
 								)
-							),
-							array('style' => 'width: 50%;')
+							)
 						)
 					),
-					array('style' => 'width: 100%;')
+					array('id'	=> 'system_config_routing')
 				)
 			)
 		).
@@ -203,30 +196,22 @@ $a->content(
 							$a->textarea(
 								$Config->replace['in'],
 								array(
-									'name' => 'replace[in]',
-									'style' => 'height: 5em; white-space: nowrap;',
-									'class' => 'form_element',
-									'cols' => 30,
-									'rows' => 3
+									'name'			=> 'replace[in]',
+									'class'			=> 'form_element'
 								)
-							),
-							array('style' => 'width: 50%;')
+							)
 						).
 						$a->td(
 							$a->textarea(
 								$Config->replace['out'],
 								array(
-									'name' => 'replace[out]',
-									'style' => 'height: 5em; white-space: nowrap;',
-									'class' => 'form_element',
-									'cols' => 30,
-									'rows' => 3
+									'name'			=> 'replace[out]',
+									'class'			=> 'form_element'
 								)
-							),
-							array('style' => 'width: 50%;')
+							)
 						)
 					),
-					array('style' => 'width: 100%;')
+					array('id'	=> 'system_config_replace')
 				)
 			)
 		),

@@ -19,7 +19,6 @@ class Index extends HTML {
 			$reset			= true,
 			$post_buttons	= '',
 
-			$methods		= array(),
 			$custom_methods	= array(),
 
 			$preload		= array(),
@@ -60,7 +59,7 @@ class Index extends HTML {
 		global $Config, $L, $Page;
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
-			$Page->title($L->get(HOME ? 'home' : MODULE));
+			$Page->title($L->{HOME ? 'home' : MODULE});
 		}
 		if ($this->parts !== false) {
 			$rc = &$Config->routing['current'];
@@ -294,14 +293,10 @@ class Index extends HTML {
 		$Page->notice($L->settings_canceled);
 	}
 	function method ($method) {
-		if (isset($this->custom_methods[$method]['pre'])) {
-			closure_process($this->custom_methods[__FUNCTION__]['pre']);
-		}
-		if (!isset($this->methods[$method]) || $this->methods[$method] != false) {
+		if (isset($this->custom_methods[$method])) {
+			closure_process($this->custom_methods[__FUNCTION__]);
+		} else {
 			$this->$method();
-		}
-		if (isset($this->custom_methods[$method]['post'])) {
-			closure_process($this->custom_methods[__FUNCTION__]['post']);
 		}
 	}
 	//Запрет клонирования

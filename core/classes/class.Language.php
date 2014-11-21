@@ -16,7 +16,7 @@ class Language {
 		}
 		if ($this->need_to_rebuild_cache) {
 			global $Cache;
-			$Cache->set('language/'.$this->clanguage, $this->translate);
+			$Cache->{'language/'.$this->clanguage} = $this->translate;
 			$this->need_to_rebuild_cache = false;
 			$this->initialized = true;
 		}
@@ -49,7 +49,7 @@ class Language {
 		global $Config, $Cache, $Text;
 		if (!is_object($Config) || ($Config->core['multilanguage'] && in_array($language, $Config->core['active_languages']))) {
 			$this->clanguage = $language;
-			if ($translate = $Cache->get('language/'.$this->clanguage)) {
+			if ($translate = $Cache->{'language/'.$this->clanguage}) {
 				$this->set($translate);
 				$Text->language($this->clang);
 				return true;

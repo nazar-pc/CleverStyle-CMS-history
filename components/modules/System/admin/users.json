@@ -2,6 +2,7 @@
 	"general",
 	"users",
 	"groups",
-	"rights",
-	"statistic"
+	"permissions",
+	"statistic",
+	"mail"
 ]

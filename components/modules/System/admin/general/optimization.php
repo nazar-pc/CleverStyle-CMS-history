@@ -11,8 +11,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[disk_cache]',
 						'checked'		=> $Config->core['disk_cache'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off)
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on)
 					)
 				)
 			)
@@ -26,7 +26,6 @@ $a->content(
 						'name'			=> 'core[disk_cache_size]',
 						'value'			=> $Config->core['disk_cache_size'],
 						'min'			=> 0,
-						'style'			=> 'width: 90px;',
 						'class'			=> 'form_element'
 					)
 				)
@@ -40,8 +39,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[memcache]',
 						'checked'		=> $Config->core['memcache'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off),
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on),
 						'add'			=> memcache() ? '' : ' disabled'
 					)
 				)
@@ -55,8 +54,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[memcached]',
 						'checked'		=> $Config->core['memcached'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off),
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on),
 						'add'			=> memcache() ? '' : ' disabled'
 					)
 				)
@@ -70,9 +69,9 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[zlib_compression]',
 						'checked'		=> $Config->core['zlib_compression'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off),
-						'onClick'		=> zlib() ? array('$(\'#zlib_compression\').show();', '$(\'#zlib_compression\').hide();') : '',
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on),
+						'onClick'		=> zlib() ? array('$(\'#zlib_compression\').hide();', '$(\'#zlib_compression\').show();') : '',
 						'add'			=> zlib_autocompression() ? ' disabled' : ''
 					)
 				)
@@ -88,14 +87,13 @@ $a->content(
 						'value'			=> $Config->core['zlib_compression_level'],
 						'min'			=> 1,
 						'max'			=> 9,
-						'style'			=> 'width: 90px;',
 						'class'			=> 'form_element'
 					)
 				)
 			),
 			array(
 				'id'	=> 'zlib_compression',
-				'style'	=> ($Config->core['zlib_compression'] || zlib_autocompression() ? '' : 'display: none; ').'text-align: center;'
+				'style'	=> ($Config->core['zlib_compression'] || zlib_autocompression() ? '' : 'display: none; ')
 			)
 		).
 		$a->tr(
@@ -106,8 +104,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[gzip_compression]',
 						'checked'		=> $Config->core['gzip_compression'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off),
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on),
 						'add'			=> !zlib_autocompression() || $Config->core['zlib_compression'] ? '' : ' disabled'
 					)
 				)
@@ -121,8 +119,8 @@ $a->content(
 						'type'			=> 'radio',
 						'name'			=> 'core[cache_compress_js_css]',
 						'checked'		=> $Config->core['cache_compress_js_css'],
-						'value'			=> array(1, 0),
-						'in'			=> array($L->on, $L->off)
+						'value'			=> array(0, 1),
+						'in'			=> array($L->off, $L->on)
 					)
 				)
 			)
@@ -136,7 +134,6 @@ $a->content(
 						'name'			=> 'core[inserts_limit]',
 						'value'			=> $Config->core['inserts_limit'],
 						'min'			=> 1,
-						'style'			=> 'width: 90px;',
 						'class'			=> 'form_element'
 					)
 				)
@@ -152,7 +149,6 @@ $a->content(
 						'value'			=> $Config->core['update_ratio'],
 						'min'			=> 0,
 						'max'			=> 100,
-						'style'			=> 'width: 90px;',
 						'class'			=> 'form_element'
 					)
 				).
@@ -180,9 +176,6 @@ $a->content(
 					)
 				)
 			)
-		).
-		$a->tr(
-			$a->td('', array('colspan'	=> 2))
 		),
 		array('class'	=> 'admin_table left_even right_odd')
 	)

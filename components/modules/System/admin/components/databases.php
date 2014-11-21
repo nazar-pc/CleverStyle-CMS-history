@@ -66,8 +66,7 @@ if (isset($rc[2])) {
 								array(
 									'name'		=> 'db[host]',
 									'value'		=> $rc[2] == 'edit' ? $database['host'] : $DB_HOST,
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->select(
@@ -85,40 +84,35 @@ if (isset($rc[2])) {
 								array(
 									'name'		=> 'db[prefix]',
 									'value'		=> $rc[2] == 'edit' ? $database['prefix'] : $DB_PREFIX,
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->input(
 								array(
 									'name'		=> 'db[name]',
 									'value'		=> $rc[2] == 'edit' ? $database['name'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->input(
 								array(
 									'name'		=> 'db[user]',
 									'value'		=> $rc[2] == 'edit' ? $database['user'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->input(
 								array(
 									'name'		=> 'db[password]',
 									'value'		=> $rc[2] == 'edit' ? $database['password'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->input(
 								array(
 									'name'		=> 'db[codepage]',
 									'value'		=> $rc[2] == 'edit' ? $database['codepage'] : $DB_CODEPAGE,
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							).
 							$a->input(
@@ -132,14 +126,11 @@ if (isset($rc[2])) {
 							(isset($rc[4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $rc[4])) : '')
 						),
 						array(
-							'class'	=> 'ui-state-default ui-corner-all'
+							'class'	=> 'ui-state-default ui-corner-all db_add'
 						)
 					)
 				),
-				array(
-					'style'	=> 'width: 100%;',
-					'class'	=> 'admin_table center_all'
-				)
+				array('class'	=> 'admin_table center_all')
 			).
 			$a->button(
 				$L->test_connection,
@@ -186,10 +177,7 @@ if (isset($rc[2])) {
 					(isset($rc[4]) ?
 						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
 					: ''),
-					array(
-						'style'	=> 'width: 100%',
-						'class'	=> 'center_all'
-					)
+					array('class'	=> 'center_all')
 				).
 				$a->button(array('in' => $L->yes, 'type' => 'submit'))
 			);
@@ -199,11 +187,11 @@ if (isset($rc[2])) {
 		$a->form = false;
 		global $Page, $db;
 		if (isset($rc[4])) {
-			$Page->content($Page->p($db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
+			$Page->content($Page->p($db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail, array('class'	=> 'test_result')));
 		} elseif (isset($rc[3])) {
-			$Page->content($Page->p($db->test(array($rc[3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
+			$Page->content($Page->p($db->test(array($rc[3])) ? $L->success : $L->fail, array('class'	=> 'test_result')));
 		} else {
-			$Page->content($Page->p($db->test($_POST['db']) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;')));
+			$Page->content($Page->p($db->test($_POST['db']) ? $L->success : $L->fail, array('class'	=> 'test_result')));
 		}
 	}
 } else {
@@ -280,8 +268,7 @@ if (isset($rc[2])) {
 					)
 				),
 				array(
-					'style'	=> 'text-align: left !important;',
-					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all db_config_buttons'.($i ? '' : ' green')
 				)
 			).
 			$a->td(
@@ -342,8 +329,7 @@ if (isset($rc[2])) {
 							)
 						),
 						array(
-							'class'	=> 'ui-state-highlight ui-corner-all',
-							'style'	=> 'text-align: right !important; border: 1px solid;'
+							'class'	=> 'ui-state-highlight ui-corner-all db_config_buttons_ db_config_even_lines'
 						)
 					).
 					$a->td(
@@ -356,8 +342,7 @@ if (isset($rc[2])) {
 							$mirror['codepage']
 						),
 						array(
-							'class'	=> 'ui-state-highlight ui-corner-all',
-							'style'	=> 'border: 1px solid;'
+							'class'	=> 'ui-state-highlight ui-corner-all db_config_even_lines'
 						)
 					)
 				);
@@ -379,21 +364,21 @@ if (isset($rc[2])) {
 					).$a->br(),
 					array(
 						'colspan'	=> 7,
-						'style'		=> 'text-align: left !important;;'
+						'class'		=> 'left_all'
 					)
 				)
 			).
 			$a->tr(
-				$a->td($a->info('db_balance'), array('colspan' => 4, 'style'	=> 'text-align: right !important;')).
+				$a->td($a->info('db_balance'), array('colspan' => 4, 'class'	=> 'right_all')).
 				$a->td(
 					$a->input(
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[db_balance]',
 							'checked'		=> $Config->core['db_balance'],
-							'value'			=> array(1, 0),
+							'value'			=> array(0, 1),
 							'class'			=> array('form_element'),
-							'in'			=> array($L->on, $L->off)
+							'in'			=> array($L->off, $L->on)
 						)
 					).
 					$a->input(
@@ -403,20 +388,20 @@ if (isset($rc[2])) {
 							'value'			=> 'config'
 						)
 					),
-					array('colspan' => 3, 'style'	=> 'text-align: left !important;')
+					array('colspan' => 3, 'class'	=> 'left_all')
 				)
 			).
 			$a->tr(
-				$a->td($a->info('maindb_for_write'), array('colspan' => 4, 'style'	=> 'text-align: right !important;')).
+				$a->td($a->info('maindb_for_write'), array('colspan' => 4, 'class'	=> 'right_all')).
 				$a->td(
 					$a->input(
 						array(
 							'type'			=> 'radio',
 							'name'			=> 'core[maindb_for_write]',
 							'checked'		=> $Config->core['maindb_for_write'],
-							'value'			=> array(1, 0),
+							'value'			=> array(0, 1),
 							'class'			=> array('form_element'),
-							'in'			=> array($L->on, $L->off)
+							'in'			=> array($L->off, $L->on)
 						)
 					).
 					$a->input(
@@ -426,13 +411,10 @@ if (isset($rc[2])) {
 							'value'			=> 'config'
 						)
 					),
-					array('colspan' => 3, 'style'	=> 'text-align: left !important;')
+					array('colspan' => 3, 'class'	=> 'left_all')
 				)
 			),
-			array(
-				'style'	=> 'width: 100%;',
-				'class'	=> 'admin_table center_all'
-			)
+			array('class'	=> 'admin_table')
 		)
 	);
 }

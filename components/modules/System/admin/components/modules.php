@@ -100,10 +100,7 @@ if ($mode && $rc[2] == 'install') {
 	$a->content(
 		$a->table(
 			$a->tr($db_list),
-			array(
-				'style'	=> 'width: 100%;',
-				'class'	=> 'admin_table'
-			)
+			array('class'	=> 'admin_table')
 		).
 		$a->input(
 			array(
@@ -164,10 +161,7 @@ if ($mode && $rc[2] == 'install') {
 	$a->content(
 		$a->table(
 			$a->tr($storage_list),
-			array(
-				'style'	=> 'width: 100%;',
-				'class'	=> 'admin_table'
-			)
+			array('class'	=> 'admin_table')
 		).
 		$a->input(
 			array(
@@ -219,8 +213,7 @@ if ($mode && $rc[2] == 'install') {
 						$a->icon('alert'),
 						array(
 							'data-title'	=> $L->missing_users_columns.':'.$a->br().$a->br().implode(', ', $lost_columns).$a->br().$a->br().$L->click_to_fix,
-							'class'			=> 'nul',
-							'style'			=> 'display: inline-block;'
+							'class'			=> 'nul pointer'
 						)
 					);
 				}
@@ -277,6 +270,7 @@ if ($mode && $rc[2] == 'install') {
 					'link',
 					array(
 						'data-title'	=> $L->API_exists.$a->br().(_file_exists($file) ? $L->click_to_view_details : ''),
+						'class'			=> 'pointer',
 						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
 					)
 				);
@@ -302,6 +296,7 @@ if ($mode && $rc[2] == 'install') {
 					'note',
 					array(
 						'data-title'	=> $L->information_about_module.$a->br().$L->click_to_view_details,
+						'class'			=> 'pointer',
 						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');'
 					)
 				);
@@ -327,6 +322,7 @@ if ($mode && $rc[2] == 'install') {
 					'info',
 					array(
 						'data-title'	=> $L->license.$a->br().$L->click_to_view_details,
+						'class'			=> 'pointer',
 						'onClick'		=> '$(\'#'.$module.'_license\').dialog(\'open\');'
 					)
 				);
@@ -418,8 +414,7 @@ if ($mode && $rc[2] == 'install') {
 			$a->td(
 				$action,
 				array(
-					'class'	=> 'ui-state-default ui-corner-all',
-					'style'	=> 'text-align: left;'
+					'class'	=> 'ui-state-default ui-corner-all modules_config_buttons'
 				)
 			)
 		);

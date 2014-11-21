@@ -1,6 +1,7 @@
 <?php
 global $Config, $Index, $L;
 $a = &$Index;
+$timezones = timezones_get_list();
 
 $a->content(
 	$a->table(
@@ -11,8 +12,7 @@ $a->content(
 					array(
 						'name'	=> 'core[name]',
 						'value' => $Config->core['name'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -24,8 +24,7 @@ $a->content(
 					array(
 						'name'	=> 'core[url]',
 						'value' => $Config->core['url'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -37,8 +36,7 @@ $a->content(
 					array(
 						'name'	=> 'core[cookie_domain]',
 						'value' => $Config->core['cookie_domain'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -50,8 +48,7 @@ $a->content(
 					array(
 						'name'	=> 'core[cookie_path]',
 						'value' => $Config->core['cookie_path'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -63,8 +60,7 @@ $a->content(
 					array(
 						'name'	=> 'core[cookie_prefix]',
 						'value' => $Config->core['cookie_prefix'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -89,31 +85,26 @@ $a->content(
 									$Config->core['mirrors_url'],
 									array(
 										'name'	=> 'core[mirrors_url]',
-										'style'	=> 'height: 4em; white-space: nowrap; margin-right: 2%;',
-										'class'	=> 'form_element',
-										'cols'	=> 30
+										'class'	=> 'form_element'
 									)
 								),
 								$a->textarea(
 									$Config->core['mirrors_cookie_domain'],
 									array(
 										'name'	=> 'core[mirrors_cookie_domain]',
-										'style'	=> 'height: 4em; white-space: nowrap; margin-right: 2%;',
-										'class'	=> 'form_element',
-										'cols'	=> 20
+										'class'	=> 'form_element'
 									)
 								),
 								$a->textarea(
 									$Config->core['mirrors_cookie_path'],
 									array(
 										'name'	=> 'core[mirrors_cookie_path]',
-										'style'	=> 'height: 4em; white-space: nowrap;',
-										'class'	=> 'form_element',
-										'cols'	=> 15
+										'class'	=> 'form_element'
 									)
 								)
 							)
-						)
+						),
+						array('id'	=> 'site_info_config_mirrors')
 					)
 				)
 			)
@@ -125,8 +116,7 @@ $a->content(
 					array(
 						'name'	=> 'core[keywords]',
 						'value' => $Config->core['keywords'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -138,8 +128,24 @@ $a->content(
 					array(
 						'name'	=> 'core[description]',
 						'value' => $Config->core['description'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
+					)
+				)
+			)
+		).
+		$a->tr(
+			$a->td($a->info('timezone')).
+			$a->td(
+				$a->select(
+					array(
+						'in'		=> array_values($timezones),
+						'value'		=> array_keys($timezones)
+					),
+					array(
+						'name'		=> 'core[timezone]',
+						'selected'	=> $Config->core['timezone'],
+						'size'		=> 7,
+						'class' 	=> 'form_element'
 					)
 				)
 			)
@@ -152,8 +158,7 @@ $a->content(
 						'type'	=> 'email',
 						'name'	=> 'core[admin_mail]',
 						'value' => $Config->core['admin_mail'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)
@@ -166,8 +171,7 @@ $a->content(
 						'type'	=> 'tel',
 						'name'	=> 'core[admin_phone]',
 						'value' => $Config->core['admin_phone'],
-						'class'	=> 'form_element',
-						'size'	=> 40
+						'class'	=> 'form_element'
 					)
 				)
 			)

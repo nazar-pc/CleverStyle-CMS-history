@@ -12,7 +12,7 @@ class Text {
 		$id = (int)$id;
 		if (isset($this->local_storage[$database.'_'.$id])) {
 			return $this->local_storage[$database.'_'.$id];
-		} elseif ($result = $Cache->get('texts/'.$database.'_'.$id)) {
+		} elseif ($result = $Cache->{'texts/'.$database.'_'.$id}) {
 			return $result;
 		}
 		if (isset($this->local_result[$database.'_'.$id])) {
@@ -26,7 +26,7 @@ class Text {
 		if (!is_array($result) || empty($result)) {
 			return false;
 		} else {
-			$Cache->set('texts/'.$database.'_'.$id, $result);
+			$Cache->{'texts/'.$database.'_'.$id} = $result;
 		}
 		if (isset($result[$this->language]) && !empty($result[$this->language])) {
 			return $this->local_storage[$database.'_'.$id] = $result[$this->language];
@@ -61,7 +61,7 @@ class Text {
 			unset($this->local_storage[$database.'_'.$id]);
 		}
 		if ($db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(_json_encode($result)).' WHERE `id` = '.$id.' LIMIT 1')) {
-			$Cache->set('texts/'.$database.'_'.$id, $result);
+			$Cache->{'texts/'.$database.'_'.$id} = $result;
 			$this->local_result[$database.'_'.$id] = &$result;
 			return '{¶'.$id.'}';
 		} else {
@@ -103,7 +103,7 @@ class Text {
 			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
 		}
 		if ($id) {
-			$Cache->set('texts/'.$database.'_'.$id, $result);
+			$Cache->{'texts/'.$database.'_'.$id} = $result;
 			$this->local_result[$database.'_'.$id] = &$result;
 			return '{¶'.$id.'}';
 		} else {

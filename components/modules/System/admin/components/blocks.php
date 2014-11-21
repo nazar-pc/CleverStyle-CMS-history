@@ -33,8 +33,7 @@ if ($mode && $rc[2] == 'settings') {
 							array(
 								'name'		=> 'block[title]',
 								'value'		=> $block['title'],
-								'class'		=> 'form_element',
-								'size'		=> 10
+								'class'		=> 'form_element'
 							)
 						),
 						$a->input(
@@ -63,8 +62,7 @@ if ($mode && $rc[2] == 'settings') {
 								'type'		=> 'datetime-local',
 								'name'		=> 'block[start]',
 								'value'		=> date('Y-m-d\TH:i', $block['start'] ?: TIME),
-								'class'		=> 'form_element',
-								'size'		=> 10
+								'class'		=> 'form_element'
 							)
 						),
 						$a->input(
@@ -82,8 +80,7 @@ if ($mode && $rc[2] == 'settings') {
 								'type'		=> 'datetime-local',
 								'name'		=> 'block[expire][date]',
 								'value'		=> date('Y-m-d\TH:i', $block['expire'] ?: TIME),
-								'class'		=> 'form_element',
-								'size'		=> 10
+								'class'		=> 'form_element'
 							)
 						),
 						$a->input(
@@ -91,18 +88,16 @@ if ($mode && $rc[2] == 'settings') {
 								'type'		=> 'time',
 								'name'		=> 'block[update]',
 								'value'		=> str_pad(round($block['update'] / 60), 2, 0, STR_PAD_LEFT).':'.str_pad(round($block['update'] % 60), 2, 0, STR_PAD_LEFT),
-								'class'		=> 'form_element',
-								'size'		=> 10
+								'class'		=> 'form_element'
 							)
 						)
 					),
 					array(
-						'class'	=> 'ui-state-default ui-corner-all'
+						'class'	=> 'ui-state-default ui-corner-all block_add'
 					)
 				)
 			),
 			array(
-				'style'	=> 'width: 100%;',
 				'class'	=> 'admin_table center_all'
 			)
 		)
@@ -113,7 +108,7 @@ if ($mode && $rc[2] == 'settings') {
 	$a->post_buttons .= $a->button(
 		$L->reset,
 		array(
-			'onClick'	=> 'location.reload();'
+			'class'		=> 'reload_button'
 		)
 	);
 	$blocks_array = array(
@@ -154,24 +149,21 @@ if ($mode && $rc[2] == 'settings') {
 		$blocks_array[$block_data['position']][$block_data['position_id']] = $a->li(
 			$a->div(
 				$block_data['title'],
-				array('style'		=> 'float: left; width: 100%; margin-right: -40px;')
+				array('class'		=> 'blocks_items_title')
 			).
 			$a->a(
 				$a->div(
-					$a->icon($block_data['active'] ? 'minusthick' : 'check'),
-					array('style'	=> 'cursor: pointer; display: inline-block;')
+					$a->icon($block_data['active'] ? 'minusthick' : 'check')
 				),
 				array(
 					'href'			=> $a->action.'/'.($block_data['active'] ? 'disable' : 'enable').'/'.$block,
-					'data-title'	=> $L->get($block_data['active'] ? 'disable' : 'enable'),
-					'onClick'		=> 'menuadmin(this.href, true); return false;',
+					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'},
 					'class'			=> 'nul'
 				)
 			).
 			$a->a(
 				$a->div(
-					$a->icon('wrench'),
-					array('style'	=> 'cursor: pointer; display: inline-block;')
+					$a->icon('wrench')
 				),
 				array(
 					'href'			=> $a->action.'/settings/'.$block,
@@ -193,9 +185,9 @@ if ($mode && $rc[2] == 'settings') {
 		$content = $a->td(
 			$a->ul(
 				$a->li(
-					$L->get($position.'_blocks'),
+					$L->{$position.'_blocks'},
 					array(
-						'class'		=> 'ui-state-disabled ui-state-highlight ui-corner-all',
+						'class'		=> 'ui-state-disabled ui-state-highlight ui-corner-all pointer',
 						'onClick'	=> 'blocks_toggle(\''.$position.'\');'
 					)
 				).
@@ -206,7 +198,7 @@ if ($mode && $rc[2] == 'settings') {
 					'class'			=> 'blocks_items'
 				)
 			),
-			array('style'	=> 'width: 33%;')
+			array('class'	=> 'blocks_items_groups')
 		);
 	}
 	unset($position, $content);
@@ -227,10 +219,7 @@ if ($mode && $rc[2] == 'settings') {
 				$blocks_array['bottom'].
 				$a->td()
 			),
-			array(
-				'style'	=> 'width: 100%;',
-				'class'	=> 'admin_table'
-			)
+			array('class'	=> 'admin_table')
 		).
 		$a->input(
 			array(

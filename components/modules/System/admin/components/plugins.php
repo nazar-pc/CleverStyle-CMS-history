@@ -57,6 +57,7 @@ foreach ($plugins as $plugin) {
 			'note',
 			array(
 				'data-title'	=> $L->information_about_plugin.$a->br().$L->click_to_view_details,
+				'class'			=> 'pointer',
 				'onClick'		=> '$(\'#'.$plugin.'_readme\').dialog(\'open\');'
 			)
 		);
@@ -82,6 +83,7 @@ foreach ($plugins as $plugin) {
 			'info',
 			array(
 				'data-title'	=> $L->license.$a->br().$L->click_to_view_details,
+				'class'			=> 'pointer',
 				'onClick'		=> '$(\'#'.$plugin.'_license\').dialog(\'open\');'
 			)
 		);
@@ -122,7 +124,7 @@ foreach ($plugins as $plugin) {
 		$a->td(
 			$action,
 			array(
-				'class'	=> 'ui-state-default ui-corner-all'
+				'class'	=> 'ui-state-default ui-corner-all plugins_config_buttons'
 			)
 		)
 	);
@@ -131,10 +133,7 @@ unset($plugins, $plugin, $state, $addition_state, $action);
 $a->content(
 	$a->table(
 		$plugins_list,
-		array(
-			'style'	=> 'width: 100%;',
-			'class'	=> 'admin_table center_all'
-		)
+		array('class'	=> 'admin_table center_all')
 	)
 );
 unset($plugins_list, $a);

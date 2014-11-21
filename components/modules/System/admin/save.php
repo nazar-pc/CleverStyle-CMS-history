@@ -8,7 +8,7 @@ if ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save') {
 		if (isset($_POST[$part])) {
 			$temp = &$Config->$part;
 			foreach ($_POST[$part] as $item => $value) {
-				$temp[$item] = filter($value, 'form');
+				$temp[$item] = $value;
 			}
 			unset($item, $value);
 			if ($part == 'routing' || $part == 'replace') {

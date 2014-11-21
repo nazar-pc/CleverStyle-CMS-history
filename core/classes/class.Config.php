@@ -66,6 +66,8 @@ class Config {
 		$L->init($this);
 		//Инициализация объекта страницы с использованием настроек движка
 		$Page->init($this);
+		//Установка часового пояса по-умолчанию
+		date_default_timezone_set($this->core['timezone']);
 	}
 	//Анализ и обработка текущего адреса страницы
 	private function routing () {

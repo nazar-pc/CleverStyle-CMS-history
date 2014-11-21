@@ -2,7 +2,6 @@
 global $Config, $Index, $L, $ADMIN;
 $a = &$Index;
 $rc = &$Config->routing['current'];
-$a->form = false;
 $test_dialog = true;
 if (isset($rc[2])) {
 	$a->apply = false;
@@ -35,16 +34,14 @@ if (isset($rc[2])) {
 								array(
 									'name'		=> 'storage[url]',
 									'value'		=> $rc[2] == 'edit' ? $storage['url'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 20
+									'class'		=> 'form_element'
 								)
 							),
 							$a->input(
 								array(
 									'name'		=> 'storage[host]',
 									'value'		=> $rc[2] == 'edit' ? $storage['host'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->select(
@@ -62,16 +59,14 @@ if (isset($rc[2])) {
 								array(
 									'name'		=> 'storage[user]',
 									'value'		=> $rc[2] == 'edit' ? $storage['user'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							),
 							$a->input(
 								array(
 									'name'		=> 'storage[password]',
 									'value'		=> $rc[2] == 'edit' ? $storage['password'] : '',
-									'class'		=> 'form_element',
-									'size'		=> 10
+									'class'		=> 'form_element'
 								)
 							).
 							$a->input(
@@ -84,14 +79,11 @@ if (isset($rc[2])) {
 							(isset($rc[3]) ? $a->input(array('type' => 'hidden', 'name' => 'storage_id', 'value' => $rc[3])) : '')
 						),
 						array(
-							'class'	=> 'ui-state-default ui-corner-all'
+							'class'	=> 'ui-state-default ui-corner-all storage_add'
 						)
 					)
 				),
-				array(
-					'style'	=> 'width: 100%;',
-					'class'	=> 'admin_table center_all'
-				)
+				array('class'	=> 'admin_table center_all')
 			).
 			$a->button(
 				$L->test_connection,
@@ -129,10 +121,7 @@ if (isset($rc[2])) {
 					$a->b($Config->storage[$rc[3]]['host'].'/'.$Config->storage[$rc[3]]['connection']).'?'.
 					$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
 					$a->input(array('type'	=> 'hidden',	'name'	=> 'storage',	'value'		=> $rc[3])),
-					array(
-						'style'	=> 'width: 100%',
-						'class'	=> 'center_all'
-					)
+					array('class'	=> 'center_all')
 				).
 				$a->button(array('in'	=> $L->yes,		'type'	=> 'submit'))
 			);
@@ -143,9 +132,9 @@ if (isset($rc[2])) {
 		$a->form = false;
 		global $Page, $Storage;
 		if (isset($rc[3])) {
-			$Page->Content = $Page->p($Storage->test(array($rc[3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+			$Page->Content = $Page->p($Storage->test(array($rc[3])) ? $L->success : $L->fail, array('class'	=> 'test_result'));
 		} else {
-			$Page->Content = $Page->p($Storage->test($_POST['storage']) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+			$Page->Content = $Page->p($Storage->test($_POST['storage']) ? $L->success : $L->fail, array('class'	=> 'test_result'));
 		}
 	}
 } else {
@@ -207,7 +196,7 @@ if (isset($rc[2])) {
 					)
 				) : '-'),
 				array(
-					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all storages_config_buttons'.($i ? '' : ' green')
 				)
 			).
 			$a->td(
@@ -218,7 +207,7 @@ if (isset($rc[2])) {
 					$i	? $storage_data['user']			: '-'
 				),
 				array(
-					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all '.($i ? '' : ' green')
 				)
 			)
 		);
@@ -237,14 +226,11 @@ if (isset($rc[2])) {
 					).$a->br(),
 					array(
 						'colspan'	=> 4,
-						'style'		=> 'text-align: left !important;'
+						'class'		=> 'left_all'
 					)
 				)
 			),
-			array(
-				'style'	=> 'text-align: center; width: 100%;',
-				'class'	=> 'admin_table center_all'
-			)
+			array('class'	=> 'admin_table center_all')
 		)
 	);
 	unset($storage_list);

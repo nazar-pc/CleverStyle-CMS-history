@@ -25,21 +25,21 @@ class Core {
 				
 				$KEY;
 		if(!_is_dir(STORAGES.DS.DOMAIN)) {
-			@_mkdir(STORAGES.DS.DOMAIN, 0600);
+			@_mkdir(STORAGES.DS.DOMAIN, 0770);
 		}
 		if(!_is_dir(STORAGE)) {
 			@_mkdir(STORAGE, 0777);
 			_file_put_contents(STORAGE.DS.'.htaccess', 'Allow From All');
 		}
 		if(!_is_dir(CACHE)) {
-			@_mkdir(CACHE, 0600);
+			@_mkdir(CACHE, 0770);
 		}
 		if(!_is_dir(PCACHE)) {
 			@_mkdir(PCACHE, 0777);
 			_file_put_contents(PCACHE.DS.'.htaccess', "Allow From All\r\nAddEncoding gzip .js\r\nAddEncoding gzip .css");
 		}
 		if(!_is_dir(LOGS)) {
-			@_mkdir(LOGS, 0600);
+			@_mkdir(LOGS, 0770);
 		}
 		if(!_is_dir(TEMP)) {
 			@_mkdir(TEMP, 0777);

@@ -2,8 +2,8 @@
 //Интерфейс для работы с глобальными системными объектами
 class Objects {
 	public	$Loaded		= array(),	//Массив со списком объектов, и данными о занятом объеме памяти
-											//после их создания, и длительностью содания
-			$unload_priority	= array('Key', 'Page', 'Config', 'User', 'db', 'Error', 'L', 'Text', 'Cache', 'Core');
+									//после их создания, и длительностью содания
+			$unload_priority	= array('Key', 'Page', 'User', 'Config', 'db', 'Error', 'L', 'Text', 'Cache', 'Core');
 	private	$List = array();
 	//Добавление в список объектов для их разрушения по окончанию работы
 	function add ($name) {

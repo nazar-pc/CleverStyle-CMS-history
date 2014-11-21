@@ -13,7 +13,6 @@ $a->content(
 						'name'			=> 'core[key_expire]',
 						'value'			=> $Config->core['key_expire'],
 						'min'			=> 1,
-						'style'			=> 'width: 90px;',
 						'class'			=> 'form_element'
 					)
 				).

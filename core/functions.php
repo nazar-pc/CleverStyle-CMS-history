@@ -576,8 +576,6 @@
 				return $mode($text, $data);
 			} elseif ($mode == 'strtolower' || $mode == 'strtoupper') {
 				return $mode($text);
-			} elseif ($mode == 'form') {
-				return function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($text, 'stripslashes') : $text;
 			} else {
 				return str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), trim($text));
 			}
@@ -623,6 +621,9 @@
 	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче
 	//настоятельно рекомендуется к использованию вместо стандартной!
 	function _json_encode ($in) {
+		if (defined('JSON_UNESCAPED_UNICODE')) {				//php 5.4
+			return json_encode($in, JSON_UNESCAPED_UNICODE);
+		}
 		return html_entity_decode(
 			preg_replace(
 				'/\\\&#x([0-9a-fA-F]{3});/',
@@ -752,6 +753,76 @@
 		}
 		return strtolower(str_pad($hex, 32, '0', STR_PAD_LEFT));
 	}
+	//Получения списка часовых зон
+	function timezones_get_list () {
+		global $Cache;
+		if (!($timezones = $Cache->timezones)) {
+			$tzs = timezone_abbreviations_list();
+			$timezones_ = $timezones = array();
+			foreach ($tzs as &$tz) {
+				foreach ($tz as &$v) {
+					if ($v['timezone_id']) {
+						$sign = $v['offset'] < 0 ? '-' : '+';
+						$v['o'] = abs($v['offset']);
+						$sec	= fmod($v['o'], 60);
+						$min	= fmod(floor($v['o']/60), 60);
+						$hour	= floor($v['o']/3600);
+						$id		= explode('/', $v['timezone_id']);
+						$timezones_[$id[0].$v['offset']]['id'] = &$v['timezone_id'];
+						$timezones_[$id[0].$v['offset']]['value'] = strtr($v['timezone_id'], '_', ' ').
+															' ('.$sign.
+																$hour.':'.
+																str_pad($min, 2, 0, STR_PAD_LEFT).':'.
+																str_pad($sec, 2, 0, STR_PAD_LEFT).
+															')';
+					}
+				}
+			}
+			unset($tzs, $tz, $v, $tmp);
+			ksort($timezones_);
+			foreach ($timezones_ as &$tz) {
+				$timezones[$tz['id']] = &$tz['value'];
+			}
+			unset($timezones_, $tz);
+			$Cache->timezones = $timezones;
+		}
+		return $timezones;
+	}
+	//Проверка сложности пароля (от 0 до 9)
+	function password_check ($password) {
+		global $Config;
+		$min		= is_object($Config) ? $Config->core['password_min_length'] : 5;
+		$password	= preg_replace('/\s+/', ' ', $password);
+		$s			= 0;
+		if(strlen($password) >= $min) {
+			++$s;
+			if(preg_match('/[0-9]+/', $password)) {
+				++$s;
+			}
+			if(preg_match('/[a-z]+/', $password)) {
+				++$s;
+			}
+			if(preg_match('/[A-Z]+/', $password)) {
+				++$s;
+			}
+			if(preg_match('/[а-я]+/', $password)) {
+				++$s;
+			}
+			if(preg_match('/[А-Я]+/', $password)) {
+				++$s;
+			}
+			if(preg_match('/\W/', $password)) {
+				++$s;
+			}
+			if($strlen = mb_strlen(preg_replace('/([0-9a-zа-я]+|\W)/i', '', $password))) {
+				++$s;
+				if ($strlen > 1) {
+					++$s;
+				}
+			}
+		}
+		return $s;
+	}
 	//Некоторые функции для определение состояния сервера
 	//Проверка версии БД
 	function check_db () {
@@ -763,7 +834,7 @@
 	//Проверка версии PHP
 	function check_php () {
 		global $PHP;
-		return (bool)version_compare(phpversion(), $PHP, '>=');
+		return (bool)version_compare(PHP_VERSION, $PHP, '>=');
 	}
 	//Проверка наличия и версии mcrypt
 	function check_mcrypt ($n = 0) { //0 - версия библиотеки (и наличие), 1 - подходит ли версия библиотеки
@@ -794,15 +865,6 @@
 	//Проверка автоматического сжатия страниц с помощью zlib
 	function zlib_autocompression () {
 		return zlib() && mb_strtolower(ini_get('zlib.output_compression')) == 'on';
-	}
-	//Проверка состояния директивы register_globals
-	function register_globals () {
-		global $L;
-		ob_start();
-		phpinfo(INFO_CONFIGURATION);
-		$tmp = ob_get_clean();
-		preg_match('/register_globals<\/td><td class=\"v\">(On|Off)/', $tmp, $tmp);
-		return $tmp[1] == 'On';
 	}
 	//Проверка отображения ошибок
 	function display_errors () {

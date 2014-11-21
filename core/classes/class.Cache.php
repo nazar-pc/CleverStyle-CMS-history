@@ -38,15 +38,14 @@ class Cache {
 		if (isset($this->local_storage[$item])) {
 			return $this->local_storage[$item];
 		}
-		global $Core;
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$item)) {
-			if ($cache = (CACHE_ENCRYPT ? $Core->decrypt($cache) : @_json_decode($cache))) {
+			if ($cache = @_json_decode($cache)) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
 			}
 		}
 		if (_is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
-			if ($cache = (CACHE_ENCRYPT ? $Core->decrypt($cache) : @_json_decode($cache))) {
+			if ($cache = @_json_decode($cache)) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
 			} else {
@@ -57,9 +56,8 @@ class Cache {
 		return false;
 	}
 	function set ($item, $data, $time = 0) {
-		global $Core;
 		$this->local_storage[$item] = $data;
-		$data = (CACHE_ENCRYPT ? $Core->encrypt($data) : @_json_encode($data));
+		$data = @_json_encode($data);
 		if (is_object($this->memcache)) {
 			global $Config;
 			$this->memcache->set(
@@ -85,7 +83,7 @@ class Cache {
 						break;
 					}
 					if(!_is_dir(CACHE.DS.$subitem)) {
-						@_mkdir(CACHE.DS.$subitem, 0600);
+						@_mkdir(CACHE.DS.$subitem, 0770);
 					}
 				}
 				unset($subitems, $max, $i, $subitem);

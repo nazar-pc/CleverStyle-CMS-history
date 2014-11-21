@@ -568,7 +568,7 @@ class HTML {
 	//Псевдо-элементы
 	function info		($in = '', $data = array()) {
 		global $L;
-		return $this->label($L->$in, array_merge(array('data-title' => $L->get($in.'_info')), $data));
+		return $this->label($L->$in, array_merge(array('data-title' => $L->{$in.'_info'}), $data));
 	}
 	function icon		($class, $data = array()) {
 		if (!isset($data['style'])) {
@@ -576,7 +576,12 @@ class HTML {
 		} else {
 			$data['style'] .= ' display: inline-block;';
 		}
-		return $this->span(array('class' => 'ui-icon ui-icon-'.$class), $data);
+		if (!isset($data['class'])) {
+			$data['class'] = 'ui-icon ui-icon-'.$class;
+		} else {
+			$data['class'] .= ' ui-icon ui-icon-'.$class;
+		}
+		return $this->span($data);
 	}
 }
 ?>

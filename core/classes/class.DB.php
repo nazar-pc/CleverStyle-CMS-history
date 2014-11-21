@@ -27,7 +27,7 @@ class DB {
 		} elseif (isset($this->connections[$connection])) {
 			return $this->connections[$connection];
 		//Проверяем, включена ли функция балансировки нагрузки и количество зеркал БД, подключаемся к БД
-		} elseif ($Config->core['db_balance'] && $mirrors = count($Config->db[$connection]['mirrors'])) {
+		} elseif (is_object($Config) && $Config->core['db_balance'] && $mirrors = count($Config->db[$connection]['mirrors'])) {
 			$select = mt_rand(0, $Config->core['maindb_for_write'] ? $mirrors - 1 : $mirrors);
 			if ($select < $mirrors) {
 				$mirror = $Config->db[$connection]['mirrors'][--$select];
@@ -143,7 +143,7 @@ class DB {
 			//Если подключалось не зеркало - выводим ошибку подключения к БД
 			if (!is_array($mirror)) {
 				global $Error, $L;
-				if ($connection == 'core') {
+				if ($connection == 'core' || $connection == 0) {
 					$Error->process($L->error_core_db, 'stop');
 				} else {
 					$Error->process($L->error_db.' '.$this->false_connections[$connection]);
@@ -179,7 +179,7 @@ class DB {
 				return false;
 			}
 		} else {
-			$db = _json_decode(filter($data, 'form'));
+			$db = _json_decode($data);
 		}
 		unset($data);
 		if (is_array($db)) {

@@ -42,6 +42,7 @@ class User {
 				$this->current['is']['guest'] = true;
 				//Иммитируем неудачный вход, чтобы при намеренной попытке подбора пароля заблокировать доступ
 				$this->login_result(false, 'system');
+				sleep(1);
 			}
 		}
 		unset($key_data, $key, $rc);
@@ -56,7 +57,7 @@ class User {
 		} else {
 			unset($test);
 			//Получаем список известных ботов
-			if (!($bots = $Cache->get('users/bots'))) {
+			if (!($bots = $Cache->{'users/bots'})) {
 				$bots = $this->db()->qfa('SELECT `id`, `login`, `email` FROM [prefix]users WHERE 3 IN (`groups`)');
 				if (is_array($bots) && !empty($bots)) {
 					foreach ($bots as &$bot) {
@@ -64,9 +65,9 @@ class User {
 						$bot['email'] = _json_decode($bot['email']);
 					}
 					unset($bot);
-					$Cache->set('users/bots', $bots);
+					$Cache->{'users/bots'} = $bots;
 				} else {
-					$Cache->set('users/bots', 'NULL');
+					$Cache->{'users/bots'} = 'NULL';
 				}
 			}
 			//Устанавливаем метку, что это бот. В любом случае изменение любых настроек,
@@ -83,7 +84,7 @@ class User {
 			//Если список известных ботов не пустой - определяем бота
 			if (is_array($bots) && !empty($bots)) {
 				//Загружаем данные
-				if (!($this->data = $Cache->get('users/'.$bot_hash))) {
+				if (!($this->data = $Cache->{'users/'.$bot_hash})) {
 					//Данных нет - ищем бота в списке известных
 					$id = false;
 					foreach ($bots as &$bot) {
@@ -103,28 +104,28 @@ class User {
 					unset($bots, $login, $email);
 					//Если получен id - бот найден
 					if ($this->data) {
-						$Cache->set('users/'.$bot_hash, $this->data);
+						$Cache->{'users/'.$bot_hash} = $this->data;
 					//Если такого бота в БД нет - определяем как гостя
 					} else {
-						$Cache->set('users/'.$full_hash, $this->data = 1);
+						$Cache->{'users/'.$full_hash} = $this->data = 1;
 					}
 				}
 			//Список ботов пустой - определяем как гостя
 			} else {
-				$Cache->set('users/'.$bot_hash, $this->data = 1);
+				$Cache->{'users/'.$bot_hash} = $this->data = 1;
 			}
 		}
 		//Загружаем данные пользователя с id $this->data
 		$id = $this->data;
 		//Точка возврата, выполняется, если аккаунт блокирован, неактивирован, или отключен
 		getting_user_data:
-		if (!($this->data = $Cache->get('users/'.$id))) {
+		if (!($this->data = $Cache->{'users/'.$id})) {
 			$this->data = $this->db()->qf(
 				'SELECT `id`, `login`, `username`, `groups`, `permissions`, `language`, `timezone`, `status`, `block_until` FROM `[prefix]users` '.
 					'WHERE `id` = '.$id.' LIMIT 1'
 			);
 			if (is_array($this->data) && !empty($this->data)) {
-				$Cache->set('users/'.$id, $this->data);
+				$Cache->{'users/'.$id} = $this->data;
 				if ($this->data['status'] != 1 && $id != 2) {
 					if ($this->data['status'] == 0) {
 						$Page->warning($L->your_account_disabled);
@@ -152,7 +153,7 @@ class User {
 			$this->current['is']['guest'] = true;
 		} else {
 			//Определяем типы пользователей
-			$groups = explode(',', $this->data['groups']);
+			$groups = explode(',', $this->groups);
 			if (in_array(1, $groups)) {
 				$this->current['is']['admin']	= true;
 				$this->current['is']['user']	= true;
@@ -169,16 +170,15 @@ class User {
 				if ($group_id < 1) {
 					continue;
 				}
-				if (!($group_data = $Cache->get('users_groups/'.$group_id))) {
-					$Cache->set(
-						'users_groups/'.$group_id,
-						$group_data = $this->db()->qf('SELECT `permissions`, `data` FROM `[prefix]users_groups` WHERE `id` = '.$group_id.' LIMIT 1')
+				if (!($group_data = $Cache->{'users_groups/'.$group_id})) {
+					$Cache->{'users_groups/'.$group_id} = $group_data = $this->db()->qf(
+						'SELECT `permissions`, `data` FROM `[prefix]users_groups` WHERE `id` = '.$group_id.' LIMIT 1'
 					);
 				}
 				$permissions = strtr($permissions | $group_data['permissions'], 2, 0);
 			}
 			unset($groups, $group_id, $group_data);
-			$this->data['permissions'] = strtr($this->data['permissions'] | $permissions, 2, 0);
+			$this->permissions = strtr($this->permissions | $permissions, 2, 0);
 		}
 		//Если не гость - применяем некоторые индивидуальные настройки
 		if ($this->id != 1) {
@@ -187,6 +187,7 @@ class User {
 		}
 	}
 	function get ($item, $user = false, $stop_key = false) {
+		global $Cache;
 		//Ключ остановки, запрещает получение данных из БД, когда идет выборка массива данных
 		static $_stop_key = false;
 		if ($_stop_key === false) {
@@ -249,7 +250,7 @@ class User {
 			if (isset($data[$item])) {
 				return $data[$item];
 			//Иначе если из кеша данные не доставали - пробуем достать
-			} elseif (!isset($new_data) && ($new_data = $Cache->get('users/'.$user)) && is_array($new_data)) {
+			} elseif (!isset($new_data) && ($new_data = $Cache->{'users/'.$user}) && is_array($new_data)) {
 				//Обновляем локальный кеш
 				if (is_array($new_data)) {
 					$data = $new_data;
@@ -308,7 +309,7 @@ class User {
 		global $Config, $db;
 		$this->db_prime = $db->{$Config->components['modules']['System']['db']['users']}(); //Получаем и сохраняем ссылку для повторного доступа
 		return $this->db_prime;
-	}	
+	}
 	//Проверяет, кем является посетитель.
 	//Возможные значения $mode: 'admin', 'user', 'guest', 'bot', 'system'
 	function is ($mode) {
@@ -332,7 +333,7 @@ class User {
 		$session_id = $session_id ?: $this->current['session'];
 		global $Cache, $Config;
 		$result = false;
-		if ($session_id && !($result = $Cache->get('sessions/'.$session_id))) {
+		if ($session_id && !($result = $Cache->{'sessions/'.$session_id})) {
 			$result = $this->db()->qf(
 				'SELECT `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip` '.
 				'FROM `[prefix]sessions` '.
@@ -344,7 +345,7 @@ class User {
 					'`forwarded_for` = \''.ip2hex($this->forwarded_for).'\' AND '.
 					'`client_ip` = \''.ip2hex($this->client_ip).'\''
 			);
-			$Cache->set('sessions/'.$session_id, $result);
+			$Cache->{'sessions/'.$session_id} = $result;
 		}
 		if (!$session_id || !is_array($result)) {
 			$this->add_session(1);
@@ -355,7 +356,7 @@ class User {
 				'UPDATE `[prefix]sessions` SET `expire` = '.(TIME + $Config->core['session_expire']).' WHERE `id` = \''.$session_id.'\''
 			);
 			$result['expire'] = TIME + $Config->core['session_expire'];
-			$Cache->set('sessions/'.$session_id, $result);
+			$Cache->{'sessions/'.$session_id} = $result;
 		}
 		return $result['user'];
 	}
@@ -380,16 +381,13 @@ class User {
 						')'
 				);
 				global $Cache;
-				$Cache->set(
-					'sessions/'.$hash,
-					$this->current['session'] = array(
-						'user'			=> (int)$id,
-						'expire'		=> TIME + $Config->core['session_expire'],
-						'user_agent'	=> $this->user_agent,
-						'ip'			=> $ip,
-						'forwarded_for'	=> $forwarded_for,
-						'client_ip'		=> $client_ip
-					)
+				$Cache->{'sessions/'.$hash} = $this->current['session'] = array(
+					'user'			=> (int)$id,
+					'expire'		=> TIME + $Config->core['session_expire'],
+					'user_agent'	=> $this->user_agent,
+					'ip'			=> $ip,
+					'forwarded_for'	=> $forwarded_for,
+					'client_ip'		=> $client_ip
 				);
 				_setcookie('session', $hash, TIME + $Config->core['session_expire'], false, true);
 				return true;
@@ -471,16 +469,14 @@ class User {
 				$Page->button(
 					$Page->icon('check').$L->log_in,
 					array(
-						'onMouseDown'	=> '$(\'#anonym_header_form\').slideUp(); $(\'#login_header_form\').slideDown();',
-						'style'			=> 'float: none; margin-top: 4px;',
+						'id'			=> 'login_slide',
 						'class'			=> 'compact'
 					)
 				).
 				$Page->button(
 					$Page->icon('pencil').$L->register,
 					array(
-						'onMouseDown'	=> '$(\'#anonym_header_form\').slideUp(); $(\'#register_header_form\').slideDown();',
-						'style'			=> 'float: none; margin-top: 4px;',
+						'id'			=> 'registration_slide',
 						'data-title'	=> $L->quick_registration_form,
 						'class'			=> 'compact'
 					)
@@ -494,32 +490,40 @@ class User {
 					array(
 						'id'			=> 'register',
 						'placeholder'	=> $L->email_or,
-						'data-title'	=> $L->email_or_desciption
+						'data-title'	=> $L->email_or_description,
+						'tabindex'		=> 1
 					)
 				).
-				/*$Page->datalist(
+				$Page->select(
 					array(
-						'in'			=> _mb_substr(get_list(MODULES.DS.MODULE.DS.'register', '/^.*?\.php$/i', 'f'), 0, -4),
-						//'onclick'		=> 'vsdf'
+						'in'			=> array_merge(array(''), _mb_substr(get_list(MODULES.DS.MODULE.DS.'register', '/^.*?\.php$/i', 'f'), 0, -4))
 					),
 					array(
 						'id'			=> 'register_list'
 					)
-				).*/
+				).
 				$Page->button(
 					$Page->icon('pencil').$L->register,
 					array(
-						'onMouseDown'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());',
-						'class'			=> 'compact'
+						'id'			=> 'register_process',
+						'class'			=> 'compact',
+						'tabindex'		=> 2
 					)
 				).
 				$Page->button(
 					$Page->icon('carat-1-s'),
 					array(
-						'onMouseDown'	=> '$(\'#anonym_header_form\').slideDown(); $(\'#register_header_form\').slideUp();',
-						'style'			=> 'float: right; margin-top: 4px;',
 						'data-title'	=> $L->back,
-						'class'			=> 'compact'
+						'class'			=> 'compact header_back',
+						'tabindex'		=> 3
+					)
+				).
+				$Page->button(
+					$Page->icon('help'),
+					array(
+						'data-title'	=> $L->restore_password,
+						'class'			=> 'compact restore_password',
+						'tabindex'		=> 4
 					)
 				),
 				array(
@@ -531,53 +535,55 @@ class User {
 				$Page->input(
 					array(
 						'id'			=> 'user_login',
-						'placeholder'	=> $L->login_or_email
+						'placeholder'	=> $L->login_or_email_or,
+						'tabindex'		=> 1
+					)
+				).
+				$Page->select(
+					array(
+						'in'			=> array_merge(array(''), _mb_substr(get_list(MODULES.DS.MODULE.DS.'register', '/^.*?\.php$/i', 'f'), 0, -4))
+					),
+					array(
+						'id'			=> 'login_list'
 					)
 				).
 				$Page->input(
 					array(
 						'type'			=> 'password',
 						'id'			=> 'user_password',
-						'placeholder'	=> $L->password
+						'placeholder'	=> $L->password,
+						'tabindex'		=> 2
 					)
 				).
 				$Page->icon(
 					'locked',
 					array(
-						'onMouseDown'	=> 'if ($(\'#user_password\').prop(\'type\') == \'password\') {'.
-											'$(\'#user_password\').prop(\'type\', \'text\');'.
-											'$(this).addClass(\'ui-icon-unlocked\');'.
-											'$(this).removeClass(\'ui-icon-locked\');'.
-										'} else {'.
-											'$(\'#user_password\').prop(\'type\', \'password\');'.
-											'$(this).addClass(\'ui-icon-locked\');'.
-											'$(this).removeClass(\'ui-icon-unlocked\');'.
-										'}'
+						'id'			=> 'show_password',
+						'class'			=> 'pointer'
 					)
 				).
 				$Page->button(
 					$Page->icon('check').$L->log_in,
 					array(
-						'id'			=> 'log_in',
-						'onMouseDown'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());',
-						'class'			=> 'compact'
+						'id'			=> 'login_process',
+						'class'			=> 'compact',
+						'tabindex'		=> 3
 					)
 				).
 				$Page->button(
 					$Page->icon('carat-1-s'),
 					array(
-						'onMouseDown'	=> '$(\'#anonym_header_form\').slideDown(); $(\'#login_header_form\').slideUp();',
-						'style'			=> 'float: right;',
 						'data-title'	=> $L->back,
-						'class'			=> 'compact'
+						'class'			=> 'compact header_back',
+						'tabindex'		=> 5
 					)
 				).
 				$Page->button(
 					$Page->icon('help'),
 					array(
-						'style'			=> 'float: right;',
 						'data-title'	=> $L->restore_password,
-						'class'			=> 'compact'
+						'class'			=> 'compact restore_password',
+						'tabindex'		=> 4
 					)
 				),
 				array(
@@ -594,12 +600,13 @@ class User {
 		global $Cache;
 		//Обновление кеша текущего пользователя
 		if ($this->update_cache && !empty($this->data)) {
-			$Cache->set('users/'.$this->id, $this->data);
+			$Cache->{'users/'.$this->id} = $this->data;
 		}
 		//Обновление кеша других пользователей
 		if ($this->update_cache_others && !empty($this->data_others)) {
 			foreach ($this->data_others as $id => &$data) {
-				$Cache->set('users/'.$id, $data);
+				$data['id'] = $id;
+				$Cache->{'users/'.$id} = $data;
 			}
 			unset($id, $data);
 		}
