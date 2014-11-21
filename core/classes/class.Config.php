@@ -225,8 +225,8 @@ class Config {
 		$Cache->config = $Config;
 		return true;
 	}
-	function save ($parts = false) {
-		if ($parts === false || empty($parts)) {
+	function save ($parts = NULL) {
+		if ($parts === NULL || empty($parts)) {
 			$parts = $this->admin_parts;
 		} elseif (!is_array($parts)) {
 			$parts = (array)$parts;

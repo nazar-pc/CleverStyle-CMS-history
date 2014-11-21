@@ -75,18 +75,23 @@ class HTTP extends StorageAbstract {
 	}
 	function copy ($source, $dest, $context = NULL) {
 		$temp = false;
+		$copy = true;
 		if ($source == realpath($source)) {
 			$temp = md5(uniqid(microtime(true)));
 			while (file_exists(TEMP.DS.$temp)) {
 				$temp = md5(uniqid(microtime(true)));
 			}
 			time_limit_pause();
-			copy($source, TEMP.DS.$temp);
+			$copy = copy($source, TEMP.DS.$temp);
 			time_limit_pause(false);
 			global $Config;
 			$source = $Config->server['base_url'].'/'.$temp;
 		}
-		$result = $this->request(array('function' => __FUNCTION__, 'source' => $source, 'dest' => $dest, 'http' => $temp));
+		if ($copy) {
+			$result = $this->request(array('function' => __FUNCTION__, 'source' => $source, 'dest' => $dest, 'http' => $temp));
+		} else {
+			return false;
+		}
 		if ($temp) {
 			unlink(TEMP.DS.$temp);
 		}
@@ -106,28 +111,37 @@ class HTTP extends StorageAbstract {
 			$temp = md5(uniqid(microtime(true)));
 		}
 		time_limit_pause();
-		move_uploaded_file($filename, TEMP.DS.$temp);
+		$move = move_uploaded_file($filename, TEMP.DS.$temp);
 		time_limit_pause(false);
 		global $Config;
-		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $Config->server['base_url'].'/'.$temp, 'destination' => $destination));
+		if ($move) {
+			$result = $this->request(array('function' => __FUNCTION__, 'filename' => $Config->server['base_url'].'/'.$temp, 'destination' => $destination));
+		} else {
+			return false;
+		}
 		unlink(TEMP.DS.$temp);
 		return (bool)$result[1];
 	}
 	function rename ($oldname, $newname, $context = NULL) {
 		$temp = false;
+		$copy = true;
 		if ($oldname == realpath($oldname)) {
 			$temp = md5(uniqid(microtime(true)));
 			while (file_exists(TEMP.DS.$temp)) {
 				$temp = md5(uniqid(microtime(true)));
 			}
 			time_limit_pause();
-			copy($oldname, TEMP.DS.$temp);
+			$copy = copy($oldname, TEMP.DS.$temp);
 			time_limit_pause(false);
 			global $Config;
 			$oldname_x = $oldname;
 			$oldname = $Config->server['base_url'].'/'.$temp;
 		}
-		$result = $this->request(array('function' => __FUNCTION__, 'oldname' => $oldname, 'newname' => $newname, 'http' => $temp));
+		if ($copy) {
+			$result = $this->request(array('function' => __FUNCTION__, 'oldname' => $oldname, 'newname' => $newname, 'http' => $temp));
+		} else {
+			return false;
+		}
 		if ($temp) {
 			unlink(TEMP.DS.$temp);
 			if ((bool)$result[1]) {

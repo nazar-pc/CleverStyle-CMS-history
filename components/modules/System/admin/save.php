@@ -29,7 +29,7 @@ if (isset($_POST['edit_settings'])) {
 				flush_pcache();
 			}
 			global $Page;
-			$Page->js("\$(document).ready(function(){save = true;});\n", 'code');
+			$Page->js("\$(function(){save = true;});\n", 'code');
 			$Index->cancel = '';
 		} else {
 			$apply_error = true;

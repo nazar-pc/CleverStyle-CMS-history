@@ -2,6 +2,7 @@
 global $Config, $Index, $L, $ADMIN;
 $a = &$Index;
 $rc = &$Config->routing['current'];
+$a->form = false;
 $test_dialog = true;
 if (isset($rc[2])) {
 	$a->apply_button = false;
@@ -83,7 +84,7 @@ if (isset($rc[2])) {
 							(isset($rc[3]) ? $a->input(array('type' => 'hidden', 'name' => 'storage_id', 'value' => $rc[3])) : '')
 						),
 						array(
-							'class'	=> 'ui-state-highlight ui-corner-all'
+							'class'	=> 'ui-state-default ui-corner-all'
 						)
 					)
 				),
@@ -123,7 +124,7 @@ if (isset($rc[2])) {
 			$Page->Top .= $a->div(
 				$L->storage_used_by_modules.': '.implode(', ', $content),
 				array(
-					'class'	=> 'red ui-state-highlight'
+					'class'	=> 'red ui-state-default'
 				)
 			);
 		} else {
@@ -186,7 +187,7 @@ if (isset($rc[2])) {
 				).
 				$a->a(
 					$a->button(
-						$a->icon('minus'),
+						$a->icon('close'),
 						array(
 							'data-title'	=> $L->delete.' '.$L->storage
 						)
@@ -209,7 +210,7 @@ if (isset($rc[2])) {
 					)
 				) : '-'),
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
 				)
 			).
 			$a->td(
@@ -220,7 +221,7 @@ if (isset($rc[2])) {
 					$i	? $storage['user']			: '-'
 				),
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
 				)
 			)
 		);

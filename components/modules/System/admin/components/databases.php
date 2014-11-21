@@ -130,7 +130,7 @@ if (isset($rc[2])) {
 							(isset($rc[4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $rc[4])) : '')
 						),
 						array(
-							'class'	=> 'ui-state-highlight ui-corner-all'
+							'class'	=> 'ui-state-default ui-corner-all'
 						)
 					)
 				),
@@ -172,7 +172,7 @@ if (isset($rc[2])) {
 			$Page->Top .= $a->div(
 				$L->db_used_by_modules.': '.implode(', ', $content),
 				array(
-					'class'	=> 'red ui-state-highlight'
+					'class'	=> 'red ui-state-default'
 				)
 			);
 		} else {
@@ -260,7 +260,7 @@ if (isset($rc[2])) {
 				).
 				$a->a(
 					$a->button(
-						$a->icon('minus'),
+						$a->icon('close'),
 						array(
 							'data-title'	=> $L->delete.' '.$L->db
 						)
@@ -284,7 +284,7 @@ if (isset($rc[2])) {
 				),
 				array(
 					'style'	=> 'text-align: left !important;',
-					'class'	=> 'ui-state-highlight ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
 				)
 			).
 			$a->td(
@@ -297,7 +297,7 @@ if (isset($rc[2])) {
 					$i	? $db['codepage']	: $DB_CODEPAGE
 				),
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all'.($i ? '' : ' green')
+					'class'	=> 'ui-state-default ui-corner-all'.($i ? '' : ' green')
 				)
 			)
 		);
@@ -319,7 +319,7 @@ if (isset($rc[2])) {
 						).
 						$a->a(
 							$a->button(
-								$a->icon('minus'),
+								$a->icon('close'),
 								array(
 									'data-title'	=> $L->delete.' '.$L->mirror
 								)
@@ -342,8 +342,8 @@ if (isset($rc[2])) {
 							)
 						),
 						array(
-							'style'	=> 'text-align: right !important;',
-							'class'	=> 'ui-widget-shadow'
+							'class'	=> 'ui-state-highlight ui-corner-all',
+							'style'	=> 'text-align: right !important; border: 1px solid;'
 						)
 					).
 					$a->td(
@@ -356,7 +356,8 @@ if (isset($rc[2])) {
 							$mirror['codepage']
 						),
 						array(
-							'class'	=> 'ui-widget-shadow'
+							'class'	=> 'ui-state-highlight ui-corner-all',
+							'style'	=> 'border: 1px solid;'
 						)
 					)
 				);

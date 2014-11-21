@@ -52,73 +52,71 @@ function background() {
 		bokeh.appendTo("#background");
 	}
 }
-$(document).ready(
-	function(){
-		var header_visible = $.cookie('header_visible'), header_elements = $('header > *, #body'),
-			header_move_allow = true,
-			header_offset = 125,
-			header_delay = 250;
-		if (header_visible == 'hide') {
-			header_elements.animate({'marginTop': '-='+header_offset+'px'}, 0);
-		} else {
-			header_visible = 'show';
-		}
-		$('#header_zone').mouseover(
-			function () {
-				if (header_visible == 'hide' && header_move_allow) {
-					header_move_allow = false;
-					header_elements.animate({'marginTop': '+='+header_offset+'px'}, header_delay, 'swing', function () {
-						header_visible = 'show';
-						$.cookie('header_visible', header_visible, {path: '/'});
-						header_move_allow = true;
-					});
-				}
-			}
-		);
-		$('#header_black').mouseout(
-			function () {
-				if (header_visible == 'show' && header_move_allow) {
-					header_move_allow = false;
-					header_elements.animate({'marginTop': '-='+header_offset+'px'}, header_delay, 'swing', function () {
-						header_visible = 'hide';
-						$.cookie('header_visible', header_visible, {path: '/'});
-						header_move_allow = true;
-					});
-				}
-			}
-		);
-		$('#body').mousemove(
-			function () {
-				if (header_visible == 'show' && header_move_allow) {
-					header_move_allow = false;
-					header_elements.animate({'marginTop': '-='+header_offset+'px'}, header_delay, 'swing', function () {
-						header_visible = 'hide';
-						$.cookie('header_visible', header_visible, {path: '/'});
-						header_move_allow = true;
-					});
-				}
-			}
-		);
-		if ($.browser.msie) {
-			$('#loading').attr('style', '-ms-transform: rotate('+(++loading_angle)+'deg)');
-			loading_interval = setInterval(function () {$('#loading').attr('style', '-ms-transform: rotate('+(loading_angle += 3)+'deg)');}, 50);
-		} else {
-			$('#loading').css(
-				{
-					"-ms-transform" : 'rotate('+(++loading_angle)+'deg)',
-					"-moz-transform" : 'rotate('+(++loading_angle)+'deg)',
-					"-o-transform" : 'rotate('+(++loading_angle)+'deg)',
-					"-webkit-transform" : 'rotate('+(++loading_angle)+'deg)',
-					"transform" : 'rotate('+(++loading_angle)+'deg)'
-				}
-			);
-			loading_interval = setInterval(function () {$('#loading').css({"-moz-transform" : 'rotate('+(++loading_angle)+'deg)', "-o-transform" : 'rotate('+(++loading_angle)+'deg)', "-webkit-transform" : 'rotate('+(++loading_angle)+'deg)', "transform" : 'rotate('+(++loading_angle)+'deg)'});}, 50);
-		}
-		$('#loading > div').css('opacity', 1);
-		background();
+$(function(){
+	var header_visible = $.cookie('header_visible'), header_elements = $('header > *, #body'),
+		header_move_allow = true,
+		header_offset = 125,
+		header_delay = 250;
+	if (header_visible == 'hide') {
+		header_elements.animate({'marginTop': '-='+header_offset+'px'}, 0);
+	} else {
+		header_visible = 'show';
 	}
-);
-$(
+	$('#header_zone').mouseover(
+		function () {
+			if (header_visible == 'hide' && header_move_allow) {
+				header_move_allow = false;
+				header_elements.animate({'marginTop': '+='+header_offset+'px'}, header_delay, 'swing', function () {
+					header_visible = 'show';
+					$.cookie('header_visible', header_visible, {path: '/'});
+					header_move_allow = true;
+				});
+			}
+		}
+	);
+	$('#header_black').mouseout(
+		function () {
+			if (header_visible == 'show' && header_move_allow) {
+				header_move_allow = false;
+				header_elements.animate({'marginTop': '-='+header_offset+'px'}, header_delay, 'swing', function () {
+					header_visible = 'hide';
+					$.cookie('header_visible', header_visible, {path: '/'});
+					header_move_allow = true;
+				});
+			}
+		}
+	);
+	$('#body').mousemove(
+		function () {
+			if (header_visible == 'show' && header_move_allow) {
+				header_move_allow = false;
+				header_elements.animate({'marginTop': '-='+header_offset+'px'}, header_delay, 'swing', function () {
+					header_visible = 'hide';
+					$.cookie('header_visible', header_visible, {path: '/'});
+					header_move_allow = true;
+				});
+			}
+		}
+	);
+	if ($.browser.msie) {
+		$('#loading').attr('style', '-ms-transform: rotate('+(++loading_angle)+'deg)');
+		loading_interval = setInterval(function () {$('#loading').attr('style', '-ms-transform: rotate('+(loading_angle += 3)+'deg)');}, 50);
+	} else {
+		$('#loading').css(
+			{
+				"-ms-transform" : 'rotate('+(++loading_angle)+'deg)',
+				"-moz-transform" : 'rotate('+(++loading_angle)+'deg)',
+				"-o-transform" : 'rotate('+(++loading_angle)+'deg)',
+				"-webkit-transform" : 'rotate('+(++loading_angle)+'deg)',
+				"transform" : 'rotate('+(++loading_angle)+'deg)'
+			}
+		);
+		loading_interval = setInterval(function () {$('#loading').css({"-moz-transform" : 'rotate('+(++loading_angle)+'deg)', "-o-transform" : 'rotate('+(++loading_angle)+'deg)', "-webkit-transform" : 'rotate('+(++loading_angle)+'deg)', "transform" : 'rotate('+(++loading_angle)+'deg)'});}, 50);
+	}
+	$('#loading > div').css('opacity', 1);
+	background();
+});
+$(window).load(
 	function(){
 		setTimeout(
 			function(){

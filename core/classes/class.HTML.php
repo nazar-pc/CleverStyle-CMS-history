@@ -160,8 +160,8 @@ class HTML {
 	}
 
 	//HTML тэги
-	///Простая обработка
-	////Парные теги
+		//Простая обработка
+			//Парные теги
 	function html		($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
@@ -190,6 +190,9 @@ class HTML {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function script		($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function style		($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function i			($in = '', $data = array()) {
@@ -234,7 +237,7 @@ class HTML {
 	function sub		($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	////Непарные теги
+			//Непарные теги
 	function link		($in = array()) {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
@@ -256,7 +259,7 @@ class HTML {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
 	}
-	///Специфическая обработка
+		//Специфическая обработка
 	function table		($in = array(), $data = array(), $data2 = array()) {
 		if (is_array($in)) {
 			$temp = '';
@@ -291,6 +294,72 @@ class HTML {
 		}
 	}
 	function td			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
+	function ul			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
+	function ol			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
+	function li			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
+	function dl			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
+	function dt			($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
+			}
+			return $temp;
+		} else {
+			return $this->swrap($in, $data, __FUNCTION__);
+		}
+	}
+	function dd			($in = '', $data = array()) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
@@ -507,7 +576,6 @@ class HTML {
 		$data['level'] = false;
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-
 	//Псевдо-элементы
 	function info		($in = '', $data = array()) {
 		global $L;

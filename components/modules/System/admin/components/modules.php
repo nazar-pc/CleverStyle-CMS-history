@@ -96,7 +96,7 @@ if ($mode && $rc[2] == 'install') {
 				)
 			),
 			array(
-				'class'	=> 'ui-state-highlight ui-corner-all'
+				'class'	=> 'ui-state-default ui-corner-all'
 			)
 		);
 	}
@@ -105,7 +105,7 @@ if ($mode && $rc[2] == 'install') {
 	$Page->Top .= $a->div(
 		$L->changing_settings_warning,
 		array(
-			'class'	=> 'red ui-state-highlight'
+			'class'	=> 'red ui-state-default'
 		)
 	);
 	$a->content(
@@ -168,7 +168,7 @@ if ($mode && $rc[2] == 'install') {
 				)
 			),
 			array(
-				'class'	=> 'ui-state-highlight ui-corner-all'
+				'class'	=> 'ui-state-default ui-corner-all'
 			)
 		);
 	}
@@ -177,7 +177,7 @@ if ($mode && $rc[2] == 'install') {
 	$Page->Top .= $a->div(
 		$L->changing_settings_warning,
 		array(
-			'class'	=> 'red ui-state-highlight'
+			'class'	=> 'red ui-state-default'
 		)
 	);
 	$a->content(
@@ -270,9 +270,14 @@ if ($mode && $rc[2] == 'install') {
 			}
 			//Уведомление об наличии API
 			if (is_dir(MODULES.DS.$module.DS.$API)) {
-				if (file_exists(MODULES.DS.$module.DS.$API.DS.'readme.txt')) {
-					$addition_state .= $a->div(
-						file_get_contents(MODULES.DS.$module.DS.$API.DS.'readme.txt'),
+				if (file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.txt') || file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.html')) {
+					if (substr($file, -3) == 'txt') {
+						$tag = 'pre';
+					} else {
+						$tag = 'div';
+					}
+					$addition_state .= $a->$tag(
+						file_get_contents($file),
 						array(
 							'id'			=> $module.'_api',
 							'class'			=> 'dialog',
@@ -284,15 +289,21 @@ if ($mode && $rc[2] == 'install') {
 				$addition_state .= $a->icon(
 					'link',
 					array(
-						'data-title'	=> $L->API_exists.$a->br().(file_exists(MODULES.DS.$module.DS.$API.DS.'readme.txt') ? $L->click_to_view_details : ''),
+						'data-title'	=> $L->API_exists.$a->br().(file_exists($file) ? $L->click_to_view_details : ''),
 						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
 					)
 				);
+				unset($tag, $file);
 			}
 			//Информация о модуле
-			if (file_exists(MODULES.DS.$module.DS.'readme.txt')) {
-				$addition_state .= $a->div(
-					file_get_contents(MODULES.DS.$module.DS.'readme.txt'),
+			if (file_exists($file = MODULES.DS.$module.DS.'readme.txt') || file_exists($file = MODULES.DS.$module.DS.'readme.html')) {
+				if (substr($file, -3) == 'txt') {
+					$tag = 'pre';
+				} else {
+					$tag = 'div';
+				}
+				$addition_state .= $a->$tag(
+					file_get_contents($file),
 					array(
 						'id'			=> $module.'_readme',
 						'class'			=> 'dialog',
@@ -301,27 +312,61 @@ if ($mode && $rc[2] == 'install') {
 					)
 				).
 				$a->icon(
-					'info',
+					'note',
 					array(
 						'data-title'	=> $L->information_about_module.$a->br().$L->click_to_view_details,
 						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');'
 					)
 				);
 			}
-			if (mb_strtolower($module) != 'system') {
-				$action .= (is_dir(MODULES.DS.$module.DS.$ADMIN) ? $a->a(
-					$a->button(
-						$a->icon('wrench'),
-						array(
-							'data-title'	=> $L->settings
-						)
-					),
+			unset($tag, $file);
+			//Лицензия
+			if (file_exists($file = MODULES.DS.$module.DS.'license.txt') || file_exists($file = MODULES.DS.$module.DS.'license.html')) {
+				if (substr($file, -3) == 'txt') {
+					$tag = 'pre';
+				} else {
+					$tag = 'div';
+				}
+				$addition_state .= $a->$tag(
+					file_get_contents($file),
 					array(
-						'href'		=> $ADMIN.'/'.$module,
-						'class'		=> 'nul'
+						'id'			=> $module.'_license',
+						'class'			=> 'dialog',
+						'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
+						'title'			=> $module.' -> '.$L->license
 					)
-				) : '').
-				$a->a(
+				).
+				$a->icon(
+					'info',
+					array(
+						'data-title'	=> $L->license.$a->br().$L->click_to_view_details,
+						'onClick'		=> '$(\'#'.$module.'_license\').dialog(\'open\');'
+					)
+				);
+			}
+			unset($tag, $file);
+			if (mb_strtolower($module) != 'system') {
+				if (
+					is_dir(MODULES.DS.$module.DS.$ADMIN) &&
+					(
+						file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.php') ||
+						file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.json')
+					)
+				) {
+					$action .= $a->a(
+						$a->button(
+							$a->icon('wrench'),
+							array(
+								'data-title'	=> $L->settings
+							)
+						),
+						array(
+							'href'		=> $ADMIN.'/'.$module,
+							'class'		=> 'nul'
+						)
+					);
+				}
+				$action .= $a->a(
 					$a->button(
 						$a->icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
 						array(
@@ -365,7 +410,7 @@ if ($mode && $rc[2] == 'install') {
 			$a->td(
 				$module,
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all'
+					'class'	=> 'ui-state-default ui-corner-all'
 				)
 			).
 			$a->td(
@@ -376,13 +421,13 @@ if ($mode && $rc[2] == 'install') {
 					)
 				).$addition_state,
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all'
+					'class'	=> 'ui-state-default ui-corner-all'
 				)
 			).
 			$a->td(
 				$action,
 				array(
-					'class'	=> 'ui-state-highlight ui-corner-all',
+					'class'	=> 'ui-state-default ui-corner-all',
 					'style'	=> 'text-align: left;'
 				)
 			)

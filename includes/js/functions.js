@@ -1,67 +1,65 @@
 var save = false;
 var cache_interval;
-$(document).ready(
-	function() {
-		$(":radio").each(
-			function (index, element) {
-				if (!$(element).hasClass('noui')) {
+$(function() {
+	$(":radio").each(
+		function (index, element) {
+			if (!$(element).hasClass('noui')) {
+				$(element).parent().buttonset();
+			}
+		}
+	);
+	$(":checkbox").each(
+		function (index, element) {
+			if (!$(element).hasClass('noui')) {
+				if ($(element).parent('label')) {
 					$(element).parent().buttonset();
-				}
-			}
-		);
-		$(":checkbox").each(
-			function (index, element) {
-				if (!$(element).hasClass('noui')) {
-					if ($(element).parent('label')) {
-						$(element).parent().buttonset();
-					} else {
-						$(element).button();
-					}
-				}
-			}
-		);
-		$(":button").each(
-			function (index, element) {
-				if (!$(element).hasClass('noui')) {
+				} else {
 					$(element).button();
 				}
 			}
-		);
-		$('#debug').dialog({
-				autoOpen:	false,
-				height:		'400',
-				hide:		'puff',
-				show:		'scale',
-				width:		'700'
-		});
-		$('.dialog').each(
-			function (index, element) {
-				if ($(element).attr('data-dialog')) {
-					$(element).dialog($.secureEvalJSON($(element).attr('data-dialog')));
-				} else {
-					$(element).dialog();
-				}
+		}
+	);
+	$(":button").each(
+		function (index, element) {
+			if (!$(element).hasClass('noui')) {
+				$(element).button();
 			}
-		);
-		$('#admin_form *').change(
-			function(){
-				save = true;
+		}
+	);
+	$('#debug').dialog({
+			autoOpen:	false,
+			height:		'400',
+			hide:		'puff',
+			show:		'scale',
+			width:		'700'
+	});
+	$('.dialog').each(
+		function (index, element) {
+			if ($(element).attr('data-dialog')) {
+				$(element).dialog($.secureEvalJSON($(element).attr('data-dialog')));
+			} else {
+				$(element).dialog();
 			}
-		);
-		$('#admin_form:reset').change(
-			function(){
-				save = false;
+		}
+	);
+	$('#admin_form *').change(
+		function(){
+			save = true;
+		}
+	);
+	$('#admin_form:reset').change(
+		function(){
+			save = false;
+		}
+	);
+	$('textarea').each(
+		function (index, element) {
+			if (!$(element).hasClass('EDITOR') && !$(element).hasClass('EDITORH') && !$(element).hasClass('SEDITOR') && !$(element).hasClass('noresize')) {
+				$(element).autoResize();
 			}
-		);
-		$('textarea').each(
-			function (index, element) {
-				if (!$(element).hasClass('EDITOR') && !$(element).hasClass('EDITORH') && !$(element).hasClass('SEDITOR') && !$(element).hasClass('noresize')) {
-					$(element).autoResize();
-				}
-			}
-		);
-	}
-);
+		}
+	);
+});
 function menuadmin (item, direct_link) {
 	if (direct_link) {
 		url = direct_link;

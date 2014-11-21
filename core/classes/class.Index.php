@@ -30,7 +30,7 @@ class Index extends HTML {
 
 	function __construct () {
 		global $Config, $L, $Page, $User, $Classes, $ADMIN, $API;
-		$Page->js("var language = '".$L->clanguage."', lang = '".$L->clang."';\n", 'code');
+		$Page->js('var language = "'.$L->clanguage.'", lang = "'.$L->clang.'";', 'code');
 		if (ADMIN && $User->is_admin()) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.$ADMIN);
 			$this->form = true;
@@ -47,7 +47,7 @@ class Index extends HTML {
 		}
 		unset($plugin);
 	}
-	function init ($save_file = false) {
+	function init () {
 		if (file_exists(MFOLDER.DS.'index.json')) {
 			$this->parts = json_decode_x(file_get_contents(MFOLDER.DS.'index.json'));
 		}
@@ -56,7 +56,6 @@ class Index extends HTML {
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
 			$Page->title($L->get(HOME ? 'home' : MODULE));
-			$this->savefile = $save_file ?: $this->savefile;
 		}
 		if ($this->parts !== false) {
 			$rc = &$Config->routing['current'];
@@ -144,7 +143,7 @@ class Index extends HTML {
 		$this->method('menumore');
 		if (!API) {
 			$Page->js(
-				"var save_before = '".$L->save_before."', continue_transfer = '".$L->continue_transfer."', base_url = '".$Config->core['url'].(ADMIN ? '/'.$ADMIN : '').'/'.MODULE.(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '')."';\n",
+				'var save_before = "'.$L->save_before.'", continue_transfer = "'.$L->continue_transfer.'", base_url = "'.$Config->core['url'].(ADMIN ? '/'.$ADMIN : '').'/'.MODULE.(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'";',
 				'code'
 			);
 		}
@@ -231,9 +230,12 @@ class Index extends HTML {
 			$Page->content($this->Content);
 		}
 	}
-	function save ($parts = false) {
+	function save ($parts = NULL) {
 		global $L, $Page, $Config;
-		if ($Config->save($parts)) {
+		if (
+			(($parts === NULL || is_array($parts) || in_array($parts, $Config->admin_parts)) && $Config->save($parts)) ||
+			$parts
+		) {
 			$Page->title($L->settings_saved);
 			$Page->Top .= $Page->div(
 				$L->settings_saved,
@@ -253,9 +255,12 @@ class Index extends HTML {
 			return false;
 		}
 	}
-	function apply () {
+	function apply ($parts = NULL) {
 		global $L, $Page, $Config;
-		if ($Config->apply()) {
+		if (
+			($parts === NULL && $Config->apply()) ||
+			$parts
+		) {
 			$Page->title($L->settings_applied);
 			$Page->Top .= $Page->div(
 				$L->settings_applied.$L->check_applied,
@@ -275,9 +280,9 @@ class Index extends HTML {
 			return false;
 		}
 	}
-	function cancel () {
+	function cancel ($system = true) {
 		global $L, $Page, $Config;
-		$Config->cancel();
+		$system && $Config->cancel();
 		$Page->title($L->settings_canceled);
 		$Page->Top .= $Page->div(
 			$L->settings_canceled,
@@ -290,7 +295,7 @@ class Index extends HTML {
 		if (isset($this->custom_methods[$method]['pre'])) {
 			closure_process($this->custom_methods[__FUNCTION__]['pre']);
 		}
-		if (!isset($this->methods[$method]) || !$this->methods[$method] == false) {
+		if (!isset($this->methods[$method]) || $this->methods[$method] != false) {
 			$this->$method();
 		}
 		if (isset($this->custom_methods[$method]['post'])) {
@@ -300,8 +305,15 @@ class Index extends HTML {
 	//Запрет клонирования
 	final function __clone () {}
 	function __finish () {
+		closure_process($this->preload);
+		if (!$this->admin && !$this->api && file_exists(MFOLDER.DS.'index.html')) {
+			global $Page;
+			$Page->content(file_get_contents(MFOLDER.DS.'index.html'));
+			return;
+		}
 		$this->method('init');
 		$this->method('generate');
+		closure_process($this->postload);
 	}
 }
 ?>

@@ -104,12 +104,14 @@ function time_x ($microtime = false) {
 function time_limit_pause ($pause = true) {
 	static $time_limit = false;
 	if ($time_limit === false) {
-		$time_limit = ini_get('max_execution_time');
+		$time_limit = array('max_execution_time' => ini_get('max_execution_time'), 'max_input_time' => ini_get('max_input_time'));
 	}
 	if ($pause) {
 		set_time_limit(0);
+		@ini_set('max_input_time', 0);
 	} else {
-		set_time_limit($time_limit);
+		set_time_limit($time_limit['max_execution_time']);
+		@ini_set('max_input_time', $time_limit['max_input_time']);
 	}
 }
 //Включение или отключение обработки ошибок
@@ -361,15 +363,13 @@ function json_encode_x ($in) {
 function json_decode_x ($in, $depth = 512) {
 	return @json_decode($in, true, $depth);
 }
-//Идеальная функция для 100% защиты от SQL-инъекций
+//Почти идеальная функция для защиты от SQL-инъекций
 //Название sip - сокращено от SQL Injection Protection
-//Copyright © by Мокринський Назар aka nazar-pc, 2011
 function sip ($in) {
 	return "unhex('".bin2hex($in)."')";
 }
-//Идеальная функция для 100% защиты от XSS-атак
+//Почти идеальная функция для защиты от XSS-атак
 //Название xap - сокращено от XSS Attack Protection
-//Copyright © by Мокринський Назар aka nazar-pc, 2011
 function xap ($in, $format=false) {
 	if ($format == 'html') {
 		//Делаем безопасный html

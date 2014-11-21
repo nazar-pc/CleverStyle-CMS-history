@@ -9,6 +9,44 @@ $a->content(
 	$a->table(
 		$a->tr(
 			array(
+				$a->td(
+					$a->div(
+						file_get_contents(DIR.DS.'readme.html'),
+						array(
+							'id'			=> 'system_readme',
+							'class'			=> 'dialog',
+							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
+							'title'			=> $L->system.' -> '.$L->information_about_system
+						)
+					).
+					$a->button(
+						$L->information_about_system,
+						array(
+							'data-title'	=> $L->click_to_view_details,
+							'onClick'		=> '$(\'#system_readme\').dialog(\'open\');'
+						)
+					).
+					$a->pre(
+						file_get_contents(DIR.DS.'license.txt'),
+						array(
+							'id'			=> 'system_license',
+							'class'			=> 'dialog',
+							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
+							'title'			=> $L->system.' -> '.$L->license
+						)
+					).
+					$a->button(
+						$L->license,
+						array(
+							'data-title'	=> $L->click_to_view_details,
+							'onClick'		=> '$(\'#system_license\').dialog(\'open\');'
+						)
+					),
+					array(
+						'colspan'	=> 2,
+						'class'		=> 'right_all'
+					)
+				),
 				$a->td($L->operation_system.':').$a->td(php_uname('s').' '.php_uname('r').' '.php_uname('v')),
 
 				$a->td($L->server_type.':').$a->td(server_api()),
@@ -147,7 +185,7 @@ $a->content(
 				)
 			)
 		) : ''),
-		array('class' => 'admin_table left_even right_odd')
+		array('class' => 'admin_table left_even right_odd', 'style' => 'width: 100%;')
 	)
 );
 unset($a);

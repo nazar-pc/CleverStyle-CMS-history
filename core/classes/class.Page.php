@@ -220,13 +220,13 @@ class Page extends HTML {
 				if ($mode == 'file') {
 					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
 				} elseif ($mode == 'code') {
-					$this->core_js[1] .= $add;
+					$this->core_js[1] .= $add."\n";
 				}
 			} else {
 				if ($mode == 'file') {
 					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'async'	=> ''))."\n";
 				} elseif ($mode == 'code') {
-					$this->js[1] .= $add;
+					$this->js[1] .= $add."\n";
 				}
 			}
 		}
@@ -242,13 +242,13 @@ class Page extends HTML {
 				if ($mode == 'file') {
 					$this->core_css[0] .= $this->link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
 				} elseif ($mode == 'code') {
-					$this->core_css[1] = $add;
+					$this->core_css[1] = $add."\n";
 				}
 			} else {
 				if ($mode == 'file') {
 					$this->css[0] .= $this->link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
 				} elseif ($mode == 'code') {
-					$this->css[1] = $add;
+					$this->css[1] = $add."\n";
 				}
 			}
 		}
@@ -579,7 +579,7 @@ class Page extends HTML {
 			ob_end_clean();
 		}
 		//Генерирование страницы в зависимости от ситуации
-		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
+		//Для AJAX запросов и API не выводится весь интерфейс страницы, только основное содержание
 		if (!$this->interface) {
 			//Обработка замены контента
 			echo preg_replace($this->Search, $this->Replace, $this->Content);
