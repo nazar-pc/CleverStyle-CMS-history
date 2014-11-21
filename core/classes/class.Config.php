@@ -8,11 +8,11 @@ class Config {
 		global $Cache;
 		$this->admin_parts = array('core', 'db', 'storage', 'components', 'replace', 'routing');
 		//Считывание настроек с кеша и определение недостающих данных
-		$config = $Cache->get('config');
-		if (isset($config) && is_array($config)) {
+		$Config = $Cache->config;
+		if (is_array($Config)) {
 			foreach ($this->admin_parts as $part) {
-					if (!empty($config[$part])) {
-						$this->$part = $config[$part];
+					if (!empty($Config[$part])) {
+						$this->$part = $Config[$part];
 					} else {
 						$query[] = "`$part`";
 					}
@@ -44,7 +44,7 @@ class Config {
 		$Page->init($this);
 	}
 	//Анализ и обработка текущего адреса страницы
-	protected function routing () {
+	private function routing () {
 		global $ADMIN, $API;
 		$this->server['url'] = urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$this->server['protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
@@ -173,17 +173,20 @@ class Config {
 		$this->init();
 		//Перезапись кеша
 		if ((is_object($Error) && !$Error->num()) || !is_object($Error) && $Cache->cache) {
+			$Config = array();
 			foreach ($this->admin_parts as $part) {
-				$config[$part] = $this->$part;
+				$Config[$part] = $this->$part;
 			}
-			if (isset($config['routing']['current'])) {
-				unset($config['routing']['current']);
+			if (isset($Config['routing']['current'])) {
+				unset($Config['routing']['current']);
 			}
-			$Cache->set('config', $config);
+			$Cache->config = $Config;
 			return true;
 		} else {
 			return false;
 		}
 	}
+	//Запрет клонирования
+	function __clone() {}
 }
 ?>

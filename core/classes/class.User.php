@@ -1,7 +1,7 @@
 <?php
 class User {
-	protected	$user = true,
-				$admin = true;
+	private	$user = true,
+			$admin = true;
 	function is_admin () {
 		return $this->admin;
 	}
@@ -14,6 +14,8 @@ class User {
 		$Page->user_avatar_text = '';
 		$Page->user_info = '<b>Приветствую, nazar-pc!</b>';
 	}
+	function __clone() {}
+	//Запрет клонирования
 	function __finish () {
 		foreach ($this as &$var) {
 			unset($var);

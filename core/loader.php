@@ -23,6 +23,7 @@ define('COMPONENTS',	DIR.DS.'components');		//Папка для компонен
 	define('BLOCKS',	COMPONENTS.DS.'blocks');	//Папка для блоков
 	define('MODULES',	COMPONENTS.DS.'modules');	//Папка для модулей
 	define('PLUGINS',	COMPONENTS.DS.'plugins');	//Папка для плагинов
+define('TEMP',			DIR.DS.'temp');				//Папка для временных файлов
 define('THEMES',		DIR.DS.'themes');			//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы

@@ -1,19 +1,19 @@
 <?php
 class Admin extends Module {
 	public	$parts = false,
-				$subparts = false,
-				$mainsubmenu = '',
-				$menumore = '',
-				$savefile = 'save',
-				$form = true,
-				$action,
-				$buttons = true,
-				$apply_button = true,
-				$cancel = ' disabled',
-				$cancel_back = false,
-				$reset_button = false,
-				$save = false,
-				$post_buttons = '';
+			$subparts = false,
+			$mainsubmenu = '',
+			$menumore = '',
+			$savefile = 'save',
+			$form = true,
+			$action,
+			$buttons = true,
+			$apply_button = true,
+			$cancel = ' disabled',
+			$cancel_back = false,
+			$reset_button = false,
+			$save = false,
+			$post_buttons = '';
 				
 	function init ($save_file = false) {
 		global $Config, $L, $Page, $ADMIN;

@@ -1,11 +1,11 @@
 <?php
 class Cache {
-	public		$cache;
-	protected	$disk = true,
-				$size,
-				$memcache = false,
-				/*$memcached = false,*/
-				$local_storage = array();	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
+	public	$cache;
+	private	$disk = true,
+			$size,
+			$memcache = false,
+			/*$memcached = false,*/
+			$local_storage = array();	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
 	function init ($Config) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
 		$this->disk = $Config->core['disk_cache'];
@@ -35,7 +35,7 @@ class Cache {
 			}
 		}
 		if (file_exists(CACHE.DS.$label) && is_readable(CACHE.DS.$label)) {
-			if ($cache = @json_decode($Core->decrypt(file_get_contents(CACHE.DS.$label)), true)) {
+			if ($cache = @json_decode($Core->decrypt(file_get_contents(CACHE.DS.$label, FILE_BINARY)), true)) {
 				$this->local_storage[$label] = $cache;
 				return $cache;
 			} else {
@@ -45,7 +45,7 @@ class Cache {
 		}
 		return false;
 	}
-	function set ($label, $data, $time = 0) {
+	function set ($label, $data) {
 		global $Core, $L;
 		$this->local_storage[$label] = $data;
 		if (is_object($this->memcache) && $this->memcache->set(CDOMAIN.$label, $Core->encrypt(json_encode_x($data)), zlib() ? MEMCACHE_COMPRESSED : false, $time)) {
@@ -53,7 +53,7 @@ class Cache {
 		}
 		if ($this->disk) {
 			if (!file_exists(CACHE.DS.$label) || (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label))) {
-				file_put_contents(CACHE.DS.$label, $Core->encrypt(json_encode_x($data)), LOCK_EX);
+				file_put_contents(CACHE.DS.$label, $Core->encrypt(json_encode_x($data)), LOCK_EX|FILE_BINARY);
 				return true;
 			} else {
 				global $Error;
@@ -63,7 +63,7 @@ class Cache {
 		}
 		return true;
 	}
-	function del ($label, $time = 0) {
+	function del ($label) {
 		unset($this->local_storage[$label]);
 		if (is_object($this->memcache) && $this->memcache->get(CDOMAIN.$label)) {
 			$this->memcache->delete(CDOMAIN.$label, $time);
@@ -86,10 +86,22 @@ class Cache {
 	function disable () {
 		$this->cache = $this->disk = $this->memcache/* = $this->memcached*/ = false;
 	}
-	function __get ($item) {
-		if ($item == 'memcache') {
+	function __get ($label) {
+		if ($label == 'memcache') {
 			return is_object($this->memcache);
+		} elseif ($label == 'disk') {
+			return $this->disk;
+		} else {
+			return $this->get($label);
 		}
 	}
+	function __set ($label, $data) {
+		return $this->set($label, $data);
+	}
+	function __unset ($label) {
+		return $this->del($label);
+	}
+	//Запрет клонирования
+	function __clone() {}
 }
 ?>

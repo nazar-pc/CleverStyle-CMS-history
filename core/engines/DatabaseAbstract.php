@@ -1,24 +1,24 @@
 <?php
 abstract class DatabaseAbstract {
-	public	$connected	= false,				//Метка наличия соединения
-			$database,							//Текущая БД
-			$prefix,							//Текущий префикс
-			$time,								//Массив для хранения общей длительности выполнения запросов
-			$query		= array(				//Массив для хранения данных последнего выполненого запроса
-							'start' => '',
-							'end' => '',
-							'time' => '',
-							'text' => '',
-							'resource' => '',
-							'id' => ''
-						),
-			$queries	= array(				//Массив для хранения данных всех выполненых запросов
-							'num' => '',
-							'time' => array(),
-							'text' => array()
-						),
-			$connecting_time;					//Время соединения
-	private	$id;								//Указатель на соединение с БД
+	public		$connected	= false,				//Метка наличия соединения
+				$database,							//Текущая БД
+				$prefix,							//Текущий префикс
+				$time,								//Массив для хранения общей длительности выполнения запросов
+				$query		= array(				//Массив для хранения данных последнего выполненого запроса
+								'start' => '',
+								'end' => '',
+								'time' => '',
+								'text' => '',
+								'resource' => '',
+								'id' => ''
+							),
+				$queries	= array(				//Массив для хранения данных всех выполненых запросов
+								'num' => '',
+								'time' => array(),
+								'text' => array()
+							),
+				$connecting_time;					//Время соединения
+	protected	$id;								//Указатель на соединение с БД
 	
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница]]
@@ -97,7 +97,7 @@ abstract class DatabaseAbstract {
 	//Информация о сервере
 	abstract function server ();
 	//Запрет клонирования
-	private function __clone() {}
+	final function __clone() {}
 	//Отключение от БД
 	abstract function __destruct ();
 }

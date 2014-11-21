@@ -1,117 +1,132 @@
 <?php
-class MySQL extends DataBase {
+class HTTP extends StorageAbstract {
+	protected	$socket,
+				$user,
+				$password;
 	//Создание подключения
-	//(название_бд, пользователь, пароль [, хост [, кодовая страница [, постоянное_соединение]]]
-	function __construct ($database, $user = '', $password = '', $host = 'localhost', $codepage = false) {
-		$this->connecting_time = time_x(true);
-		$this->id = mysql_connect($host, $user, $password);
-		if(is_resource($this->id)) {
-			if(!$this->select_db($database)) {
-				unset($this);
-				return false;
+	function __construct ($host, $user = '', $password = '') {
+		$host = explode($host);
+		$this->socket = fsockopen($host[0], isset($host[1]) ? $host[1] : 80, $errno, $errstr);
+		$this->user = $user;
+		$this->password = $password;
+		if(!is_resource($this->socket)) {
+			global $Error;
+			$Error->process();
+			die('#'.$errno.' '.$errstr);
+			return false;
+		}
+	}
+	//(массив_вида_ключ_значение)
+	//Возвращает массив из двух елементов:
+	//0 - заголовки, 1 - тело документа
+	protected function request ($data) {
+		if (empty($data)) {
+			return false;
+		} else {
+			$data['key'] = md5(md5(json_encode($data).$user).$password);
+		}
+		time_limit_pause();
+		fwrite(
+			$this->socket,
+			"POST /socket.php HTTP/1.1\r\n".
+			'Host: '.$host[0]."\r\n".
+			"Content-type: application/x-www-form-urlencoded\r\n".
+			"Content-length:".mb_strlen($data)."\r\n".
+			"Accept:*/*\r\n".
+			"User-agent: CleverStyle CMS\r\n".
+			'Authorization: Basic '.base64_encode($this->user.':'.$this->password)."\r\n\r\n".
+			http_build_query($data)."\r\n\r\n"
+		);
+		time_limit_pause(true);
+		unset($time_limit);
+		return explode("\r\n\r\n", stream_get_contents($this->socket), 2);
+	}
+	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
+		$result = $this->request(array(
+			'function' => __FUNCTION__,
+			'dir' => $dir,
+			'mask' => $mask,
+			'mode' => $mode,
+			'with_path' => $with_path,
+			'subfolders' => $subfolders,
+			'sort' => $sort
+		));
+		return $result[1];
+	}
+	function file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'flags' => $flags));
+		return $result[1];
+	}
+	function file_put_contents ($filename, $data, $flags = 0, $context = NULL) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'data' => $data, 'flags' => $flags));
+		return $result[1];
+	}
+	function copy ($source, $dest, $context = NULL) {
+		$http = false;
+		if ($source == realpath($source)) {
+			$http = true;
+			$temp = md5(uniqid(microtime(true)));
+			while (file_exists(TEMP.DS.$temp)) {
+				$temp = md5(uniqid(microtime(true)));
 			}
-			//Смена кодировки соеденения с БД
-			if ($codepage) {
-				if ($codepage != mysql_client_encoding($this->id)) {
-					mysql_set_charset($codepage, $this->id);
-				}
+			time_limit_pause();
+			copy($source, TEMP.DS.$temp);
+			time_limit_pause(true);
+			global $Config;
+			$source = $Config->server['base_url'].'/'.$temp;
+		}
+		$result = $this->request(array('function' => __FUNCTION__, 'source' => $source, 'dest' => $dest, 'http' => $http));
+		if ($http) {
+			unlink(TEMP.DS.$temp);
+		}
+		return (bool)$result[1];
+	}
+	function unlink ($filename, $context = NULL) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
+		return (bool)$result[1];
+	}
+	function file_exists ($filename) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
+		return (bool)$result[1];
+	}
+	function move_uploaded_file ($filename, $destination) {
+		$temp = md5(uniqid(microtime(true)));
+		while (file_exists(TEMP.DS.$temp)) {
+			$temp = md5(uniqid(microtime(true)));
+		}
+		move_uploaded_file($filename, TEMP.DS.$temp);
+		global $Config;
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $Config->server['base_url'].'/'.$temp, 'destination' => $destination));
+		unlink(TEMP.DS.$temp);
+		return (bool)$result[1];
+	}
+	function rename ($oldname, $newname, $context = NULL) {
+		$http = false;
+		if ($oldname == realpath($oldname)) {
+			$http = true;
+			$temp = md5(uniqid(microtime(true)));
+			while (file_exists(TEMP.DS.$temp)) {
+				$temp = md5(uniqid(microtime(true)));
 			}
-			$this->connected = true;
-		} else {
-			unset($this);
-			return false;
+			time_limit_pause();
+			copy($oldname, TEMP.DS.$temp);
+			time_limit_pause(true);
+			global $Config;
+			$oldname_x = $oldname;
+			$oldname = $Config->server['base_url'].'/'.$temp;
 		}
-		$this->connecting_time = time_x(true) - $this->connecting_time;
-		global $db;
-		$db->time += $this->connecting_time;
-		return $this->id;
-	}
-	//Смена текущей БД
-	function select_db ($database) {
-		$this->database = $database;
-		return mysql_select_db($database, $this->id);
-	}
-	//Запрос в БД
-	//(текст_запроса)
-	function q ($query = '') {
-		if(!$query) {
-			return false;
-		}
-		if (is_resource($this->query['resource'])) {
-			mysql_free_result($this->query['resource']);
-		}
-		$this->query['time'] = time_x(true);
-		$this->query['text'] = str_replace('[prefix]', $this->prefix, $query);
-		unset($this->query['resource']);
-		$this->query['resource'] = mysql_query($this->query['text'], $this->id);
-		$this->query['time'] = round(time_x(true) - $this->query['time'], 6);
-		$this->time += $this->query['time'];
-		++$this->queries['num'];
-		global $db, $Config;
-		++$db->queries;
-		$db->time += $this->query['time'];
-		$this->queries['time'][] = $this->query['time'];
-		$this->queries['text'][] = xap($this->query['text']);
-		if ($this->query['resource']) {
-			return $this->query['resource'];
-		} else {
-			return false;
-		}
-	}
-	//Подсчёт количества строк
-	//([id_запроса])
-	function n ($query_resource = false) {
-		if($query_resource === false) {
-			$query_resource = $this->query['resource'];
-		}
-		if(is_resource($query_resource)) {
-			return mysql_num_rows($query_resource);
-		} else {
-			return false;
-		}
-	}
-	//Получение результатов
-	//([id_запроса [, тип_возвращаемого_массива [, в_виде_массива_результатов]]])
-	function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
-		if (!$query_resource) {
-			$query_resource = $this->query['resource'];
-		}
-		if (is_resource($query_resource)) {
-			if ($array) {
-				while ($result[] = mysql_fetch_array($query_resource, $result_type));
-				return $result;
-			} else {
-				return mysql_fetch_array($query_resource, $result_type);
+		$result = $this->request(array('function' => __FUNCTION__, 'oldname' => $oldname, 'newname' => $newname, 'http' => $http));
+		if ($http) {
+			unlink(TEMP.DS.$temp);
+			if ((bool)$result[1]) {
+				unlink($oldname_x);
 			}
-		} else {
-			return false;
 		}
+		return (bool)$result[1];
 	}
-	//Очистка результатов запроса
-	//([id_запроса])
-	function free ($query_resource = false) {
-		if($query_resource === false) {
-			$query_resource = $this->query['resource'];
-		}
-		if(is_resource($query_resource)) {
-			return mysql_free_result($query_resource);
-		} else {
-			return true;
-		}
-	}
-	//Информация о MySQL-сервере
-	function server () {
-		return mysql_get_server_info($this->id);
-	}
-	//Отключение от БД
 	function __destruct () {
-		if($this->connected && is_resource($this->id)) {
-			if (is_resource($this->query['resource'])) {
-				mysql_free_result($this->query['resource']);
-				$this->query['resource'] = '';
-			}
-			mysql_close($this->id);
-			$this->connected = false;
+		if (is_resource($this->socket)) {
+			fclose($this->socket);
 		}
 	}
 }

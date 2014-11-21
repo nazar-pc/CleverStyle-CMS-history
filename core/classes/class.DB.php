@@ -1,13 +1,13 @@
 <?php
 class DB {
-	public		$queries				= 0,
-				$time					= 0,
-				$succesful_connections	= array(),
-				$false_connections		= array(),
-				$connections			= array(),
-				$mirrors				= array();
-	protected	$DB_USER,
-				$DB_PASSWORD;
+	public	$queries				= 0,
+			$time					= 0,
+			$succesful_connections	= array(),
+			$false_connections		= array(),
+			$connections			= array(),
+			$mirrors				= array();
+	private	$DB_USER,
+			$DB_PASSWORD;
 	//Для безопасности глобальные переменные с именем пользователя и паролем главной БД забираются во внутренние переменные объекта,
 	//глобальные переменные уничтожаются
 	function __construct () {
@@ -52,7 +52,7 @@ class DB {
 		return $this->connecting($connection, isset($mode[0]) ? (bool)$mode[0] : false);
 	}
 	//Обработка всех подключений к БД
-	protected function connecting($connection, $mirror = true) {
+	private function connecting($connection, $mirror = true) {
 		//Если соединение есть в списке неудачных - выходим
 		if (isset($this->false_connections[$connection])) {
 			return false;
@@ -191,5 +191,7 @@ class DB {
 			return false;
 		}
 	}
+	//Запрет клонирования
+	function __clone() {}
 }
 ?>

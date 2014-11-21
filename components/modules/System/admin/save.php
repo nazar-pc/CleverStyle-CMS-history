@@ -25,7 +25,6 @@ if (isset($_POST['edit_settings'])) {
 		}
 	}
 	if ($_POST['edit_settings'] == 'apply' && $Cache->cache) {
-		global $Cache;
 		if ($Admin->applied($Config->rebuild_cache(false))) {
 			$Config->init();
 			if (isset($_POST['visual_style']) || isset($_POST['caching'])) {

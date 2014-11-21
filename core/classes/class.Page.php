@@ -34,7 +34,7 @@ class Page extends HTML {
 										'post_Body'			=> 2
 									);
 
-	protected	$Search = array(), $Replace = array();
+	private	$Search = array(), $Replace = array();
 	
 	function __construct () {
 		global $interface;
@@ -282,7 +282,7 @@ class Page extends HTML {
 		}
 	}
 	//Подключение JavaScript и CSS файлов
-	protected function get_js_css () {
+	private function get_js_css () {
 		global $Config;
 		if (!is_object($Config)) {
 			return;
@@ -290,10 +290,10 @@ class Page extends HTML {
 		if ($Config->core['cache_compress_js_css']) {
 			global $Cache;
 			//Проверка текущего кеша
-			if (!(file_exists(PCACHE.DS.$this->cache_list[0].'css') || file_exists(PCACHE.DS.$this->cache_list[0].'js') || file_exists(PCACHE.DS.$this->cache_list[1].'css') || file_exists(PCACHE.DS.$this->cache_list[1].'js') || file_exists(PCACHE.DS.$this->cache_list[2].'css') || file_exists(PCACHE.DS.$this->cache_list[2].'js')) || !$Cache->get('pcache_key')) {
+			if (!(file_exists(PCACHE.DS.$this->cache_list[0].'css') || file_exists(PCACHE.DS.$this->cache_list[0].'js') || file_exists(PCACHE.DS.$this->cache_list[1].'css') || file_exists(PCACHE.DS.$this->cache_list[1].'js') || file_exists(PCACHE.DS.$this->cache_list[2].'css') || file_exists(PCACHE.DS.$this->cache_list[2].'js')) || !$Cache->pcache_key) {
 				$this->rebuild_cache();
 			}
-			$key = $Cache->get('pcache_key');
+			$key = $Cache->pcache_key;
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.DS.$file.'css')) {
@@ -349,22 +349,18 @@ class Page extends HTML {
 				if (file_exists($file)) {
 					unlink($file);
 				}
-				$cache = gzopen($file, 'w9');
-				flock($chache, LOCK_EX);
-				gzwrite($cache, $temp_cache);
-				flock($chache, LOCK_UN);
-				gzclose($cache);
+				file_put_contents($file, gzcompress($temp_cache, 9), LOCK_EX|FILE_BINARY);
 				$key .= md5($temp_cache);
 				unset($temp_cache, $cache);
 			}
 		}
-		$Cache->set('pcache_key', mb_substr(md5($key), 0, 5));
+		$Cache->pcache_key = mb_substr(md5($key), 0, 5);
 		unset($key);
 	}
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
 		preg_match_all('/url\((.*?)\)/', $data, $images);
-		chdir(realpath(dirname($file)));
+		chdir(dirname(realpath($file)));
 		unset($images[0]);
 		foreach ($images[1] as $image) {
 			$format = mb_substr($image, -3);
@@ -394,7 +390,7 @@ class Page extends HTML {
 		return $content;
 	}
 	//Генерирование информации о процессе загрузки страницы
-	protected function footer ($stop) {
+	private function footer ($stop) {
 		global $copyright, $L, $db;
 		if (!($copyright && is_array($copyright))) {
 			exit;
@@ -412,7 +408,7 @@ class Page extends HTML {
 		return $footer;
 	}
 	//Сбор и отображение отладочных данных
-	protected function debug () {
+	private function debug () {
 		global $Config, $L, $db;
 		$span = array(
 			0	=> $this->span(array('class'	=> 'ui-icon ui-icon-triangle-1-e',	'style'	=> 'display: inline-block;',	'level'	=> 0)),
@@ -574,6 +570,8 @@ class Page extends HTML {
 			unset($i, $v, $debug_info);
 		}
 	}
+	//Запрет клонирования
+	function __clone() {}
 	//Генерирование страницы
 	function __finish () {
 		global $Config, $Page;

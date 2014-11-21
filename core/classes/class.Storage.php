@@ -10,7 +10,7 @@ class Storage {
 		return $this->connecting($connection);
 	}
 	//Обработка всех подключений к хранилищам
-	protected function connecting($connection) {
+	private function connecting($connection) {
 		//Если соединение есть в списке неудачных - выходим
 		if (isset($this->false_connections[$connection])) {
 			return false;
@@ -83,6 +83,7 @@ class Storage {
 			return false;
 		}
 	}
-	
+	//Запрет клонирования
+	function __clone() {}
 }
 ?>

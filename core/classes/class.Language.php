@@ -1,9 +1,9 @@
 <?php
 class Language {
-	public		$clanguage;
-	protected	$translate = array(),
-				$need_to_rebuild_cache = false,
-				$initialized = false;
+	public	$clanguage;
+	private	$translate = array(),
+			$need_to_rebuild_cache = false,
+			$initialized = false;
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
@@ -66,5 +66,7 @@ class Language {
 		}
 		return false;
 	}
+	//Запрет клонирования
+	function __clone() {}
 }
 ?>

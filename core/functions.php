@@ -95,21 +95,34 @@ function __finish () {
 	}
 	exit;
 }
-//
+//Получение времени по Гринвичу целым числом, и числом с плавающей точкой
 function time_x ($microtime = false) {
 	return ($microtime ? microtime(true) : time())-date('Z');
 }
+//Приостановить ограничение на время выполнение скрипта
+//Применяется для выполнения длительных операций без ошибок
+function time_limit_pause ($resume = false) {
+	static $time_limit = false;
+	if ($time_limit === false) {
+		$time_limit = ini_get('max_execution_time');
+	}
+	if ($resume) {
+		set_time_limit($time_limit);
+	} else {
+		set_time_limit(0);
+	}
+}
 //Включение или отключение обработки ошибок
-function errors_on() {
+function errors_on () {
 	global $Error;
 	is_object($Error) && $Error->error = true;
 }
-function errors_off() {
+function errors_off () {
 	global $Error;
 	is_object($Error) && $Error->error = false;
 }
 //Включение или отключение отображения полного интерфейса
-function interface_on() {
+function interface_on () {
 	global $Page;
 	if (is_object($Page)) {
 		$Page->interface = true;
@@ -118,7 +131,7 @@ function interface_on() {
 		$interface = true;
 	}
 }
-function interface_off() {
+function interface_off () {
 	global $Page;
 	if (is_object($Page)) {
 		$Page->interface = false;
@@ -232,7 +245,6 @@ function flush_cache () {
 		if ($Cache->memcache) {
 			$ok = $Cache->flush() && $ok;
 		}
-		//$Cache->disable();
 	}
 	return $ok;
 }

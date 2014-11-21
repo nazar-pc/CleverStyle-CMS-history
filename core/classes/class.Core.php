@@ -1,10 +1,10 @@
 <?php
 //Класс ядра
 class Core {
-	protected	$iv,
-				$td,
-				$key,
-				$support = false;
+	private	$iv,
+			$td,
+			$key,
+			$support = false;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
 		if (require_x(CONFIG.DS.DOMAIN.DS.'main.php', true, false)) {
@@ -82,6 +82,8 @@ class Core {
 			unset($this->key[$name], $this->iv[$name], $this->td[$name]);
 		}
 	}
+	//Запрет клонирования
+	function __clone() {}
 	//Отключений функций шифрования
 	function __finish () {
 		if (!$this->support) {

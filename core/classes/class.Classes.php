@@ -3,7 +3,7 @@
 class Classes {
 	public	$ObjectsList = array();	//Массив со списком объектов, и данными о занятом объеме памяти после их объектов,
 									//и длительностью их содания
-	protected	$LoadedObjects = array();
+	private	$LoadedObjects = array();
 	//Метод добавления объектов в список для их разрушения в конце работы
 	function add ($name) {
 		$this->LoadedObjects[$name] = $name;
@@ -67,6 +67,8 @@ class Classes {
 			unset($$class, $GLOBALS[$class]);
 		}
 	}
+	//Запрет клонирования
+	function __clone() {}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __finish () {
 		foreach ($this->LoadedObjects as $class) {

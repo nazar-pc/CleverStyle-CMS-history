@@ -1,7 +1,7 @@
 <?php
 class Error {
-	public		$error	= true;
-	protected	$num	= 0;
+	public	$error	= true;
+	private	$num	= 0;
 	function __construct () {
 		set_error_handler(array($this, 'process'));
 	}
@@ -89,5 +89,7 @@ class Error {
 	function __call ($func, $args) {
 		$this->process($args);
 	}
+	//Запрет клонирования
+	function __clone() {}
 }
 ?>
