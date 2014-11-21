@@ -1,5 +1,2 @@
 <?php
-$parent->l = array (
-				'' => ''
-			  );
 ?>

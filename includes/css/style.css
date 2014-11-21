@@ -5,6 +5,9 @@
 .admin_form {
 	width: 100%;
 }
+.admin_table {
+	margin: auto;
+}
 .admin_table tr td:nth-child(odd) {
 	border-spacing: 0px;
 	padding-right: 20px;
@@ -17,4 +20,8 @@
 }
 .left_table tr td:nth-child(odd) {
 	text-align: left;
+}
+.r-table td {
+	border-radius: 5px;
+	padding: 5px;
 }

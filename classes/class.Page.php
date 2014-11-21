@@ -47,8 +47,8 @@ class Page extends XForm {
 				$Replace = array(),
 				$Config;
 	
-	function init (&$Config) {
-		$this->Config = &$Config;
+	function init ($Config) {
+		$this->Config = $Config;
 		$this->Title[0] = $this->Config->core['name'];
 		$this->Keywords = $this->Config->core['keywords'];
 		$this->Description = $this->Config->core['description'];
@@ -239,8 +239,8 @@ class Page extends XForm {
 		}
 		$footer = "<div id=\"copyright\">\n	$copyright[2] $copyright[3]\n</div>\n";
 		if (!$stop) {
-			$footer = "<div id=\"execution_info\">\n	$L[page_generated] <!--generate time-->"
-					." $L[sec], $db->queries $L[queries] $L[during] ".round($db->time, 5)." $L[sec], $L[peak_memory_usage] <!--peak memory usage-->\n</div>\n".$footer;
+			$footer = "<div id=\"execution_info\">\n	$L->page_generated <!--generate time-->"
+					." $L->sec, $db->queries $L->queries $L->during ".round($db->time, 5)." $L->sec, $L->peak_memory_usage <!--peak memory usage-->\n</div>\n".$footer;
 		}
 		return $footer;
 	}

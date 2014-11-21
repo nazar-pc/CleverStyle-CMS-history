@@ -15,7 +15,7 @@ function ext_textarea (id, extended) {
 				+'<button type="button" onclick="setUnder('+num+')" class="under">Ч</button></div>'
 				: '')
 				+'<input name="'+this.id+'" id="'+this.id+'" type="hidden" value="'+content+'">'
-			+'<iframe id="frame_'+this.id+'" frameborder="0" src="#" style="width: 100%;" '+(extended ? ' scrolling="yes"' : '')+'class="form_element"></iframe>'
+			+'<iframe id="frame_'+this.id+'" frameborder="0" style="width: 100%;" '+(extended ? ' scrolling="yes"' : '')+'class="form_element"></iframe>'
 			);
 		this.iframe = (isGecko) ? Doc.getElementById('frame_'+this.id) : frames['frame_'+this.id];
 		this.iWin = (isGecko) ? this.iframe.contentWindow : this.iframe.window;

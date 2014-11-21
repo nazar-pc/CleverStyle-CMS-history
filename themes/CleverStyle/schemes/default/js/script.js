@@ -1,7 +1,7 @@
 function background() {
 	var height = document.body.clientHeight > window.innerHeight ? document.body.clientHeight : window.innerHeight;
 	num = Math.round(height/40);
-	for(var i = 0; i < 15; i++) {
+	for(var i = 0; i < num; i++) {
 		bokehSize = 100+(Math.random()*50);
 		x = true;
 		while (x) {
@@ -27,7 +27,7 @@ function background() {
 					'border': '1px solid rgba('+bokehColour+', 0.5)',
 					'overflow': 'hidden'
 				});
-		if (browser == 'Opera' || browser == 'MSIE') {
+		if ($.browser.opera || $.browser.msie) {
 			bokeh.css({
 				'background': 'rgba('+bokehColour+', 0.4)'
 			});

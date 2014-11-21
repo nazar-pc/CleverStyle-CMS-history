@@ -58,7 +58,7 @@ class Config {
 		} else {
 			global $Error, $L;
 			$this->server['base_url'] = '';
-			$Error->show($L['mirror_not_allowed'], 'stop');
+			$Error->show($L->mirror_not_allowed, 'stop');
 		}
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;

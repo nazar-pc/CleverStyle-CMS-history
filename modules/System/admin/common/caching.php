@@ -15,7 +15,7 @@ $a->table(
 				'',
 				array('', memcache() || memcached() ? 'red' : 'green', memcache() || memcached() ? 'green' : 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -43,7 +43,7 @@ $a->table(
 				memcache() ? '' : ' disabled',
 				memcache() ? array('', 'green', 'red') : array('', 'grey', 'grey'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -58,7 +58,7 @@ $a->table(
 				memcached() ? '' : ' disabled',
 				memcached() ? array('', 'green', 'red') : array('', 'grey', 'grey'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -73,7 +73,7 @@ $a->table(
 				'',
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	), '', false, '', 'admin_table'

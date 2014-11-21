@@ -17,7 +17,7 @@ class DB {
 			$this->DB_PASSWORD = $DB_PASSWORD;
 			unset($DB_USER, $DB_PASSWORD);
 	}
-	function init(&$Config) {
+	function init($Config) {
 		$this->Config = $Config;
 	}
 	//Обработка всех запросов получения данных БД
@@ -115,9 +115,9 @@ class DB {
 			if (!is_array($mirror)) {
 				global $Error, $L;
 				if ($connection == 'core') {
-					$Error->show($L['error_core_db'], 'stop');
+					$Error->show($L->error_core_db, 'stop');
 				} else {
-					$Error->show($L['error_db'].' '.$connection);
+					$Error->show($L->error_db.' '.$connection);
 				}
 				return false;
 			}

@@ -106,9 +106,9 @@ class XForm {
 			return false;
 		}
 		if ($return) {
-			return $this->L[$title].'<sup title="'.$this->L[$title.'_info']."\"> (!) </sup>:\n";
+			return $this->L->$title.'<sup title="'.$this->L->$title.'_info'."\"> (!) </sup>:\n";
 		} else {
-			$this->Content .= $this->Page->level($this->L[$title].'<sup title="'.$this->L[$title.'_info']."\"> (!) </sup>:\n", 5);
+			$this->Content .= $this->Page->level($this->L->$title.'<sup title="'.$this->L->$title.'_info'."\"> (!) </sup>:\n", 5);
 		}
 	}
 	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
@@ -127,7 +127,7 @@ class XForm {
 				$Content[] = $this->input(
 										$type,
 										is_array($id) ? $id[$i] : $id,
-										is_array($values) ? array($values[0], $values[$i]) : array($values),
+										is_array($values) ? array($values[0], $values[$i]) : $values,
 										true,
 										is_array($add) ? $add[$i] : $add,
 										is_array($classes) ? $classes[$i] : $classes,
@@ -140,12 +140,12 @@ class XForm {
 			$Content = implode($devider, $Content);
 		} else {
 			if ($type == 'text' || $type == 'checkbox' || $type == 'radio') {
-				$Content = '<input name="'.$id.'"'.($type == 'radio' ? '' : ' id="'.$id.'"').(is_array($values) ? ' value="'.filter($values[1]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($type == 'text' ? ' size="'.$array_if_size.'"' : ($values[0] == $values[1] && $array_if_size ? ' checked' : '')).($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
+				$Content = '<input name="'.$id.'"'.($type == 'radio' ? '' : ' id="'.$id.'"').(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($type == 'text' ? ' size="'.$array_if_size.'"' : ($values[0] == $values[1] && $array_if_size ? ' checked' : '')).($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			} else {
-				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
+				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[0]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			}
 			if ($label && $array_text) {
-				$Content = $this->label($Content).($type != 'radio' ? $devider : '');
+				$Content = $this->label($Content).$devider;
 			}
 		}
 		if ($return) {

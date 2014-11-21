@@ -55,7 +55,3 @@ header, footer {
 	position:absolute;
 	z-index:-100;
 }
-.r-table td {
-	border-radius: 5px;
-	padding: 5px;
-}

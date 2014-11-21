@@ -37,20 +37,20 @@ if (isset($_POST['edit_settings'])) {
 	}
 	if (strval($_POST['edit_settings']) == 'apply') {
 		if ($Config->rebuild_cache()) {
-			$Page->title($L['settings_applied']);
-			$Page->Top .= '<div class="green notice">'.$L['settings_applied'].$L['check_applied'].'</div>';
+			$Page->title($L->settings_applied);
+			$Page->Top .= '<div class="green notice">'.$L->settings_applied.$L->check_applied.'</div>';
 			global $Admin;
 			$Admin->cancel = '';
 		} else {
 			global $Error;
-			$Error->show($L['settings_apply_error']);
-			$Page->Top .= '<div class="red notice">'.$L['settings_apply_error'].'</div>';
+			$Error->show($L->settings_apply_error);
+			$Page->Top .= '<div class="red notice">'.$L->settings_apply_error.'</div>';
 			$apply_error = true;
 		}
 	} elseif (strval($_POST['edit_settings']) == 'save' && isset($update)) {
 		if ($db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $update).' WHERE `domain` = '.sip(CDOMAIN))) {
-			$Page->title($L['settings_saved']);
-			$Page->Top .= '<div class="green notice">'.$L['settings_saved'].'</div>';
+			$Page->title($L->settings_saved);
+			$Page->Top .= '<div class="green notice">'.$L->settings_saved.'</div>';
 			$Config->rebuild_cache();
 //			if ($Config->core['cache_compress_js_css']) {
 //				$Page->rebuild_cache('js');
@@ -58,15 +58,15 @@ if (isset($_POST['edit_settings'])) {
 //			}
 		} else {
 			global $Error;
-			$Error->show($L['settings_save_error']);
-			$Page->Top .= '<div class="red notice">'.$L['settings_save_error'].'</div>';
+			$Error->show($L->settings_save_error);
+			$Page->Top .= '<div class="red notice">'.$L->settings_save_error.'</div>';
 		}
 	}
 	if (strval($_POST['edit_settings']) == 'cancel' || (strval($_POST['edit_settings']) == 'apply' && $apply_error)) {
 		$Config->rebuild_cache(true);
 		if (!$apply_error) {
-			$Page->title($L['settings_canceled']);
-			$Page->Top .= '<div class="green notice">'.$L['settings_canceled'].'</div>';
+			$Page->title($L->settings_canceled);
+			$Page->Top .= '<div class="green notice">'.$L->settings_canceled.'</div>';
 		}
 	}
 	$Page->init($Config);

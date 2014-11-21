@@ -3,6 +3,7 @@ global $Config, $Admin, $L;
 $Config->reload_themes();
 $a = &$Admin;
 $a->return = true;
+asort($Config->core['color_schemes'][$Config->core['theme']]);
 foreach ($Config->core['color_schemes'][$Config->core['theme']] as $color_scheme => $color_scheme_name) {
 	$color_schemes[] = $color_scheme;
 	$color_schemes_name[] = $color_scheme_name;
@@ -50,7 +51,7 @@ $a->table(
 				'',
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	), '', false, '', 'admin_table'

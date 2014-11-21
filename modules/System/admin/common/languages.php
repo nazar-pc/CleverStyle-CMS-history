@@ -3,6 +3,7 @@ global $Config, $Admin, $L;
 $Config->reload_languages();
 $a = &$Admin;
 $a->return = true;
+asort($Config->core['languages']);
 foreach ($Config->core['languages'] as $lang => $name) {
 	$languages[] = $lang;
 	$languages_name[] = $name;
@@ -35,7 +36,7 @@ $a->table(
 				'',
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -50,7 +51,7 @@ $a->table(
 				'',
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	), '', false, '', 'admin_table'

@@ -18,7 +18,7 @@ if (USE_CUSTOM) {
 		} else {
 			global $L;
 			if ($show_errors) {
-				@trigger_error($L['file'].' '.$file.' '.$L['not_exists']);
+				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
 			}
 			return false;
 		}
@@ -39,7 +39,7 @@ if (USE_CUSTOM) {
 		} else {
 			global $L;
 			if ($show_errors) {
-				@trigger_error($L['file'].' '.$file.' '.$L['not_exists']);
+				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
 			}
 			return false;
 		}
@@ -55,7 +55,7 @@ if (USE_CUSTOM) {
 		} else {
 			global $L;
 			if ($show_errors) {
-				@trigger_error($L['file'].' '.$file.' '.$L['not_exists']);
+				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
 			}
 			return false;
 		}
@@ -70,7 +70,7 @@ if (USE_CUSTOM) {
 		} else {
 			global $L;
 			if ($show_errors) {
-				@trigger_error($L['file'].' '.$file.' '.$L['not_exists']);
+				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
 			}
 			return false;
 		}
@@ -143,13 +143,13 @@ function formatfilesize($size, $round = false) {
 	global $L;
 	if($size >= 1073741824) {
 		$size = $size/1073741824;
-		$unit = " ".$L['Gb'];
+		$unit = " ".$L->Gb;
 	} elseif ($size >= 1048576) {
 		$size = $size/1048576;
-		$unit = " ".$L['Mb'];
+		$unit = " ".$L->Mb;
 	} elseif ($size >= 1024) {
 		$size = $size/1024;
-		$unit = " ".$L['Kb'];
+		$unit = " ".$L->Kb;
 	} else {
 		$size = $size." b";
 	}
@@ -295,7 +295,7 @@ function server_api () {
 	if ($tmp[1]) {
 		return $tmp[1];
 	} else {
-		return $L['indefinite'];
+		return $L->indefinite;
 	}
 }
 //Проверка версии сервера Apache
@@ -308,7 +308,7 @@ function apache_version () {
 	if ($tmp[1]) {
 		return $tmp[1];
 	} else {
-		return $L['indefinite'];
+		return $L->indefinite;
 	}
 }
 //Информация о кодировках SQL
@@ -319,95 +319,95 @@ function get_sql_info () {
 	$sql = $db->core->q('SHOW VARIABLES');
 	while ($data = $db->core->f($sql)) {
 		if ($data[0]=='character_set_client') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[client_encoding]:
+			'.$L->client_encoding.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='character_set_connection') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[character_connection]:
+			'.$L->character_connection.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='character_set_database') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[character_database]:
+			'.$L->character_database.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='character_set_results') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[character_results]:
+			'.$L->character_results.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='character_set_server') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[character_server]:
+			'.$L->character_server.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='character_set_system') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[character_system]:
+			'.$L->character_system.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='collation_connection') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[collation_connection]:
+			'.$L->collation_connection.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='collation_database') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[collation_database]:
+			'.$L->collation_database.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		} elseif ($data[0]=='collation_server') {
-			$sql_encoding .= "
+			$sql_encoding .= '
 	<tr>
 		<td>
-			$L[collation_server]:
+			'.$L->collation_server.':
 		</td>
 		<td>
-			".$data[1]."
+			'.$data[1].'
 		</td>
-	</tr>";
+	</tr>';
 		}
 	}
 	return $sql_encoding;

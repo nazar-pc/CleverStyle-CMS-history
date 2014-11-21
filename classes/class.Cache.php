@@ -11,7 +11,7 @@ class Cache {
 		$memcache = memcache();
 		$memcached = memcached();
 	}
-	function init (&$Config) {
+	function init ($Config) {
 		$this->disk = &$Config->core['disk_cache'];
 		$this->size = &$Config->core['cache_size'];
 		$this->memcache = &$Config->core['memcache'];

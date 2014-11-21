@@ -15,7 +15,7 @@ $a->table(
 				'',
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -69,7 +69,7 @@ $a->table(
 				'',
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -84,7 +84,7 @@ $a->table(
 				array('', ' onClick="$(\'#debug_form\').css(\'display\', \'none\');"', ' onClick="$(\'#debug_form\').css(\'display\', \'\');"'),
 				array('', 'green', 'red'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
@@ -99,7 +99,7 @@ $a->table(
 				'',
 				array('', 'red', 'green', 'green'),
 				true,
-				array('', '&nbsp;'.$L['dont_show_queries'], '&nbsp;'.$L['show_queries'], '&nbsp;'.$L['show_queries_and_time']),
+				array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time),
 				true,
 				'<br>'
 			).'<br>'.
@@ -111,7 +111,7 @@ $a->table(
 				'',
 				'form_element',
 				true,
-				$L['show_cookies'],
+				$L->show_cookies,
 				true,
 				'<br>'
 			).
@@ -123,7 +123,7 @@ $a->table(
 				'',
 				'form_element',
 				true,
-				$L['show_session_vars'],
+				$L->show_session_vars,
 				true,
 				'<br>'
 			).
@@ -135,7 +135,7 @@ $a->table(
 				'',
 				'form_element',
 				true,
-				$L['show_global_vars']
+				$L->show_global_vars
 			), true, ' style="'.($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;"', '', 'debug_form'
 		)
 	).
@@ -150,7 +150,7 @@ $a->table(
 				'',
 				extension_loaded('zlib') ? array('', 'green', 'red') : array('', 'grey', 'grey'),
 				true,
-				array('', '&nbsp;'.$L['on'], '&nbsp;'.$L['off'])
+				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 			)
 		)
 	).
