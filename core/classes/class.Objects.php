@@ -15,7 +15,6 @@ class Objects {
 		if (empty($class)) {
 			return false;
 		} elseif (!$stop && !is_array($class)) {
-			global $timeload, $Config;
 			if (class_exists($class)) {
 				//Используем заданное имя для объекта
 				if ($custom_name !== false) {
@@ -50,6 +49,7 @@ class Objects {
 				}
 			}
 		}
+		return false;
 	}
 	//Метод уничтожения объектов
 	function unload ($class) {
@@ -61,7 +61,7 @@ class Objects {
 			global $$class;
 			unset($this->List[$class]);
 			method_exists($$class, '__finish') && $$class->__finish();
-			$$class = NULL;
+			$$class = null;
 			unset($GLOBALS[$class]);
 		}
 	}

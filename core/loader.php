@@ -13,7 +13,7 @@ unset(
 	$_GET,
 	$_REQUEST
 );
-//Защищаемся от NULL Byte уязвимости
+//Защищаемся от null Byte уязвимости
 null_byte_filter($_POST);
 null_byte_filter($_COOKIE);
 null_byte_filter($_FILES);

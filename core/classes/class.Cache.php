@@ -107,7 +107,7 @@ class Cache {
 						$this->size -= _filesize(CACHE.DS.$item);
 					}
 					if ($this->size > $this->disk_size) {
-						$cache_list = get_list(CACHE, fasle, 'f', true, true, 'datea|desc');
+						$cache_list = get_list(CACHE, false, 'f', true, true, 'datea|desc');
 						foreach ($cache_list as $file) {
 							$this->size -= _filesize($file);
 							_unlink($file);
@@ -170,9 +170,7 @@ class Cache {
 		return true;
 	}
 	function memcache_getversion () {
-		if (is_object($this->memcache)) {
-			return $this->memcache->getversion();
-		}
+		return is_object($this->memcache) ? $this->memcache->getversion() : false;
 	}
 	function flush () {
 		if (is_object($this->memcache)) {

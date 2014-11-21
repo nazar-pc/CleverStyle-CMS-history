@@ -1,7 +1,7 @@
 <?php
 class Language {
 	public		$clanguage,								//Текущий язык
-				$time = false;
+				$time = '';
 	protected	$translate = array(),					//Локальный кеш переводов
 				$need_to_rebuild_cache = false,			//Требуется пересобрать кеш
 				$initialized = false;					//Состояние инициализации

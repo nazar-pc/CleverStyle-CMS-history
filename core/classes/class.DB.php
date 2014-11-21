@@ -106,8 +106,7 @@ class DB {
 			//Ускоряем повторную операцию доступа к этой БД
 			$this->$connection = $this->connections[$connection];
 			if ($connection == 'core') {
-				$zero = 0;
-				$this->$zero = $this->$connection;
+				$this->{'0'} = $this->$connection;
 				unset($zero);
 			}
 			if ($connection == 0) {
@@ -116,9 +115,10 @@ class DB {
 			return $this->connections[$connection];
 		//Если подключение не удалось - разрушаем соединение и пытаемся подключится к зеркалу
 		} else {
-			unset($this->$connection, $db);
+			unset($this->$connection);
 			//Добавляем подключение в список неудачных
 			$this->false_connections[$connection] = ($connection == 'core' || $connection == 0 ? $L->core_db.'('.$DB_NAME.')' : $connection).'/'.$db['host'].'/'.$db['type'];
+			unset($db);
 			//Если допускается подключение к зеркалу БД, и зеркала доступны
 			if (
 				$mirror === true && 
@@ -148,8 +148,8 @@ class DB {
 				} else {
 					$Error->process($L->error_db.' '.$this->false_connections[$connection]);
 				}
-				return false;
 			}
+			return false;
 		}
 	}
 	//Тестовое подключение к БД
@@ -163,7 +163,7 @@ class DB {
 				$db = $Config->db[$data[0]]['mirrors'][$data[1]];
 			} elseif (isset($data[0])) {
 				if ($data[0] == 0) {
-					global $DB_TYPE, $DB_PREFIX, $DB_NAME;
+					global $DB_TYPE, $DB_NAME;
 					$db = array(
 								'type'		=> $DB_TYPE,
 								'host'		=> $DB_HOST,

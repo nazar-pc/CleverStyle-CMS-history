@@ -41,11 +41,11 @@ function progress (element) {
 	}
 };
 function db_test (url, added) {
-	$('#test_db').html('<div id="test_progress" style="width: 100%"></div>');
+	$('#test_db').html('<div id="test_progress"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_db').dialog('open');
 	var test_interval	= setInterval(function () {progress('#test_progress')}, 100);
-	if (added == true) {
+	if (added) {
 		$.ajax({
 			url:		url,
 			type:		'POST',
@@ -75,11 +75,11 @@ function db_test (url, added) {
 	}
 }
 function storage_test (url, added) {
-	$('#test_storage').html('<div id="test_progress" style="width: 100%"></div>');
+	$('#test_storage').html('<div id="test_progress"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_storage').dialog('open');
-	test_interval	= setInterval(function () {progress('#test_progress')}, 100);
-	if (added == true) {
+	var test_interval	= setInterval(function () {progress('#test_progress')}, 100);
+	if (added) {
 		$.ajax({
 			url:		url,
 			type:		'POST',
@@ -127,7 +127,7 @@ $(function () {
 			placeholder:	'ui-state-default',
 			items:			'li:not(.ui-state-disabled)',
 			cancel:			'.ui-state-disabled',
-			update:			function (event, ui) {save = true;}
+			update:			function () {save = true;}
 		}).disableSelection();
 	}
 });
@@ -149,7 +149,7 @@ function json_decode (str) {
 }
 //Поддерживает алгоритмы sha224, sha256, sha384, sha512
 function hash (algo, data) {
-	return new jsSHA(data).getHash(algo);
+	return (new jsSHA(data)).getHash(algo);
 }
 function setcookie (name, value, expires, path, domain, secure) {
 	return $.cookie(name, value, {expires: expires, path: path ? path : '/', domain: domain, secure: secure});

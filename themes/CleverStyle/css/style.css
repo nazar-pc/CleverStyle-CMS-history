@@ -1,8 +1,8 @@
 body {
 	font-family: "Sergoe UI", Tahoma, Verdana, Arial;
 	font-size: 11px;
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 	width: 100%;
 }
 #body {
@@ -11,7 +11,7 @@ body {
 #body > table {
 	border-radius: 10px;
 	-moz-border-radius: 10px;
-	padding: 5px 0px;
+	padding: 5px 0;
 	margin-top: 145px;
 	width: 100%;
 }
@@ -67,7 +67,7 @@ a[href^="http://"]::after {
 	border: solid 2px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-spacing: 0px;
+	border-spacing: 0;
 	padding: 3px;
 }
 input,
@@ -97,8 +97,8 @@ header,
 footer {
 	width: 100%;
 	text-align: center;
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 }
 .green,
 .red,
@@ -144,6 +144,9 @@ a.nul:visited {
 	margin: 0 5px 5px 5px;
 	padding: 5px;
 }
+.info {
+	cursor: help;
+}
 .pointer,
 .modules_config_buttons button,
 .db_config_buttons button,
@@ -155,11 +158,9 @@ a.nul:visited {
 #cancel_settings,
 #reset_settings,
 #system_readme_open,
-#system_license_open {
+#system_license_open,
+#user_info_header button {
 	cursor: pointer;
-}
-.info {
-	cursor: help;
 }
 .dialog {
 	display: none;
@@ -275,4 +276,7 @@ td.left_all {
 }
 #site_info_config_mirrors textarea {
 	width: 90%;
+}
+#test_progress {
+	width: 100%;
 }

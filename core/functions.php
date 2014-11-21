@@ -22,7 +22,7 @@
 					global $L, $Error;
 					if ($show_errors && is_object($Error)) {
 						$data = debug_backtrace();
-						$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
+						$Error->process(null, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 					}
 					return false;
 				}
@@ -45,7 +45,7 @@
 					global $L, $Error;
 					if ($show_errors && is_object($Error)) {
 						$data = debug_backtrace();
-						$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
+						$Error->process(null, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 					}
 					return false;
 				}
@@ -63,7 +63,7 @@
 					global $L, $Error;
 					if ($show_errors && is_object($Error)) {
 						$data = debug_backtrace();
-						$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
+						$Error->process(null, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 					}
 					return false;
 				}
@@ -78,10 +78,9 @@
 					}
 				} else {
 					global $L, $Error;
-					global $L, $Error;
 					if ($show_errors && is_object($Error)) {
 						$data = debug_backtrace();
-						$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
+						$Error->process(null, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 					}
 					return false;
 				}
@@ -111,8 +110,8 @@
 	//Приостановить ограничение на время выполнение скрипта
 	//Применяется для выполнения длительных операций без ошибок
 	function time_limit_pause ($pause = true) {
-		static $time_limit = false;
-		if ($time_limit === false) {
+		static $time_limit;
+		if (!isset($time_limit)) {
 			$time_limit = array('max_execution_time' => ini_get('max_execution_time'), 'max_input_time' => ini_get('max_input_time'));
 		}
 		if ($pause) {
@@ -165,7 +164,7 @@
 			$prepare = function (&$list, &$tmp, $link) {
 				$list[_fileatime($link) ?: _filemtime($link)] = $tmp;
 			};
-		} if (isset($sort_x) && $sort_x[0] == 'datem') {
+		} elseif (isset($sort_x) && $sort_x[0] == 'datem') {
 			$prepare = function (&$list, &$tmp, $link) {
 				$list[_filemtime($link)] = $tmp;
 			};
@@ -175,7 +174,6 @@
 			};
 		}
 		$list = array();
-		$l = 0;
 		if ($with_path != 1 && $with_path) {
 			$with_path = rtrim($with_path, DS).DS;
 		}
@@ -236,10 +234,6 @@
 		}
 		closedir($dirc);
 		unset($prepare);
-		foreach ($list as &$str) {
-			$str = $str;
-		}
-		unset($str);
 		if (empty($list)) {
 			return $list;
 		} else {
@@ -269,13 +263,24 @@
 	//рекомендуется использовать везде, где нет уверенности в том, что Unicode символы не встретятся в пути к файлу или папке.
 		//Функция подготавливает строку, которая должна использоваться как путь для файловой системы
 		function str_to_path ($str) {
-			static $x = false;
+			if (is_array($str)) {
+				foreach ($str as &$s) {
+					$s = str_to_path($s);
+				}
+				return $str;
+			}
 			return CHARSET == FS_CHARSET || strpos($str, 'http:\\') === 0 || strpos($str, 'https:\\') === 0 || strpos($str, 'ftp:\\') === 0 ?
 				$str :
 				!is_utf8($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
 		}
 		//Функция подготавливает строку, которая была получена как путь в файловой системе, для использования в движке
 		function path_to_str ($path) {
+			if (is_array($path)) {
+				foreach ($path as &$p) {
+					$p = str_to_path($p);
+				}
+				return $path;
+			}
 			return CHARSET == FS_CHARSET ? $path : is_utf8($path) ? $path : iconv(FS_CHARSET, CHARSET, $path);
 		}
 		//Функция обнаружения utf-8 строки
@@ -304,27 +309,27 @@
 	//Аналоги системных функций с теми же параметрами в том же порядке. Настоятельно рекомендуется использовать вместо стандартных
 	//При использовании этих функций будет небольшая потеря в скорости, зато нивелируются различия в операционных системах
 	//при использовании кириллических и других Unicode символов (не латинских) в пути к файлу или папке
-		function _file ($filename, $flags = 0, $context = NULL) {
+		function _file ($filename, $flags = 0, $context = null) {
 			return is_null($context) ?
 					file(str_to_path($filename), $flags) :
 					file(str_to_path($filename), $flags, $context);
 		}
-		function _file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
+		function _file_get_contents ($filename, $flags = 0, $context = null, $offset = -1, $maxlen = -1) {
 			return is_null($context) ?
 					file_get_contents(str_to_path($filename), $flags, $context, $offset) :
 					file_get_contents(str_to_path($filename), $flags, $context, $offset, $maxlen);
 		}
-		function _file_put_contents ($filename, $data, $flags = 0, $context = NULL) {
+		function _file_put_contents ($filename, $data, $flags = 0, $context = null) {
 			return is_null($context) ?
 					file_put_contents(str_to_path($filename), $data, $flags) :
 					file_put_contents(str_to_path($filename), $data, $flags, $context);
 		}
-		function _copy ($source, $dest, $context = NULL) {
+		function _copy ($source, $dest, $context = null) {
 			return is_null($context) ?
 					copy(str_to_path($source), str_to_path($dest)) :
 					copy(str_to_path($source), str_to_path($dest), $context);
 		}
-		function _unlink ($filename, $context = NULL) {
+		function _unlink ($filename, $context = null) {
 			return is_null($context) ?
 					unlink(str_to_path($filename)) :
 					unlink(str_to_path($filename), $context);
@@ -332,17 +337,17 @@
 		function _file_exists ($filename) {
 			return file_exists(str_to_path($filename));
 		}
-		function _rename ($oldname, $newname, $context = NULL) {
+		function _rename ($oldname, $newname, $context = null) {
 			return is_null($context) ?
 					rename(str_to_path($oldname), str_to_path($newname)) :
 					rename(str_to_path($oldname), str_to_path($newname), $context);
 		}
-		function _mkdir ($pathname, $mode = 0777, $recursive = false, $context = NULL) {
+		function _mkdir ($pathname, $mode = 0777, $recursive = false, $context = null) {
 			return is_null($context) ?
 					mkdir(str_to_path($pathname), $mode, $recursive) :
 					mkdir(str_to_path($pathname), $mode, $recursive, $context);
 		}
-		function _rmdir ($dirname, $context = NULL) {
+		function _rmdir ($dirname, $context = null) {
 			return is_null($context) ?
 					rmdir(str_to_path($dirname)) :
 					rmdir(str_to_path($dirname), $context);
@@ -359,18 +364,23 @@
 		function _filesize ($filename) {
 			return filesize(str_to_path($filename));
 		}
-		function _fopen ($filename, $mode, $use_include_path = false, $context = NULL) {
+		function _fopen ($filename, $mode, $use_include_path = false, $context = null) {
 			return is_null($context) ?
 					fopen(str_to_path($filename), $mode, $use_include_path) :
 					fopen(str_to_path($filename), $mode, $use_include_path, $context);
 		}
-		function _opendir ($path, $context = NULL) {
+		function _opendir ($path, $context = null) {
 			return is_null($context) ?
 					opendir(str_to_path($path)) :
 					opendir(str_to_path($path), $context);
 		}
-		function _readdir ($dir_handle) {
+		function _readdir ($dir_handle = null) {
 			return path_to_str(readdir($dir_handle));
+		}
+		function _scandir ($directory, $sorting_order = null, $context = null) {
+			return is_null($context) ?
+				path_to_str(scandir(str_to_path($directory), $sorting_order)) :
+				path_to_str(scandir(str_to_path($directory), $sorting_order, $context));
 		}
 		function _is_dir ($filename) {
 			return is_dir(str_to_path($filename));
@@ -415,8 +425,8 @@
 	}
 	//Получить расположение файла в файловой системе по его URL
 	function source_by_url ($url) {
+		global $Config;
 		if (strpos($url, $Config->server['base_url']) === 0) {
-			global $Config;
 			if (is_object($Config)) {
 				return str_replace('/', DS, str_replace($Config->server['base_url'], DIR, $url));
 			}
@@ -462,6 +472,9 @@
 		return $ok;
 	}
 	//Обработка замыканий
+	/**
+	 * @param &$functions Closure[]
+	 */
 	function closure_process (&$functions) {
 		$functions = (array)$functions;
 		foreach ($functions as &$function) {
@@ -507,6 +520,7 @@
 	//Функция форматирования размера файла из байтов в удобночитаемый вид
 	function format_filesize ($size, $round = false) {
 		global $L;
+		$unit = '';
 		if($size >= 1099511627776) {
 			$size = $size/1099511627776;
 			$unit = ' '.$L->TB;
@@ -528,7 +542,7 @@
 			return $size;
 		}
 	}
-	//Защита от NULL Byte уязвимости
+	//Защита от null Byte уязвимости
 	function null_byte_filter (&$in) {
 		if (is_array($in)) {
 			foreach ($in as &$val) {
@@ -537,9 +551,10 @@
 		} else {
 			$in = str_replace(chr(0), '', $in);
 		}
+		return $in;
 	}
 	//Фильтрация и функции для рекурсивной обработки массивов
-	function filter ($text, $mode = '', $data = false, $data2 = NULL, $data3 = NULL) {
+	function filter ($text, $mode = '', $data = false, $data2 = null, $data3 = null) {
 		if (is_array($text)) {
 			foreach ($text as $item => &$val) {
 				$text[$item] = filter($val, $mode, $data, $data2, $data3);
@@ -557,8 +572,8 @@
 					return $mode($text);
 				}
 			} elseif ($mode == 'substr') {
-				if ($data2 !== NULL) {
-					if ($data3 !== NULL) {
+				if ($data2 !== null) {
+					if ($data3 !== null) {
 						return $mode($text, $data, $data2, $data3);
 					} else {
 						return $mode($text, $data, $data2);
@@ -567,7 +582,7 @@
 					return $mode($text, $data);
 				}
 			} elseif ($mode == 'mb_substr') {
-				if ($data2 !== NULL) {
+				if ($data2 !== null) {
 					return $mode($text, $data, $data2);
 				} else {
 					return $mode($text, $data);
@@ -603,7 +618,7 @@
 		function _substr ($string, $start, $length) {
 			return filter($string, 'substr', $start, $length);
 		}
-		function _mb_substr ($string, $start, $length = NULL, $encoding = NULL) {
+		function _mb_substr ($string, $start, $length = null, $encoding = null) {
 			return filter($string, 'substr', $start, $length, $encoding);
 		}
 		function _strtolower ($string) {
@@ -621,7 +636,7 @@
 	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче
 	//настоятельно рекомендуется к использованию вместо стандартной!
 	function _json_encode ($in) {
-		if (defined('JSON_UNESCAPED_UNICODE')) {				//php 5.4
+		if (defined('JSON_UNESCAPED_UNICODE')) {				//for php 5.4
 			return json_encode($in, JSON_UNESCAPED_UNICODE);
 		}
 		return html_entity_decode(
@@ -645,13 +660,13 @@
 	//Функция для выставления cookies на все зеркала сайта, параметры как у стандартной функции setcookie(),
 	//только упущены параметры $path и $domain, они обрабатываются системой
 	function _setcookie ($name, $value, $expire = 0, $secure = false, $httponly = false) {
-		static $domains = false, $paths = false, $prefix = false;
+		static $domains, $paths, $prefix;
 		global $Config;
-		if ($prefix === false) {
+		if (!isset($prefix)) {
 			$prefix = is_object($Config) && $Config->core['cookie_prefix'] ? $Config->core['cookie_prefix'].'_' : '';
 		}
 		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
-			if (!$domains) {
+			if (!isset($domains)) {
 				$domains	= array_merge((array)$Config->core['cookie_domain'], explode("\n", $Config->core['mirrors_cookie_domain']));
 				$paths		= array_merge((array)$Config->core['cookie_path'], explode("\n", $Config->core['mirrors_cookie_path']));
 				foreach ($domains as $i => $domain) {
@@ -673,8 +688,8 @@
 		}
 	}
 	function _getcookie ($name) {
-		static $prefix = false;
-		if ($prefix === false) {
+		static $prefix;
+		if (!isset($prefix)) {
 			global $Config;
 			$prefix = is_object($Config) && $Config->core['cookie_prefix'] ? $Config->core['cookie_prefix'].'_' : '';
 		}
@@ -697,7 +712,6 @@
 	}
 	//Функция для конвертации IPv4 и IPv6 адресов в hex значение для помещения в БД
 	function ip2hex ($ip) {
-		$hex = '';
 		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
 			$isIPv4 = true;
 		} elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false) {
@@ -839,7 +853,7 @@
 	//Проверка наличия и версии mcrypt
 	function check_mcrypt ($n = 0) { //0 - версия библиотеки (и наличие), 1 - подходит ли версия библиотеки
 		static $mcrypt_data;
-		if (empty($mcrypt_data)) {
+		if (!isset($mcrypt_data)) {
 			ob_start();
 			phpinfo(INFO_MODULES);
 			$mcrypt_version = ob_get_clean();

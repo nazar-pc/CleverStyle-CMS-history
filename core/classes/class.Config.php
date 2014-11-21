@@ -1,4 +1,5 @@
 <?php
+
 class Config {
 	public	$admin_parts	= array(		//Столбцы в БД в таблице конфигурации движка
 				'core',
@@ -59,13 +60,15 @@ class Config {
 	}
 	//Инициализация движка (или реинициалицазия при необходимости)
 	function init() {
-		global $Cache, $L, $Text, $Page;
+		global $Cache, $L, $Error, $Page;
 		//Инициализация объекта кеша с использованием настроек движка
 		$Cache->init($this);
 		//Инициализация объекта языков с использованием настроек движка
 		$L->init($this);
 		//Инициализация объекта страницы с использованием настроек движка
 		$Page->init($this);
+		//Инициализация объекта обработки ошибок
+		$Error->init();
 		//Установка часового пояса по-умолчанию
 		date_default_timezone_set($this->core['timezone']);
 	}
@@ -73,11 +76,13 @@ class Config {
 	private function routing () {
 		global $ADMIN, $API;
 		$this->server['url']		= urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		null_byte_filter($this->server['url']);
 		$this->server['protocol']	= isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 		$core_url					= explode('://', $this->core['url'], 2);
 		$core_url[1]				= explode(';', $core_url[1]);
 		//$core_url = array(0 => протокол, 1 => array(список из домена и IP адресов))
 		//Проверяем, сходится ли адрес с главным доменом
+		$url_replace = false;
 		if ($core_url[0] == $this->server['protocol']) {
 			foreach ($core_url[1] as $url) {
 				if (mb_strpos($this->server['url'], $url) === 0) {
@@ -90,7 +95,7 @@ class Config {
 		$this->server['mirrors'][$core_url[0]] = array_merge($this->server['mirrors'][$core_url[0]], $core_url[1]);
 		unset($core_url, $url);
 		//Если это не главный домен - ищем совпадение в зеркалах
-		if (!isset($url_replace) && !empty($this->core['mirrors_url'])) {
+		if ($url_replace === false && !empty($this->core['mirrors_url'])) {
 			$mirrors_url = explode("\n", $this->core['mirrors_url']);
 			foreach ($mirrors_url as $i => $mirror_url) {
 				$mirror_url		= explode('://', $mirror_url, 2);
@@ -115,7 +120,7 @@ class Config {
 				$Error->process($L->mirror_not_allowed, 'stop');
 			}
 		//Если соответствие нигде не найдено - зеркало не разрешено!
-		} elseif (!isset($url_replace)) {
+		} elseif ($url_replace === false) {
 			global $Error, $L;
 			$this->server['base_url'] = '';
 			$Error->process($L->mirror_not_allowed, 'stop');
@@ -256,9 +261,9 @@ class Config {
 		return true;
 	}
 	//Сохранение и применение изменений
-	function save ($parts = NULL) {
-		global $db, $Cache;
-		if ($parts === NULL || empty($parts)) {
+	function save ($parts = null) {
+		global $db;
+		if ($parts === null || empty($parts)) {
 			$parts = $this->admin_parts;
 		} elseif (!is_array($parts)) {
 			$parts = (array)$parts;

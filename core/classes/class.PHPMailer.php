@@ -306,7 +306,7 @@ class PHPMailer {
   // PROPERTIES, PRIVATE AND PROTECTED
   /////////////////////////////////////////////////
 
-  private   $smtp           = NULL;
+  private   $smtp           = null;
   private   $to             = array();
   private   $cc             = array();
   private   $bcc            = array();
@@ -1236,7 +1236,7 @@ class PHPMailer {
         $file = tempnam('', 'mail');
         file_put_contents($file, $body); //TODO check this worked
         $signed = tempnam("", "signed");
-        if (@openssl_pkcs7_sign($file, $signed, "file://".$this->sign_cert_file, array("file://".$this->sign_key_file, $this->sign_key_pass), NULL)) {
+        if (@openssl_pkcs7_sign($file, $signed, "file://".$this->sign_cert_file, array("file://".$this->sign_key_file, $this->sign_key_pass), null)) {
           @unlink($file);
           @unlink($signed);
           $body = file_get_contents($signed);

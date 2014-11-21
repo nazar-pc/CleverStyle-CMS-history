@@ -18,7 +18,7 @@ class Key {
 			return true;
 		}
 	}
-	function put ($database, $key, $data = NULL, $expire = 0) {
+	function put ($database, $key, $data = null, $expire = 0) {
 		global $db, $Config;
 		$expire = (int)$expire;
 		if ($expire == 0 && $expire < TIME) {

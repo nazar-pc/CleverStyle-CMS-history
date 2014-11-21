@@ -52,9 +52,10 @@ class Storage {
 			return $this->connections[$connection];
 		//Если подключение не удалось - разрушаем соединение
 		} else {
-			unset($this->$connection, $storage);
+			unset($this->$connection);
 			//Добавляем подключение в список неудачных
 			$this->false_connections[$connection] = $connection.'/'.$storage['host'].'/'.$storage['connection'];
+			unset($storage);
 			//Выводим ошибку подключения к хранилищу
 			global $Error, $L;
 			$Error->process($L->error_storage.' '.$this->false_connections[$connection]);

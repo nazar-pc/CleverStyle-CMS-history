@@ -1,15 +1,15 @@
 #header_zone {
 	height: 30px;
 	position: fixed;
-	top: 0px;
+	top: 0;
 	width: 100%;
 }
 #header_green, #header_black {
-	border-radius: 0px 0px 10px 10px;
-	-moz-border-radius: 0px 0px 10px 10px;
+	border-radius: 0 0 10px 10px;
+	-moz-border-radius: 0 0 10px 10px;
 	position: fixed;
 	right: 300px;
-	top: 0px;
+	top: 0;
 	width: inherit;
 }
 #header_green {
@@ -26,8 +26,8 @@
 	height: 92px;
 	margin: 5px;
 	position: fixed;
-	right: 0px;
-	top: 0px;
+	right: 0;
+	top: 0;
 	width: 252px;
 	z-index: 3;
 }
@@ -54,7 +54,7 @@
 	background: #ddd;
 	border: #fff solid 1px;
 	float: left;
-	margin: 0px 0px 5px 3px;
+	margin: 0 0 5px 3px;
 	width: 150px;
 }
 #user_info_header #register, #user_info_header #user_login {
@@ -65,7 +65,7 @@
 	width: 20px;
 }
 #login_header_form > .ui-icon {
-	margin: 26px 0px 0px -20px;
+	margin: 26px 0 0 -20px;
 }
 #user_info_header button {
 	margin-left: 3px;
@@ -73,11 +73,11 @@
 }
 #main-menu, #main-submenu, #menu-more {
 	height: 40px;
-	left: 0px;
+	left: 0;
 	line-height: 32px;
 	position: fixed;
 	text-align: left;
-	top: 0px;
+	top: 0;
 	z-index: 3;
 }
 #main-submenu {
@@ -100,15 +100,15 @@
 }
 #main-menu {
 	font-size: 40px;
-	margin: 0px;
-	padding: 5px 0px 0px 5px;
+	margin: 0;
+	padding: 5px 0 0 5px;
 }
 #main-submenu {
 	font-size: 24px;
-	margin: 0px;
-	padding: 5px 0px 0px 5px;
+	margin: 0;
+	padding: 5px 0 0 5px;
 }
 #menu-more {
-	margin: 0px;
-	padding: 5px 0px 0px 10px;
+	margin: 0;
+	padding: 5px 0 0 10px;
 }

@@ -29,7 +29,7 @@ class Index extends HTML {
 			$api			= false;
 
 	function __construct () {
-		global $Config, $L, $Page, $User;
+		global $Config, $User;
 		if (
 			ADMIN && $User->is('admin') && _file_exists(MODULES.DS.MODULE.DS.'admin') &&
 			(_file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') || _file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json'))
@@ -154,7 +154,10 @@ class Index extends HTML {
 					'current_base_url = "'.$Config->server['base_url'].'/'.($this->admin ? ADMIN.'/' : '').MODULE.
 						(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
 					($User->is('guest') ?
-						'auth_error_connection = "'.$L->auth_error_connection.'",'
+						'auth_error_connection = "'.$L->auth_error_connection.'",'.
+						'reg_connection_error = "'.$L->reg_error_connection.'",'.
+						'please_type_your_email = "'.$L->please_type_your_email.'",'.
+						'please_type_correct_email = "'.$L->please_type_correct_email.'",'
 					: '').
 					'language = "'.$L->clanguage.'",'.
 					'language_en = "'.$L->clanguage_en.'",'.
@@ -253,10 +256,10 @@ class Index extends HTML {
 			$Page->content($this->Content);
 		}
 	}
-	function save ($parts = NULL) {
+	function save ($parts = null) {
 		global $L, $Page, $Config;
 		if (
-			(($parts === NULL || is_array($parts) || in_array($parts, $Config->admin_parts)) && $Config->save($parts)) ||
+			(($parts === null || is_array($parts) || in_array($parts, $Config->admin_parts)) && $Config->save($parts)) ||
 			$parts
 		) {
 			$Page->title($L->settings_saved);
@@ -268,10 +271,10 @@ class Index extends HTML {
 			return false;
 		}
 	}
-	function apply ($parts = NULL) {
+	function apply ($parts = null) {
 		global $L, $Page, $Config;
 		if (
-			($parts === NULL && $Config->apply()) ||
+			($parts === null && $Config->apply()) ||
 			$parts
 		) {
 			$Page->title($L->settings_applied);

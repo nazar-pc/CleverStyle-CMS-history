@@ -1,20 +1,20 @@
 <?php
 class Page extends HTML {
 	public		$theme, $color_scheme, $get_list, $cache_list, $interface = true,
-	
+
 				$Html, $Keywords, $Description, $Title = array(),
-	
+
 				$Head,
 				$core_js	= array(0 => '', 1 => ''),
 				$core_css	= array(0 => '', 1 => ''),
 				$js			= array(0 => '', 1 => ''),
 				$css		= array(0 => '', 1 => ''),
-	
+
 				$user_avatar_image, $user_avatar_text, $user_info,
 				$debug_info,
-	
+
 				$pre_Body, $Header, $mainmenu, $mainsubmenu, $menumore, $Left, $Top, $Bottom, $Right, $Footer, $post_Body,
-	
+
 				$level		= array (			//Количество табуляций для отступов при подстановке значений в шаблон по-умолчанию
 					'Head'				=> 2,
 					'pre_Body'			=> 2,
@@ -36,7 +36,7 @@ class Page extends HTML {
 
 	private		$Search		= array(),
 				$Replace	= array();
-	
+
 	function __construct () {
 		global $interface;
 		$this->interface = (bool)$interface;
@@ -453,7 +453,7 @@ class Page extends HTML {
 					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
 				)
 			);
-			global $timeload, $loader_init_memory;
+			global $loader_init_memory;
 			$this->debug_info .= $this->div(
 				'',
 				array(
@@ -485,11 +485,7 @@ class Page extends HTML {
 				$L->active_connections.': '.(count($db->connections) ? '' : $this->b($L->no))
 			);
 			foreach ($db->connections as $name => &$database) {
-				if ($name == 'core') {
-						$name = $L->core_db;
-				} else {
-					$name = ($name != 'core' && $name != 0 ? $name : $L->core_db.'('.$DB_NAME.')').'('.$database->database.')';
-				}
+				$name = $name != 'core' ? $L->db.' '.$database->database : $L->core_db.' ('.$database->database.')';
 				$queries .= $this->p(
 					$name.
 					', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).

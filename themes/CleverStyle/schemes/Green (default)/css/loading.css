@@ -6,9 +6,9 @@
 }
 #loading > div {
 	background-color: #6ebc00;
-	box-shadow: 0px 0px 15px #000;
-	-moz-box-shadow: 0px 0px 15px #000;
-	-webkit-box-shadow: 0px 0px 15px #000;
+	box-shadow: 0 0 15px #000;
+	-moz-box-shadow: 0 0 15px #000;
+	-webkit-box-shadow: 0 0 15px #000;
 	opacity: 0;
 	position: relative;
 	transition: all 0.3s linear;
@@ -30,7 +30,7 @@
 	height: 40px;
 	left: 24px;
 	margin-top: -18px;
-	top: 0px;
+	top: 0;
 	width: 40px;
 }
 #loading > #n3 {
@@ -39,7 +39,7 @@
 	height: 36px;
 	left: 6px;
 	margin-top: 10px;
-	top: 0px;
+	top: 0;
 	width: 36px;
 }
 #loading > #n4 {
@@ -48,7 +48,7 @@
 	height: 28px;
 	left: 16px;
 	margin-top: 10px;
-	top: 0px;
+	top: 0;
 	width: 28px;
 }
 #loading > #n5 {

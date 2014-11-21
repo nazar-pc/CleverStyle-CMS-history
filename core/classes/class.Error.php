@@ -2,7 +2,7 @@
 class Error {
 	public	$error	= true;
 	private	$num	= 0;
-	function __construct () {
+	function init () {
 		global $Error;
 		$Error = $this;
 		set_error_handler(array($Error, 'process'));
@@ -66,7 +66,8 @@ class Error {
 				default:
 					$Page->content(
 						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errstr.' '.$L->on_line.' '.$errline.' '.$L->of_file.' '
-						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br><br>\n");
+						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br><br>\n"
+					);
 				break;
 			}
 		} else {

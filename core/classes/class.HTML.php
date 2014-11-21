@@ -18,7 +18,7 @@ class HTML {
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
 		global $Config;
-		if ($level < 1 || !$Config->core['debug']) {
+		if ($level < 1 || !is_object($Config) || !$Config->core['debug']) {
 			return $in;
 		}
 		return preg_replace('/^(.*)$/m', str_repeat("\t", $level).'$1', $in);
@@ -274,11 +274,11 @@ class HTML {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
 	}
-	function meta		($in = '', $data = array()) {
+	function meta		($in = array()) {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
 	}
-	function base		($in = '') {
+	function base		($in = array()) {
 		$data['href']	= $in;
 		$data['tag']	= __FUNCTION__;
 		return $this->iwrap($data);
@@ -406,11 +406,11 @@ class HTML {
 					if (!isset($item['type'])) {
 						$item['type'] = 'text';
 					}
-					if (isset($item['min']) && $item['min'] < $value) {
-						$value = $item['min'];
+					if (isset($item['min']) && isset($item['value']) && $item['min'] < $item['value']) {
+						$item['value'] = $item['min'];
 					}
-					if (isset($item['max']) && $item['max'] > $value) {
-						$value = $item['max'];
+					if (isset($item['max']) && isset($item['value']) && $item['max'] > $item['value']) {
+						$item['value'] = $item['max'];
 					}
 					$item['tag'] = __FUNCTION__;
 					if (isset($item['value'])) {
@@ -423,11 +423,11 @@ class HTML {
 				if (!isset($in['type'])) {
 					$in['type'] = 'text';
 				}
-				if (isset($item['min']) && $item['min'] < $value) {
-					$value = $item['min'];
+				if (isset($in['min']) && isset($in['value']) && $in['min'] < $in['value']) {
+					$in['value'] = $in['min'];
 				}
-				if (isset($item['max']) && $item['max'] > $value) {
-					$value = $item['max'];
+				if (isset($in['max']) && isset($in['value']) && $in['max'] > $in['value']) {
+					$in['value'] = $in['max'];
 				}
 				$in['tag'] = __FUNCTION__;
 				if (isset($in['value'])) {

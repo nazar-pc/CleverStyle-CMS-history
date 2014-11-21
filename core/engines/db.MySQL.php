@@ -9,6 +9,7 @@ class MySQL extends DatabaseAbstract {
 			if(!$this->select_db($database)) {
 				return false;
 			}
+			$this->database = $database;
 			//Смена кодировки соеденения с БД
 			if ($codepage) {
 				if ($codepage != @mysql_client_encoding($this->id)) {
@@ -27,7 +28,6 @@ class MySQL extends DatabaseAbstract {
 	}
 	//Смена текущей БД
 	function select_db ($database) {
-		$this->database = $database;
 		return @mysql_select_db($database, $this->id);
 	}
 	//Запрос в БД
@@ -39,7 +39,7 @@ class MySQL extends DatabaseAbstract {
 		if (is_resource($this->query['resource'])) {
 			@mysql_free_result($this->query['resource']);
 		}
-		global $db, $Config;
+		global $db;
 		$this->query['time']			= microtime(true);
 		$this->queries['text'][]		= $this->query['text']				= str_replace('[prefix]', $this->prefix, $query);
 		$this->queries['resource'][]	= (bool)$this->query['resource']	= @mysql_query($this->query['text'], $this->id);

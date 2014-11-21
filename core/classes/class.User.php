@@ -1,4 +1,5 @@
 <?php
+
 class User {
 	protected	$current				= array(
 					'session'		=> false,
@@ -10,12 +11,10 @@ class User {
 						'system'		=> false
 					)
 				),
+				$id						= false,	//id текущего пользователя
 				$update_cache			= false,	//Нужно ли обновлять кеш данных текущего пользователя
 				$data					= array(),	//Локальный кеш данных пользователя
 				$data_set				= array(),	//Измененные данные пользователя, которыми по завершению нужно обновить данные в БД
-				$update_cache_others	= array(),	//Нужно ли обновлять кеш данных других пользователей
-				$data_others			= array(),	//Локальный кеш данных других пользователей
-				$data_set_others		= array(),	//Измененные данные других пользователей
 				$db						= false,	//Ссылка на объект БД
 				$db_prime				= false,	//Ссылка на объект основной БД
 				$cache					= array();	//Кеш с некоторыми временными данными
@@ -25,14 +24,14 @@ class User {
 		//Определяем системного пользователя
 		//Последний элемент в пути страницы - ключ
 		$rc = &$Config->routing['current'];
-		if (isset($rc[count($rc) - 1]) &&
-			$this->user_agent == 'CleverStyle CMS' &&
+		if ($this->user_agent == 'CleverStyle CMS' &&
 			$this->login_attempts('1') &&
-			$key_data = $Key->get(
+			isset($rc[count($rc) - 1]) &&
+			($key_data = $Key->get(
 				$Config->components['modules']['System']['db']['keys'],
 				$key = $rc[count($rc) - 1],
 				true
-			) &&
+			)) &&
 			is_array($key_data)
 		) {
 			if ($this->current['is']['system'] = $key_data['data'] == md5($Config->server['url'])) {
@@ -46,13 +45,12 @@ class User {
 			}
 		}
 		unset($key_data, $key, $rc);
-		//$this->current['is']['admin']	= true;///////////////////////////////////////////////////////////////////////////////////////
 		//Пользователь может устанавливать cookies
 		if (setcookie($test = uniqid(), 'test')) {
 			setcookie($test, '');
 			unset($test);
 			//Получение id пользователя по сессии
-			$this->data = $this->get_session();
+			$this->id = $this->get_session();
 		//Не может установивить cookie - значит (вероятнее всего) бот
 		} else {
 			unset($test);
@@ -67,7 +65,7 @@ class User {
 					unset($bot);
 					$Cache->{'users/bots'} = $bots;
 				} else {
-					$Cache->{'users/bots'} = 'NULL';
+					$Cache->{'users/bots'} = 'null';
 				}
 			}
 			//Устанавливаем метку, что это бот. В любом случае изменение любых настроек,
@@ -84,72 +82,74 @@ class User {
 			//Если список известных ботов не пустой - определяем бота
 			if (is_array($bots) && !empty($bots)) {
 				//Загружаем данные
-				if (!($this->data = $Cache->{'users/'.$bot_hash})) {
+				if (!($this->id = $Cache->{'users/'.$bot_hash})) {
 					//Данных нет - ищем бота в списке известных
-					$id = false;
 					foreach ($bots as &$bot) {
 						foreach ($bot['login'] as $login) {
 							if ($user_agent == $login || preg_match($user_agent, $login)) {
-								$this->data = $bot['id'];
+								$this->id = $bot['id'];
 								break 2;
 							}
 						}
 						foreach ($bot['email'] as $email) {
 							if ($ip == $email || preg_match($ip, $email)) {
-								$this->data = $bot['id'];
+								$this->id = $bot['id'];
 								break 2;
 							}
 						}
 					}
 					unset($bots, $login, $email);
 					//Если получен id - бот найден
-					if ($this->data) {
-						$Cache->{'users/'.$bot_hash} = $this->data;
+					if ($this->id) {
+						$Cache->{'users/'.$bot_hash} = $this->id;
 					//Если такого бота в БД нет - определяем как гостя
 					} else {
-						$Cache->{'users/'.$full_hash} = $this->data = 1;
+						$Cache->{'users/'.$bot_hash} = $this->id = 1;
 					}
 				}
 			//Список ботов пустой - определяем как гостя
 			} else {
-				$Cache->{'users/'.$bot_hash} = $this->data = 1;
+				$Cache->{'users/'.$bot_hash} = $this->id = 1;
 			}
 		}
-		//Загружаем данные пользователя с id $this->data
-		$id = $this->data;
+		//Загружаем данные пользователя
 		//Точка возврата, выполняется, если аккаунт блокирован, неактивирован, или отключен
 		getting_user_data:
-		if (!($this->data = $Cache->{'users/'.$id})) {
-			$this->data = $this->db()->qf(
+		if (!($data = $Cache->{'users/'.$this->id})) {
+			$data = $this->db()->qf(
 				'SELECT `id`, `login`, `username`, `groups`, `permissions`, `language`, `timezone`, `status`, `block_until` FROM `[prefix]users` '.
-					'WHERE `id` = '.$id.' LIMIT 1'
+					'WHERE `id` = '.$this->id.' LIMIT 1'
 			);
-			if (is_array($this->data) && !empty($this->data)) {
-				$Cache->{'users/'.$id} = $this->data;
-				if ($this->data['status'] != 1 && $id != 2) {
-					if ($this->data['status'] == 0) {
+			if (is_array($data)) {
+				$Cache->{'users/'.$this->id} = $data;
+				if ($this['status'] != 1) {
+					if ($data['status'] == 0) {
 						$Page->warning($L->your_account_disabled);
 						//Отмечаем как гостя, и получаем данные заново
-						$id = 1;
+						$this->id = 1;
 						$this->del_session();
 						goto getting_user_data;
 					} else {
 						$Page->warning($L->your_account_is_not_active);
 						//Отмечаем как гостя, и получаем данные заново
-						$id = 1;
+						$this->id = 1;
 						$this->del_session();
 						goto getting_user_data;
 					}
-				} elseif ($this->data['block_until'] > TIME && $id != 2) {
-					$Page->warning($L->your_account_blocked_until.' '.date($L->_full_date, $this->data['block_until']));
+				} elseif ($data['block_until'] > TIME) {
+					$Page->warning($L->your_account_blocked_until.' '.date($L->_full_date, $data['block_until']));
 					//Отмечаем как гостя, и получаем данные заново
-					$id = 1;
+					$this->id = 1;
 					$this->del_session();
 					goto getting_user_data;
 				}
+			} elseif ($this->id != 1) {
+				//Если данные не были получены - отмечаем, как гостя и пытаемся получить данные заново
+				$this->id = 1;
+				goto getting_user_data;
 			}
 		}
-		if ($id == 1) {
+		if ($this->id == 1) {
 			$this->current['is']['guest'] = true;
 		} else {
 			//Определяем типы пользователей
@@ -164,7 +164,7 @@ class User {
 			}
 			//Определяем права доступа, с учётом индивидуальных прав.
 			//Цифра 2 в маске пользователя прав означает перепись любого предыдущего значения права доступа запретом,
-			//поэтому после сложения делаем замену
+			//поэтому после сложения делаем замену 2 на 0
 			$permissions = '';
 			foreach ($groups as $group_id) {
 				if ($group_id < 1) {
@@ -186,33 +186,35 @@ class User {
 			$L->change($this->language);
 		}
 	}
+	/**
+	 * @param array|string $item
+	 * @param bool|int $user
+	 * @param bool $stop_key
+	 * @return array|bool
+	 */
 	function get ($item, $user = false, $stop_key = false) {
+		$user = (int)($user ?: $this->id);
 		global $Cache;
-		//Ключ остановки, запрещает получение данных из БД, когда идет выборка массива данных
-		static $_stop_key = false;
-		if ($_stop_key === false) {
+		/**
+		 * Key of stopping, prohibits getting of data from db, when retrieves array of data
+		 */
+		static $_stop_key;
+		if (!isset($_stop_key)) {
 			$_stop_key = uniqid();
 		}
 		if ($item == 'user_agent') {
 			return $_SERVER['HTTP_USER_AGENT'];
 		} elseif ($item == 'ip') {
-			return $this->data[$item] = $_SERVER['REMOTE_ADDR'];
+			return $this->data[$this->id][$item] = $_SERVER['REMOTE_ADDR'];
 		} elseif ($item == 'forwarded_for') {
-			return $this->data[$item] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : false;
+			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : false;
 		} elseif ($item == 'client_ip') {
-			return $this->data[$item] = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : false;
+			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : false;
 		}
-		//Делаем ссылочные переменные для того, чтобы не разделять код работы с разными пользователями
-		if ($user === false) {
-			$update_cache = &$this->update_cache;
-			$data = &$this->data;
-		} else {
-			if (!isset($this->update_cache_others[(int)$user])) {
-				$this->update_cache_others[(int)$user] = false;
-			}
-			$update_cache = &$this->update_cache_others[(int)$user];
-			$data = &$this->data_others[(int)$user];
-		}
+		/**
+		 * Link for simplier use
+		 */
+		$data = &$this->data[$user];
 		//Если получаем массив значений
 		if (is_array($item)) {
 			$result = $new_items = array();
@@ -224,13 +226,13 @@ class User {
 					$new_items[] = $i;
 				}
 			}
-			if (!empty($new_items)) {
+			if (empty($new_items)) {
 				return $result;
 			}
 			//Если есть недостающие значения - достаем их из БД
-			$res = $this->db()->qf('SELECT `'.implode('`, `', $new_items).'` FROM `[prefix]users` WHERE `id` = '.$user ?: $this->id.' LIMIT 1');
+			$res = $this->db()->qf('SELECT `'.implode('`, `', $new_items).'` FROM `[prefix]users` WHERE `id` = '.$user.' LIMIT 1');
 			if (is_array($res)) {
-				$update_cache = true;
+				$this->update_cache[$user] = true;
 				$data = array_merge($data, $res);
 				$result = array_merge($result, $res);
 				//Пересортируем результирующий массив в том же порядке, что и входящий массив элементов
@@ -260,27 +262,28 @@ class User {
 			} elseif ($stop_key == $_stop_key) {
 				return $stop_key;
 			} else {
-				$new_data = $this->db()->qf('SELECT `'.$item.'` FROM `[prefix]users` WHERE `id` = '.($user ?: $this->id).' LIMIT 1');
+				$new_data = $this->db()->qf('SELECT `'.$item.'` FROM `[prefix]users` WHERE `id` = '.($user).' LIMIT 1');
 				if (is_array($new_data)) {
-					$update_cache = true;
+					$this->update_cache[$user] = true;
 					return $data[$item] = &$new_data[$item];
-				} else {
-					return false;
 				}
 			}
 		}
+		return false;
 	}
+	/**
+	 * @param array|string $item
+	 * @param $value
+	 * @param bool|int $user
+	 */
 	function set ($item, $value, $user = false) {
+		$user = (int)($user ?: $this->id);
 		if (is_array($item)) {
 			foreach ($item as $i => &$v) {
 				$this->set($i, $v, $user);
 			}
 		} else {
-			if ($user === false) {
-				$this->data_set[$item] = $this->data[$item] = $value;
-			} else {
-				$this->data_set_others[$user][$item] = $this->data_others[$user][$item] = $value;
-			}
+			$this->data_set[$user][$item] = $this->data[$user][$item] = $value;
 		}
 	}
 	function __get ($item) {
@@ -289,34 +292,52 @@ class User {
 	function __set ($item, $value = '') {
 		$this->set($item, $value);
 	}
-	//Возвращает указатель на объект БД с пользователями, используется для чтения данных (может подключаться зеркало БД)
+	/**
+	 * Returns link to the object of db for reading (can be mirror)
+	 * @return object
+	 */
 	protected function db () {
-		if ($this->db !== false) {
+		if (is_object($this->db)) {
 			return $this->db;
 		}
 		if (is_object($this->db_prime)) {
 			return $this->db = $this->db_prime;
 		}
 		global $Config, $db;
-		$this->db = $db->{$Config->components['modules']['System']['db']['users']}(); //Получаем и сохраняем ссылку для повторного доступа
+		/**
+		 * Save link for faster access
+		 */
+		$this->db = $db->{$Config->components['modules']['System']['db']['users']}();
 		return $this->db;
 	}
-	//Возвращает указатель на объект БД с пользователями, используется для изменения данных (всегда главная БД)
+	/**
+	 * Returns link to the object of db for writting (always main db)
+	 * @return object
+	 */
 	protected function db_prime () {
-		if ($this->db_prime !== false) {
+		if (is_object($this->db_prime)) {
 			return $this->db_prime;
 		}
 		global $Config, $db;
-		$this->db_prime = $db->{$Config->components['modules']['System']['db']['users']}(); //Получаем и сохраняем ссылку для повторного доступа
+		/**
+		 * Save link for faster access
+		 */
+		$this->db_prime = $db->{$Config->components['modules']['System']['db']['users']}();
 		return $this->db_prime;
 	}
-	//Проверяет, кем является посетитель.
-	//Возможные значения $mode: 'admin', 'user', 'guest', 'bot', 'system'
+	/**
+	 * Who is visitor
+	 * @param string $mode admin|user|guest|bot|system
+	 * @return bool
+	 */
 	function is ($mode) {
-		return $this->current['is'][$mode];
+		return isset($this->current['is'][$mode]) && $this->current['is'][$mode];
 	}
-	//Возвращает id пользователя
-	//(sha224_хеш_логина_или_пароля)
+	/**
+	 * Returns user id by login or password hash (sha224)
+	 * @param  string $login_hash
+	 * @return bool|int
+	 */
 	function get_id ($login_hash) {
 		$this->login_result(true);
 		$data = $this->db()->qf(
@@ -327,8 +348,12 @@ class User {
 		);
 		return is_array($data) ? $data['id'] : false;
 	}
-	//Ищет сессию по её id, и возвращает id пользователя сессии
-	function get_session ($session_id = false) {
+	/**
+	 * Find the session by id, and return id of owner (user)
+	 * @param string $session_id
+	 * @return int
+	 */
+	function get_session ($session_id = '') {
 		$this->current['session'] = _getcookie('session');
 		$session_id = $session_id ?: $this->current['session'];
 		global $Cache, $Config;
@@ -360,10 +385,16 @@ class User {
 		}
 		return $result['user'];
 	}
-	//Создаем сессию для пользователя с указанным id
+	/**
+	 * Create the session for the user with specified id
+	 * @param int $id
+	 * @return bool
+	 */
 	function add_session ($id) {
 		global $Config;
-		//Делаем генерацию хеша в цикле, если сессия с таким хешем не найдена - создаем сессию, иначе генерируем новый уникальный хеш
+		/**
+		 * Generate hash in cycle, to obtain unique value
+		 */
 		for ($i = 0; $hash = md5(MICROTIME + $i); ++$i) {
 			if (!$this->db_prime()->qf('SELECT `id` FROM `[prefix]sessions` WHERE `id` = \''.$hash.'\' LIMIT 1')) {
 				$this->db_prime()->q(
@@ -372,7 +403,7 @@ class User {
 							'VALUES '.
 						'('.
 							'\''.$hash.'\', '.
-							(int)$id.', '.
+							$id.', '.
 							(TIME + $Config->core['session_expire']).', '.
 							$this->db_prime()->sip($this->user_agent).', '.
 							'\''.($ip = ip2hex($this->ip)).'\', '.
@@ -382,7 +413,7 @@ class User {
 				);
 				global $Cache;
 				$Cache->{'sessions/'.$hash} = $this->current['session'] = array(
-					'user'			=> (int)$id,
+					'user'			=> $id,
 					'expire'		=> TIME + $Config->core['session_expire'],
 					'user_agent'	=> $this->user_agent,
 					'ip'			=> $ip,
@@ -395,26 +426,37 @@ class User {
 		}
 		return false;
 	}
-	//Удаляем сессию
-	function del_session ($session_id = false) {
+	/**
+	 * Remove the session
+	 * @param string $session_id
+	 * @return bool
+	 */
+	function del_session ($session_id = '') {
 		global $Cache;
 		$session_id = $session_id ?: $this->current['session'];
 		_setcookie('session', '');
 		$Cache->del('sessions/'.$session_id);
-		return $session_id ? $db->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `id` = \''.$session_id.'\'') : false;
+		return $session_id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `id` = \''.$session_id.'\'') : false;
 	}
-	//Удаляем все сессии пользователя
+	/**
+	 * Remove all user sessions
+	 * @param bool|int $id
+	 * @return bool
+	 */
 	function del_all_sessions ($id = false) {
 		$id = $id ?: $this->id;
 		_setcookie('session', '');
-		return $id ? $db->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `user` = \''.$this->id.'\'') : false;
+		return $id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `user` = \''.$this->id.'\'') : false;
 	}
-	//Проверяем количество попыток входа
-	function login_attempts ($login = false) {
-		if (isset($cache['login_attempts'])) {
-			return $cache['login_attempts'];
+	/**
+	 * Check number of login attempts
+	 * @param string $login
+	 * @return int
+	 */
+	function login_attempts ($login = '') {
+		if (isset($this->cache['login_attempts'])) {
+			return $this->cache['login_attempts'];
 		}
-		global $Config;
 		$return = $this->db()->qf(
 			'SELECT COUNT(`expire`) FROM `[prefix]user_logins` '.
 				'WHERE `expire` > '.TIME.' AND ('.
@@ -425,7 +467,11 @@ class User {
 		);
 		return $cache['login_attempts'] = $return[0];
 	}
-	//Обрабатываем разультат входа
+	/**
+	 * Process login result
+	 * @param bool $result
+	 * @param bool|int $login
+	 */
 	function login_result ($result, $login = false) {
 		if ($result) {
 			$this->db_prime()->q(
@@ -453,8 +499,11 @@ class User {
 			}
 		}
 	}
+	/**
+	 * Substitutes header information about user, login/registration forms, etc.
+	 */
 	function get_header_info () {
-		global $Config, $Page, $L;
+		global $Page, $L;
 		if ($this->is('user')) {
 			if ($this->avatar) {
 				$Page->user_avatar_image = $this->avatar;
@@ -496,7 +545,7 @@ class User {
 				).
 				$Page->select(
 					array(
-						'in'			=> array_merge(array(''), _mb_substr(get_list(MODULES.DS.MODULE.DS.'register', '/^.*?\.php$/i', 'f'), 0, -4))
+						'in'			=> array_merge(array(''), (array)_mb_substr(get_list(MODULES.DS.'System'.DS.'registration', '/^.*?\.php$/i', 'f'), 0, -4))
 					),
 					array(
 						'id'			=> 'register_list'
@@ -541,7 +590,7 @@ class User {
 				).
 				$Page->select(
 					array(
-						'in'			=> array_merge(array(''), _mb_substr(get_list(MODULES.DS.MODULE.DS.'register', '/^.*?\.php$/i', 'f'), 0, -4))
+						'in'			=> array_merge(array(''), (array)_mb_substr(get_list(MODULES.DS.'System'.DS.'registration', '/^.*?\.php$/i', 'f'), 0, -4))
 					),
 					array(
 						'id'			=> 'login_list'
@@ -593,35 +642,26 @@ class User {
 			);
 		}
 	}
-	//Запрет клонирования
-	function __clone () {}
-	//Сохранение изменений кеша, и данных пользоветелей
+	/**
+	 * Saving cache changing, and users data
+	 */
 	function __finish () {
 		global $Cache;
-		//Обновление кеша текущего пользователя
-		if ($this->update_cache && !empty($this->data)) {
-			$Cache->{'users/'.$this->id} = $this->data;
-		}
-		//Обновление кеша других пользователей
-		if ($this->update_cache_others && !empty($this->data_others)) {
-			foreach ($this->data_others as $id => &$data) {
+		/**
+		 * Update cache users
+		 */
+		if ($this->update_cache && is_array($this->data) && !empty($this->data)) {
+			foreach ($this->data as $id => &$data) {
 				$data['id'] = $id;
 				$Cache->{'users/'.$id} = $data;
 			}
 			unset($id, $data);
 		}
-		//Обновление данных текущего пользователя
-		if (!empty($this->data_set)) {
-			$data = array();
-			foreach ($this->data_set as $i => &$val) {
-				$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
-			}
-			$this->db_prime()->q('UPDATE `[prefix]users` SET '.implode(', ', $data).' WHERE `id` = '.$this->id);
-			unset($i, $val, $data);
-		}
-		//Обновление данных других пользователей
-		if (!empty($this->data_set_others)) {
-			foreach ($this->data_set_others as $id => &$data_set) {
+		/**
+		 * Update data users
+		 */
+		if (is_array($this->data_set) && !empty($this->data_set)) {
+			foreach ($this->data_set as $id => &$data_set) {
 				$data = array();
 				foreach ($data_set as $i => &$val) {
 					$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
@@ -629,7 +669,6 @@ class User {
 				$this->db_prime()->q('UPDATE `[prefix]users` SET '.implode(', ', $data).' WHERE `id` = '.$id);
 				unset($i, $val, $data);
 			}
-			unset($id, $data_set);
 		}
 	}
 }

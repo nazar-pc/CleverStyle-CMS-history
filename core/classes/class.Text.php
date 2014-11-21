@@ -61,6 +61,7 @@ class Text {
 			unset($this->local_storage[$database.'_'.$id]);
 		}
 		if ($db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(_json_encode($result)).' WHERE `id` = '.$id.' LIMIT 1')) {
+			global $Cache;
 			$Cache->{'texts/'.$database.'_'.$id} = $result;
 			$this->local_result[$database.'_'.$id] = &$result;
 			return '{¶'.$id.'}';
@@ -103,6 +104,7 @@ class Text {
 			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
 		}
 		if ($id) {
+			global $Cache;
 			$Cache->{'texts/'.$database.'_'.$id} = $result;
 			$this->local_result[$database.'_'.$id] = &$result;
 			return '{¶'.$id.'}';
@@ -117,7 +119,7 @@ class Text {
 		} elseif (isset($this->local_result[$database.'_'.$id])) {
 			unset($this->local_result[$database.'_'.$id]);
 		}
-		global $db;
+		global $db, $Cache;
 		$Cache->del('texts/'.$database.'_'.$id);
 		return $db->$database()->q('UPDATE `[prefix]texts` SET `relation` = \'\', `relation_id` = 0, `text` = \'\' WHERE `id` = '.$id.' LIMIT 1');
 	}
