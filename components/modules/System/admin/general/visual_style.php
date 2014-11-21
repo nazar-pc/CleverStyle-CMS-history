@@ -5,7 +5,7 @@ $a = &$Admin;
 $a->content(
 	$a->table(
 		$a->tr(
-			$a->td($a->label($a->info('current_theme'), array('for' => 'core[theme]'))).
+			$a->td($a->info('current_theme')).
 			$a->td(
 				$a->select(
 					array(
@@ -22,7 +22,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('active_themes'), array('for' => 'core[active_themes][]'))).
+			$a->td($a->info('active_themes')).
 			$a->td(
 				$a->select(
 					array(
@@ -39,7 +39,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('color_scheme'), array('for' => 'core[color_scheme]'))).
+			$a->td($a->info('color_scheme')).
 			$a->td(
 				$a->select(
 					array(
@@ -67,7 +67,7 @@ $a->content(
 					'',
 					'',
 					true,
-					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+					array('', $L->on, $L->off)
 				)
 			)
 		),

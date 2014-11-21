@@ -162,9 +162,14 @@ class XForm {
 	function label ($in = '', $data = array()) {
 		return $this->swrap($in, $data, 'label');
 	}
-	function info ($in = '') {
+	function info ($in = '', $data = array()) {
 		$info = $in.'_info';
-		return $this->swrap($this->L->$in, array('data-title' => $this->L->$info, 'class' => 'info'), 'div');
+		if (isset($data['class'])) {
+			$data['class'] .= ' info';
+		} else {
+			$data['class'] = 'info';
+		}
+		return $this->label($this->L->$in, array_merge(array('data-title' => $this->L->$info), $data));
 	}
 	function inputx ($in = '') {
 		if ($in['type'] == 'radio') {

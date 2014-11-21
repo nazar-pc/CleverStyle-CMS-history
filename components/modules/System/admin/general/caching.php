@@ -3,19 +3,18 @@ global $L, $Config, $Admin;
 if (isset($Config->routing['current'][2])) {
 	global $Page;
 	$Admin->form = false;
-	if ($Config->routing['current'][2] == 'settings') {
-		$list = get_list(CACHE);
-		foreach ($list as $item) {
-			unlink(CACHE.DS.$item);
+	if ($Config->routing['current'][2] == 'cache') {
+		if (empty_cache()) {
+			$Page->Content = '<div class="green">'.$L->done.'</div>';
+		} else {
+			$Page->Content = '<div class="green">'.$L->error.'</div>';
 		}
-		$Page->Content = '<div class="green">'.$L->done.'</div>';
-	} elseif ($Config->routing['current'][2] == 'jscss') {
-		$list = get_list(PCACHE);
-		foreach ($list as $item) {
-			unlink(PCACHE.DS.$item);
+	} elseif ($Config->routing['current'][2] == 'pcache') {
+		if (empty_pcache()) {
+			$Page->Content = '<div class="green">'.$L->done.'</div>';
+		} else {
+			$Page->Content = '<div class="green">'.$L->error.'</div>';
 		}
-		$Page->rebuild_cache = true;
-		$Page->Content = '<div class="green">'.$L->done.'</div>';
 	}
 } else {
 	$themes_list = get_list(THEMES, false, 'd');
@@ -33,12 +32,12 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'',
 						true,
-						array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+						array('', $L->on, $L->off)
 					)
 				)
 			).
 			$a->tr(
-				$a->td($a->info('disk_cache_size')).
+				$a->td($a->info('disk_cache_size', array('for' => 'core[disk_cache_size]'))).
 				$a->td(
 					$a->input(
 						'number',
@@ -61,7 +60,7 @@ if (isset($Config->routing['current'][2])) {
 						memcache() ? '' : ' disabled',
 						'',
 						true,
-						array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+						array('', $L->on, $L->off)
 					)
 				)
 			).
@@ -76,7 +75,7 @@ if (isset($Config->routing['current'][2])) {
 						memcached() ? '' : ' disabled',
 						'',
 						true,
-						array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+						array('', $L->on, $L->off)
 					)
 				)
 			).
@@ -91,7 +90,7 @@ if (isset($Config->routing['current'][2])) {
 						zlib() ? array('', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').show();"', (zlib_autocompression() ? ' disabled' : '').' onClick="$(\'#zlib_compression\').hide();"') : '',
 						'',
 						true,
-						array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+						array('', $L->on, $L->off)
 					)
 				)
 			).
@@ -124,7 +123,7 @@ if (isset($Config->routing['current'][2])) {
 						!zlib_autocompression() && !$Config->core['zlib_compression'] ? '' : ' disabled',
 						'',
 						true,
-						array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+						array('', $L->on, $L->off)
 					)
 				)
 			).
@@ -139,29 +138,29 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'',
 						true,
-						array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+						array('', $L->on, $L->off)
 					)
 				)
 			).
 			$a->tr(
 				$a->td(
-					$a->div(array('id' => 'clean_settings_cache'))				
+					$a->div(array('id' => 'clean_cache'))				
 				).
 				$a->td(
-					$a->div(array('id' => 'clean_scripts_styles_cache'))
+					$a->div(array('id' => 'clean_pcache'))
 				)
 			).
 			$a->tr(
 				$a->td(
 					$a->button(
 						$L->clean_settings_cache,
-						array('onMouseDown' => 'javascript: admin_cache(\'#clean_settings_cache\', \''.$a->action.'/settings/nointerface\');')
+						array('onMouseDown' => 'javascript: admin_cache(\'#clean_cache\', \''.$a->action.'/cache/nointerface\');')
 					)
 				).
 				$a->td(
 					$a->button(
 						$L->clean_scripts_styles_cache,
-						array('onMouseDown' => 'javascript: admin_cache(\'#clean_scripts_styles_cache\', \''.$a->action.'/jscss/nointerface\');')
+						array('onMouseDown' => 'javascript: admin_cache(\'#clean_pcache\', \''.$a->action.'/pcache/nointerface\');')
 					)
 				)
 			).

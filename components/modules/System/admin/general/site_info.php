@@ -5,7 +5,7 @@ $a = &$Admin;
 $a->content(
 	$a->table(
 		$a->tr(
-			$a->td($a->label($a->info('name2'), array('for' => 'core[name]'))).
+			$a->td($a->info('name2', array('for' => 'core[name]'))).
 			$a->td(
 				$a->input(
 					'text',
@@ -18,7 +18,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('url'), array('for' => 'core[url]'))).
+			$a->td($a->info('url', array('for' => 'core[url]'))).
 			$a->td(
 				$a->input(
 					'url',
@@ -31,7 +31,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('mirrors'), array('for' => 'core[mirrors]'))).
+			$a->td($a->info('mirrors')).
 			$a->td(
 				$a->textarea(
 					$Config->core['mirrors'],
@@ -44,7 +44,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('keywords'), array('for' => 'core[keywords]'))).
+			$a->td($a->info('keywords', array('for' => 'core[keywords]'))).
 			$a->td(
 				$a->input(
 					'text',
@@ -57,7 +57,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('description'), array('for' => 'core[description]'))).
+			$a->td($a->info('description', array('for' => 'core[description]'))).
 			$a->td(
 				$a->input(
 					'text',
@@ -70,7 +70,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('admin_mail'), array('for' => 'core[admin_mail]'))).
+			$a->td($a->info('admin_mail', array('for' => 'core[admin_mail]'))).
 			$a->td(
 				$a->input(
 					'email',
@@ -83,7 +83,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('admin_phone'), array('for' => 'core[admin_phone]'))).
+			$a->td($a->info('admin_phone', array('for' => 'core[admin_phone]'))).
 			$a->td(
 				$a->input(
 					'tel',
@@ -96,7 +96,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('start_date'), array('for' => 'core[start_date]'))).
+			$a->td($a->info('start_date', array('for' => 'core[start_date]'))).
 			$a->td(
 				$a->input(
 					'date',
@@ -109,7 +109,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('time_of_site'))).
+			$a->td($a->info('time_of_site', array('for' => 'core[time_of_site]'))).
 			$a->td(
 				$a->input(
 					'number',

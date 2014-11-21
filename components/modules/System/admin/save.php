@@ -38,7 +38,7 @@ if (isset($_POST['edit_settings'])) {
 	if (strval($_POST['edit_settings']) == 'apply') {
 		if ($Config->rebuild_cache()) {
 			if (isset($_POST['visual_style'])) {
-				$Page->rebuild_cache = true;
+				empty_pcache();
 			}
 			$Page->title($L->settings_applied);
 			$Page->Top .= '<div class="green notice">'.$L->settings_applied.$L->check_applied.'</div>';
@@ -54,9 +54,9 @@ if (isset($_POST['edit_settings'])) {
 		if ($db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $update).' WHERE `domain` = '.sip(CDOMAIN))) {
 			$Page->title($L->settings_saved);
 			$Page->Top .= '<div class="green notice">'.$L->settings_saved.'</div>';
-			$Config->rebuild_cache();
+			empty_cache();
 			if (isset($_POST['visual_style'])) {
-				$Page->rebuild_cache = true;
+				empty_pcache();
 			}
 		} else {
 			$Page->title($L->settings_save_error);
@@ -64,7 +64,7 @@ if (isset($_POST['edit_settings'])) {
 		}
 	}
 	if (strval($_POST['edit_settings']) == 'cancel' || (strval($_POST['edit_settings']) == 'apply' && $apply_error)) {
-		$Config->rebuild_cache(true);
+		empty_cache();
 		if (!$apply_error) {
 			$Page->title($L->settings_canceled);
 			$Page->Top .= '<div class="green notice">'.$L->settings_canceled.'</div>';

@@ -2,7 +2,9 @@
 global $timeload, $Classes, $loader_init_memory;
 //error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
+//error_reporting(0);
 ini_set('display_errors', 1);
+//ini_set('display_errors', 0);
 header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("UTF-8");
 
@@ -49,7 +51,7 @@ $Classes->load(
 		array('DB', true, 'db'),				//Создание объекта БД
 		array('Config', true),					//Создание объекта настроек
 		array('User', true),					//Создание объекта пользователя
-		array('Index', true)					//Создание объекта, который управляет текущим модулем и его отображением
+		array('Component', true)				//Создание объекта, который управляет обработкой компонентов
 	)
 );
 $Classes->__destruct();

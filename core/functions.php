@@ -144,6 +144,34 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		return $list;
 	}
 }
+//Очистка системного кеша
+function empty_cache () {
+	$ok = true;
+	$list = get_list(CACHE);
+	foreach ($list as $item) {
+		if (is_writable(CACHE.DS.$item)) {
+			unlink(CACHE.DS.$item);
+		} else {
+			$ok = false;
+		}
+	}
+	unset($list);
+	return $ok;
+}
+//Очисистка публичного кеша
+function empty_pcache () {
+	$ok = true;
+	$list = get_list(PCACHE);
+	foreach ($list as $item) {
+		if (is_writable(PCACHE.DS.$item)) {
+			unlink(PCACHE.DS.$item);
+		} else {
+			$ok = false;
+		}
+	}
+	unset($list);
+	return $ok;
+}
 //Функция форматирования размера файла из байтов в удобный вид
 function formatfilesize($size, $round = false) {
 	global $L;

@@ -1,11 +1,11 @@
 <?php
 class DB {
-	public		$queries = 0,
-				$time = 0,
-				$succesful_connections = array(),
-				$false_connections = array(),
-				$connections = array();
-	protected	$mirrors = array(),
+	public		$queries				= 0,
+				$time					= 0,
+				$succesful_connections	= array(),
+				$false_connections		= array(),
+				$connections			= array();
+	protected	$mirrors				= array(),
 				$DB_USER,
 				$DB_PASSWORD,
 				$Config;
@@ -64,13 +64,13 @@ class DB {
 			//Если создается подключение ядра
 			if ($connection == 'core' && !is_array($mirror)) {
 				global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_PREFIX, $DB_CODEPAGE;
-				$db['type'] = $DB_TYPE;
-				$db['name'] = $DB_NAME;
-				$db['user'] = $this->DB_USER;
-				$db['password'] = $this->DB_PASSWORD;
-				$db['host'] = $DB_HOST;
-				$db['codepage'] = $DB_CODEPAGE;
-				$db['prefix'] = $DB_PREFIX;
+				$db['type']		= $DB_TYPE;
+				$db['name']		= $DB_NAME;
+				$db['user']		= $this->DB_USER;
+				$db['password']	= $this->DB_PASSWORD;
+				$db['host']		= $DB_HOST;
+				$db['codepage']	= $DB_CODEPAGE;
+				$db['prefix']	= $DB_PREFIX;
 				unset($this->DB_USER, $this->DB_PASSWORD);
 			} else {
 				//Если подключается зеркало БД

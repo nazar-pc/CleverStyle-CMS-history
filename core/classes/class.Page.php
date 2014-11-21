@@ -4,19 +4,18 @@ class Page extends XForm {
 			$color_scheme,
 			$get_list,
 			$cache_list,
-			$rebuild_cache = false,
-			$interface = true,
+			$interface				= true,
 
 			$Html,
 			$Keywords,
 			$Description,
-			$Title = array(),
+			$Title					= array(),
 
 			$Head,
-			$core_js = array(0 => '', 1 => ''),
-			$core_css = array(0 => '', 1 => ''),
-			$js = array(0 => '', 1 => ''),
-			$css = array(0 => '', 1 => ''),
+			$core_js				= array(0 => '', 1 => ''),
+			$core_css				= array(0 => '', 1 => ''),
+			$js						= array(0 => '', 1 => ''),
+			$css					= array(0 => '', 1 => ''),
 			
 			$user_avatar_image,
 			$user_avatar_text,
@@ -36,27 +35,27 @@ class Page extends XForm {
 			$Footer,
 			$post_Body,
 
-			$level = array (
-						'Head' => 2,
-						'pre_Body' => 2,
-						'Header' => 4,
-						'mainmenu' => 4,
-						'mainsubmenu' => 4,
-						'menumore' => 4,
-						'user_avatar_text' => 5,
-						'user_info' => 5,
-						'debug_info' => 3,
-						'Left' => 3,
-						'Top' => 3,
-						'Content' => 8,
-						'Bottom' => 3,
-						'Right' => 3,
-						'Footer' => 4,
-						'post_Body' => 2
-					);
+			$level					= array (
+										'Head'				=> 2,
+										'pre_Body'			=> 2,
+										'Header'			=> 4,
+										'mainmenu'			=> 4,
+										'mainsubmenu'		=> 4,
+										'menumore'			=> 4,
+										'user_avatar_text'	=> 5,
+										'user_info'			=> 5,
+										'debug_info'		=> 3,
+										'Left'				=> 3,
+										'Top'				=> 3,
+										'Content'			=> 8,
+										'Bottom'			=> 3,
+										'Right'				=> 3,
+										'Footer'			=> 4,
+										'post_Body'			=> 2
+									);
 
-	protected	$Search = array(),
-				$Replace = array(),
+	protected	$Search				= array(),
+				$Replace			= array(),
 				$Config,
 				$Page;
 	
@@ -117,10 +116,6 @@ class Page extends XForm {
 		$this->load($stop);
 		//Загрузка стилей и скриптов
 		$this->get_js_css();
-		//Перестроение кеша при необходимости
-		if ($this->rebuild_cache) {
-			$this->rebuild_cache();
-		}
 		//Загрузка данных о пользователе
 		$User->get_header_info();
 		//Формирование заголовка
@@ -331,7 +326,6 @@ class Page extends XForm {
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {
-		$this->rebuild_cache = false;
 		$this->get_list();
 		foreach ($this->get_list as $part => $array) {
 			foreach ($array as $i => $files) {
@@ -587,12 +581,6 @@ class Page extends XForm {
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
 		if (mb_strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
-			//Перестроение кеша при необходимости
-			if ($this->rebuild_cache) {
-				$this->load(false);
-				$this->get_js_css();
-				$this->rebuild_cache();
-			}
 			//Обработка замены контента
 			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			echo $this->Content;

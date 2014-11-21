@@ -15,12 +15,12 @@ $a->content(
 					'',
 					'',
 					true,
-					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+					array('', $L->on, $L->off)
 				)
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('closed_title'), array('for' => 'core[closed_title]'))).
+			$a->td($a->info('closed_title', array('for' => 'core[closed_title]'))).
 			$a->td(
 				$a->input(
 					'text',
@@ -46,7 +46,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('title_delimiter'), array('for' => 'core[title_delimiter]'))).
+			$a->td($a->info('title_delimiter', array('for' => 'core[title_delimiter]'))).
 			$a->td(
 				$a->input(
 					'text',
@@ -69,7 +69,7 @@ $a->content(
 					'',
 					'',
 					true,
-					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+					array('', $L->on, $L->off)
 				)
 			)
 		).
@@ -84,7 +84,7 @@ $a->content(
 					array('', ' onClick="$(\'#debug_form\').show();"', ' onClick="$(\'#debug_form\').hide();"'),
 					'',
 					true,
-					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+					array('', $L->on, $L->off)
 				)
 			)
 		).
@@ -157,7 +157,7 @@ $a->content(
 						)
 					)
 				),
-				array('id' => 'debug_form', 'style' => ($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;"', 'class' => 'debug_form')
+				array('id' => 'debug_form', 'style' => ($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;', 'class' => 'debug_form')
 			)
 		).
 		$a->tr(

@@ -13,7 +13,7 @@ $a = &$Admin;
 $a->content(
 	$a->table(
 		$a->tr(
-			$a->td($a->label($a->info('current_language'), array('for' => 'core[language]'))).
+			$a->td($a->info('current_language')).
 			$a->td(
 				$a->select(
 					array(
@@ -31,7 +31,7 @@ $a->content(
 			)
 		).
 		$a->tr(
-			$a->td($a->label($a->info('active_languages'), array('for' => 'core[active_languages][]'))).
+			$a->td($a->info('active_languages')).
 			$a->td(
 				$a->select(
 					array(
@@ -59,7 +59,7 @@ $a->content(
 					'',
 					'',
 					true,
-					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+					array('', $L->on, $L->off)
 				)
 			)
 		).
@@ -74,7 +74,7 @@ $a->content(
 					'',
 					'',
 					true,
-					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
+					array('', $L->on, $L->off)
 				)
 			)
 		),

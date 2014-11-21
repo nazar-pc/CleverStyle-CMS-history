@@ -10,6 +10,9 @@ a[target="_blank"]::after, a[target="_new"]::after {
 a[href^="http://"]::after {
     content: "↗";
 }
+a.nul {
+	border-bottom-style: none;
+}
 .form_element, .form_element:hover, .form_element:focus {
 	border: solid 2px;
 	border-radius: 5px;
