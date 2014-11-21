@@ -2,7 +2,7 @@
 if (!isset($_POST['mode'])) {
 	return;
 }
-global $Index, $User;
+global $Index, $User, $Cache;
 $u_db = $User->db_prime();
 switch ($_POST['mode']) {
 	case 'edit':
@@ -16,10 +16,16 @@ switch ($_POST['mode']) {
 			WHERE
 				`id` = '.$permission['id'].'
 			LIMIT 1');
+		unset($Cache->{'permissions_table'});
 		$Index->save(true);
 	break;
-	case 'deactivate':
-		$u_db->q('DELETE FROM `[prefix]permissions` WHERE `id` = '.(int)$_POST['id'].' LIMIT 1');
+	case 'delete':
+		$id = (int)$_POST['id'];
+		$u_db->q('DELETE FROM `[prefix]permissions` WHERE `id` = '.$id.' LIMIT 1;
+			DELETE FROM `[prefix]groups_permissions` WHERE `permission` = '.$id.';
+			DELETE FROM `[prefix]users_permissions` WHERE `permission` = '.$id
+		);
+		unset($Cache->{'permissions_table'}, $Cache->{'users/permissions'}, $Cache->{'groups/permissions'});
 		$Index->save(true);
-	break;
+		break;
 }

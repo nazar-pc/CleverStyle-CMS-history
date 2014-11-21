@@ -88,7 +88,7 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 					}
 					$db_list[] = h::{'th.ui-widget-header.ui-corner-all'}(
 						array(
-							h::info('module_db'),
+							h::info('db_purpose'),
 							h::info('system_db')
 						)
 					);
@@ -156,7 +156,7 @@ if (isset($rc[2], $rc[3], $Config->components['modules'][$rc[3]]) && !empty($rc[
 					unset($i, $storage_data);
 					$storage_list[] = h::{'th.ui-widget-header.ui-corner-all'}(
 						[
-							h::info('module_storage'),
+							h::info('module_storage'),//TODO add strings into language file and check processing of storage configuration
 							h::info('system_storage')
 						]
 					);

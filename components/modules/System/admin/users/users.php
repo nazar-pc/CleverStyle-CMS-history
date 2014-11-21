@@ -15,24 +15,22 @@ if (isset($rc[2], $rc[3])) {
 				$content_ .= h::{'th.ui-widget-header.ui-corner-all'}(
 					$column
 				).
-				h::{'td.ui-state-default.ui-corner-all'}(
+				h::{'td.ui-widget-content.ui-corner-all'}(
 					$column == 'data' || $column == 'about' ?
 						h::{'textarea.form_element'}(
 							$user_data[$column],
-							array(
+							[
 								'name'		=> 'user['.$column.']'
-							)
+							]
 						) :
-						h::{'input.form_element'}(
-							array(
-								'name'		=> 'user['.$column.']',
-								'value'		=> $user_data[$column],
-								$column == 'id' ? 'readonly' : false
-							)
-						),
-					array(
+						h::{'input.form_element'}([
+							'name'		=> 'user['.$column.']',
+							'value'		=> $user_data[$column],
+							$column == 'id' ? 'readonly' : false
+						]),
+					[
 						'colspan'	=> $i == $last ? 3 : false
-					)
+					]
 				);
 				if  ($i % 2) {
 					$content .= h::tr(
@@ -48,16 +46,14 @@ if (isset($rc[2], $rc[3])) {
 			}
 			unset($i, $column, $content_);
 			$a->content(
-				h::{'table#users_raw_edit.admin_table.center_all'}(
-					$content
-				)
+				h::{'table#users_raw_edit.admin_table.center_all'}($content)
 			);
 		break;
 		case 'edit':
 			$a->apply		= false;
 			$a->cancel_back	= true;
 			$user_data		= $User->get(
-				array(
+				[
 					'login',
 					'username',
 					'email',
@@ -80,315 +76,191 @@ if (isset($rc[2], $rc[3])) {
 					'icq',
 					'skype',
 					'about'
-				),
+				],
 				$rc[3]
 			);
 			$timezones	= get_timezones_list();
 			$regip		= hex2ip($user_data['regip'], 10);
 			$lastip		= hex2ip($user_data['lastip'], 10);
+			$row		= function ($row1, $row2) {
+				return	h::{'th.ui-widget-header.ui-corner-all'}($row1).
+						h::{'td.ui-widget-content.ui-corner-all'}($row2);
+			};
 			$a->content(
-				h::{'table#users_edit.admin_table.center_all'}(
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							'id'
-						).
-						h::{'td.ui-state-default.ui-corner-all'}(
-							$rc[3]
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->registration_date
-						).
-						h::{'td.ui-state-default.ui-corner-all'}(
-							$user_data['regdate'] ? date($L->_date, $user_data['regdate']) : $L->undefined
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->registration_ip
-						).
-						h::{'td.ui-state-default.ui-corner-all'}(
-							$regip[0] ? $regip[0].($regip[1] ? h::br().$regip[1] : '') : $L->undefined
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->last_login
-						).
-						h::{'td.ui-state-default.ui-corner-all'}(
-							$user_data['lastlogin'] ? date($L->_datetime, $user_data['lastlogin']) : $L->undefined
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->last_ip
-						).
-						h::{'td.ui-state-default.ui-corner-all'}(
-							$lastip[0] ? $lastip[0].($lastip[1] ? h::br().$lastip[1] : '') : $L->undefined
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->login
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'		=> 'user[login]',
-								'value'		=> $user_data['login']
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->username
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'	=> 'user[username]',
-								'value'	=> $user_data['username']
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->email
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'		=> 'user[email]',
-								'value'		=> $user_data['email']
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->password_only_for_changing.
-							h::{'icon#show_password'}(
-								'locked'
-							)
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element[type=password]'}(
-							array(
-								'id'		=> 'user_password',
-								'name'		=> 'user[password]',
-								'value'		=> ''
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->language
-						).
-						h::{'td.ui-state-default.ui-corner-all select.form_element'}(
-							array(
-								'in'		=> array_merge(array($L->system_default.' ('.$Config->core['language'].')'), $Config->core['active_languages']),
-								'value'		=> array_merge(array(''), $Config->core['active_languages'])
-							),
-							array(
-								'name'		=> 'user[language]',
-								'selected'	=> $user_data['language'],
-								'size'		=> 5
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->timezone
-						).
-						h::{'td.ui-state-default.ui-corner-all select.form_element'}(
-							array(
-								'in'		=> array_merge(array($L->system_default.' ('.$Config->core['timezone'].')'), array_values($timezones)),
-								'value'		=> array_merge(array(''), array_keys($timezones))
-							),
-							array(
-								'name'		=> 'user[timezone]',
-								'selected'	=> $user_data['timezone'],
-								'size'		=> 5
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->status
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element[type=radio]'}(
-							array(
-								'name'		=> 'user[status]',
-								'checked'	=> $user_data['status'],
-								'value'		=> array(-1, 0, 1),
-								'in'		=> array($L->is_not_activated, $L->inactive, $L->active)
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							h::info('block_until')
-						).
-						h::{'td.ui-state-default.ui-corner-all'}(
-							h::{'input.form_element[type=datetime-local]'}(
-								array(
-									'name'		=> 'user[block_until]',
-									'value'		=> date('Y-m-d\TH:i', $user_data['block_until'] ?: TIME)
-								)
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->gender
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element[type=radio]'}(
-							array(
-								'name'		=> 'user[gender]',
-								'checked'	=> $user_data['gender'],
-								'value'		=> array(-1, 0, 1),
-								'in'		=> array($L->undefined, $L->male, $L->female)
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							h::info('birthday')
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element[type=date]'}(
-							array(
-								'name'		=> 'user[birthday]',
-								'value'		=> date('Y-m-d', $user_data['birthday'] ?: TIME)
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->avatar
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'		=> 'user[avatar]',
-								'value'		=> $user_data['avatar']
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->website
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'		=> 'user[website]',
-								'value'		=> $user_data['website']
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->icq
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'		=> 'user[icq]',
-								'value'		=> $user_data['icq'] ?: ''
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->skype
-						).
-						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
-							array(
-								'name'		=> 'user[skype]',
-								'value'		=> $user_data['skype']
-							)
-						)
-					).
-					h::tr(
-						h::{'th.ui-widget-header.ui-corner-all'}(
-							$L->about_myself
-						).
-						h::{'td.ui-state-default.ui-corner-all textarea.form_element'}(
-							array(
-								'name'		=> 'user[about]',
-								'value'		=> $user_data['about']
-							)
-						)
-					)
-				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'user[id]',
-						'value'	=> $rc[3]
-					)
-				)
+				h::{'table#users_edit.admin_table.center_all tr'}([
+					$row('id', $rc[3]),
+
+					$row($L->registration_date, $user_data['regdate'] ? date($L->_date, $user_data['regdate']) : $L->undefined),
+
+					$row($L->registration_ip, $regip[0] ? $regip[0].($regip[1] ? h::br().$regip[1] : '') : $L->undefined),
+
+					$row($L->last_login, $user_data['lastlogin'] ? date($L->_datetime, $user_data['lastlogin']) : $L->undefined),
+
+					$row($L->last_ip, $lastip[0] ? $lastip[0].($lastip[1] ? h::br().$lastip[1] : '') : $L->undefined),
+
+					$row($L->login, h::{'input.form_element'}([
+						'name'		=> 'user[login]',
+						'value'		=> $user_data['login']
+					])),
+
+					$row($L->username, h::{'input.form_element'}([
+						'name'	=> 'user[username]',
+						'value'	=> $user_data['username']
+					])),
+
+					$row($L->email, h::{'input.form_element'}([
+						'name'		=> 'user[email]',
+						'value'		=> $user_data['email']
+					])),
+
+					$row(
+						$L->password_only_for_changing.h::{'icon#show_password'}('locked'),
+						h::{'input.form_element[type=password]'}([
+							'id'	=> 'user_password',
+							'name'	=> 'user[password]',
+							'value'	=> ''
+						])
+					),
+
+					$row($L->language, h::{'select.form_element'}(
+						[
+							'in'		=> array_merge([$L->system_default.' ('.$Config->core['language'].')'], $Config->core['active_languages']),
+							'value'		=> array_merge([''], $Config->core['active_languages'])
+						],
+						[
+							'name'		=> 'user[language]',
+							'selected'	=> $user_data['language'],
+							'size'		=> 5
+						]
+					)),
+
+					$row($L->timezone, h::{'select.form_element'}(
+						[
+							'in'		=> array_merge([$L->system_default.' ('.$Config->core['timezone'].')'], array_values($timezones)),
+							'value'		=> array_merge([''], array_keys($timezones))
+						],
+						[
+							'name'		=> 'user[timezone]',
+							'selected'	=> $user_data['timezone'],
+							'size'		=> 5
+						]
+					)),
+
+					$row($L->status, h::{'input.form_element[type=radio]'}([
+						'name'		=> 'user[status]',
+						'checked'	=> $user_data['status'],
+						'value'		=> [-1, 0, 1],
+						'in'		=> [$L->is_not_activated, $L->inactive, $L->active]
+					])),
+
+					$row(h::info('block_until'), h::{'input.form_element[type=datetime-local]'}([
+						'name'		=> 'user[block_until]',
+						'value'		=> date('Y-m-d\TH:i', $user_data['block_until'] ?: TIME)
+					])),
+
+					$row($L->gender, h::{'input.form_element[type=radio]'}([
+						'name'		=> 'user[gender]',
+						'checked'	=> $user_data['gender'],
+						'value'		=> [-1, 0, 1],
+						'in'		=> [$L->undefined, $L->male, $L->female]
+					])),
+
+					$row(h::info('birthday'), h::{'input.form_element[type=date]'}([
+						'name'		=> 'user[birthday]',
+						'value'		=> date('Y-m-d', $user_data['birthday'] ?: TIME)
+					])),
+
+					$row($L->avatar, h::{'input.form_element'}([
+						'name'		=> 'user[avatar]',
+						'value'		=> $user_data['avatar']
+					])),
+
+					$row($L->website, h::{'input.form_element'}([
+						'name'		=> 'user[website]',
+						'value'		=> $user_data['website']
+					])),
+
+					$row($L->icq, h::{'input.form_element'}([
+						'name'		=> 'user[icq]',
+						'value'		=> $user_data['icq'] ?: ''
+					])),
+
+					$row($L->skype, h::{'input.form_element'}([
+						'name'		=> 'user[skype]',
+						'value'		=> $user_data['skype']
+					])),
+
+					$row($L->about_myself, h::{'textarea.form_element'}([
+						'name'		=> 'user[about]',
+						'value'		=> $user_data['about']
+					]))
+				]).
+				h::{'input[type=hidden]'}([
+					'name'	=> 'user[id]',
+					'value'	=> $rc[3]
+				])
 			);
 		break;
 		case 'deactivate':
 			$a->buttons		= false;
 			$a->cancel_back	= true;
-			$user_data		= $User->get(array('login', 'username'), $rc[3]);
+			$user_data		= $User->get(['login', 'username'], $rc[3]);
 			$a->content(
 				h::{'p.center_all'}(
 					$L->sure_deactivate_user($user_data['username'] ?: $user_data['login'])
 				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'id',
-						'value'	=> $rc[3]
-					)
-				).
+				h::{'input[type=hidden]'}([
+					'name'	=> 'id',
+					'value'	=> $rc[3]
+				]).
 				h::{'button[type=submit]'}($L->yes)
 			);
 		break;
 		case 'activate':
 			$a->buttons		= false;
 			$a->cancel_back	= true;
-			$user_data		= $User->get(array('login', 'username'), $rc[3]);
+			$user_data		= $User->get(['login', 'username'], $rc[3]);
 			$a->content(
 				h::{'p.center_all'}(
 					$L->sure_activate_user($user_data['username'] ?: $user_data['login'])
 				).
-				h::{'input[type=hidden]'}(
-					array(
-						'name'	=> 'id',
-						'value'	=> $rc[3]
-					)
-				).
+				h::{'input[type=hidden]'}([
+					'name'	=> 'id',
+					'value'	=> $rc[3]
+				]).
 				h::{'button[type=submit]'}($L->yes)
 			);
 		break;
 	}
 	$a->content(
-		h::{'input[type=hidden]'}(
-			array(
-				'name'	=> 'mode',
-				'value'	=> $rc[2]
-			)
-		)
+		h::{'input[type=hidden]'}([
+			'name'	=> 'mode',
+			'value'	=> $rc[2]
+		])
 	);
 } else {
 	$a->buttons		= false;
 	$u_db			= $User->db();
-	$columns		= isset($_POST['columns']) && $_POST['columns'] ? explode(';', $_POST['columns']) : array(
-		'id',
-		'login',
-		'username',
-		'email'
-	);
+	$columns		= isset($_POST['columns']) && $_POST['columns'] ? explode(';', $_POST['columns']) : [
+		'id', 'login', 'username', 'email'
+	];
 	$limit			= isset($_POST['search_limit'])	? (int)$_POST['search_limit']	: 100;
 	$start			= isset($_POST['search_start'])	? (int)$_POST['search_start']-1	: 0;
 	$search_text	= isset($_POST['search_text'])	? $_POST['search_text']			: '';
 	$columns_list	= '';
-	$search_modes	= array(
-		'=', '!=', '>', '<', '>=', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'REGEXP', 'NOT REGEXP'
-	);
+	$search_modes	= [
+		'=', '!=', '>', '<', '>=', '<=',
+		'LIKE', 'NOT LIKE', 'IN', 'NOT IN',
+		'IS NULL', 'IS NOT NULL', 'REGEXP', 'NOT REGEXP'
+	];
 	$search_mode	= isset($_POST['search_mode']) && in_array($_POST['search_mode'], $search_modes) ? $_POST['search_mode'] : '';
 	foreach ($search_columns as $column) {
 		$columns_list .= h::li(
 			$column,
-			array(
+			[
 				'style'	=> 'display: inline-block;',
 				'class'	=> in_array($column, $columns) ? 'ui-selected' : ''
-			)
+			]
 		);
 	}
 	unset($column);
@@ -440,55 +312,48 @@ if (isset($rc[2], $rc[3])) {
 			'SELECT `id` FROM `[prefix]users` WHERE '.$where.' ORDER BY `id` LIMIT '.($start*$limit).', '.$limit
 		);
 	}
-	$users_list				= h::{'th.ui-widget-header.ui-corner-all'}(
-		array(
-			$L->action,
-			''
-		)
+	$users_list				= h::{'tr th.ui-widget-header.ui-corner-all'}(
+		array_merge([$L->action, ''], $columns)
 	);
-	$users_list_template	= h::{'td.ui-state-default.ui-corner-all'}(array('%s', '%s'));
-	foreach ($columns as $column) {
-		$users_list				.= h::{'th.ui-widget-header.ui-corner-all'}($column);
-		$users_list_template	.= h::{'td.ui-state-default.ui-corner-all'}('%s');
-	}
-	$users_list				= h::tr($users_list);
-	$users_list_template	= h::tr($users_list_template);
+	$users_list_template	= h::{'tr td.ui-widget-content.ui-corner-all'}(
+		array_fill(0, count($columns)+2, '%s')
+	);
 	if (isset($users_ids) && is_array($users_ids)) {
 		foreach ($users_ids as $id) {
 			$id = $id['id'];
 			$action = h::a(
 				h::{'button.compact'}(
 					h::icon('pencil'),
-					array(
+					[
 						'data-title'	=> $L->edit_raw_user_data
-					)
+					]
 				),
-				array(
+				[
 					'href'		=> $a->action.'/edit_raw/'.$id
-				)
+				]
 			).
 			h::a(
 				h::{'button.compact'}(
 					h::icon('wrench'),
-					array(
+					[
 						'data-title'	=> $L->edit_user_data
-					)
+					]
 				),
-				array(
+				[
 					'href'		=> $a->action.'/edit/'.$id
-				)
+				]
 			).
 			($id != 1 && $id != 2 ?
 				h::a(
 					h::{'button.compact'}(
 						h::icon($User->get('status', $id) == 1 ? 'minusthick' : 'check'),
-						array(
+						[
 							'data-title'	=> $L->deactivate_user
-						)
+						]
 					),
-					array(
+					[
 						'href'		=> $a->action.'/'.($User->get('status', $id) == 1 ? 'deactivate' : 'activate').'/'.$id
-					)
+					]
 				) : ''
 			);
 			$user_data		= $User->get($columns, $id);
@@ -527,81 +392,79 @@ if (isset($rc[2], $rc[3])) {
 			h::ul(
 				h::{'li a'}(
 					$L->search,
-					array(
+					[
 						'href' => '#search_settings'
-					)
+					]
 				).
 				h::{'li a'}(
 					h::info('show_columns'),
-					array(
+					[
 						'href' => '#columns_settings'
-					)
+					]
 				)
 			).
 			h::{'div#search_settings'}(
 				h::{'select.form_element'}(
-					array(
-						'in'		=> array_merge(array($L->all_columns), $search_columns),
-						'values'	=> array_merge(array(''), $search_columns)
-					),
-					array(
+					[
+						'in'		=> array_merge([$L->all_columns], $search_columns),
+						'values'	=> array_merge([''], $search_columns)
+					],
+					[
 						'selected'	=> $search_column ?: '',
 						'name'		=> 'search_column'
-					)
+					]
 				).
 				$L->search_mode.' '.
 				h::{'select.form_element'}(
 					$search_modes,
-					array(
+					[
 						'selected'	=> $search_mode ?: 'LIKE',
 						'name'		=> 'search_mode'
-					)
+					]
 				).
 				h::{'input.form_element'}(
-					array(
+					[
 						'value'			=> $search_text,
 						'name'			=> 'search_text',
 						'placeholder'	=> $L->search_text
-					)
+					]
 				).
 				$L->page.' '.
 				h::{'input.form_element[type=number]'}(
-					array(
+					[
 						'value'	=> $start+1,
 						'min'	=> 1,
 						'size'	=> 4,
 						'name'	=> 'search_start'
-					)
+					]
 				).
 				$L->items.' '.
 				h::{'input.form_element[type=number]'}(
-					array(
+					[
 						'value'	=> $limit,
 						'min'	=> 1,
 						'size'	=> 5,
 						'name'	=> 'search_limit'
-					)
+					]
 				),
-				array(
+				[
 					'style'	=> 'text-align: left;'
-				)
+				]
 			).
 			h::{'div#columns_settings'}(
 				h::ol(
 					$columns_list
 				).
-				h::{'input#columns[type=hidden]'}(
-					array(
-						'name'	=> 'columns'
-					)
-				)
+				h::{'input#columns[type=hidden]'}([
+					'name'	=> 'columns'
+				])
 			)
 		).
 		h::{'button[type=submit'}(
 			$L->search,
-			array(
+			[
 				'style'	=> 'margin: 5px 100% 5px 0;'
-			)
+			]
 		).
 		h::{'p.left'}(
 			$L->founded_users($results_count).
@@ -612,7 +475,7 @@ if (isset($rc[2], $rc[3])) {
 		).
 		h::{'p.left'}(
 			$L->founded_users($results_count).
-				($results_count > $limit ? ' / '.$L->page_from($start+1, ceil($results_count/$limit)) : '')
+			($results_count > $limit ? ' / '.$L->page_from($start+1, ceil($results_count/$limit)) : '')
 		)//TODO make add user function
 	);
 }

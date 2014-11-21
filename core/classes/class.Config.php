@@ -76,8 +76,8 @@ class Config {
 	//Анализ и обработка текущего адреса страницы
 	protected function routing () {
 		$this->server['url']		= urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		$this->server['url']		= null_byte_filter($this->server['url']);
 		$this->server['host']		= $_SERVER['HTTP_HOST'];
-		null_byte_filter($this->server['url']);
 		$this->server['protocol']	= isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 		$core_url					= explode('://', $this->core['url'], 2);
 		$core_url[1]				= explode(';', $core_url[1]);

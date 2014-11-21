@@ -94,11 +94,17 @@ switch ($_POST['mode']) {
 		$Index->save(true);
 	break;
 	case 'deactivate':
-		$User->set('status', 0, $_POST['id']);
-		$Index->save(true);
+		$id = (int)$_POST['id'];
+		if ($id != 1 && $id != 2) {
+			$User->set('status', 0, $id);
+			$Index->save(true);
+		}
 	break;
 	case 'activate':
-		$User->set('status', 1, $_POST['id']);
-		$Index->save(true);
+		$id = (int)$_POST['id'];
+		if ($id != 1 && $id != 2) {
+			$User->set('status', 1, $id);
+			$Index->save(true);
+		}
 	break;
 }

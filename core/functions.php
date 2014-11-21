@@ -248,6 +248,8 @@
 				}
 				return $str;
 			}
+			//Null byte injection protection
+			$str = null_byte_filter($str);
 			return CHARSET == FS_CHARSET || strpos($str, 'http:\\') === 0 || strpos($str, 'https:\\') === 0 || strpos($str, 'ftp:\\') === 0 ?
 				$str :
 				!is_unicode($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
@@ -537,10 +539,10 @@
 	 * @param string|array $in
 	 * @return string|array
 	 */
-	function null_byte_filter (&$in) {
+	function null_byte_filter ($in) {
 		if (is_array($in)) {
 			foreach ($in as &$val) {
-				null_byte_filter($val);
+				$val = null_byte_filter($val);
 			}
 		} else {
 			$in = str_replace(chr(0), '', $in);
@@ -707,8 +709,13 @@
 		}
 		return isset($_COOKIE[$prefix.$name]) ? $_COOKIE[$prefix.$name] : false;
 	}
-	//Почти идеальная функция для защиты от XSS-атак
-	//Название xap - сокращено от XSS Attack Protection
+	/**
+	 * XSS Attack Protection
+	 *
+	 * @param array|string $in HTML code
+	 * @param bool|string $html <b>text</b> - text at output (default), <b>true</b> - processed HTML at output, <b>false</b> - HTML tags will be deleted
+	 * @return array|string
+	 */
 	function xap ($in, $html = 'text') {
 		if (is_array($in)) {
 			foreach ($in as &$item) {

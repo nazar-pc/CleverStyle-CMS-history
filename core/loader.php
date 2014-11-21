@@ -14,10 +14,6 @@ unset(
 	$_GET,
 	$_REQUEST
 );
-//Защищаемся от null Byte уязвимости
-null_byte_filter($_POST);
-null_byte_filter($_COOKIE);
-null_byte_filter($_FILES);
 //Задание базовых констант с путями системных папок
 //DOMAIN - константа, содержащая базовый домен сайта
 //CDOMAIN - константа, содержащая домен текущего сайта

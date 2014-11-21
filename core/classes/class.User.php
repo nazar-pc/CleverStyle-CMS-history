@@ -320,6 +320,11 @@ class User {
 				}
 			}
 		} elseif (in_array($item, $this->users_columns) && $item != 'id') {
+			if ($item == 'about') {
+				$value = xap($value, true);
+			} elseif ($item != 'data') {
+				$value = xap($value);
+			}
 			$this->update_cache[$user] = true;
 			$this->data[$user][$item] = $value;
 			if ($this->init) {

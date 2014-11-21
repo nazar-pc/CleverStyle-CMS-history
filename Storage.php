@@ -11,7 +11,7 @@ define('CORE',		__DIR__.DS.'core');
 chdir(__DIR__);
 require CORE.DS.'functions.php';
 $DOMAIN = str_replace(array('/', '\\'), '', (string)$_POST['domain']);
-null_byte_filter($DOMAIN);
+$DOMAIN = null_byte_filter($DOMAIN);
 define('STORAGE',	__DIR__.DS.'storages'.DS.$DOMAIN.DS.'public');	//For storage on the same server as site or
 																	//if there are several storages for several domains
 																	//on one server
