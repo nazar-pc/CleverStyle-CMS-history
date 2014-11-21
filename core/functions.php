@@ -344,9 +344,13 @@ function filter ($text, $mode = '', $data = false, $data2 = NULL) {
 		}
 	}
 }
-//Исправленная функция json_encode, настоятельно рекомендуется к использованию вместо стандартной
+//Исправленная функция json_encode, настоятельно рекомендуется к использованию вместо стандартной!
 function json_encode_x ($in) {
 	return html_entity_decode(preg_replace('/\\\&#x([0-9a-fA-F]{3});/', '\\\\\u0$1', preg_replace('/\\\u0([0-9a-fA-F]{3})/', '&#x$1;', json_encode($in))), ENT_NOQUOTES, 'utf-8');
+}
+//Аналог json_decode, сразу возвращает ассоциативный массив
+function json_decode_x ($in, $depth = 512) {
+	return @json_decode($in, true, $depth);
 }
 //Идеальная функция для 100% защиты от SQL-инъекций
 //Название sip - сокращено от SQL Injection Protection
@@ -445,7 +449,7 @@ function get_sql_info () {
 	global $$DB_TYPE;
 	$sql_encoding = '';
 	$sql = $db->core->q('SHOW VARIABLES');
-	while ($data = $db->core->f($sql)) {
+	while ($data = $db->core->f($sql, false, MYSQL_NUM)) {
 		if ($data[0]=='character_set_client') {
 			$sql_encoding .= '
 	<tr>

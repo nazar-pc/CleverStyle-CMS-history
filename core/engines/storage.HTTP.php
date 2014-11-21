@@ -63,7 +63,7 @@ class HTTP extends StorageAbstract {
 			'subfolders' => $subfolders,
 			'sort' => $sort
 		));
-		return json_decode($result[1], true);
+		return json_decode_x($result[1]);
 	}
 	function file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
 		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'flags' => $flags, 'offset' => $offset, 'maxlen' => $maxlen));

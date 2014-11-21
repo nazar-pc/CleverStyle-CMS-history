@@ -14,7 +14,7 @@ class User {
 		$Page->user_avatar_text = '';
 		$Page->user_info = '<b>Приветствую, nazar-pc!</b>';
 	}
-	function __clone() {}
+	function __clone () {}
 	//Запрет клонирования
 	function __finish () {
 		foreach ($this as &$var) {

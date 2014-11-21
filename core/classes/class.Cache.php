@@ -22,7 +22,7 @@ class Cache {
 		}
 		//$this->memcached = $Config->core['memcached'];
 		$this->cache = $this->disk || is_object($this->memcache)/* || is_object($this->memcached)*/;
-		unset($MEMCACHE_HOST, $MEMCACHE_PORT, $GLOBALS['MEMCACHE_HOST'], $GLOBALS['MEMCACHE_PORT']);
+		unset($GLOBALS['MEMCACHE_HOST'], $GLOBALS['MEMCACHE_PORT']);
 	}
 	function get ($label) {
 		if (isset($this->local_storage[$label])) {
@@ -30,7 +30,7 @@ class Cache {
 		}
 		global $Core;
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$label)) {
-			if ($cache = @json_decode($Core->decrypt($result), true)) {
+			if ($cache = @json_decode_x($Core->decrypt($result))) {
 				$this->local_storage[$label] = $cache;
 				return $cache;
 			}
@@ -159,6 +159,6 @@ class Cache {
 		return $this->del($label);
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 }
 ?>

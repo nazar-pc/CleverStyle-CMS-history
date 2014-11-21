@@ -22,7 +22,7 @@ if (defined('DOMAIN')) {
 		header("HTTP/1.0 404 Not Found");
 		exit;
 	}
-	unset($MULTIDOMAIN, $MULTIDOMAIN_CURRENT, $GLOBALS['MULTIDOMAIN'], $GLOBALS['MULTIDOMAIN_CURRENT']);
+	unset($MULTIDOMAIN_CURRENT, $GLOBALS['MULTIDOMAIN']);
 } else {
 	define('DOMAIN', 'cscms.org');
 }

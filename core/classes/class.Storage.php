@@ -10,7 +10,7 @@ class Storage {
 		return $this->connecting($connection);
 	}
 	//Обработка всех подключений к хранилищам
-	private function connecting($connection) {
+	private function connecting ($connection) {
 		//Если соединение есть в списке неудачных - выходим
 		if (isset($this->false_connections[$connection])) {
 			return false;
@@ -73,7 +73,7 @@ class Storage {
 				return false;
 			}
 		} else {print_r($storage);
-			$storage = json_decode(filter($data, 'form'), true);
+			$storage = json_decode_x(filter($data, 'form'));
 		}
 		unset($data);
 		if (is_array($storage)) {
@@ -84,6 +84,6 @@ class Storage {
 		}
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 }
 ?>

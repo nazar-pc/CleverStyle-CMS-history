@@ -21,6 +21,6 @@ abstract class StorageAbstract {
 		return $this->base_url;
 	}
 	//Запрет клонирования
-	final function __clone() {}
+	final function __clone () {}
 }
 ?>

@@ -33,15 +33,15 @@ abstract class DatabaseAbstract {
 	abstract function n ($query_resource = false);
 	//Получение результатов
 	//([ресурс_запроса [, в_виде_массива_результатов [, тип_возвращаемого_массива]]])
-	abstract function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	abstract function f ($query_resource = false, $array = false, $result_type = MYSQL_ASSOC);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 	//Упрощенный интерфейс метода для получения результата в виде массива
 	//([ресурс_запроса [, тип_возвращаемого_массива]])
-	function fa ($query_resource = false, $result_type = MYSQL_BOTH) {
+	function fa ($query_resource = false, $result_type = MYSQL_ASSOC) {
 		return $this->f($query_resource, true, $result_type);
 	}
 	//Запрос с получением результатов, результаты запросов кешируются при соответствующей настройке сайта
 	//(текст_запроса [, тип_возвращаемого_массива [, в_виде массива]])
-	function qf ($query = '', $array = false, $result_type = MYSQL_BOTH) {
+	function qf ($query = '', $array = false, $result_type = MYSQL_ASSOC) {
 		if (!$query) {
 			return false;
 		}
@@ -49,7 +49,7 @@ abstract class DatabaseAbstract {
 	}
 	//Упрощенный интерфейс метода выполнения запроса с получением результата в виде массива
 	//(текст_запроса [, тип_возвращаемого_массива])
-	function qfa ($query = '', $result_type = MYSQL_BOTH) {
+	function qfa ($query = '', $result_type = MYSQL_ASSOC) {
 		if (!$query) {
 			return false;
 		}
@@ -63,7 +63,7 @@ abstract class DatabaseAbstract {
 	abstract function free ($query_resource = false);
 	//Получение списка полей таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
-	function fields ($table, $like = false, $result_type = MYSQL_BOTH) {
+	function fields ($table, $like = false, $result_type = MYSQL_ASSOC) {
 		if(!$table) {
 			return false;
 		}
@@ -75,7 +75,7 @@ abstract class DatabaseAbstract {
 	}
 	//Получение списка колонок таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
-	function columns ($table, $like = false, $result_type = MYSQL_BOTH) {
+	function columns ($table, $like = false, $result_type = MYSQL_ASSOC) {
 		if(!$table) {
 			return false;
 		}
@@ -87,7 +87,7 @@ abstract class DatabaseAbstract {
 	}
 	//Получение списка таблиц БД (если БД не указана - используется текущая)
 	//([похожих_на [, тип_возвращаемого_массива]]])
-	function tables ($like = false, $result_type = MYSQL_BOTH) {
+	function tables ($like = false, $result_type = MYSQL_ASSOC) {
 		if ($like) {
 			return $this->qfa('SHOW TABLES FROM `'.$this->database.'` LIKE \''.$like.'\'', $result_type);
 		} else {
@@ -97,7 +97,7 @@ abstract class DatabaseAbstract {
 	//Информация о сервере
 	abstract function server ();
 	//Запрет клонирования
-	final function __clone() {}
+	final function __clone () {}
 	//Отключение от БД
 	abstract function __destruct ();
 }

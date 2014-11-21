@@ -23,6 +23,6 @@ class Index {
 		//include_x(PLUGINS.'/postload/AjexFileManager/index.php');
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 }
 ?>

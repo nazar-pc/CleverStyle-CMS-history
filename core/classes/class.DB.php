@@ -14,7 +14,7 @@ class DB {
 		global $DB_USER, $DB_PASSWORD;
 		$this->DB_USER = $DB_USER;
 		$this->DB_PASSWORD = $DB_PASSWORD;
-		unset($DB_USER, $DB_PASSWORD, $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWORD']);
+		unset($GLOBALS['DB_USER'], $GLOBALS['DB_PASSWORD']);
 	}
 	//Обработка запросов получения данных БД
 	//При соответствующей настройке срабатывает балансировка нагрузки на БД
@@ -52,7 +52,7 @@ class DB {
 		return $this->connecting($connection, isset($mode[0]) ? (bool)$mode[0] : false);
 	}
 	//Обработка всех подключений к БД
-	private function connecting($connection, $mirror = true) {
+	private function connecting ($connection, $mirror = true) {
 		//Если соединение есть в списке неудачных - выходим
 		if (isset($this->false_connections[$connection])) {
 			return false;
@@ -179,7 +179,7 @@ class DB {
 				return false;
 			}
 		} else {
-			$db = json_decode(filter($data, 'form'), true);
+			$db = json_decode_x(filter($data, 'form'));
 		}
 		unset($data);
 		if (is_array($db)) {
@@ -192,6 +192,6 @@ class DB {
 		}
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 }
 ?>

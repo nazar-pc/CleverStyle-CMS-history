@@ -64,11 +64,11 @@ class Classes {
 			global $$class;
 			unset($this->LoadedObjects[$class]);
 			method_exists($$class, '__finish') && $$class->__finish();
-			unset($$class, $GLOBALS[$class]);
+			unset($GLOBALS[$class]);
 		}
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __finish () {
 		foreach ($this->LoadedObjects as $class) {

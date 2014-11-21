@@ -22,6 +22,6 @@ class Module extends HTML {
 		$Page->mainmenu .= '<a href="/" title="'.$L->home.'">'.$L->home.'</a></menu>';
 	}
 	//Запрет клонирования
-	final function __clone() {}
+	final function __clone () {}
 }
 ?>

@@ -90,6 +90,6 @@ class Error {
 		$this->process($args);
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 }
 ?>

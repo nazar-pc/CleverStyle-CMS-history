@@ -567,7 +567,7 @@ class Page extends HTML {
 		}
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 	//Генерирование страницы
 	function __finish () {
 		global $Config, $Page;

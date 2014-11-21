@@ -76,7 +76,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	$db_json = json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'), true);
+	$db_json = json_decode_x(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
 		$db_list .= $a->td(
@@ -148,7 +148,7 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	$storage_json = json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'), true);
+	$storage_json = json_decode_x(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
 	foreach ($storage_json as $storage) {
 		$storage_translate = $rc[3].'_storage_'.$storage;
 		$storage_list .= $a->td(
@@ -219,7 +219,7 @@ if ($mode && $rc[2] == 'install') {
 		$addition_state = $action = '';
 		$db_json = array();
 		if ($mdata['active'] != 0 && file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
-			$db_json = json_decode(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'), true);
+			$db_json = json_decode_x(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
 			$lost_columns = array();
 			foreach ($db_json['users'] as $db_users_item) {
 				if (!in_array($db_users_item, $db_users_items)) {

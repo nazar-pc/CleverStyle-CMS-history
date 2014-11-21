@@ -32,10 +32,12 @@ class Config {
 	}
 	//Инициализация движка (или реинициалицазия при необходимости)
 	function init() {
-		global $Page, $Cache, $L;
+		global $Cache, $L, $Text, $Page;
 		//Инициализация объекта кеша с использованием настроек движка
 		$Cache->init($this);
 		//Инициализация объекта языков с использованием настроек движка
+		$L->init($this);
+		//Инициализация объекта мультиязычного текстового контента
 		$L->init($this);
 		//Инициализация объекта страницы с использованием настроек движка
 		$Page->init($this);
@@ -45,42 +47,65 @@ class Config {
 		global $ADMIN, $API;
 		$this->server['url'] = urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$this->server['protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-		$core_url = explode(';', $this->core['url'], 2);
-		if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $core_url[0]) === 0) {
-			$url_replace = explode('//', $core_url[0], 2);
-			$this->server['base_url'] = $core_url[0];
-			unset($core_url);
-		} elseif (!empty($this->core['mirrors_url'])) {
-			$mirrors_url = explode("\n", $this->core['mirrors_url']);
-			foreach ($mirrors_url as $i => $mirror) {
-				$mirror_url = explode(';', $mirror, 2);
-				if (mb_strpos($this->server['protocol'].'://'.$this->server['url'], $mirror_url[0]) === 0) {
-					$url_replace = explode('//', $mirror_url[0], 2);
-					$this->server['base_url'] = $mirror_url[0];
-					$this->mirror_index = $i;
+		$core_url = explode('://', $this->core['url'], 2);
+		$core_url[1] = explode(';', $core_url[1]);
+		//$core_url = array(0 => протокол, 1 => array(список из домена и IP адресов))
+		//Проверяем, сходится ли адрес с главным доменом
+		if ($core_url[0] == $this->server['protocol']) {
+			foreach ($core_url[1] as $url) {
+				if (mb_strpos($this->server['url'], $url) === 0) {
+					$this->server['base_url'] = $this->server['protocol'].'://'.$url;
+					$url_replace = $url;
+					unset($core_url, $url);
 					break;
 				}
 			}
-			unset($i, $mirror, $mirror_url, $mirrors_url);
+		}
+		//Если это не главный домен - ищем совпадение в зерказах
+		if (!isset($url_replace) && !empty($this->core['mirrors_url'])) {
+			$mirrors_url = explode("\n", $this->core['mirrors_url']);
+			foreach ($mirrors_url as $i => $mirror) {
+				$mirror_url = explode('://', $mirror, 2);
+				$mirror_url[1] = explode(';', $mirror_url[1]);
+				//$mirror_url = array(0 => протокол, 1 => array(список из домена и IP адресов))
+				if ($mirror_url[0] == $this->server['protocol']) {
+					foreach ($mirror_url[1] as $url) {
+						if (mb_strpos($this->server['url'], $url) === 0) {
+							$this->server['base_url'] = $this->server['protocol'].'://'.$url;
+							$url_replace = $url;
+							$this->mirror_index = $i;
+							unset($mirrors_url, $mirror_url, $url, $i, $mirror);
+							break;
+						}
+					}
+				}
+			}
+			//Если в зеркалах соответствие не найдено - зеркало не разрешено!
 			if ($this->mirror_index == -1) {
 				global $Error, $L;
 				$this->server['base_url'] = '';
 				$Error->process($L->mirror_not_allowed, 'stop');
 			}
-		} else {
+		//Если соответствие нигде не найдено - зеркало не разрешено!
+		} elseif (!isset($url_replace)) {
 			global $Error, $L;
 			$this->server['base_url'] = '';
 			$Error->process($L->mirror_not_allowed, 'stop');
 		}
-		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace[1], '', $this->server['url']), ' /\\'));
+		//Подготавливаем адрес страницы без базовой части
+		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace, '', $this->server['url']), ' /\\'));
+		unset($url_replace);
 		$r = &$this->routing;
+		//Получаем путь к странице в виде массива
 		$r['current'] = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
+		//Если адрес похож на адрес админки
 		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
 			if (!defined('ADMIN')) {
 				define('ADMIN', true);
 			}
 			array_shift($r['current']);
 		}
+		//Определение модуля модуля
 		if (isset($r['current'][0]) && in_array($r['current'][0], array_keys($this->components['modules']))) {
 			if (!defined('MODULE')) {
 				define('MODULE', array_shift($r['current']));
@@ -90,13 +115,16 @@ class Config {
 				define('MODULE', 'System');
 			}
 		}
+		//Если адрес похож на запрос к API
 		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($API)) {
 			if (!defined('API')) {
 				define('API', true);
 			}
 			array_shift($r['current']);
 		}
+		//Скорректированный путь страницы (рекомендуемый к использованию)
 		$this->server['current_url'] = (defined('ADMIN') ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
+		//Определение необходимости отключить интерфейс
 		if (isset($_POST['nonterface']) || defined('API')) {
 			interface_off();
 		} elseif (isset($r['current'][count($r['current']) - 1]) && mb_strtolower($r['current'][count($r['current']) - 1]) == 'nointerface') {
@@ -135,7 +163,7 @@ class Config {
 		$langlist = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?\.php$/i', 'f');
 		foreach ($langlist as $lang) {
 			if (file_exists(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json')) {
-				$lang_data = json_decode(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'), true);
+				$lang_data = json_decode_x(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'));
 				$this->core['languages'][mb_substr($lang, 5, -4)] = $lang_data['name'];
 			} else {
 				$this->core['languages'][mb_substr($lang, 5, -4)] = ucfirst(mb_substr($lang, 5, -4));
@@ -151,13 +179,13 @@ class Config {
 		foreach ($this->admin_parts as $part) {
 			$query[] = '`'.$part.'`';
 		}
-		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1', false, 1);
+		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1');
 		if (isset($this->routing['current'])) {
 			$current_routing = $this->routing['current'];
 		}
 		if (is_array($result)) {
 			foreach ($this->admin_parts as $part) {
-				$this->$part = json_decode($result[$part], true);
+				$this->$part = json_decode_x($result[$part]);
 			}
 		} else {
 			return false;
@@ -200,6 +228,13 @@ class Config {
 		$query = '';
 		foreach ($parts as $part) {
 			if (isset($this->$part)) {
+				if ($part == 'routing') {
+					$temp = $this->routing;
+					unset($temp['current']);
+					$query .= '`'.$part.'` = '.sip(json_encode_x($temp));
+					unset($temp);
+					continue;
+				}
 				$query .= '`'.$part.'` = '.sip(json_encode_x($this->$part));
 			}
 			unset($part);
@@ -218,6 +253,6 @@ class Config {
 		$this->apply();
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 }
 ?>

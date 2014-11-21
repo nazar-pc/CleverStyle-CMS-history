@@ -70,7 +70,7 @@ class MySQL extends DatabaseAbstract {
 	}
 	//Получение результатов
 	//([ресурс_запроса [, в_виде_массива_результатов [, тип_возвращаемого_массива]]])
-	function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	function f ($query_resource = false, $array = false, $result_type = MYSQL_ASSOC) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 		if ($query_resource === false) {
 			$query_resource = $this->query['resource'];
 		}

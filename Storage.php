@@ -15,13 +15,13 @@ if (
 ) {
 	include __DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php';
 	global $STORAGE_USER, $STORAGE_PASSWORD;
-	$data = json_decode(filter((string)$_POST['data'], 'form'), true);
+	$data = json_decode_x(filter((string)$_POST['data'], 'form'));
 	$KEY = substr((string)$data['key'], 0, 32);
 	unset($data['key']);
 	if (md5(md5(json_encode_x($data).$STORAGE_USER).$STORAGE_PASSWORD) !== $KEY) {
 		exit;
 	}
-	unset($STORAGE_USER, $STORAGE_PASSWORD, $GLOBALS['STORAGE_USER'], $GLOBALS['STORAGE_PASSWORD'], $KEY, $DOMAIN);
+	unset($GLOBALS['STORAGE_USER'], $GLOBALS['STORAGE_PASSWORD'], $KEY, $DOMAIN);
 } else {
 	exit;
 }

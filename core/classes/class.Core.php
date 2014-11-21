@@ -54,7 +54,7 @@ class Core {
 				$td
 			);
 		}
-		unset($KEY, $GLOBALS['KEY'], $td);
+		unset($GLOBALS['KEY'], $td);
 	}
 	//Инициализация шифрования
 	function crypt_open ($name, $key, $iv, $td = false) {
@@ -107,7 +107,7 @@ class Core {
 		}
 	}
 	//Запрет клонирования
-	function __clone() {}
+	function __clone () {}
 	//Отключений функций шифрования
 	function __finish () {
 		if (!$this->support) {
