@@ -150,7 +150,7 @@ class Config {
 		!defined('ADMIN')	&& define('ADMIN', false);
 		!defined('API')		&& define('API', false);
 		//Определение модуля модуля
-		if (isset($rc[0]) && in_array($rc[0], array_keys($this->components['modules']))) {
+		if (isset($rc[0]) && in_array(mb_strtolower($rc[0]), _mb_strtolower(array_keys($this->components['modules'])))) {
 			if (!defined('MODULE')) {
 				define('MODULE', array_shift($rc));
 			}

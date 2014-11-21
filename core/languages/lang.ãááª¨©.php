@@ -1,8 +1,6 @@
 <?php
 global $L;
 //Файл перевода Русского языка
-$L->set(true,	$L->on = 'Вкл.');
-$L->set(false,	$L->off = 'Выкл.');
 $L->set(array(
 //Общее
 	'home'						=> 'Главная',

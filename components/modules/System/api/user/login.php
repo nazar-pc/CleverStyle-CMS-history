@@ -39,7 +39,7 @@ if ($Config->server['referer']['local'] && $Config->server['ajax'] && $User->is(
 		sleep(1);
 		if ($_POST['auth_hash'] == $auth_hash) {
 			$User->add_session($key_data['id']);
-			$Page->content('true');
+			$Page->content('reload');
 		} else {
 			$Page->content($L->auth_error_login);
 		}

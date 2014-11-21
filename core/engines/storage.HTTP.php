@@ -53,15 +53,16 @@ class HTTP extends StorageAbstract {
 		unset($time_limit);
 		return explode("\r\n\r\n", stream_get_contents($this->socket), 2);
 	}
-	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
+	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false, $exclusion = false) {
 		$result = $this->request(array(
-			'function' => __FUNCTION__,
-			'dir' => $dir,
-			'mask' => $mask,
-			'mode' => $mode,
-			'with_path' => $with_path,
-			'subfolders' => $subfolders,
-			'sort' => $sort
+			'function'		=> __FUNCTION__,
+			'dir'			=> $dir,
+			'mask'			=> $mask,
+			'mode'			=> $mode,
+			'with_path'		=> $with_path,
+			'subfolders'	=> $subfolders,
+			'sort'			=> $sort,
+			'exclusion'		=> $exclusion
 		));
 		return _json_decode($result[1]);
 	}

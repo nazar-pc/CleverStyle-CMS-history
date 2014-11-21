@@ -102,7 +102,7 @@ $a->content(
 
 							zlib() ?
 								$a->td($L->zlib_autocompression.':', array('style' => 'padding-left: 20px;')).
-								$a->td($L->get(zlib_autocompression()))
+								$a->td($L->get(zlib_autocompression()), array('class' => zlib_autocompression() ? 'red' : 'green'))
 							: false
 						)
 					),

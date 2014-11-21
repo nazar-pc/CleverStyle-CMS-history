@@ -264,31 +264,6 @@ class Page extends HTML {
 	function title ($add) {
 		$this->Title[] = htmlentities($add, ENT_COMPAT, CHARSET);
 	}
-	//Загрузка списка JavaScript и CSS файлов
-	protected function get_list ($for_cache = false) {
-		$theme_folder	= THEMES.DS.$this->theme;
-		$scheme_folder	= $theme_folder.DS.'schemes'.DS.$this->color_scheme;
-		$theme_pfolder	= 'themes/'.$this->theme;
-		$scheme_pfolder	= $theme_pfolder.'/schemes/'.$this->color_scheme;
-		$this->get_list = array(
-			'css' => array_merge(
-				(array)get_list(INCLUDES.DS.'css',			'/(.*)\.css$/i', 'f', $for_cache ? true : 'includes/css', true),
-				(array)get_list($theme_folder.DS.'css',		'/(.*)\.css$/i', 'f', $for_cache ? true : $theme_pfolder.'/css', true),
-				(array)get_list($scheme_folder.DS.'css',	'/(.*)\.css$/i', 'f', $for_cache ? true : $scheme_pfolder.'/css', true)
-			),
-			'js' => array_merge(
-				(array)get_list(INCLUDES.DS.'js',		'/(.*)\.js$/i', 'f', $for_cache ? true : 'includes/js', true ),
-				(array)get_list($theme_folder.DS.'js',	'/(.*)\.js$/i', 'f', $for_cache ? true : $theme_pfolder.'/js', true),
-				(array)get_list($scheme_folder.DS.'js',	'/(.*)\.js$/i', 'f', $for_cache ? true : $scheme_pfolder.'/js', true)
-			)
-		);
-		unset($theme_folder, $scheme_folder, $theme_pfolder, $scheme_pfolder);
-		if (!$for_cache && DS != '/') {
-			$this->get_list = _str_replace(DS, '/', $this->get_list);
-		}
-		sort($this->get_list['css']);
-		sort($this->get_list['js']);
-	}
 	//Подключение JavaScript и CSS файлов
 	protected function get_js_css () {
 		global $Config;
@@ -306,9 +281,25 @@ class Page extends HTML {
 			}
 			$key = _file_get_contents(PCACHE.DS.'pcache_key');
 			//Подключение CSS стилей
-			$this->css('storages/pcache/'.$this->cache_list.'css?'.$key, 'file', true);
+			$css_list = get_list(PCACHE, '/(.*)\.css$/i', 'f', 'storages/pcache');
+			if (DS != '/') {
+				$css_list = _str_replace(DS, '/', $css_list);
+			}
+			foreach ($css_list as &$file) {
+				$file .= '?'.$key;
+			}
+			unset($file);
+			$this->css($css_list, 'file', true);
 			//Подключение JavaScript
-			$this->js('storages/pcache/'.$this->cache_list.'js?'.$key, 'file', true);
+			$js_list = get_list(PCACHE, '/(.*)\.js$/i', 'f', 'storages/pcache');
+			if (DS != '/') {
+				$js_list = _str_replace(DS, '/', $js_list);
+			}
+			foreach ($js_list as &$file) {
+				$file .= '?'.$key;
+			}
+			unset($file);
+			$this->js($js_list, 'file', true);
 		} else {
 			$this->get_list();
 			//Подключение CSS стилей
@@ -320,6 +311,31 @@ class Page extends HTML {
 				$this->js($file, 'file', true);
 			}
 		}
+	}
+	//Загрузка списка JavaScript и CSS файлов
+	protected function get_list ($for_cache = false) {
+		$theme_folder	= THEMES.DS.$this->theme;
+		$scheme_folder	= $theme_folder.DS.'schemes'.DS.$this->color_scheme;
+		$theme_pfolder	= 'themes/'.$this->theme;
+		$scheme_pfolder	= $theme_pfolder.'/schemes/'.$this->color_scheme;
+		$this->get_list = array(
+			'css' => array_merge(
+				(array)get_list(INCLUDES.DS.'css',			'/(.*)\.css$/i',	'f', $for_cache ? true : 'includes/css',			true, false, '!include'),
+				(array)get_list($theme_folder.DS.'css',		'/(.*)\.css$/i',	'f', $for_cache ? true : $theme_pfolder.'/css',		true, false, '!include'),
+				(array)get_list($scheme_folder.DS.'css',	'/(.*)\.css$/i',	'f', $for_cache ? true : $scheme_pfolder.'/css',	true, false, '!include')
+			),
+			'js' => array_merge(
+				(array)get_list(INCLUDES.DS.'js',			'/(.*)\.js$/i',		'f', $for_cache ? true : 'includes/js',				true, false, '!include'),
+				(array)get_list($theme_folder.DS.'js',		'/(.*)\.js$/i',		'f', $for_cache ? true : $theme_pfolder.'/js',		true, false, '!include'),
+				(array)get_list($scheme_folder.DS.'js',		'/(.*)\.js$/i',		'f', $for_cache ? true : $scheme_pfolder.'/js',		true, false, '!include')
+			)
+		);
+		unset($theme_folder, $scheme_folder, $theme_pfolder, $scheme_pfolder);
+		if (!$for_cache && DS != '/') {
+			$this->get_list = _str_replace(DS, '/', $this->get_list);
+		}
+		sort($this->get_list['css']);
+		sort($this->get_list['js']);
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {

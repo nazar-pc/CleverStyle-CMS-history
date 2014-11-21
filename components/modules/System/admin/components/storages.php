@@ -171,7 +171,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('wrench'),
 						array(
-							'data-title'	=> $L->edit.' '.$L->storage
+							'data-title'	=> $L->edit.' '.$L->storage,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -183,7 +184,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('close'),
 						array(
-							'data-title'	=> $L->delete.' '.$L->storage
+							'data-title'	=> $L->delete.' '.$L->storage,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -195,7 +197,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('signal-diag'),
 						array(
-							'data-title'	=> $L->test_connection
+							'data-title'	=> $L->test_connection,
+							'class'			=> 'compact'
 						)
 					),
 					array(

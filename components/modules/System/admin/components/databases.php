@@ -149,9 +149,6 @@ if (isset($rc[2])) {
 				)
 			)
 		);
-		if (isset($database)) {
-			unset($database);
-		}
 	} elseif ($rc[2] == 'delete' && isset($rc[3])) {
 		$a->buttons = false;
 		$content = array();
@@ -234,7 +231,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('plus'),
 						array(
-							'data-title'	=> $L->add.' '.$L->mirror.' '.$L->of_db
+							'data-title'	=> $L->add.' '.$L->mirror.' '.$L->of_db,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -246,7 +244,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('wrench'),
 						array(
-							'data-title'	=> $L->edit.' '.$L->db
+							'data-title'	=> $L->edit.' '.$L->db,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -258,7 +257,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('close'),
 						array(
-							'data-title'	=> $L->delete.' '.$L->db
+							'data-title'	=> $L->delete.' '.$L->db,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -270,7 +270,8 @@ if (isset($rc[2])) {
 					$a->button(
 						$a->icon('signal-diag'),
 						array(
-							'data-title'	=> $L->test_connection
+							'data-title'	=> $L->test_connection,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -305,7 +306,8 @@ if (isset($rc[2])) {
 							$a->button(
 								$a->icon('wrench'),
 								array(
-									'data-title'	=> $L->edit.' '.$L->mirror.' '.$L->of_db
+									'data-title'	=> $L->edit.' '.$L->mirror.' '.$L->of_db,
+									'class'			=> 'compact'
 								)
 							),
 							array(
@@ -317,7 +319,8 @@ if (isset($rc[2])) {
 							$a->button(
 								$a->icon('close'),
 								array(
-									'data-title'	=> $L->delete.' '.$L->mirror.' '.$L->of_db
+									'data-title'	=> $L->delete.' '.$L->mirror.' '.$L->of_db,
+									'class'			=> 'compact'
 								)
 							),
 							array(
@@ -329,7 +332,8 @@ if (isset($rc[2])) {
 							$a->button(
 								$a->icon('signal-diag'),
 								array(
-									'data-title'	=> $L->test_connection
+									'data-title'	=> $L->test_connection,
+									'class'			=> 'compact'
 								)
 							),
 							array(
@@ -431,7 +435,6 @@ if (isset($rc[2])) {
 			)
 		)
 	);
-	unset($db_list);
 }
 $test_dialog && $a->content(
 	$a->div(
@@ -443,5 +446,4 @@ $test_dialog && $a->content(
 		)
 	)
 );
-unset($a, $rc, $test_dialog);
 ?>

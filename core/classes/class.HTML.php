@@ -535,7 +535,7 @@ class HTML {
 	//Псевдо-элементы
 	function info		($in = '', $data = array()) {
 		global $L;
-		return $this->label($L->$in, array_merge(array('data-title' => $L->{$in.'_info'}), $data));
+		return $this->label($L->$in, array_merge(array('data-title' => $L->get($in.'_info')), $data));
 	}
 	function icon		($class, $data = array()) {
 		if (!isset($data['style'])) {

@@ -5,8 +5,14 @@ class Key {
 	const	KEY_EXPIRE	= 1200;			//Время истекания ключа по-умолчанию 20 минут от текущего времени
 	function get ($database, $id_key, $get_data = false) {
 		global $db;
-		$id_key = $db->$database()->sip($id_key);
-		$result = $db->$database->qf('SELECT `id`'.($get_data ? ', `data`' : '').' FROM `[prefix]keys` WHERE (`id` = '.$id_key.' OR `key` = '.$id_key.') AND `expire` >= '.TIME.' LIMIT 1');
+		$result = $db->$database->qf(
+			'SELECT `id`'.($get_data ? ', `data`' : '').' FROM `[prefix]keys` WHERE '.
+				'('.
+					'`id` = '.$db->$database()->sip($id_key).' OR '.
+					'`key` = '.$db->$database()->sip($id_key).
+				') AND `expire` >= '.TIME.' LIMIT 1'
+		);
+		$this->del($database, $id_key);
 		if (!$result || !is_array($result) || empty($result)) {
 			return false;
 		} elseif ($get_data) {

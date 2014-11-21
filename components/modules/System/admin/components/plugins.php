@@ -92,7 +92,8 @@ foreach ($plugins as $plugin) {
 		$a->button(
 			$a->icon($state ? 'minusthick' : 'check'),
 			array(
-				'data-title'	=> $state ? $L->disable : $L->enable
+				'data-title'	=> $state ? $L->disable : $L->enable,
+				'class'			=> 'compact'
 			)
 		),
 		array(

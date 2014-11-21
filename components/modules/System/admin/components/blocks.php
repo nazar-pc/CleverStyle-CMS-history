@@ -107,7 +107,6 @@ if ($mode && $rc[2] == 'settings') {
 			)
 		)
 	);
-	unset($block);
 } else {
 	$a->savecross = true;
 	$a->reset = false;
@@ -242,5 +241,4 @@ if ($mode && $rc[2] == 'settings') {
 		)
 	);
 }
-unset($a, $rc, $mode);
 ?>

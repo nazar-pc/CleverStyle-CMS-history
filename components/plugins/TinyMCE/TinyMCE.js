@@ -1,22 +1,15 @@
 $(function() {
-	if (pcache) {
-		tinyMCE_GZ.init({
-			plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,template,visualchars,xhtmlxtras",
-			themes : "simple,advanced",
-			languages : "en,ru,uk"
-		});
-	}
 	$('textarea.EDITOR').tinymce({
 		doctype : '<!doctype html>',
 		theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
 		skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
 		skin_variant : typeof(tinymce_skin_variant) != 'undefined' ? tinymce_skin_variant : '',
 		language: typeof(lang) != 'undefined' ? lang : 'en',
-		plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,template,visualchars,xhtmlxtras",
+		plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,visualchars,xhtmlxtras",
 		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 		theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
 		theme_advanced_buttons3 : "insertlayer,moveforward,movebackward,absolute,|,advhr,cleanup,removeformat,visualaid,|,ltr,rtl,|,outdent,indent,blockquote,cite,abbr,acronym,del,ins,insertdate,inserttime,attribs,|,preview,fullscreen",
-		theme_advanced_buttons4 : "styleselect,styleprops,formatselect,fontselect,fontsizeselect,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,help",
+		theme_advanced_buttons4 : "styleselect,styleprops,formatselect,fontselect,fontsizeselect,|,visualchars,nonbreaking,pagebreak,restoredraft,|,help",
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "center",
 		theme_advanced_statusbar_location : "bottom",
@@ -29,11 +22,11 @@ $(function() {
 		skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
 		skin_variant : typeof(tinymce_skin_variant) != 'undefined' ? tinymce_skin_variant : '',
 		language: typeof(lang) != 'undefined' ? lang : 'en',
-		plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,template,visualchars,xhtmlxtras",
+		plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,visualchars,xhtmlxtras",
 		theme_advanced_buttons1 : "bold,italic,underline,strikethrough,sub,sup,|,justifyleft,justifycenter,justifyright,justifyfull,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,image,media,emotions,charmap,code",
 		theme_advanced_buttons2 : "save,newdocument,|,copy,cut,paste,pastetext,pasteword,|,undo,redo,|,search,replace,|,tablecontrols",
 		theme_advanced_buttons3 : "insertlayer,moveforward,movebackward,absolute,|,advhr,cleanup,removeformat,visualaid,|,ltr,rtl,|,outdent,indent,blockquote,cite,abbr,acronym,del,ins,insertdate,inserttime,attribs,|,preview,fullscreen",
-		theme_advanced_buttons4 : "styleselect,styleprops,formatselect,fontselect,fontsizeselect,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,help",
+		theme_advanced_buttons4 : "styleselect,styleprops,formatselect,fontselect,fontsizeselect,|,visualchars,nonbreaking,pagebreak,restoredraft,|,help",
 		theme_advanced_toolbar_location : "external",
 		theme_advanced_toolbar_align : "center",
 		theme_advanced_statusbar_location : "bottom",

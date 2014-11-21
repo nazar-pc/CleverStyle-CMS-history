@@ -2,7 +2,4 @@ Allow from all
 <Files *.php>
 	Deny from all
 </Files>
-<Files tiny_mce_gzip.php>
-	Allow from all
-</Files>
 RewriteEngine Off

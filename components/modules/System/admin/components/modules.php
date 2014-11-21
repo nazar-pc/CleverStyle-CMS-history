@@ -64,7 +64,6 @@ if ($mode && $rc[2] == 'install') {
 			$dbs_name[] = $db_data['name'].' ('.$db_data['host'].' / '.$db_data['type'].')';
 		}
 	}
-	unset($i, $db_data);
 	$db_list[] = $a->td(
 		array(
 			$a->info('module_db'),
@@ -98,7 +97,6 @@ if ($mode && $rc[2] == 'install') {
 			)
 		);
 	}
-	unset($db_json, $dbs_name, $dbs, $database, $db_translate);
 	$a->content(
 		$a->table(
 			$a->tr($db_list),
@@ -115,7 +113,6 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	unset($db_list);
 	global $Page;
 	$Page->warning($L->changing_settings_warning);
 } elseif ($mode && $rc[2] == 'storage' && isset($Config->components['modules'][$rc[3]]) && count($Config->storage) > 1) {
@@ -164,7 +161,6 @@ if ($mode && $rc[2] == 'install') {
 			)
 		);
 	}
-	unset($storage_json, $storages_name, $storages, $storage, $storage_translate);
 	$a->content(
 		$a->table(
 			$a->tr($storage_list),
@@ -181,7 +177,6 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	unset($storage_list);
 	global $Page;
 	$Page->warning($L->changing_settings_warning);
 } else {
@@ -234,7 +229,8 @@ if ($mode && $rc[2] == 'install') {
 					$a->button(
 						$a->icon('gear'),
 						array(
-							'data-title'	=> $L->databases
+							'data-title'	=> $L->databases,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -249,7 +245,8 @@ if ($mode && $rc[2] == 'install') {
 					$a->button(
 						$a->icon('disk'),
 						array(
-							'data-title'	=> $L->storages
+							'data-title'	=> $L->storages,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -347,7 +344,8 @@ if ($mode && $rc[2] == 'install') {
 						$a->button(
 							$a->icon('wrench'),
 							array(
-								'data-title'	=> $L->settings
+								'data-title'	=> $L->settings,
+								'class'			=> 'compact'
 							)
 						),
 						array(
@@ -360,7 +358,8 @@ if ($mode && $rc[2] == 'install') {
 					$a->button(
 						$a->icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
 						array(
-							'data-title'	=> $mdata['active'] == 1 ? $L->disable : $L->enable
+							'data-title'	=> $mdata['active'] == 1 ? $L->disable : $L->enable,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -372,7 +371,8 @@ if ($mode && $rc[2] == 'install') {
 					$a->button(
 						$a->icon('trash'),
 						array(
-							'data-title'	=> $L->uninstall
+							'data-title'	=> $L->uninstall,
+							'class'			=> 'compact'
 						)
 					),
 					array(
@@ -387,7 +387,8 @@ if ($mode && $rc[2] == 'install') {
 				$a->button(
 					$a->icon('arrowthickstop-1-s'),
 					array(
-						'data-title'	=> $L->install
+						'data-title'	=> $L->install,
+						'class'			=> 'compact'
 					)
 				),
 				array(
@@ -423,7 +424,6 @@ if ($mode && $rc[2] == 'install') {
 			)
 		);
 	}
-	unset($module, $db_users_items, $addition_state, $action);
 	$a->content(
 		$a->table(
 			$modules_list,
@@ -441,7 +441,5 @@ if ($mode && $rc[2] == 'install') {
 			)
 		)
 	);
-	unset($modules_list);
 }
-unset($a);
 ?>

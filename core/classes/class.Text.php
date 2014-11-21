@@ -10,9 +10,12 @@ class Text {
 		$this->language = $language;
 	}
 	function get ($database, $id) {
+		global $Cache;
 		$id = (int)$id;
 		if (isset($this->local_storage[$database.'_'.$id])) {
 			return $this->local_storage[$database.'_'.$id];
+		} elseif ($result = $Cache->get('texts/'.$database.'_'.$id)) {
+			return $result;
 		}
 		if (isset($this->local_result[$database.'_'.$id])) {
 			$result = &$this->local_result[$database.'_'.$id];
@@ -24,7 +27,10 @@ class Text {
 		}
 		if (!is_array($result) || empty($result)) {
 			return false;
-		} elseif (isset($result[$this->language]) && !empty($result[$this->language])) {
+		} else {
+			$Cache->set('texts/'.$database.'_'.$id, $result);
+		}
+		if (isset($result[$this->language]) && !empty($result[$this->language])) {
 			return $this->local_storage[$database.'_'.$id] = $result[$this->language];
 		} elseif (isset($result[0]) && !empty($result[0])) {
 			return $this->local_storage[$database.'_'.$id] = $result[0];
@@ -57,6 +63,7 @@ class Text {
 			unset($this->local_storage[$database.'_'.$id]);
 		}
 		if ($db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(_json_encode($result)).' WHERE `id` = '.$id.' LIMIT 1')) {
+			$Cache->set('texts/'.$database.'_'.$id, $result);
 			$this->local_result[$database.'_'.$id] = &$result;
 			return '{¶'.$id.'}';
 		} else {
@@ -98,6 +105,7 @@ class Text {
 			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
 		}
 		if ($id) {
+			$Cache->set('texts/'.$database.'_'.$id, $result);
 			$this->local_result[$database.'_'.$id] = &$result;
 			return '{¶'.$id.'}';
 		} else {
@@ -112,6 +120,7 @@ class Text {
 			unset($this->local_result[$database.'_'.$id]);
 		}
 		global $db;
+		$Cache->del('texts/'.$database.'_'.$id);
 		return $db->$database()->q('UPDATE `[prefix]texts` SET `relation` = \'\', `relation_id` = 0, `text` = \'\' WHERE `id` = '.$id.' LIMIT 1');
 	}
 	function process ($database, $data) {

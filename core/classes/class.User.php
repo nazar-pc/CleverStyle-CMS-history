@@ -3,10 +3,11 @@ class User {
 	protected	$current			= array(
 					'session'	=> false,
 					'is'		=> array(
-						'admin'	=> false,
-						'user'	=> false,
-						'bot'	=> false,
-						'guest'	=> false
+						'admin'		=> false,
+						'user'		=> false,
+						'bot'		=> false,
+						'guest'		=> false,
+						'system'	=> false
 					)
 				),
 				$data				= array(),	//Локальный кеш данных пользователя
@@ -17,7 +18,22 @@ class User {
 				$db_prime			= false;
 
 	function __construct () {
-		global $Cache, $Config, $Page, $L;
+		global $Cache, $Config, $Page, $L, $Key;
+		$rc = &$Config->routing['current'];
+		if (isset($rc[count($rc) - 1]) &&
+			$this->user_agent == 'CleverStyle CMS' &&
+			$key_data = $Key->get(
+				$Config->components['modules']['System']['db']['keys'],
+				$key = $rc[count($rc) - 1],
+				true
+			) &&
+			is_array($key_data)
+		) {
+			$this->current['is']['system'] = $key_data['data'] == md5($key.(isset($rc[2]) ? $rc[2].(isset($rc[3]) ? $rc[3] : '') : ''));
+			interface_off();
+			return;
+		}
+		unset($key_data, $key, $rc);
 		$this->current['is']['admin']	= true;
 		//Пользователь может устанавливать cookies
 		if (setcookie($test = uniqid(), 'test')) {
@@ -235,9 +251,9 @@ class User {
 		return $this->db_prime;
 	}	
 	//Проверяет, кем является посетитель.
-	//Возможные значения '$mode': 'admin', 'user', 'guest', 'bot'
-	function is ($mode = 'user') {
-		return $this->current['is'][strtolower($mode)];
+	//Возможные значения $mode: 'admin', 'user', 'guest', 'bot', 'system'
+	function is ($mode) {
+		return $this->current['is'][$mode];
 	}
 	//Возвращает id пользователя
 	//(sha224_хеш_логина)
@@ -349,9 +365,8 @@ class User {
 					)
 				).
 				$Page->button(
-					$Page->icon('check').$L->register,
+					$Page->icon('pencil').$L->register,
 					array(
-						'id'			=> 'log_in',
 						'onMouseDown'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());',
 						'class'			=> 'compact'
 					)

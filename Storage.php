@@ -35,7 +35,7 @@ switch ($data['function']) {
 	default:
 		exit;
 	case 'get_list':
-		exit(_json_encode(get_list(STORAGE.DS.$data['dir'], $data['mask'], $data['mode'], $data['with_path'], $data['subfolders'], $data['sort'])));
+		exit(_json_encode(get_list(STORAGE.DS.$data['dir'], $data['mask'], $data['mode'], $data['with_path'], $data['subfolders'], $data['sort'], $data['exclusion'])));
 	case 'file_get_contents':
 		exit(_file_get_contents(STORAGE.DS.$data['filename'], $data['flags'], NULL, $data['offset'], $data['maxlen']));
 	case 'file_put_contents':

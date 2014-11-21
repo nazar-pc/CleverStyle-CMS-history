@@ -5,7 +5,7 @@ abstract class StorageAbstract {
 	//Создание подключения
 	//(хост [, пользователь [, пароль]])
 	abstract function __construct ($base_url, $host, $user = '', $password = '');
-	abstract function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false);
+	abstract function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false, $exclusion = false);
 	abstract function file_get_contents ($filename, $flags = 0);
 	abstract function file_put_contents ($filename, $data, $flags = 0);
 	abstract function copy ($source, $dest);

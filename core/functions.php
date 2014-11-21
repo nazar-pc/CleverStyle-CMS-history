@@ -152,8 +152,9 @@
 		}
 	}
 	//Функция для получения списка содержимого директории (и поддиректорий при необходимости)
-	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
-		if (!_is_dir($dir)) {
+	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false, $exclusion = false) {
+		$dir = rtrim($dir, DS).DS;
+		if (!_is_dir($dir) || ($exclusion !== false && _file_exists($dir.$exclusion))) {
 			return false;
 		}
 		if ($sort !== false) {
@@ -175,56 +176,61 @@
 		}
 		$list = array();
 		$l = 0;
+		if ($with_path != 1 && $with_path) {
+			$with_path = rtrim($with_path, DS).DS;
+		}
 		$dirc = _opendir($dir);
-		if (mb_substr($dir, -1, 1) != DS) {
-			$dir .= DS;
-		}
-		if ($with_path != 1 && $with_path && mb_substr($with_path, -1, 1) != DS) {
-			$with_path .= DS;
-		}
 		while ($file = _readdir($dirc)) {
 			if (
-				(!$mask || preg_match($mask, $file) || ($subfolders && _is_dir($dir.$file))) &&
-				$file != '.' &&
-				$file != '..' &&
-				$file != '.htaccess' &&
-				$file != '.htpasswd'
+				(
+					$mask &&
+					!preg_match($mask, $file) &&
+					(
+						!$subfolders ||
+						!_is_dir($dir.$file)
+					)
+				) ||
+				$file == '.' ||
+				$file == '..' ||
+				$file == '.htaccess' ||
+				$file == '.htpasswd'
 			) {
-				if (_is_file($dir.$file) && ($mode == 'f' || $mode == 'fd')) {
-					if ($with_path == 1) {
-						$tmp = $dir.$file;
-					} elseif ($with_path) {
-						$tmp = $with_path.$file;
-					} else {
-						$tmp = $file;
-					}
-					$prepare($list, $tmp, $dir.$file);
-					unset($tmp);
-				} elseif (_is_dir($dir.$file) && ($mode == 'd' || $mode == 'fd')) {
-					if ($with_path == 1) {
-						$tmp = $dir.$file;
-					} elseif ($with_path) {
-						$tmp = $with_path.$file;
-					} else {
-						$tmp = $file;
-					}
-					$prepare($list, $tmp, $dir.$file);
-					unset($tmp);
+				continue;
+			}
+			if (_is_file($dir.$file) && ($mode == 'f' || $mode == 'fd')) {
+				if ($with_path == 1) {
+					$tmp = $dir.$file;
+				} elseif ($with_path) {
+					$tmp = $with_path.$file;
+				} else {
+					$tmp = $file;
 				}
-				if ($subfolders && _is_dir($dir.$file)) {
-					if ($with_path == 1) {
-						$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort);
-						if (is_array($get_list)) {
-							$list = array_merge($list, $get_list);
-						}
-						unset($get_list);
-					} elseif ($with_path) {
-						$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $sort);
-						if (is_array($get_list)) {
-							$list = array_merge($list, $get_list);
-						}
-						unset($get_list);
+				$prepare($list, $tmp, $dir.$file);
+				unset($tmp);
+			} elseif (_is_dir($dir.$file) && ($mode == 'd' || $mode == 'fd')) {
+				if ($with_path == 1) {
+					$tmp = $dir.$file;
+				} elseif ($with_path) {
+					$tmp = $with_path.$file;
+				} else {
+					$tmp = $file;
+				}
+				$prepare($list, $tmp, $dir.$file);
+				unset($tmp);
+			}
+			if ($subfolders && _is_dir($dir.$file)) {
+				if ($with_path == 1) {
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort);
+					if (is_array($get_list)) {
+						$list = array_merge($list, $get_list);
 					}
+					unset($get_list);
+				} elseif ($with_path) {
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $sort);
+					if (is_array($get_list)) {
+						$list = array_merge($list, $get_list);
+					}
+					unset($get_list);
 				}
 			}
 		}
@@ -266,15 +272,26 @@
 			static $x = false;
 			return CHARSET == FS_CHARSET || strpos($str, 'http:\\') === 0 || strpos($str, 'https:\\') === 0 || strpos($str, 'ftp:\\') === 0 ?
 				$str :
-				!is_utf($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
+				!is_utf8($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
 		}
 		//Функция подготавливает строку, которая была получена как путь в файловой системе, для использования в движке
 		function path_to_str ($path) {
-			return CHARSET == FS_CHARSET ? $path : is_utf($path) ? $path : iconv(FS_CHARSET, CHARSET, $path);
+			return CHARSET == FS_CHARSET ? $path : is_utf8($path) ? $path : iconv(FS_CHARSET, CHARSET, $path);
 		}
 		//Функция обнаружения utf-8 строки
-		function is_utf ($s) {
-			$s	= urlencode($s);
+		function is_utf8 ($s) {
+			// http://w3.org/International/questions/qa-forms-utf-8.html
+			return preg_match('%^(?:
+			   [\x09\x0A\x0D\x20-\x7E]            # ASCII
+			 | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
+			 | \xE0[\xA0-\xBF][\x80-\xBF]         # excluding overlongs
+			 | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+			 | \xED[\x80-\x9F][\x80-\xBF]         # excluding surrogates
+			 | \xF0[\x90-\xBF][\x80-\xBF]{2}      # planes 1-3
+			 | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
+			 | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
+			)*$%xs', $s);
+			/*$s	= urlencode($s);
 			$l	= strlen($s);
 			$u	= strlen(str_replace(array('%D0', '%D1'), '', strtoupper($s)));
 			
@@ -282,11 +299,11 @@
 				$k = $l/$u;
 				return ($k > 1.2) && ($k < 2.2);
 			}
-			return false;
+			return false;*/
 		}
 	//Аналоги системных функций с теми же параметрами в том же порядке. Настоятельно рекомендуется использовать вместо стандартных
 	//При использовании этих функций будет небольшая потеря в скорости, зато нивелируются различия в операционных системах
-	//при использовании Unicode символов в 
+	//при использовании кириллических и других Unicode символов (не латинских) в пути к файлу или папке
 		function _file ($filename, $flags = 0, $context = NULL) {
 			return is_null($context) ?
 					file(str_to_path($filename), $flags) :
@@ -508,6 +525,10 @@
 				} else {
 					return $mode($text, $data);
 				}
+			} elseif ($mode == 'mb_strtolower' || $mode == 'mb_strtoupper') {
+				return $mode($text, $data);
+			} elseif ($mode == 'strtolower' || $mode == 'strtoupper') {
+				return $mode($text);
 			} elseif ($mode == 'form') {
 				return function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($text, 'stripslashes') : $text;
 			} else {
@@ -533,6 +554,18 @@
 		}
 		function _mb_substr ($string, $start, $length = NULL, $encoding = NULL) {
 			return filter($string, 'substr', $start, $length, $encoding);
+		}
+		function _strtolower ($string) {
+			return filter($string, 'strtolower');
+		}
+		function _strtoupper ($string) {
+			return filter($string, 'strtoupper');
+		}
+		function _mb_strtolower ($string, $encoding = false) {
+			return filter($string, 'mb_strtolower', $encoding ?: mb_internal_encoding());
+		}
+		function _mb_strtoupper ($string, $encoding = false) {
+			return filter($string, 'mb_strtoupper', $encoding ?: mb_internal_encoding());
 		}
 	//Аналог системной функции json_encode, корректно и более экономно в плане длинны результирующей строки
 	//настоятельно рекомендуется к использованию вместо стандартной!

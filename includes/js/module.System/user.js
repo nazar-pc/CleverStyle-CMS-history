@@ -18,7 +18,7 @@
 									auth_hash: hash('sha512', hash('sha224', login)+hash('sha512', password)+navigator.userAgent+random_hash)
 								},
 								success: function(result) {
-									if (result == 'true') {
+									if (result == 'reload') {
 										location.reload();
 									} else {
 										alert(result);
@@ -29,6 +29,8 @@
 								}
 							}
 						);
+					} else if (result == 'reload') {
+						location.reload();
 					} else {
 						alert(random_hash);
 					}

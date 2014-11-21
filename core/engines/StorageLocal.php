@@ -4,7 +4,7 @@ class StorageLocal extends StorageAbstract {
 		$this->connected = true;
 		$this->base_url = $base_url;
 	}
-	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
+	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false, $exclusion = false) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
 	function file_get_contents ($filename, $flags = 0) {
