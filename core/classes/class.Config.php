@@ -39,7 +39,7 @@ class Config {
 	}
 	//Анализ и обработка текущего адреса страницы
 	protected function routing () {
-		global $ADMIN;
+		global $ADMIN, $API;
 		$this->server['url'] = urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		$this->server['protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 		if (preg_match('/^('.str_replace('//', '\/\/', $this->core['url']).')/', $this->server['protocol'].'://'.$this->server['url'])) {
@@ -61,40 +61,54 @@ class Config {
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
 		$r['current'] = explode('/', str_replace($r['in'], $r['out'], $this->server['url']));
-		if (strtolower($r['current'][0]) == $ADMIN) {
-			if (!defined('ADMIN')) {
-				define('ADMIN', $ADMIN);
+		if (strtolower($r['current'][0]) == $API) {
+			if (!defined('API')) {
+				define('API', $API);
 			}
 			unset($r['current'][0]);
+			$rc = $r['current'];
+			$r['current'] = array();
+			foreach ($rc as $i) {
+				$r['current'][] = $i;
+			}
+			unset($rc);
 		} else {
-			if (!defined('ADMIN')) {
-				define('ADMIN', false);
+			define('API', false);
+			if (strtolower($r['current'][0]) == $ADMIN) {
+				if (!defined('ADMIN')) {
+					define('ADMIN', $ADMIN);
+				}
+				unset($r['current'][0]);
+				$rc = $r['current'];
+				$r['current'] = array();
+				foreach ($rc as $i) {
+					$r['current'][] = $i;
+				}
+				unset($rc);
+			} else {
+				if (!defined('ADMIN')) {
+					define('ADMIN', false);
+				}
 			}
-		}
-		unset($ADMIN);
-		$rc = $r['current'];
-		$r['current'] = array();
-		foreach ($rc as $i) {
-			$r['current'][] = $i;
-		}
-		unset($rc);
-		if (isset($r['current'][0]) && ((!empty($r['out']) && in_array($r['current'][0], $r['out'])) || $r['current'][0] == 'System')) {
-			if (!defined('MODULE')) {
-				define('MODULE', $r['current'][0]);
+			if (isset($r['current'][0]) && ((!empty($r['out']) && in_array($r['current'][0], $r['out'])) || $r['current'][0] == 'System')) {
+				if (!defined('MODULE')) {
+					define('MODULE', $r['current'][0]);
+				}
+				unset($r['current'][0]);
+				$rc = $r['current'];
+				$r['current'] = array();
+				foreach ($rc as $i) {
+					$r['current'][] = $i;
+				}
+				unset($rc);
+			} else {
+				if (!defined('MODULE')) {
+					define('MODULE', 'System');
+				}
 			}
-			unset($r['current'][0]);
-		} else {
-			if (!defined('MODULE')) {
-				define('MODULE', 'System');
-			}
+			$this->server['current_url'] = (ADMIN ? ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
 		}
-		$rc = $r['current'];
-		$r['current'] = array();
-		foreach ($rc as $i) {
-			$r['current'][] = $i;
-		}
-		$this->server['current_url'] = (ADMIN ? ADMIN.'/' : '').MODULE.'/'.implode('/', $rc);
-		unset($rc);
+		unset($r);
 	}
 	//Обновление информации о текущем наборе тем оформления
 	function reload_themes () {

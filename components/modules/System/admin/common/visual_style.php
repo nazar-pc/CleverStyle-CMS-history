@@ -3,10 +3,6 @@ global $Config, $Admin, $L;
 $Config->reload_themes();
 $a = &$Admin;
 $a->return = true;
-foreach ($Config->core['color_schemes'][$Config->core['theme']] as $color_scheme => $color_scheme_name) {
-	$color_schemes[] = $color_scheme;
-	$color_schemes_name[] = $color_scheme_name;
-}
 $active_themes = array('');
 foreach ($Config->core['themes'] as $theme) {
 	$active_themes[] = in_array($theme, $Config->core['active_themes']);
@@ -49,8 +45,8 @@ $a->table(
 		$a->td(
 			$a->select(
 				'core[color_scheme]',
-				array_merge(array($Config->core['color_schemes'][$Config->core['theme']][$Config->core['color_scheme']]), $color_schemes_name),
-				array_merge(array($Config->core['color_scheme']), $color_schemes),
+				array_merge(array($Config->core['color_schemes'][$Config->core['theme']][$Config->core['color_scheme']]), array_values($Config->core['color_schemes'][$Config->core['theme']])),
+				array_merge(array($Config->core['color_scheme']), array_keys($Config->core['color_schemes'][$Config->core['theme']])),
 				5,
 				true,
 				' onClick="javascript: $(\'#apply_settings\').click();"',

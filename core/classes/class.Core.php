@@ -7,7 +7,7 @@ class Core {
 				$support;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
-		if (require_x(DIR.'/config/'.DOMAIN.'/main.php', true)) {
+		if (require_x(CONFIG.'/'.DOMAIN.'/main.php', true)) {
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_USER, $DB_PASSWORD, $DB_PREFIX, $DB_CODEPAGE, $KEY;
 			$this->KEY = $KEY;
 			unset($KEY);

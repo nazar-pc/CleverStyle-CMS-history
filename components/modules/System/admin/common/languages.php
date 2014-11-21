@@ -6,8 +6,6 @@ $a->return = true;
 $active_languages_list = array('');
 $active_languages = $active_languages_name = array();
 foreach ($Config->core['languages'] as $lang => $name) {
-	$languages[] = $lang;
-	$languages_name[] = $name;
 	if (in_array($lang, $Config->core['active_languages'])) {
 		$active_languages[] = $lang;
 		$active_languages_name[] = $name;
@@ -36,8 +34,8 @@ $a->table(
 		$a->td(
 			$a->select(
 				'core[active_languages][]',
-				array_merge(array(''), $languages_name),
-				array_merge(array(''), $languages),
+				array_merge(array(''), array_values($Config->core['languages'])),
+				array_merge(array(''), array_keys($Config->core['languages'])),
 				5,
 				true,
 				' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['language'].'\\\']\').attr(\'selected\', \'selected\');"',

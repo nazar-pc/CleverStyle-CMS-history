@@ -298,6 +298,10 @@ class Page extends XForm {
 			return;
 		}
 		if ($this->Config->core['cache_compress_js_css']) {
+			//Проверка текущего кеша
+			if (!file_exists(PCACHE.'/'.$this->cache_list[0].'css') && !file_exists(PCACHE.'/'.$this->cache_list[0].'js') && !file_exists(PCACHE.'/'.$this->cache_list[1].'css') && !file_exists(PCACHE.'/'.$this->cache_list[1].'js') && !file_exists(PCACHE.'/'.$this->cache_list[2].'css') && !file_exists(PCACHE.'/'.$this->cache_list[2].'js')) {
+				$this->rebuild_cache();
+			}
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.'/'.$file.'css')) {
@@ -349,7 +353,7 @@ class Page extends XForm {
 			}
 		}
 	}
-	//Фильтр лиших данных для CSS и JavaScript
+	//Фильтр лиших данных в CSS и JavaScript файлах
 	function filter ($content, $mode = 'css') {
 		if ($mode == 'js') {
 			$content = preg_replace( '/[\n\t]+/s', ' ', $content);
@@ -367,7 +371,7 @@ class Page extends XForm {
 		}
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
-		if (strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'ajax' || isset($_POST['ajax']) || defined('AJAX')) {
+		if (strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'NOINTERFACE' || isset($_POST['NOINTERFACE']) || defined('NOINTERFACE')) {
 			//Обработка замены контента
 			$this->Html = str_replace($this->Search, $this->Replace, $this->Html);
 			echo $this->Content;

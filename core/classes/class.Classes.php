@@ -15,7 +15,9 @@ class Classes {
 	//Метод подключения классов
 	function load ($class, $create = false, $custom = false) {
 		global $stop;
-		if (!$stop && is_array($class)) {
+		if (empty($class)) {
+			continue;
+		} elseif (!$stop && is_array($class)) {
 			if (is_array($class[0])) {
 				foreach ($class as $c) {
 					if (!isset($c[1])) {
