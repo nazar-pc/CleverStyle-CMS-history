@@ -24,26 +24,26 @@ class Core {
 				$DB_CODEPAGE,
 				
 				$KEY;
-		if(!is_dir(STORAGES.DS.DOMAIN)) {
-			@mkdir(STORAGES.DS.DOMAIN, 0600);
+		if(!_is_dir(STORAGES.DS.DOMAIN)) {
+			@_mkdir(STORAGES.DS.DOMAIN, 0600);
 		}
-		if(!is_dir(STORAGE)) {
-			@mkdir(STORAGE, 0777);
-			file_put_contents(STORAGE.DS.'.htaccess', 'Allow From All');
+		if(!_is_dir(STORAGE)) {
+			@_mkdir(STORAGE, 0777);
+			_file_put_contents(STORAGE.DS.'.htaccess', 'Allow From All');
 		}
-		if(!is_dir(CACHE)) {
-			@mkdir(CACHE, 0600);
+		if(!_is_dir(CACHE)) {
+			@_mkdir(CACHE, 0600);
 		}
-		if(!is_dir(PCACHE)) {
-			@mkdir(PCACHE, 0777);
-			file_put_contents(PCACHE.DS.'.htaccess', "Allow From All\r\nAddEncoding gzip .js\r\nAddEncoding gzip .css");
+		if(!_is_dir(PCACHE)) {
+			@_mkdir(PCACHE, 0777);
+			_file_put_contents(PCACHE.DS.'.htaccess', "Allow From All\r\nAddEncoding gzip .js\r\nAddEncoding gzip .css");
 		}
-		if(!is_dir(LOGS)) {
-			@mkdir(LOGS, 0600);
+		if(!_is_dir(LOGS)) {
+			@_mkdir(LOGS, 0600);
 		}
-		if(!is_dir(TEMP)) {
-			@mkdir(TEMP, 0777);
-			file_put_contents(TEMP.DS.'.htaccess', 'Allow From All');
+		if(!_is_dir(TEMP)) {
+			@_mkdir(TEMP, 0777);
+			_file_put_contents(TEMP.DS.'.htaccess', 'Allow From All');
 		}
 		if ($this->support = check_mcrypt()) {
 			$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');

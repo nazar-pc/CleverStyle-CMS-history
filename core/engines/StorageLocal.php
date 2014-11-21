@@ -7,16 +7,16 @@ class StorageLocal extends StorageAbstract {
 	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
+	function file_get_contents ($filename, $flags = 0) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function file_put_contents ($filename, $data, $flags = 0, $context = NULL) {
+	function file_put_contents ($filename, $data, $flags = 0) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function copy ($source, $dest, $context = NULL) {
+	function copy ($source, $dest) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function unlink ($filename, $context = NULL) {
+	function unlink ($filename) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
 	function file_exists ($filename) {
@@ -25,13 +25,13 @@ class StorageLocal extends StorageAbstract {
 	function move_uploaded_file ($filename, $destination) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function rename ($oldname, $newname, $context = NULL) {
+	function rename ($oldname, $newname) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function mkdir ($pathname, $mode = 0777, $recursive = false, $context = NULL) {
+	function mkdir ($pathname, $mode = 0777, $recursive = false) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
-	function rmdir ($dirname, $context = NULL) {
+	function rmdir ($dirname) {
 		return call_user_func_array(__FUNCTION__, func_get_args());
 	}
 	function url_by_source ($source) {

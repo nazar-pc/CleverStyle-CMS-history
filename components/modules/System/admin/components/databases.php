@@ -72,7 +72,7 @@ if (isset($rc[2])) {
 							),
 							$a->select(
 								array(
-									'in'		=> _mb_substr(get_list(ENGINES, '/^db\.[0-9a-z_\-]*?\.php$/i', 'f'), 3, -4)
+									'in'		=> _mb_substr(get_list(ENGINES, '/^db\..*?\.php$/i', 'f'), 3, -4)
 								),
 								array(
 									'name'		=> 'db[type]',

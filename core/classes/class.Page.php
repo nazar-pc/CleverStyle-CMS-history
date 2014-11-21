@@ -73,14 +73,14 @@ class Page extends HTML {
 		//Загрузка шаблона
 		if ($this->interface) {
 			ob_start();
-			if (is_object($Config) && !$stop && $Config->core['site_mode'] && (file_exists(THEMES.DS.$this->theme.DS.'index.html') || file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
+			if (is_object($Config) && !$stop && $Config->core['site_mode'] && (_file_exists(THEMES.DS.$this->theme.DS.'index.html') || _file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
 				_require(THEMES.DS.$this->theme.DS.'prepare.php', true, false);
 				if (!_include(THEMES.DS.$this->theme.DS.'index.php', true, false)) {
 					_include(THEMES.DS.$this->theme.DS.'index.html', true);
 				}
-			} elseif ($stop == 1 && file_exists(THEMES.DS.$this->theme.DS.'closed.html')) {
+			} elseif ($stop == 1 && _file_exists(THEMES.DS.$this->theme.DS.'closed.html')) {
 				_include(THEMES.DS.$this->theme.DS.'closed.html', 1);
-			} elseif ($stop == 2 && file_exists(THEMES.DS.$this->theme.DS.'error.html')) {
+			} elseif ($stop == 2 && _file_exists(THEMES.DS.$this->theme.DS.'error.html')) {
 				_include(THEMES.DS.$this->theme.DS.'error.html', 1);
 			} else {
 				echo	"<!doctype html>\n".
@@ -143,9 +143,9 @@ class Page extends HTML {
 						$this->link(
 							array(
 								'rel'		=> 'shortcut icon',
-								'href'		=> file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ?
+								'href'		=> _file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ?
 												'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' :
-												file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ?
+												_file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ?
 												'themes/'.$this->theme.'/img/favicon.ico' :
 												'includes/img/favicon.ico'
 						)).
@@ -298,13 +298,13 @@ class Page extends HTML {
 		if ($Config->core['cache_compress_js_css']) {
 			//Проверка текущего кеша
 			if (
-				!file_exists(PCACHE.DS.$this->cache_list.'css') ||
-				!file_exists(PCACHE.DS.$this->cache_list.'js') ||
-				!file_exists(PCACHE.DS.'pcache_key')
+				!_file_exists(PCACHE.DS.$this->cache_list.'css') ||
+				!_file_exists(PCACHE.DS.$this->cache_list.'js') ||
+				!_file_exists(PCACHE.DS.'pcache_key')
 			) {
 				$this->rebuild_cache();
 			}
-			$key = file_get_contents(PCACHE.DS.'pcache_key');
+			$key = _file_get_contents(PCACHE.DS.'pcache_key');
 			//Подключение CSS стилей
 			$this->css('storages/pcache/'.$this->cache_list.'css?'.$key, 'file', true);
 			//Подключение JavaScript
@@ -328,8 +328,8 @@ class Page extends HTML {
 		foreach ($this->get_list as $extension => &$files) {
 			$temp_cache = '';
 			foreach ($files as $file) {
-				if (file_exists($file)) {
-					$current_cache = file_get_contents($file);
+				if (_file_exists($file)) {
+					$current_cache = _file_get_contents($file);
 					if ($extension == 'css') {
 						$this->images_substitution($current_cache, $file);
 					}
@@ -343,14 +343,14 @@ class Page extends HTML {
 			} elseif ($extension == 'css') {
 				$temp_cache = CssMin::minify($temp_cache, $this->CssMin);
 			}
-			file_put_contents(PCACHE.DS.$this->cache_list.$extension, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
+			_file_put_contents(PCACHE.DS.$this->cache_list.$extension, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
 			$key .= md5($temp_cache);
 		}
-		file_put_contents(PCACHE.DS.'pcache_key', mb_substr(md5($key), 0, 5), LOCK_EX|FILE_BINARY);
+		_file_put_contents(PCACHE.DS.'pcache_key', mb_substr(md5($key), 0, 5), LOCK_EX|FILE_BINARY);
 	}
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
-		chdir(dirname($file));
+		_chdir(_dirname($file));
 		preg_replace_callback(
 			'/url\((.*?)\)/',
 			function ($link) use (&$data) {
@@ -359,15 +359,15 @@ class Page extends HTML {
 				if (mb_substr($link[0], -4) == 'jpeg') {
 					$format = 'jpg';
 				}
-				if (($format == 'jpg' || $format == 'png' || $format == 'gif') && file_exists(realpath($link[0]))) {
-					$data = str_replace($link[1], 'data:image/'.$format.';base64,'.base64_encode(file_get_contents(realpath(str_to_path($link[0])))), $data);
-				} elseif ($format == 'css' && file_exists(realpath($link[0]))) {
-					$data = str_replace($link[1], 'data:text/'.$format.';base64,'.base64_encode(file_get_contents(realpath(str_to_path($link[0])))), $data);
+				if (($format == 'jpg' || $format == 'png' || $format == 'gif') && _file_exists(_realpath($link[0]))) {
+					$data = str_replace($link[1], 'data:image/'.$format.';base64,'.base64_encode(_file_get_contents(_realpath($link[0]))), $data);
+				} elseif ($format == 'css' && _file_exists(_realpath($link[0]))) {
+					$data = str_replace($link[1], 'data:text/'.$format.';base64,'.base64_encode(_file_get_contents(_realpath($link[0]))), $data);
 				}
 			},
 			$data
 		);
-		chdir(DIR);
+		_chdir(DIR);
 	}
 	//Генерирование информации о процессе загрузки страницы
 	protected function footer ($stop) {
@@ -603,7 +603,7 @@ class Page extends HTML {
 				ini_set('zlib.output_compression_level', $Config->core['zlib_compression_level']);
 			}
 			$timeload['end'] = microtime(true);
-			if ($User->is('admin') && is_object($Config) && $Config->core['debug']) {
+			if (is_object($User) && $User->is('admin') && is_object($Config) && $Config->core['debug']) {
 				$this->debug();
 			}
 			echo str_replace(

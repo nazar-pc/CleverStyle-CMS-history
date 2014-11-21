@@ -1,6 +1,6 @@
 <?php
 global $Page, $Config;
-$plugin = basename(dirname(__FILE__));
+$plugin = _basename(_dirname(__FILE__));
 $Page->js(
 	array(
 		'components/plugins/'.$plugin.'/tiny_mce_gzip.js',

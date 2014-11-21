@@ -80,6 +80,9 @@ input, textarea {
 textarea {
 	overflow-x: auto;
 }
+button.compact > span, input[type=button].compact > span {
+	padding: 2px 3px !important;
+}
 header, footer {
 	width: 100%;
 	text-align: center;

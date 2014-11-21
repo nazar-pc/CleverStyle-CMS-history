@@ -153,7 +153,7 @@
 	}
 	//Функция для получения списка содержимого директории (и поддиректорий при необходимости)
 	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false) {
-		if (!is_dir($dir)) {
+		if (!_is_dir($dir)) {
 			return false;
 		}
 		if ($sort !== false) {
@@ -162,11 +162,11 @@
 		}
 		if (isset($sort_x) && $sort_x[0] == 'datea') {
 			$prepare = function (&$list, &$tmp, $link) {
-				$list[fileatime($link) ?: filemtime($link)] = $tmp;
+				$list[_fileatime($link) ?: _filemtime($link)] = $tmp;
 			};
 		} if (isset($sort_x) && $sort_x[0] == 'datem') {
 			$prepare = function (&$list, &$tmp, $link) {
-				$list[filemtime($link)] = $tmp;
+				$list[_filemtime($link)] = $tmp;
 			};
 		} else {
 			$prepare = function (&$list, &$tmp, $link) {
@@ -175,22 +175,22 @@
 		}
 		$list = array();
 		$l = 0;
-		$dirc = opendir(str_to_path($dir));
+		$dirc = _opendir($dir);
 		if (mb_substr($dir, -1, 1) != DS) {
 			$dir .= DS;
 		}
 		if ($with_path != 1 && $with_path && mb_substr($with_path, -1, 1) != DS) {
 			$with_path .= DS;
 		}
-		while ($file = readdir($dirc)) {
+		while ($file = _readdir($dirc)) {
 			if (
-				(!$mask || preg_match($mask, $file) || ($subfolders && is_dir($dir.$file))) &&
+				(!$mask || preg_match($mask, $file) || ($subfolders && _is_dir($dir.$file))) &&
 				$file != '.' &&
 				$file != '..' &&
 				$file != '.htaccess' &&
 				$file != '.htpasswd'
 			) {
-				if (is_file($dir.$file) && ($mode == 'f' || $mode == 'fd')) {
+				if (_is_file($dir.$file) && ($mode == 'f' || $mode == 'fd')) {
 					if ($with_path == 1) {
 						$tmp = $dir.$file;
 					} elseif ($with_path) {
@@ -200,7 +200,7 @@
 					}
 					$prepare($list, $tmp, $dir.$file);
 					unset($tmp);
-				} elseif (is_dir($dir.$file) && ($mode == 'd' || $mode == 'fd')) {
+				} elseif (_is_dir($dir.$file) && ($mode == 'd' || $mode == 'fd')) {
 					if ($with_path == 1) {
 						$tmp = $dir.$file;
 					} elseif ($with_path) {
@@ -211,7 +211,7 @@
 					$prepare($list, $tmp, $dir.$file);
 					unset($tmp);
 				}
-				if ($subfolders && is_dir($dir.$file)) {
+				if ($subfolders && _is_dir($dir.$file)) {
 					if ($with_path == 1) {
 						$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort);
 						if (is_array($get_list)) {
@@ -231,7 +231,7 @@
 		closedir($dirc);
 		unset($prepare);
 		foreach ($list as &$str) {
-			$str = path_to_str($str);
+			$str = $str;
 		}
 		unset($str);
 		if (empty($list)) {
@@ -263,52 +263,97 @@
 	//рекомендуется использовать везде, где нет уверенности в том, что Unicode символы не встретятся в пути к файлу или папке.
 		//Функция подготавливает строку, которая должна использоваться как путь для файловой системы
 		function str_to_path ($str) {
+			static $x = false;
 			return CHARSET == FS_CHARSET || strpos($str, 'http:\\') === 0 || strpos($str, 'https:\\') === 0 || strpos($str, 'ftp:\\') === 0 ?
 				$str :
-				iconv(CHARSET, FS_CHARSET, $str);
+				!is_utf($str) ? $str : iconv(CHARSET, FS_CHARSET, $str);
 		}
 		//Функция подготавливает строку, которая была получена как путь в файловой системе, для использования в движке
 		function path_to_str ($path) {
-			return CHARSET == FS_CHARSET ? $path : iconv(FS_CHARSET, CHARSET, $path);
+			return CHARSET == FS_CHARSET ? $path : is_utf($path) ? $path : iconv(FS_CHARSET, CHARSET, $path);
+		}
+		//Функция обнаружения utf-8 строки
+		function is_utf ($s) {
+			$s	= urlencode($s);
+			$l	= strlen($s);
+			$u	= strlen(str_replace(array('%D0', '%D1'), '', strtoupper($s)));
+			
+			if ($u > 0){
+				$k = $l/$u;
+				return ($k > 1.2) && ($k < 2.2);
+			}
+			return false;
 		}
 	//Аналоги системных функций с теми же параметрами в том же порядке. Настоятельно рекомендуется использовать вместо стандартных
 	//При использовании этих функций будет небольшая потеря в скорости, зато нивелируются различия в операционных системах
 	//при использовании Unicode символов в 
 		function _file ($filename, $flags = 0, $context = NULL) {
-			return file(str_to_path($filename), $flags, $context);
+			return is_null($context) ?
+					file(str_to_path($filename), $flags) :
+					file(str_to_path($filename), $flags, $context);
 		}
 		function _file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
-			return file_get_contents(str_to_path($filename), $flags, $context, $offset, $maxlen);
+			return is_null($context) ?
+					file_get_contents(str_to_path($filename), $flags, $context, $offset) :
+					file_get_contents(str_to_path($filename), $flags, $context, $offset, $maxlen);
 		}
 		function _file_put_contents ($filename, $data, $flags = 0, $context = NULL) {
-			return file_put_contents(str_to_path($filename), $data, $flags, $context);
+			return is_null($context) ?
+					file_put_contents(str_to_path($filename), $data, $flags) :
+					file_put_contents(str_to_path($filename), $data, $flags, $context);
 		}
 		function _copy ($source, $dest, $context = NULL) {
-			return copy(str_to_path($source), str_to_path($dest), $context);
+			return is_null($context) ?
+					copy(str_to_path($source), str_to_path($dest)) :
+					copy(str_to_path($source), str_to_path($dest), $context);
 		}
 		function _unlink ($filename, $context = NULL) {
-			return unlink(str_to_path($filename), $context);
+			return is_null($context) ?
+					unlink(str_to_path($filename)) :
+					unlink(str_to_path($filename), $context);
 		}
 		function _file_exists ($filename) {
 			return file_exists(str_to_path($filename));
 		}
 		function _rename ($oldname, $newname, $context = NULL) {
-			return rename(str_to_path($oldname), str_to_path($newname), $context);
+			return is_null($context) ?
+					rename(str_to_path($oldname), str_to_path($newname)) :
+					rename(str_to_path($oldname), str_to_path($newname), $context);
 		}
 		function _mkdir ($pathname, $mode = 0777, $recursive = false, $context = NULL) {
-			return mkdir (str_to_path($pathname), $mode, $recursive, $context);
+			return is_null($context) ?
+					mkdir(str_to_path($pathname), $mode, $recursive) :
+					mkdir(str_to_path($pathname), $mode, $recursive, $context);
 		}
 		function _rmdir ($dirname, $context = NULL) {
-			return rmdir (str_to_path($dirname), $context);
+			return is_null($context) ?
+					rmdir(str_to_path($dirname)) :
+					rmdir(str_to_path($dirname), $context);
 		}
 		function _basename ($path, $suffix = '') {
 			return basename(str_to_path($path), $suffix);
+		}
+		function _dirname ($path) {
+			return dirname(str_to_path($path));
+		}
+		function _chdir ($directory) {
+			return chdir(str_to_path($directory));
 		}
 		function _filesize ($filename) {
 			return filesize(str_to_path($filename));
 		}
 		function _fopen ($filename, $mode, $use_include_path = false, $context = NULL) {
-			return fopen(str_to_path($filename), $mode, $use_include_path, $context);
+			return is_null($context) ?
+					fopen(str_to_path($filename), $mode, $use_include_path) :
+					fopen(str_to_path($filename), $mode, $use_include_path, $context);
+		}
+		function _opendir ($path, $context = NULL) {
+			return is_null($context) ?
+					opendir(str_to_path($path)) :
+					opendir(str_to_path($path), $context);
+		}
+		function _readdir ($dir_handle) {
+			return path_to_str(readdir($dir_handle));
 		}
 		function _is_dir ($filename) {
 			return is_dir(str_to_path($filename));
@@ -331,9 +376,18 @@
 		function _realpath ($path) {
 			return realpath(str_to_path($path));
 		}
+		function _filectime ($filename) {
+			return filectime(str_to_path($filename));
+		}
+		function _fileatime ($filename) {
+			return fileatime(str_to_path($filename));
+		}
+		function _filemtime ($filename) {
+			return filemtime(str_to_path($filename));
+		}
 	//Получить URL файла по его расположению в файловой системе
 	function url_by_source ($source) {
-		$source = realpath($source);
+		$source = _realpath($source);
 		if (strpos($source, DIR.DS) === 0) {
 			global $Config;
 			if (is_object($Config)) {
@@ -357,8 +411,8 @@
 		$ok = true;
 		$list = get_list(CACHE, false, 'fd', true, true, 'name|desc');
 		foreach ($list as $item) {
-			if (is_writable($item)) {
-				is_dir($item) ? @rmdir($item) : @unlink($item);
+			if (_is_writable($item)) {
+				_is_dir($item) ? @_rmdir($item) : @_unlink($item);
 			} else {
 				$ok = false;
 			}
@@ -377,15 +431,15 @@
 		$ok = true;
 		$list = get_list(PCACHE, false, 'fd', true, true, 'name|desc');
 		foreach ($list as $item) {
-			if (is_writable($item)) {
-				is_dir($item) ? @rmdir($item) : @unlink($item);
+			if (_is_writable($item)) {
+				_is_dir($item) ? @_rmdir($item) : @_unlink($item);
 			} else {
 				$ok = false;
 			}
 		}
 		unset($list, $item);
-		if (is_writable(CACHE.DS.'pcache_key')) {
-			unlink(CACHE.DS.'pcache_key');
+		if (_is_writable(CACHE.DS.'pcache_key')) {
+			_unlink(CACHE.DS.'pcache_key');
 		}
 		unset($list);
 		return $ok;

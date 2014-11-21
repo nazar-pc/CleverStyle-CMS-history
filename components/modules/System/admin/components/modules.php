@@ -74,7 +74,7 @@ if ($mode && $rc[2] == 'install') {
 			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	);
-	$db_json = _json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
+	$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
 		$db_list[] = $a->td(
@@ -140,7 +140,7 @@ if ($mode && $rc[2] == 'install') {
 			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	);
-	$storage_json = _json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
+	$storage_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
 	foreach ($storage_json as $storage) {
 		$storage_translate = $rc[3].'_storage_'.$storage;
 		$storage_list[] = $a->td(
@@ -210,8 +210,8 @@ if ($mode && $rc[2] == 'install') {
 			$addition_state = $action = '';
 			$db_json = array();
 			//Настройки БД
-			if (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
-				$db_json = _json_decode(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
+			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
+				$db_json = _json_decode(_file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
 				$lost_columns = array();
 				foreach ($db_json['users'] as $db_users_item) {
 					if (!in_array($db_users_item, $db_users_items)) {
@@ -244,7 +244,7 @@ if ($mode && $rc[2] == 'install') {
 				);
 			}
 			//Настройки хранилищ
-			if (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1) {
+			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1) {
 				$action .= $a->a(
 					$a->button(
 						$a->icon('disk'),
@@ -259,15 +259,15 @@ if ($mode && $rc[2] == 'install') {
 				);
 			}
 			//Уведомление об наличии API
-			if (is_dir(MODULES.DS.$module.DS.$API)) {
-				if (file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.txt') || file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.html')) {
+			if (_is_dir(MODULES.DS.$module.DS.$API)) {
+				if (_file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.txt') || _file_exists($file = MODULES.DS.$module.DS.$API.DS.'readme.html')) {
 					if (substr($file, -3) == 'txt') {
 						$tag = 'pre';
 					} else {
 						$tag = 'div';
 					}
 					$addition_state .= $a->$tag(
-						file_get_contents($file),
+						_file_get_contents($file),
 						array(
 							'id'			=> $module.'_api',
 							'class'			=> 'dialog',
@@ -279,21 +279,21 @@ if ($mode && $rc[2] == 'install') {
 				$addition_state .= $a->icon(
 					'link',
 					array(
-						'data-title'	=> $L->API_exists.$a->br().(file_exists($file) ? $L->click_to_view_details : ''),
+						'data-title'	=> $L->API_exists.$a->br().(_file_exists($file) ? $L->click_to_view_details : ''),
 						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
 					)
 				);
 				unset($tag, $file);
 			}
 			//Информация о модуле
-			if (file_exists($file = MODULES.DS.$module.DS.'readme.txt') || file_exists($file = MODULES.DS.$module.DS.'readme.html')) {
+			if (_file_exists($file = MODULES.DS.$module.DS.'readme.txt') || _file_exists($file = MODULES.DS.$module.DS.'readme.html')) {
 				if (substr($file, -3) == 'txt') {
 					$tag = 'pre';
 				} else {
 					$tag = 'div';
 				}
 				$addition_state .= $a->$tag(
-					file_get_contents($file),
+					_file_get_contents($file),
 					array(
 						'id'			=> $module.'_readme',
 						'class'			=> 'dialog',
@@ -311,14 +311,14 @@ if ($mode && $rc[2] == 'install') {
 			}
 			unset($tag, $file);
 			//Лицензия
-			if (file_exists($file = MODULES.DS.$module.DS.'license.txt') || file_exists($file = MODULES.DS.$module.DS.'license.html')) {
+			if (_file_exists($file = MODULES.DS.$module.DS.'license.txt') || _file_exists($file = MODULES.DS.$module.DS.'license.html')) {
 				if (substr($file, -3) == 'txt') {
 					$tag = 'pre';
 				} else {
 					$tag = 'div';
 				}
 				$addition_state .= $a->$tag(
-					file_get_contents($file),
+					_file_get_contents($file),
 					array(
 						'id'			=> $module.'_license',
 						'class'			=> 'dialog',
@@ -337,10 +337,10 @@ if ($mode && $rc[2] == 'install') {
 			unset($tag, $file);
 			if (mb_strtolower($module) != 'system') {
 				if (
-					is_dir(MODULES.DS.$module.DS.$ADMIN) &&
+					_is_dir(MODULES.DS.$module.DS.$ADMIN) &&
 					(
-						file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.php') ||
-						file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.json')
+						_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.php') ||
+						_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.json')
 					)
 				) {
 					$action .= $a->a(

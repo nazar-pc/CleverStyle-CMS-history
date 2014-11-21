@@ -11,7 +11,7 @@ $a->content(
 			array(
 				$a->td(
 					$a->div(
-						file_get_contents(DIR.DS.'readme.html'),
+						_file_get_contents(DIR.DS.'readme.html'),
 						array(
 							'id'			=> 'system_readme',
 							'class'			=> 'dialog',
@@ -27,7 +27,7 @@ $a->content(
 						)
 					).
 					$a->pre(
-						file_get_contents(DIR.DS.'license.txt'),
+						_file_get_contents(DIR.DS.'license.txt'),
 						array(
 							'id'			=> 'system_license',
 							'class'			=> 'dialog',

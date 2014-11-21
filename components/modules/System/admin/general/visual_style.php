@@ -8,9 +8,7 @@ $a->content(
 			$a->td($a->info('current_theme')).
 			$a->td(
 				$a->select(
-					array(
-						'in' => $Config->core['active_themes']
-					),
+					$Config->core['active_themes'],
 					array(
 						'name' => 'core[theme]',
 						'selected' => $Config->core['theme'],
@@ -25,9 +23,7 @@ $a->content(
 			$a->td($a->info('active_themes')).
 			$a->td(
 				$a->select(
-					array(
-						'in' => $Config->core['themes']
-					),
+					$Config->core['themes'],
 					array(
 						'name' => 'core[active_themes][]',
 						'selected' => $Config->core['active_themes'],
@@ -42,10 +38,7 @@ $a->content(
 			$a->td($a->info('color_scheme')).
 			$a->td(
 				$a->select(
-					array(
-						'in' => array_values($Config->core['color_schemes'][$Config->core['theme']]),
-						'value' => array_keys($Config->core['color_schemes'][$Config->core['theme']])
-					),
+					$Config->core['color_schemes'][$Config->core['theme']],
 					array(
 						'name' => 'core[color_scheme]',
 						'selected' => $Config->core['color_scheme'],

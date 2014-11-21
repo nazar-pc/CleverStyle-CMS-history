@@ -10,6 +10,9 @@ class Cache {
 	function init ($Config) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
 		$this->disk			= $Config->core['disk_cache'];
+		if (!$this->disk && $this->get('cache')) {
+			flush_cache();
+		}
 		$this->disk_size	= $Config->core['disk_cache_size']*1048576;
 		$this->memcache		= $Config->core['memcache'];
 		if ($this->memcache) {
@@ -42,12 +45,12 @@ class Cache {
 				return $cache;
 			}
 		}
-		if (is_file(CACHE.DS.$item) && is_readable(CACHE.DS.$item) && $cache = file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
+		if (_is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
 			if ($cache = (CACHE_ENCRYPT ? $Core->decrypt($cache) : @_json_decode($cache))) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
 			} else {
-				unlink(CACHE.DS.$item);
+				_unlink(CACHE.DS.$item);
 				return false;
 			}
 		}
@@ -81,18 +84,18 @@ class Cache {
 					if ($i == $max) {
 						break;
 					}
-					if(!is_dir(CACHE.DS.$subitem)) {
-						@mkdir(CACHE.DS.$subitem, 0600);
+					if(!_is_dir(CACHE.DS.$subitem)) {
+						@_mkdir(CACHE.DS.$subitem, 0600);
 					}
 				}
 				unset($subitems, $max, $i, $subitem);
 			}
-			if (!file_exists(CACHE.DS.$item) || is_writable(CACHE.DS.$item)) {
+			if (!_file_exists(CACHE.DS.$item) || _is_writable(CACHE.DS.$item)) {
 				if ($this->disk_size > 0) {
 					if (($dsize = strlen($data)) > $this->disk_size) {
 						return false;
 					}
-					$size_file = fopen(CACHE.DS.'size', 'c+b');
+					$size_file = _fopen(CACHE.DS.'size', 'c+b');
 					flock($size_file, LOCK_EX);
 					if ($this->size === false) {
 						$this->size = '';
@@ -102,14 +105,14 @@ class Cache {
 						$this->size = (int)$this->size;
 					}
 					$this->size += $dsize;
-					if (file_exists(CACHE.DS.$item)) {
-						$this->size -= filesize(CACHE.DS.$item);
+					if (_file_exists(CACHE.DS.$item)) {
+						$this->size -= _filesize(CACHE.DS.$item);
 					}
 					if ($this->size > $this->disk_size) {
 						$cache_list = get_list(CACHE, fasle, 'f', true, true, 'datea|desc');
 						foreach ($cache_list as $file) {
-							$this->size -= filesize($file);
-							unlink($file);
+							$this->size -= _filesize($file);
+							_unlink($file);
 							$disk_size = $this->disk_size*2/3;
 							if ($this->size <= $disk_size) {
 								break;
@@ -117,7 +120,7 @@ class Cache {
 						}
 						unset($cache_list, $file);
 					}
-					if (($return = file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY)) !== false) {
+					if (($return = _file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY)) !== false) {
 						ftruncate($size_file, 0);
 						fseek($size_file, 0);
 						fwrite($size_file, $this->size > 0 ? $this->size : 0);
@@ -128,7 +131,7 @@ class Cache {
 					fclose($size_file);
 					return $return;
 				} else {
-					return file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY);
+					return _file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY);
 				}
 			} else {
 				global $Error, $L;
@@ -143,9 +146,9 @@ class Cache {
 		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$item)) {
 			$this->memcache->delete(DOMAIN.$item, $time);
 		}
-		if (is_writable(CACHE.DS.$item)) {
+		if (_is_writable(CACHE.DS.$item)) {
 			if ($this->disk_size > 0) {
-				$size_file = fopen(CACHE.DS.'size', 'c+b');
+				$size_file = _fopen(CACHE.DS.'size', 'c+b');
 				flock($size_file, LOCK_EX);
 				if ($this->size === false) {
 					$this->size = '';
@@ -154,8 +157,8 @@ class Cache {
 					}
 					$this->size = (int)$this->size;
 				}
-				$this->size -= filesize(CACHE.DS.$item);
-				if (unlink(CACHE.DS.$item)) {
+				$this->size -= _filesize(CACHE.DS.$item);
+				if (_unlink(CACHE.DS.$item)) {
 					ftruncate($size_file, 0);
 					fseek($size_file, 0);
 					fwrite($size_file, $this->size > 0 ? $this->size : 0);
@@ -163,7 +166,7 @@ class Cache {
 				flock($size_file, LOCK_UN);
 				fclose($size_file);
 			} else {
-				unlink(CACHE.DS.$item);
+				_unlink(CACHE.DS.$item);
 			}
 		}
 		return true;

@@ -38,14 +38,14 @@ $plugins_list = $a->tr(
 foreach ($plugins as $plugin) {
 	$addition_state = $action = '';
 	//Информация о плагине
-	if (file_exists($file = PLUGINS.DS.$plugin.DS.'readme.txt') || file_exists($file = PLUGINS.DS.$plugin.DS.'readme.html')) {
+	if (_file_exists($file = PLUGINS.DS.$plugin.DS.'readme.txt') || _file_exists($file = PLUGINS.DS.$plugin.DS.'readme.html')) {
 		if (substr($file, -3) == 'txt') {
 			$tag = 'pre';
 		} else {
 			$tag = 'div';
 		}
 		$addition_state .= $a->$tag(
-			file_get_contents($file),
+			_file_get_contents($file),
 			array(
 				'id'			=> $plugin.'_readme',
 				'class'			=> 'dialog',
@@ -63,14 +63,14 @@ foreach ($plugins as $plugin) {
 	}
 	unset($tag, $file);
 	//Лицензия
-	if (file_exists($file = PLUGINS.DS.$plugin.DS.'license.txt') || file_exists($file = PLUGINS.DS.$plugin.DS.'license.html')) {
+	if (_file_exists($file = PLUGINS.DS.$plugin.DS.'license.txt') || _file_exists($file = PLUGINS.DS.$plugin.DS.'license.html')) {
 		if (substr($file, -3) == 'txt') {
 			$tag = 'pre';
 		} else {
 			$tag = 'div';
 		}
 		$addition_state .= $a->$tag(
-			file_get_contents($file),
+			_file_get_contents($file),
 			array(
 				'id'			=> $plugin.'_license',
 				'class'			=> 'dialog',

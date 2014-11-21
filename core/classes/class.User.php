@@ -15,6 +15,7 @@ class User {
 				$data_others_set	= array(),	//Массив с измененными данными других пользователей, которыми по завершению нужно обновить кеш
 				$db					= false,
 				$db_prime			= false;
+
 	function __construct () {
 		global $Cache, $Config, $Page, $L;
 		$this->current['is']['admin']	= true;
@@ -297,28 +298,96 @@ class User {
 	}
 	function get_header_info () {
 		global $Config, $Page, $L;
-		//$Page->user_avatar_image = '1.jpg';
-		$Page->user_avatar_text = '?';
-		//$Page->user_info = '<b>Приветствую, nazar-pc!</b>';
-		$Page->user_info = $Page->div(
-			$Page->input(
+		if ($this->is('user')) {
+			if ($this->avatar) {
+				$Page->user_avatar_image = $this->avatar;
+			} else {
+				$Page->user_avatar_text = '?';
+			}
+			$Page->user_info = $Page->b($L->hello.', '.($this->username ?: $this->login ?: $this->email).'!').$Page->br();
+		} else {
+			$Page->user_avatar_text = '?';
+			$Page->user_info = $Page->div(
+				$Page->b($L->hello.', '.$L->guest.'!').$Page->br().
+				$Page->button(
+					$L->log_in,
+					array(
+						'onMouseDown'	=> '$(\'#anonym_header_form\').slideUp(); $(\'#login_header_form\').slideDown();',
+						'style'			=> 'float: none; margin-top: 4px;',
+						'class'			=> 'compact'
+					)
+				).
+				$Page->button(
+					$L->register,
+					array(
+						'onMouseDown'	=> '$(\'#anonym_header_form\').slideUp(); $(\'#register_header_form\').slideDown();',
+						'style'			=> 'float: none; margin-top: 4px;',
+						'data-title'	=> $L->quick_registration_form,
+						'class'			=> 'compact'
+					)
+				),
 				array(
-					'type'			=> 'text',
-					'id'			=> 'user_login',
-					'placeholder'	=> $L->login_or_email
+					'id'		=> 'anonym_header_form'
 				)
 			).
-			$Page->input(
+			$Page->div(
+				$Page->input(
+					array(
+						'id'			=> 'register',
+						'placeholder'	=> $L->email_or,
+						'data-title'	=> $L->email_or_desciption,
+						'list'			=> 'register_list'
+					)
+				).
+				$Page->datalist(
+					array(
+						'in'			=> _mb_substr(get_list(MODULES.DS.MODULE.DS.'register', '/^.*?\.php$/i', 'f'), 0, -4),
+						//'onclick'		=> 'vsdf'
+					),
+					array(
+						'id'			=> 'register_list'
+					)
+				).
+				$Page->button(
+					$Page->icon('check').$L->register,
+					array(
+						'id'			=> 'log_in',
+						'onMouseDown'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());',
+						'class'			=> 'compact'
+					)
+				).
+				$Page->button(
+					$Page->icon('carat-1-s'),
+					array(
+						'onMouseDown'	=> '$(\'#anonym_header_form\').slideDown(); $(\'#register_header_form\').slideUp();',
+						'style'			=> 'float: right; margin-top: 4px;',
+						'data-title'	=> $L->back,
+						'class'			=> 'compact'
+					)
+				),
 				array(
-					'type'			=> 'password',
-					'id'			=> 'user_password',
-					'placeholder'	=> $L->password
+					'id'	=> 'register_header_form',
+					'style'	=> 'display: none;'
 				)
 			).
-			$Page->icon(
-				'locked',
-				array(
-					'onClick'		=> 'if ($(\'#user_password\').prop(\'type\') == \'password\') {'.
+			$Page->div(
+				$Page->input(
+					array(
+						'id'			=> 'user_login',
+						'placeholder'	=> $L->login_or_email
+					)
+				).
+				$Page->input(
+					array(
+						'type'			=> 'password',
+						'id'			=> 'user_password',
+						'placeholder'	=> $L->password
+					)
+				).
+				$Page->icon(
+					'locked',
+					array(
+						'onMouseDown'	=> 'if ($(\'#user_password\').prop(\'type\') == \'password\') {'.
 											'$(\'#user_password\').prop(\'type\', \'text\');'.
 											'$(this).addClass(\'ui-icon-unlocked\');'.
 											'$(this).removeClass(\'ui-icon-locked\');'.
@@ -327,32 +396,39 @@ class User {
 											'$(this).addClass(\'ui-icon-locked\');'.
 											'$(this).removeClass(\'ui-icon-unlocked\');'.
 										'}'
-				)
-			).
-			$Page->button(
-				$Page->icon('check').$L->log_in,
+					)
+				).
+				$Page->button(
+					$Page->icon('check').$L->log_in,
+					array(
+						'id'			=> 'log_in',
+						'onMouseDown'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());',
+						'class'			=> 'compact'
+					)
+				).
+				$Page->button(
+					$Page->icon('carat-1-s'),
+					array(
+						'onMouseDown'	=> '$(\'#anonym_header_form\').slideDown(); $(\'#login_header_form\').slideUp();',
+						'style'			=> 'float: right;',
+						'data-title'	=> $L->back,
+						'class'			=> 'compact'
+					)
+				).
+				$Page->button(
+					$Page->icon('help'),
+					array(
+						'style'			=> 'float: right;',
+						'data-title'	=> $L->restore_password,
+						'class'			=> 'compact'
+					)
+				),
 				array(
-					'id'		=> 'log_in',
-					'onClick'	=> 'login($(\'#user_login\').val(), $(\'#user_password\').val());'
+					'id'	=> 'login_header_form',
+					'style'	=> 'display: none;'
 				)
-			).
-			$Page->button(
-				$Page->icon('closethick'),
-				array(
-					'style'	=> 'float: right;'
-				)
-			).
-			$Page->button(
-				$Page->icon('help'),
-				array(
-					'style'	=> 'float: right;'
-				)
-			),
-			array(
-				'id'	=> 'login_header_form',
-				//'style'	=> 'display: none;'
-			)
-		);
+			);
+		}
 	}
 	function __clone () {}
 	//Запрет клонирования

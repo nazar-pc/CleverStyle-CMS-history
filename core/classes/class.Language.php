@@ -54,13 +54,15 @@ class Language {
 				$Text->language($this->clang);
 				return true;
 			} elseif (_include(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
-				if (file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
-					$lang_data = _json_decode(file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'));
+				if (_file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
+					$lang_data = _json_decode(_file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'));
 					$this->clang = $lang_data['short_format'];
+					$this->clanguage_en = $lang_data['language_en'];
 					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $lang_data['locale']) : setlocale(LC_TIME, $lang_data['locale']);
 					unset($lang_data);
 				} else {
 					$this->clang = strtolower(mb_substr($this->clanguage, 0, 2));
+					$this->clanguage_en = $this->clanguage;
 					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $this->clang.'_'.strtoupper($this->clang)) : setlocale(LC_TIME, $this->clang.'_'.strtoupper($this->clang));
 				}
 				$Text->language($this->clang);

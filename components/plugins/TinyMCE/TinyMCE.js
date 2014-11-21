@@ -24,7 +24,6 @@ $(function() {
 		file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''*/
 	});
 	$('textarea.EDITORH').tinymce({
-		debug: true,
 		doctype : '<!doctype html>',
 		theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
 		skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",

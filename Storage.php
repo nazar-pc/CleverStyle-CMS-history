@@ -1,4 +1,9 @@
 <?php
+define('CHARSET', 'utf-8');											//Основная кодировка
+define(
+	'FS_CHARSET',													//Кодировка файловой системы (названий файлов) (изменять при наличии проблемм)
+	strtolower(PHP_OS) == 'winnt' ? 'windows-1251' : 'utf-8'
+);
 header('Content-Type: text/html; charset='.CHARSET);
 define('DS',		DIRECTORY_SEPARATOR);
 define('CORE',		__DIR__.DS.'core');
@@ -11,7 +16,7 @@ if (
 	$_SERVER['HTTP_USER_AGENT'] == 'CleverStyle CMS' &&
 	strpos($DOMAIN, '\\') === false &&
 	strpos($DOMAIN, '/') === false &&
-	file_exists(__DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php')
+	_file_exists(__DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php')
 ) {
 	include __DIR__.DS.'storages'.DS.$DOMAIN.DS.'config.php';
 	global $STORAGE_USER, $STORAGE_PASSWORD;
@@ -52,8 +57,8 @@ switch ($data['function']) {
 	case 'test':
 		exit('OK');
 	case 'is_file':
-		exit(_file_exists(STORAGE.DS.$data['filename']));
+		exit(_is_file(STORAGE.DS.$data['filename']));
 	case 'is_dir':
-		exit(_file_exists(STORAGE.DS.$data['filename']));
+		exit(_is_dir(STORAGE.DS.$data['filename']));
 }
 ?>

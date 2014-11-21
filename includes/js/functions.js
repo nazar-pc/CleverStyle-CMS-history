@@ -25,7 +25,7 @@ var cache_interval;
 					$(element).button();
 				}
 			}
-		);
+		).disableSelection();
 		$('#debug').dialog({
 				autoOpen:	false,
 				height:		'400',
@@ -175,8 +175,8 @@ var cache_interval;
 		return $.evalJSON(input);
 	}
 	//Поддерживает алгоритмы sha224, sha256, sha384, sha512
-	function hash (variant, string) {
-		return new jsSHA(string).getHash(variant);
+	function hash (algo, data) {
+		return new jsSHA(data).getHash(algo);
 	}
 	function setcookie (name, value, expire, path, domain, secure) {
 		return $.cookie(name, value, {expire: expire, path: path ? path : '/', domain: domain, secure: secure});

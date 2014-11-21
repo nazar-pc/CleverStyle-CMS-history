@@ -32,15 +32,15 @@ class Index extends HTML {
 	function __construct () {
 		global $Config, $L, $Page, $User, $Classes;
 		if (
-			ADMIN && $User->is('admin') && file_exists(MODULES.DS.MODULE.DS.'admin') &&
-			(file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') || file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json'))
+			ADMIN && $User->is('admin') && _file_exists(MODULES.DS.MODULE.DS.'admin') &&
+			(_file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') || _file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json'))
 		) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.'admin');
 			$this->form = true;
 			$this->admin = true;
 		} elseif (
-			API && file_exists(MODULES.DS.MODULE.DS.'api') &&
-			(file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.php') || file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.json'))
+			API && _file_exists(MODULES.DS.MODULE.DS.'api') &&
+			(_file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.php') || _file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.json'))
 		) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.'api');
 			$this->api = true;
@@ -53,8 +53,8 @@ class Index extends HTML {
 		}
 	}
 	function init () {
-		if (file_exists(MFOLDER.DS.'index.json')) {
-			$this->parts = _json_decode(file_get_contents(MFOLDER.DS.'index.json'));
+		if (_file_exists(MFOLDER.DS.'index.json')) {
+			$this->parts = _json_decode(_file_get_contents(MFOLDER.DS.'index.json'));
 		}
 		_include(MFOLDER.DS.'index.php', true, false);
 		global $Config, $L, $Page;
@@ -64,19 +64,19 @@ class Index extends HTML {
 		}
 		if ($this->parts !== false) {
 			$rc = &$Config->routing['current'];
-			if (!isset($rc[0]) || !in_array($rc[0], $this->parts) || (!file_exists(MFOLDER.DS.$rc[0].'.json') && !file_exists(MFOLDER.DS.$rc[0].'.php'))) {
+			if (!isset($rc[0]) || !in_array($rc[0], $this->parts) || (!_file_exists(MFOLDER.DS.$rc[0].'.json') && !_file_exists(MFOLDER.DS.$rc[0].'.php'))) {
 				$rc[0] = $this->parts[0];
 			}
 			!$this->api && $Page->title($L->$rc[0]);
 			if ($this->admin && !_include(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
 				_include(MFOLDER.DS.$this->savefile.'.php', true, false);
 			}
-			if (file_exists(MFOLDER.DS.$rc[0].'.json')) {
-				$this->subparts = _json_decode(file_get_contents(MFOLDER.DS.$rc[0].'.json'));
+			if (_file_exists(MFOLDER.DS.$rc[0].'.json')) {
+				$this->subparts = _json_decode(_file_get_contents(MFOLDER.DS.$rc[0].'.json'));
 			}
 			_include(MFOLDER.DS.$rc[0].'.php', true, false);
 			if (is_array($this->subparts)) {
-				if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
+				if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
 					$rc[1] = $this->subparts[0];
 				}
 				if (!$this->api) {
@@ -158,6 +158,7 @@ class Index extends HTML {
 						'auth_error_connection = "'.$L->auth_error_connection.'",'
 					: '').
 					'language = "'.$L->clanguage.'",'.
+					'language_en = "'.$L->clanguage_en.'",'.
 					'lang = "'.$L->clang.'",'.
 					'module = "'.MODULE.'",'.
 					($User->is('admin') ? 'admin = "'.$ADMIN.'",' : '').
@@ -307,9 +308,9 @@ class Index extends HTML {
 	final function __clone () {}
 	function __finish () {
 		closure_process($this->preload);
-		if (!$this->admin && !$this->api && file_exists(MFOLDER.DS.'index.html')) {
+		if (!$this->admin && !$this->api && _file_exists(MFOLDER.DS.'index.html')) {
 			global $Page;
-			$Page->content(file_get_contents(MFOLDER.DS.'index.html'));
+			$Page->content(_file_get_contents(MFOLDER.DS.'index.html'));
 			return;
 		}
 		$this->method('init');

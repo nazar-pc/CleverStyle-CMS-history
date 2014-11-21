@@ -86,7 +86,7 @@ class Config {
 		}
 		$this->server['mirrors'][$core_url[0]] = array_merge($this->server['mirrors'][$core_url[0]], $core_url[1]);
 		unset($core_url, $url);
-		//Если это не главный домен - ищем совпадение в зерказах
+		//Если это не главный домен - ищем совпадение в зеркалах
 		if (!isset($url_replace) && !empty($this->core['mirrors_url'])) {
 			$mirrors_url = explode("\n", $this->core['mirrors_url']);
 			foreach ($mirrors_url as $i => $mirror_url) {
@@ -189,35 +189,13 @@ class Config {
 		asort($this->core['themes']);
 		foreach ($this->core['themes'] as $theme) {
 			$this->core['color_schemes'][$theme] = array();
-			if (
-				file_exists(THEMES.'/'.$theme.'/schemes.json') &&
-				($schemes = _json_decode(file_get_contents(THEMES.'/'.$theme.'/schemes.json'))) &&
-				is_array($schemes)
-			) {
-				foreach ($schemes as $scheme => $name) {
-					$this->core['color_schemes'][$theme][$scheme] = $name;
-				}
-			} else {
-				$schemes = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
-				foreach ($schemes as $scheme) {
-					$this->core['color_schemes'][$theme][$scheme] = ucfirst($scheme);
-				}
-			}
+			$this->core['color_schemes'][$theme] = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
 			asort($this->core['color_schemes'][$theme]);
 		}
 	}
 	//Обновление списка текущих языков
 	function reload_languages () {
-		unset($this->core['languages']);
-		$langlist = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?\.php$/i', 'f');
-		foreach ($langlist as $lang) {
-			if (file_exists(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json')) {
-				$lang_data = _json_decode(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'));
-				$this->core['languages'][mb_substr($lang, 5, -4)] = $lang_data['name'];
-			} else {
-				$this->core['languages'][mb_substr($lang, 5, -4)] = ucfirst(mb_substr($lang, 5, -4));
-			}
-		}
+		$this->core['languages'] = _mb_substr(get_list(LANGUAGES, '/^lang\..*?\.php$/i', 'f'), 5, -4);
 		asort($this->core['languages']);
 	}
 	//Перестройка кеша настроек
@@ -253,7 +231,7 @@ class Config {
 	function apply () {
 		global $Error, $Cache;
 		//Перезапись кеша
-		if ($Error->num() || !$Cache->cache) {
+		if ($Error->num()) {
 			return false;
 		}
 		$this->init();
@@ -271,7 +249,7 @@ class Config {
 	}
 	//Сохранение и применение изменений
 	function save ($parts = NULL) {
-		global $db;
+		global $db, $Cache;
 		if ($parts === NULL || empty($parts)) {
 			$parts = $this->admin_parts;
 		} elseif (!is_array($parts)) {

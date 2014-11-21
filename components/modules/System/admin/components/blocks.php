@@ -49,7 +49,7 @@ if ($mode && $rc[2] == 'settings') {
 						),
 						$a->select(
 							array(
-								'in'		=> _mb_substr(get_list(TEMPLATES.DS.'blocks', '/^block\.[0-9a-z_\-]*?\.(php|html)$/i', 'f'), 6)
+								'in'		=> _mb_substr(get_list(TEMPLATES.DS.'blocks', '/^block\..*?\.(php|html)$/i', 'f'), 6)
 							),
 							array(
 								'name'		=> 'block[template]',
@@ -124,7 +124,7 @@ if ($mode && $rc[2] == 'settings') {
 		'right'		=> array(),
 		'bottom'	=> array()
 	);
-	$blocks = _mb_substr(get_list(BLOCKS, '/^block\.[0-9a-z_\-]*?\.php$/i', 'f'), 6, -4);
+	$blocks = _mb_substr(get_list(BLOCKS, '/^block\..*?\.php$/i', 'f'), 6, -4);
 	$diff = array_diff(array_keys($Config->components['blocks']), $blocks);
 	$save = false;
 	if (!empty($diff)) {

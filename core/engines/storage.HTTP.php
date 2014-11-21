@@ -65,24 +65,24 @@ class HTTP extends StorageAbstract {
 		));
 		return _json_decode($result[1]);
 	}
-	function file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
-		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'flags' => $flags, 'offset' => $offset, 'maxlen' => $maxlen));
+	function file_get_contents ($filename, $flags = 0) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'flags' => $flags));
 		return $result[1];
 	}
-	function file_put_contents ($filename, $data, $flags = 0, $context = NULL) {
+	function file_put_contents ($filename, $data, $flags = 0) {
 		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'data' => $data, 'flags' => $flags));
 		return $result[1];
 	}
-	function copy ($source, $dest, $context = NULL) {
+	function copy ($source, $dest) {
 		$temp = false;
 		$copy = true;
-		if ($source == realpath($source)) {
+		if ($source == _realpath($source)) {
 			$temp = md5(uniqid(microtime(true)));
 			while (file_exists(TEMP.DS.$temp)) {
 				$temp = md5(uniqid(microtime(true)));
 			}
 			time_limit_pause();
-			$copy = copy($source, TEMP.DS.$temp);
+			$copy = _copy($source, TEMP.DS.$temp);
 			time_limit_pause(false);
 			global $Config;
 			$source = $Config->server['base_url'].'/'.$temp;
@@ -97,7 +97,7 @@ class HTTP extends StorageAbstract {
 		}
 		return (bool)$result[1];
 	}
-	function unlink ($filename, $context = NULL) {
+	function unlink ($filename) {
 		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
 		return (bool)$result[1];
 	}
@@ -111,7 +111,7 @@ class HTTP extends StorageAbstract {
 			$temp = md5(uniqid(microtime(true)));
 		}
 		time_limit_pause();
-		$move = move_uploaded_file($filename, TEMP.DS.$temp);
+		$move = _move_uploaded_file($filename, TEMP.DS.$temp);
 		time_limit_pause(false);
 		global $Config;
 		if ($move) {
@@ -122,16 +122,16 @@ class HTTP extends StorageAbstract {
 		unlink(TEMP.DS.$temp);
 		return (bool)$result[1];
 	}
-	function rename ($oldname, $newname, $context = NULL) {
+	function rename ($oldname, $newname) {
 		$temp = false;
 		$copy = true;
-		if ($oldname == realpath($oldname)) {
+		if ($oldname == _realpath($oldname)) {
 			$temp = md5(uniqid(microtime(true)));
 			while (file_exists(TEMP.DS.$temp)) {
 				$temp = md5(uniqid(microtime(true)));
 			}
 			time_limit_pause();
-			$copy = copy($oldname, TEMP.DS.$temp);
+			$copy = _copy($oldname, TEMP.DS.$temp);
 			time_limit_pause(false);
 			global $Config;
 			$oldname_x = $oldname;
@@ -145,17 +145,25 @@ class HTTP extends StorageAbstract {
 		if ($temp) {
 			unlink(TEMP.DS.$temp);
 			if ((bool)$result[1]) {
-				unlink($oldname_x);
+				_unlink($oldname_x);
 			}
 		}
 		return (bool)$result[1];
 	}
-	function mkdir ($pathname, $mode = 0777, $recursive = false, $context = NULL) {
+	function mkdir ($pathname, $mode = 0777, $recursive = false) {
 		$result = $this->request(array('function' => __FUNCTION__, 'pathname' => $pathname));
 		return (bool)$result[1];
 	}
-	function rmdir ($dirname, $context = NULL) {
+	function rmdir ($dirname) {
 		$result = $this->request(array('function' => __FUNCTION__, 'dirname' => $dirname));
+		return (bool)$result[1];
+	}
+	function is_file ($filename) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
+		return (bool)$result[1];
+	}
+	function is_dir ($filename) {
+		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
 		return (bool)$result[1];
 	}
 	function url_by_source ($source) {
@@ -177,14 +185,6 @@ class HTTP extends StorageAbstract {
 		if (is_resource($this->socket)) {
 			fclose($this->socket);
 		}
-	}
-	function is_file ($filename) {
-		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
-		return (bool)$result[1];
-	}
-	function is_dir ($filename) {
-		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename));
-		return (bool)$result[1];
 	}
 }
 ?>

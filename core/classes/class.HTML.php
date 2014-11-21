@@ -2,7 +2,19 @@
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
 class HTML {
 	public		$Content;
-	protected	$unit_atributes = array('async', 'defer', 'formnovalidate', 'autofocus', 'checked', 'selected', 'readonly', 'required', 'disabled', 'multiple');
+	protected	$unit_atributes = array(	//Одиночные атрибуты, которые не имеют значения
+					'async',
+					'defer',
+					'formnovalidate',
+					'autofocus',
+					'checked',
+					'selected',
+					'readonly',
+					'required',
+					'disabled',
+					'multiple'
+				);
+
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
 		if ($level < 1) {
@@ -11,6 +23,7 @@ class HTML {
 		return preg_replace('/^(.*)$/m', str_repeat("\t", $level).'$1', $in);
 	}
 	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
+	//Используется наследуемыми классами
 	function content ($add, $level = false) {
 		if ($level !== false) {
 			$this->Content .= $this->level($add, $level);
@@ -253,7 +266,7 @@ class HTML {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
 	}
-		//Специфическая обработка
+		//Специфическая обработка (похожие в обработке теги групируются в шаблоны - template_#)
 	function table		($in = array(), $data = array(), $data2 = array()) {
 		if (is_array($in)) {
 			$temp = '';
@@ -265,105 +278,49 @@ class HTML {
 			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
-	function tr			($in = '', $data = array()) {
+	//{template_1
+	function template_1	($in = '', $data = array(), $function) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
+				$temp .= $this->swrap($item, $data, $function);
 			}
 			return $temp;
 		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
+			return $this->swrap($in, $data, $function);
 		}
+	}
+	function tr			($in = '', $data = array()) {
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function th			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function td			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function ul			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function ol			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function li			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function dl			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function dt			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	function dd			($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+		return $this->template_1($in, $data, __FUNCTION__);
 	}
+	function option		($in = '', $data = array()) {
+		return $this->template_1($in, $data, __FUNCTION__);
+	}
+	//}
 	function input		($in = array()) {
 		if (isset($in['type']) && $in['type'] == 'radio') {
 			if (is_array($in)) {
@@ -447,15 +404,25 @@ class HTML {
 			}
 		}
 	}
-	function select		($in = '', $data = array()) {
+	//{template_2
+	function template_2	($in = '', $data = array(), $function) {
 		if (!is_array($in)) {
-			return $this->swrap($in, $data, __FUNCTION__);
+			return $this->swrap($in, $data, $function);
 		}
-		if (!isset($in['value']) && isset($in['in'])) {
+		if (!isset($in['value']) && isset($in['in']) && is_array($in['in'])) {
 			$in['value'] = &$in['in'];
-		}
-		if (!isset($in['in']) && isset($in['value'])) {
+		} elseif (!isset($in['in']) && isset($in['value']) && is_array($in['value'])) {
 			$in['in'] = &$in['value'];
+		} elseif (
+			(!isset($in['in']) || !is_array($in['in'])) &&
+			(!isset($in['value']) || !is_array($in['value'])) &&
+			is_array($in)
+		) {
+			$temp = $in;
+			$in = array();
+			$in['value'] = &$temp;
+			$in['in'] = &$temp;
+			unset($temp);
 		}
 		if (!isset($in['value']) && !isset($in['in'])) {
 			return false;
@@ -492,7 +459,7 @@ class HTML {
 			}
 			unset($in['selected'], $i, $v);
 		}
-		if (!$selected) {
+		if (!$selected && $function == 'select') {
 			if (!isset($in['add'][0])) {
 				$in['add'][0] = ' selected';
 			} else {
@@ -502,19 +469,15 @@ class HTML {
 		}
 		$options = $this->array_flip($in, isset($i) ? $i+1 : count($in['in']));
 		unset($in);
-		return $this->swrap($this->option($options), $data, __FUNCTION__);
+		return $this->swrap($this->option($options), $data, $function);
 	}
-	function option		($in = '', $data = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, __FUNCTION__);
-			}
-			return $temp;
-		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
-		}
+	function select		($in = '', $data = array()) {
+		return $this->template_2($in, $data, __FUNCTION__);
 	}
+	function datalist	($in = '', $data = array()) {
+		return $this->template_2($in, $data, __FUNCTION__);
+	}
+	//}
 	function button		($in = '', $data = array()) {
 		if (is_array($in)) {
 			if (!isset($in['type'])) {
@@ -539,9 +502,10 @@ class HTML {
 		}
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	function textarea	($in = '', $data = array()) {
+	//{template_3
+	function template_3	($in = '', $data = array(), $function) {
 		global $Page;
-		$uniqid = uniqid('textarea_');
+		$uniqid = uniqid('html_replace_');
 		if (is_array($in)) {
 			if (isset($in['in'])) {
 				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
@@ -552,38 +516,18 @@ class HTML {
 			$in = $uniqid;
 		}
 		$data['level'] = false;
-		return $this->swrap($in, $data, __FUNCTION__);
+		return $this->swrap($in, $data, $function);
+	}
+	function textarea	($in = '', $data = array()) {
+		return $this->template_3($in, $data, __FUNCTION__);
 	}
 	function pre		($in = '', $data = array()) {
-		global $Page;
-		$uniqid = uniqid('pre_');
-		if (is_array($in)) {
-			if (isset($in['in'])) {
-				$Page->replace($uniqid, $in['in']);
-				$in['in'] = $uniqid;
-			}
-		} else {
-			$Page->replace($uniqid, $in);
-			$in = $uniqid;
-		}
-		$data['level'] = false;
-		return $this->swrap($in, $data, __FUNCTION__);
+		return $this->template_3($in, $data, __FUNCTION__);
 	}
 	function code		($in = '', $data = array()) {
-		global $Page;
-		$uniqid = uniqid('code_');
-		if (is_array($in)) {
-			if (isset($in['in'])) {
-				$Page->replace($uniqid, $in['in']);
-				$in['in'] = $uniqid;
-			}
-		} else {
-			$Page->replace($uniqid, $in);
-			$in = $uniqid;
-		}
-		$data['level'] = false;
-		return $this->swrap($in, $data, __FUNCTION__);
+		return $this->template_3($in, $data, __FUNCTION__);
 	}
+	//}
 	function br			($repeat = 1) {
 		$in['tag'] = __FUNCTION__;
 		return str_repeat($this->iwrap($in), $repeat);

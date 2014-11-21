@@ -33,9 +33,6 @@ if (isset($_POST['edit_settings'])) {
 		if ($Index->save() && !$Config->core['cache_compress_js_css']) {
 			flush_pcache();
 		}
-		if (!$Cache->cache) {
-			flush_cache();
-		}
 	} elseif ($_POST['edit_settings'] == 'cancel' && $Cache->cache) {
 		$Index->cancel();
 	}

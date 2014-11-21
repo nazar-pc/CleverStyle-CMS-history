@@ -487,7 +487,7 @@ class CssMin
 		 * For compression if a @media at-rule block is defined the same media type as the @import at-rule the 
 		 * T_AT_MEDIA_START and T_AT_MEDIA_END tokens will get removed.
 		 */
-		if ($sImportImports && is_dir($sImportBasePath))
+		if ($sImportImports && _is_dir($sImportBasePath))
 			{
 			$importFile				= "";
 			$importTokens			= array();
@@ -495,7 +495,7 @@ class CssMin
 			$importBlocks			= array();
 			for($i = 0, $l = count($tokens); $i < $l; $i++)
 				{
-				if ($tokens[$i][0] == self::T_AT_IMPORT && file_exists($sImportBasePath . $tokens[$i][1]))
+				if ($tokens[$i][0] == self::T_AT_IMPORT && _file_exists($sImportBasePath . $tokens[$i][1]))
 					{
 					$importFile = $sImportBasePath . $tokens[$i][1];
 					// Import file already imported; remove this @import at-rule to prevent any recursion
@@ -506,7 +506,7 @@ class CssMin
 					else
 						{
 						$sImportImportedFiles[]	= $sImportBasePath . $tokens[$i][1];
-						$importTokens			= self::parse(file_get_contents($importFile));
+						$importTokens			= self::parse(_file_get_contents($importFile));
 						// The @import at-rule has media types defined requires special handling
 						if (count($tokens[$i][2]) > 0 && !(count($tokens[$i][2]) == 1 && $tokens[$i][2][0] == "all"))
 							{
@@ -663,7 +663,7 @@ class CssMin
 			{
 			$sRemoveTokens = array_merge($sRemoveTokens, array(self::T_AT_VARIABLES_START, self::T_VARIABLE_DECLARATION, self::T_AT_VARIABLES_END));
 			}
-		if ($sImportImports && is_dir($sImportBasePath) && $sImportRemoveInvalid)
+		if ($sImportImports && _is_dir($sImportBasePath) && $sImportRemoveInvalid)
 			{
 			$sRemoveTokens[] = self::T_AT_IMPORT;
 			}

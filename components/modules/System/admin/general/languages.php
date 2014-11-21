@@ -1,14 +1,6 @@
 <?php
 global $Config, $Index, $L;
 $Config->reload_languages();
-$active_languages = $active_languages_name = array();
-foreach ($Config->core['languages'] as $lang => $name) {
-	if (in_array($lang, $Config->core['active_languages'])) {
-		$active_languages[] = $lang;
-		$active_languages_name[] = $name;
-	}
-}
-unset($lang, $name);
 $a = &$Index;
 $a->content(
 	$a->table(
@@ -16,10 +8,7 @@ $a->content(
 			$a->td($a->info('current_language')).
 			$a->td(
 				$a->select(
-					array(
-						'in' => $active_languages_name,
-						'value' => $active_languages
-					),
+					$Config->core['active_languages'],
 					array(
 						'name' => 'core[language]',
 						'selected' => $Config->core['language'],
@@ -34,10 +23,7 @@ $a->content(
 			$a->td($a->info('active_languages')).
 			$a->td(
 				$a->select(
-					array(
-						'in' => array_values($Config->core['languages']),
-						'value' => array_keys($Config->core['languages'])
-					),
+					$Config->core['languages'],
 					array(
 						'name' => 'core[active_languages][]',
 						'selected' => $Config->core['active_languages'],
