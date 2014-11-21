@@ -6,6 +6,7 @@ class Index extends HTML {
 			$mainmenu		= '',
 			$mainsubmenu	= '',
 			$menumore		= '',
+			$savecross		= false,
 
 			$savefile		= 'save',
 			$form			= false,
@@ -16,7 +17,6 @@ class Index extends HTML {
 			$cancel			= ' disabled',
 			$cancel_back	= false,
 			$reset			= true,
-			$save			= false,
 			$post_buttons	= '',
 
 			$methods		= array(),
@@ -91,14 +91,14 @@ class Index extends HTML {
 	}
 	function mainmenu () {
 		global $Config, $L, $Page, $User, $ADMIN;
-		$Page->mainmenu = '<menu>';
+		$Page->mainmenu = '';
 		if ($Config->core['debug']) {
 			$Page->mainmenu .= '<a onClick="debug_window();" title="'.$L->debug.'">'.mb_substr($L->debug, 0, 1).'</a>&nbsp;';
 		}
 		if ($User->is_admin()) {
 			$Page->mainmenu .= '<a href="'.$ADMIN.'" title="'.$L->administration.'">'.mb_substr($L->administration, 0, 1).'</a>&nbsp;';
 		}
-		$Page->mainmenu .= '<a href="/" title="'.$L->home.'">'.$L->home.'</a></menu>';
+		$Page->mainmenu .= '<a href="/" title="'.$L->home.'">'.$L->home.'</a>';
 	}
 	function mainsubmenu () {
 		if (!is_array($this->parts)) {
@@ -123,7 +123,7 @@ class Index extends HTML {
 		global $Config, $L, $ADMIN;
 		foreach ($this->subparts as $subpart) {
 			$onClick = '';
-			if ($this->save && $this->form) {
+			if ($this->savecross && $this->form) {
 				$onClick = 'menuadmin(\''.$subpart.'\', false); return false;';
 			}
 			$this->menumore .= $this->a(
@@ -144,14 +144,14 @@ class Index extends HTML {
 		$this->method('menumore');
 		if (!API) {
 			$Page->js(
-				'var save_before = "'.$L->save_before.'", continue_transfer = "'.$L->continue_transfer.'", base_url = "'.$Config->core['url'].(ADMIN ? '/'.$ADMIN : '').'/'.MODULE.(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'";',
+				'var save_before = "'.$L->save_before.'", continue_transfer = "'.$L->continue_transfer.'", base_url = "'.$Config->server['base_url'].(ADMIN ? '/'.$ADMIN : '').'/'.MODULE.(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'";',
 				'code'
 			);
 		}
 		if ($this->parts !== false) {
-			$Page->mainsubmenu	= $this->menu($this->mainsubmenu);
+			$Page->mainsubmenu	= $this->mainsubmenu;
 			if ($this->subparts !== false) {
-				$Page->menumore		= $this->menu($this->menumore);
+				$Page->menumore		= $this->menumore;
 			}
 		}
 		if ($this->form) {
@@ -269,6 +269,7 @@ class Index extends HTML {
 					'class'	=> 'green ui-state-highlight'
 				)
 			);
+			$this->cancel = '';
 			return true;
 		} else {
 			$Page->title($L->settings_apply_error);

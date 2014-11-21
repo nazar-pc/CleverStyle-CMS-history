@@ -32,24 +32,24 @@
 	text-shadow:  0px 0px 20px #fff;
 	vertical-align: top;
 }
-#main-menu > menu, #main-menu > menu > a, #main-submenu > menu > a {
+#main-menu, #main-menu > a, #main-submenu > a {
 	color: #fff;
 }
-#main-menu > menu > a {
+#main-menu > a {
 	text-shadow: 0px 0px 7px rgba(0, 0, 0, 0.5);
 }
-#main-menu > menu > a:hover, #main-submenu > menu > a:hover, #main-submenu > menu > a.active {
+#main-menu > a:hover, #main-submenu > a:hover, #main-submenu > a.active {
 	color: #000;
 	text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.7);
 }
-#menu-more > menu {
+#menu-more {
 	color: rgb(110, 188, 0);
 }
-#menu-more > menu > a {
+#menu-more > a {
 	border-top: 2px solid rgb(110, 188, 0);
 	color: rgb(110, 188, 0);
 }
-#menu-more > menu > a:hover, #menu-more > menu > a.active {
+#menu-more > a:hover, #menu-more > a.active {
 	border-top-color: #ddd;
 	color: #ddd;
 }

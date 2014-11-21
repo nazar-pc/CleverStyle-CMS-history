@@ -569,10 +569,9 @@ function get_sql_info () {
 }
 $temp = base64_decode('Y29weXJpZ2h0');
 $$temp = array(
-	0 => base64_decode('TW9rcnluc2t5aSBOYXphcg=='),																								//Автор
-	1 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Генератор
-	2 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExIGJ5IE1va3J5bnNreWkgTmF6YXI='),																	//Копирайт
-	3 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Ссылка
+	0 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Генератор
+	1 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExIGJ5IE1va3J5bnNreWkgTmF6YXI='),																	//Копирайт
+	2 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Ссылка
 );
 unset($temp);
 ?>

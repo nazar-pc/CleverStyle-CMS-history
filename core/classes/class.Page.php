@@ -19,9 +19,9 @@ class Page extends HTML {
 										'Head'				=> 2,
 										'pre_Body'			=> 2,
 										'Header'			=> 4,
-										'mainmenu'			=> 4,
-										'mainsubmenu'		=> 4,
-										'menumore'			=> 4,
+										'mainmenu'			=> 3,
+										'mainsubmenu'		=> 3,
+										'menumore'			=> 3,
 										'user_avatar_text'	=> 5,
 										'user_info'			=> 5,
 										'debug_info'		=> 3,
@@ -144,12 +144,9 @@ class Page extends HTML {
 		}
 		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
 						$this->meta(array('http-equiv'	=> 'Content-Type',		'content'	=> 'text/html; charset=utf-8')).
-						$this->meta(array('http-equiv'	=> 'Content-Language',	'content'	=> $L->clang)).
-						$this->meta(array('name'		=> 'author',			'content'	=> $copyright[0])).
-						$this->meta(array('name'		=> 'copyright',			'content'	=> $copyright[2])).
 						$this->meta(array('name'		=> 'keywords',			'content'	=> $this->Keywords)).
 						$this->meta(array('name'		=> 'description',		'content'	=> $this->Description)).
-						$this->meta(array('name'		=> 'generator',			'content'	=> $copyright[1])).
+						$this->meta(array('name'		=> 'generator',			'content'	=> $copyright[0])).
 						$this->link(array('rel'			=> 'shortcut icon',		'href'		=> 
 							file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ?
 								'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' :
@@ -408,7 +405,7 @@ class Page extends HTML {
 		if (!($copyright && is_array($copyright))) {
 			exit;
 		}
-		$footer = $this->div($copyright[2].' '.$copyright[3], array('id'	=> 'copyright'));
+		$footer = $this->div($copyright[1].' '.$copyright[2], array('id'	=> 'copyright'));
 		if (!$stop) {
 			$footer =	$this->div(
 							$L->page_generated.' <!--generate time--> '.

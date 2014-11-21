@@ -1,4 +1,6 @@
 <?php
 global $Config;
-include_x(MFOLDER.DS.$Config->routing['current'][0].DS.'save.'.(isset($Config->routing['current'][1]) ? $Config->routing['current'][1] : 'modules').'.php', true, false);
+if (isset($Config->routing['current'][1])) {
+	include_x(MFOLDER.DS.$Config->routing['current'][0].DS.'save.'.$Config->routing['current'][1].'.php', true, false);
+}
 ?>

@@ -30,7 +30,6 @@ if (isset($_POST['edit_settings'])) {
 			}
 			global $Page;
 			$Page->js("\$(function(){save = true;});", 'code');
-			$Index->cancel = '';
 		} else {
 			$apply_error = true;
 		}
