@@ -3,7 +3,7 @@ class XForm {
 	public	$return = false;
 	private	$n = 0;
 	function form ($mode, $method = 'post', $action = '', $id = false, $return = -1, $add = '', $class = '', $name = false) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$mode) {
@@ -23,7 +23,7 @@ class XForm {
 		}
 	}
 	function table ($mode, $id = false, $return = -1, $add = '', $class = '', $name = false) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$mode) {
@@ -51,7 +51,7 @@ class XForm {
 		}
 	}
 	function tr ($mode, $return = -1, $add = '', $class = '', $id = false, $name = false) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$mode) {
@@ -71,8 +71,11 @@ class XForm {
 		}
 	}
 	function td ($mode, $return = -1, $add = '', $class = '', $id = false, $name = false) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
+		}
+		if (!$mode) {
+			return false;
 		}
 		if ($mode == 'o') {
 			$Content = '<td'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n";
@@ -88,7 +91,7 @@ class XForm {
 		}
 	}
 	function label ($mode, $id = false, $return = -1, $add = '', $class = '') {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$mode) {
@@ -108,7 +111,7 @@ class XForm {
 		}
 	}
 	function info ($title, $return = -1) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$title) {
@@ -123,7 +126,7 @@ class XForm {
 	}
 	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
 		++$this->n;
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$type || !$id) {
@@ -151,7 +154,7 @@ class XForm {
 			$Content = implode('', $Content);
 		} else {
 			if ($type == 'text') {
-				$Content = '<input name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
+				$Content = '<input name="'.$id.'" id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			} elseif ($type == 'checkbox' || $type == 'radio') {
 				$Content = '<input id="'.$this->n.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, $this->n, $return).$devider."\n";
 			} else {
@@ -168,7 +171,7 @@ class XForm {
 		}
 	}
 	function select ($id, $options, $values = false, $size = 1, $return = -1, $add = '', $array_options_add = false, $classes = '', $array_if = false) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$id || empty($options)) {
@@ -196,7 +199,7 @@ class XForm {
 		}
 	}
 	function textarea ($id, $value = '', $return = -1, $add = '', $class = '', $cols = false, $rows = false) {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$id) {
@@ -212,7 +215,7 @@ class XForm {
 		}
 	}
 	function button ($value, $type = 'button', $name = '', $return = -1, $add = '', $class = '', $id = '') {
-		if ($return == -1) {
+		if ($return === -1) {
 			$return = $this->return;
 		}
 		if (!$value) {

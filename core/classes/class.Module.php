@@ -11,13 +11,10 @@ class Module extends XForm {
 		$this->L = $L;
 		$this->Page = $Page;
 		$this->User = $User;
-		$this->Page->javascript(
+		$this->Page->js(
 			"var language = '".$this->L->clanguage."', lang = '".$L->clang."';\n",
 			'code'
 		);
-		if ($this->Config->core['debug']) {
-			$this->Page->Content .= "<div id=\"debug\" title=\"".$this->L->debug."\" style=\"display: none;\"><!--debug_info-->\n</div>\n";
-		}
 	}
 	function init () {
 		$this->mainmenu();

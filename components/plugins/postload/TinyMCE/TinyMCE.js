@@ -20,7 +20,7 @@ $(document).ready(
 			theme_advanced_toolbar_align : "center",
 			theme_advanced_statusbar_location : "bottom",
 			theme_advanced_resizing : true,
-			file_browser_callback : typeof(AjexFileManager) == 'object' ? 'AjexFileManager.open' : ''
+			file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''
 		});
 		$('.EDITORH').tinymce({
 			doctype : '<!doctype html>',
@@ -37,14 +37,14 @@ $(document).ready(
 			theme_advanced_toolbar_align : "center",
 			theme_advanced_statusbar_location : "bottom",
 			theme_advanced_resizing : true,
-			file_browser_callback : typeof(AjexFileManager) == 'object' ? 'AjexFileManager.open' : ''
+			file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''
 		});
-		if (typeof(AjexFileManager) == 'object') {
+		/*if (typeof(AjexFileManager) == 'object') {
 			AjexFileManager.init({
 				returnTo: 'tinymce',
 				height: 550
 			});
-		}
+		}*/
 		$('.SEDITOR').tinymce({
 			doctype : '<!doctype html>',
 			theme : typeof(tinymce_theme_mini) != 'undefined' ? tinymce_theme_mini : "simple",

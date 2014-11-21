@@ -1,4 +1,3 @@
-@charset "utf-8";
 body {
 	font-family: "Sergoe UI", Tahoma, Verdana, Arial;
 	font-size: 11px;
@@ -20,7 +19,7 @@ body[id=textarea] {
 	border-radius: 10px;
 	-moz-border-radius: 10px;
 	padding: 5px 0px;
-	margin-top: 130px;
+	margin-top: 145px;
 	width: 100%;
 }
 .admin_form {
@@ -49,12 +48,10 @@ body[id=textarea] {
 	padding: 5px;
 }
 td#main_content {
-	vertical-align: top;
-}
-td#main_content {
 	border-radius: 7px;
 	-moz-border-radius: 7px;
 	padding: 10px;
+	vertical-align: top;
 }
 td#main_content > section > article > div {
 	border-radius: 5px;

@@ -30,10 +30,10 @@ $(document).ready(
 		);		
 		$('#debug').dialog({
 				autoOpen: false,
-				width: '800',
 				height: '400',
 				hide: 'puff',
-				show: 'scale'
+				show: 'scale',
+				width: '700'
 		});
 		$('#admin_form *').change(
 			function(){

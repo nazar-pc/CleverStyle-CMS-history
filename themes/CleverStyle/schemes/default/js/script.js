@@ -33,11 +33,59 @@ function background() {
 			});
 		} else {
 			bokeh.css({
-				'background': '-moz-radial-gradient( contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))',
+				'background': '-moz-radial-gradient(contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))',
 				'background-image': '-webkit-gradient(radial, center center, 0, center center, 70.5, from(rgba('+bokehColour+', 0.7)), to(rgba('+bokehColour+',0.3)))'
 			});
 		}
 		bokeh.appendTo("#background");
 	}
 }
-$(function () { background(); });
+$(document).ready(
+	function(){
+		background();
+		$('#loading > div').css('opacity', '1');
+		$('#loading').addClass('active');
+		var header_visible = true;
+		$('#header_zone').mouseover(
+			function () {
+				if (header_visible === false) {
+					header_visible = true;
+					$('header > *').show(250);
+					$('#body').animate({'marginTop': '+=120px'}, 250);
+				}
+			}
+		);
+		$('#header_black').mouseout(
+			function () {
+				if (header_visible === true) {
+					header_visible = false;
+					$('header > *').hide(250, function () {$('#header_zone').show();});
+					$('#body').animate({'marginTop': '-=120px'}, 500);
+				}
+			}
+		);
+		$('#body').mousemove(
+			function () {
+				if (header_visible === true) {
+					header_visible = false;
+					$('header > *').hide(250, function () {$('#header_zone').show();});
+					$('#body').animate({'marginTop': '-=120px'}, 500);
+				}
+			}
+		);
+	}
+);
+$(
+	function(){
+		setTimeout(
+			function(){
+				$('#loading > div').css('opacity', '0');
+				setTimeout(
+					function(){
+						$('#loading').remove();
+					}, 1000
+				);
+			}, 1000
+		);
+	}
+);

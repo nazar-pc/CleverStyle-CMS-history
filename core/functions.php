@@ -1,9 +1,9 @@
 <?php
 //Специальные функции для обработки подключения пользовательских файлов ядра
 if (USE_CUSTOM) {
-	define('CUSTOM_DIR', DIR.'/custom');
+	define('CUSTOM_DIR', DIR.DS.'custom');
 	function require_x ($file, $once = false, $show_errors = true) {
-		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, strtr($file, '\\', '/')))) {
+		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
 				return require_once($file_x);
 			} else {
@@ -24,7 +24,7 @@ if (USE_CUSTOM) {
 		}
 	}
 	function include_x ($file, $once = false, $show_errors = true) {
-		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, strtr($file, '\\', '/')))) {
+		if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
 			if ($once) {
 				return include_once($file_x);
 			} else {
@@ -77,18 +77,20 @@ if (USE_CUSTOM) {
 	}
 }
 //Функция для получения списка содержимого директории (и поддиректорий при необходимости)
-function get_list ($dir, $mask=false, $mode='f', $with_path=false, $subfolders = false) {
+function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $DS = false) {
 	if (!is_dir($dir)) {
 		return false;
 	}
 	$list = array();
 	$l = 0;
 	$dirc[$l] = opendir($dir);
-	if (substr($dir, -1, 1) != '/') {
-		$dir .= '/';
+	if (substr($dir, -1, 1) != DS) {
+		$dir .= DS;
 	}
 	if ($with_path != 1 && $with_path) {
-		$with_path = trim($with_path, '/').'/';
+		if (substr($with_path, -1, 1) != $DS) {
+			$with_path .= $DS;
+		}
 	}
 	while ($file = readdir($dirc[$l])) {
 		if ((!$mask || preg_match($mask, $file) || ($subfolders && is_dir($dir.$file))) && $file != '.' && $file != '..') {
@@ -110,7 +112,7 @@ function get_list ($dir, $mask=false, $mode='f', $with_path=false, $subfolders =
 				}
 			} elseif (is_dir($dir.$file) && $subfolders) {
 				if ($with_path == 1 || !$with_path) {
-					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders);
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $DS);
 					if (is_array($get_list)) {
 						foreach ($get_list as $v) {
 							$list[] = $v;
@@ -121,7 +123,7 @@ function get_list ($dir, $mask=false, $mode='f', $with_path=false, $subfolders =
 						$list[] = $dir.$file;
 					}
 				} elseif ($with_path) {
-					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders);
+					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $DS);
 					if (is_array($get_list)) {
 						foreach ($get_list as $v) {
 							$list[] = $v;

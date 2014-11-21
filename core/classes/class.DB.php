@@ -2,10 +2,10 @@
 class DB {
 	public		$queries = 0,
 				$time = 0,
-				$ok_connections = array(),
-				$false_connections = array();
-	protected	$connections = array(),
-				$mirrors = array(),
+				$succesful_connections = array(),
+				$false_connections = array(),
+				$connections = array();
+	protected	$mirrors = array(),
 				$DB_USER,
 				$DB_PASSWORD,
 				$Config;
@@ -76,8 +76,7 @@ class DB {
 				//Если подключается зеркало БД
 				if (is_array($mirror)) {
 					$db = &$mirror;
-				} else {
-					//Ищем настройки подключения
+				} else {//Иначе ищем настройки подключения
 					if (!isset($this->Config->db[$connection]) || !is_array($this->Config->db[$connection])) {
 						return false;
 					}
@@ -87,17 +86,17 @@ class DB {
 			}
 			//Подключаем абстрактную модель БД
 			if (!class_exists('DataBase')) {
-				include_x(CORE.'/db/DataBase.php', 1);
+				include_x(DB.DS.'DataBase.php', 1);
 			}
 			//Подключаем драйвер текущего типа БД
 			if (!class_exists($db['type'])) {
-				include_x(CORE.'/db/db.'.$db['type'].'.php', 1);
+				include_x(DB.DS.'db.'.$db['type'].'.php', 1);
 			}
 			//Создаем новое подключение к БД
 			$this->connections[$connection] = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'], $db['codepage']);
 			//В случае успешного подключения - заносим в общий список подключений и сохраняем в массиве его параметры.
 			if (is_object($this->connections[$connection]) && $this->connections[$connection]->connected) {
-				$this->ok_connections[] = $connection;
+				$this->succesful_connections[] = $connection;
 				//Устанавливаем текущую БД
 				if ($this->connections[$connection]->database != $connection) {
 					$this->connections[$connection]->select_db($connection);

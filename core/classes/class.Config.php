@@ -63,27 +63,18 @@ class Config {
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
 		$r['current'] = explode('/', str_replace($r['in'], $r['out'], $this->server['url']));
-		$refresh = function (&$r) {
-			unset($r['current'][0]);
-			$rc = $r['current'];
-			$r['current'] = array();
-			foreach ($rc as $i) {
-				$r['current'][] = $i;
-			}
-			unset($rc);
-		};
 		if (strtolower($r['current'][0]) == $API) {
 			if (!defined('API')) {
 				define('API', $API);
 			}
-			$refresh($r);
+			array_shift($r['current']);
 		} else {
 			define('API', false);
 			if (strtolower($r['current'][0]) == $ADMIN) {
 				if (!defined('ADMIN')) {
 					define('ADMIN', $ADMIN);
 				}
-				$refresh($r);
+				array_shift($r['current']);
 			} else {
 				if (!defined('ADMIN')) {
 					define('ADMIN', false);
@@ -91,9 +82,8 @@ class Config {
 			}
 			if (isset($r['current'][0]) && ((!empty($r['out']) && in_array($r['current'][0], $r['out'])) || $r['current'][0] == 'System')) {
 				if (!defined('MODULE')) {
-					define('MODULE', $r['current'][0]);
+					define('MODULE', array_shift($r['current']));
 				}
-				$refresh($r);
 			} else {
 				if (!defined('MODULE')) {
 					define('MODULE', 'System');

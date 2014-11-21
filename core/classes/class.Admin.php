@@ -16,19 +16,19 @@ class Admin extends Module {
 		$this->action = $this->Config->server['current_url'];
 		$this->Page->title($this->L->administration);
 		$r = &$this->Config->routing;
-		if (!isset($r['current'][0]) || !in_array($r['current'][0], $this->parts) || !file_exists(MFOLDER.'/'.$r['current'][0].'.php')) {
+		if (!isset($r['current'][0]) || !in_array($r['current'][0], $this->parts) || !file_exists(MFOLDER.DS.$r['current'][0].'.php')) {
 			$r['current'][0] = $this->parts[0];
 		}
 		$this->Page->title($this->L->$r['current'][0]);
 		$this->savefile = $save_file ?: $this->savefile;
-		if (!include_x(MFOLDER.'/'.$r['current'][0].'/'.$this->savefile.'.php', true, false)) {
-			include_x(MFOLDER.'/'.$this->savefile.'.php', true, false);
+		if (!include_x(MFOLDER.DS.$r['current'][0].DS.$this->savefile.'.php', true, false)) {
+			include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
 		}
-		include_x(MFOLDER.'/'.$this->Config->routing['current'][0].'.php');
-		if (!isset($r['current'][1]) || !in_array($r['current'][1], $this->subparts) || !file_exists(MFOLDER.'/'.$r['current'][0].'/'.$r['current'][1].'.php')) {
+		include_x(MFOLDER.DS.$this->Config->routing['current'][0].'.php');
+		if (!isset($r['current'][1]) || !in_array($r['current'][1], $this->subparts) || !file_exists(MFOLDER.DS.$r['current'][0].DS.$r['current'][1].'.php')) {
 			$r['current'][1] = $this->subparts[0];
 		}
-		include_x(MFOLDER.'/'.$r['current'][0].'/'.$r['current'][1].'.php');
+		include_x(MFOLDER.DS.$r['current'][0].DS.$r['current'][1].'.php');
 		unset($r);
 		$this->mainmenu();
 	}
@@ -50,7 +50,7 @@ class Admin extends Module {
 	function generate () {
 		$this->mainsubmenu();
 		$this->menumore();
-		$this->Page->javascript(
+		$this->Page->js(
 			"var save_before = '".$this->L->save_before."', continue_transfer = '".$this->L->continue_transfer."', base_url = '".$this->Config->core['url']."/admin/".MODULE.'/'.$this->Config->routing['current'][0]."';\n",
 			'code'
 		);

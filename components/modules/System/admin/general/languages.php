@@ -23,7 +23,7 @@ $a->table(
 				array_merge(array($Config->core['language']), $active_languages),
 				5,
 				true,
-				' onClick="$(\'#apply_settings\').click();"',
+				' onClick="$(\'#apply_settings\').mousedown().click();"',
 				false,
 				'form_element'
 			)

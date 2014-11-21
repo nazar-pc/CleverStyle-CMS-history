@@ -128,8 +128,8 @@ $a->table(
 					$a->td(
 						$a->input(
 							'radio',
-							'core[queries]',
-							array(intval($Config->core['queries']), 0, 1, 2, 3),
+							'core[show_queries]',
+							array(intval($Config->core['show_queries']), 0, 1, 2, 3),
 							true,
 							'',
 							'',
@@ -172,7 +172,7 @@ $a->table(
 							'routing[in]',
 							$Config->routing['in'],
 							true,
-							' wrap="off"',
+							' style="white-space: nowrap;"',
 							'form_element',
 							30,
 							3
@@ -183,7 +183,7 @@ $a->table(
 							'routing[out]',
 							$Config->routing['out'],
 							true,
-							' wrap="off"',
+							' style="white-space: nowrap;"',
 							'form_element',
 							30,
 							3
@@ -207,7 +207,7 @@ $a->table(
 							'replace[in]',
 							$Config->replace['in'],
 							true,
-							' wrap="off"',
+							' style="white-space: nowrap;"',
 							'form_element',
 							30,
 							3
@@ -218,7 +218,7 @@ $a->table(
 							'replace[out]',
 							$Config->replace['out'],
 							true,
-							' wrap="off"',
+							' style="white-space: nowrap;"',
 							'form_element',
 							30,
 							3

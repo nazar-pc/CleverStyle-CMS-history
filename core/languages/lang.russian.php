@@ -1,8 +1,4 @@
 <?php
-//Найти \$L\[\'([^\']*)\'\]
-//Заменить $L->$1
-//Найти \$L->([A-Za-z0-9_]*) = \'([^\']*)\';
-//Заменить 	'$1' => '$2',
 global $L;
 //Интерфейс пользователя
 $L->__set(true, $L->on = 'Вкл.');
@@ -11,10 +7,11 @@ $L->translate = array(
 	'clang' => 'ru',
 	'home' => 'Главная',
 	'page_generated' => 'Страница сгенерирована за',
-	'queries' => 'запрос(ов) в БД',
+	'queries_to_db' => 'запрос(ов) в БД',
 	'during' => 'за',
 	'file' => 'Файл',
 	'not_exists' => 'не найден',
+	'not_writable' => 'не доступен для записи',
 	'peak_memory_usage' => 'максимальное потребление памяти',
 	'hidden' => 'Скрыто',
 	'add' => 'Добавить',
@@ -225,7 +222,17 @@ $L->translate = array(
 	'memory_usage' => 'Потребление памяти',
 	'time_from_start_execution' => 'Время от начала выполнения',
 	'total_list' => 'Полный список',
-	'objects' => 'Объекты',
+	'user_data' => 'Данные пользователя',
+	'cookies' => 'Cookies',
+	'key' => 'Ключ',
+	'value' => 'Значение',
+	'queries' => 'Запросы',
+	'total' => 'Всего',
+	'succesful_connections' => 'Успешные соединения',
+	'false_connections' => 'Неудачные соединения',
+	'mirrors_connections' => 'Соединения с зеркалами',
+	'active_connections' => 'Активные соединения',
+	'duration_of_connecting_with_db' => 'длительность подключения к БД',
 	'objects' => 'Объекты',
 	'objects' => 'Объекты',
 	'objects' => 'Объекты',

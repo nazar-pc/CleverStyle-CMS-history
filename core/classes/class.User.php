@@ -5,7 +5,7 @@ class User {
 				$Config,
 				$Page;
 	function __construct () {
-		global $Config, $Page/*, $L*/;
+		global $Config, $Page;
 		$this->Config = $Config;
 		$this->Page = $Page;	
 	}

@@ -18,7 +18,7 @@ $a->table(
 				false,
 				5,
 				true,
-				' onClick="javascript: $(\'#apply_settings\').click();"',
+				' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
 				false,
 				'form_element'
 			)
@@ -33,7 +33,7 @@ $a->table(
 				false,
 				5,
 				true,
-				' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').click();"',
+				' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').mousedown().click();"',
 				false,
 				'form_element',
 				$active_themes
@@ -49,7 +49,7 @@ $a->table(
 				array_merge(array($Config->core['color_scheme']), array_keys($Config->core['color_schemes'][$Config->core['theme']])),
 				5,
 				true,
-				' onClick="javascript: $(\'#apply_settings\').click();"',
+				' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
 				false,
 				'form_element'
 			)

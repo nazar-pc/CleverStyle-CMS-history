@@ -26,8 +26,8 @@ class Classes {
 				}
 			} else {
 				global $timeload;
-				if (file_exists(CLASSES.'/class.'.$class[0].'.php')) {
-					require_x(CLASSES.'/class.'.$class[0].'.php', 1);
+				if (file_exists(CLASSES.DS.'class.'.$class[0].'.php')) {
+					require_x(CLASSES.DS.'class.'.$class[0].'.php', 1);
 					//Если второй параметр true - создаем глобальный объект
 					if ($class[1]) {
 						if (isset($class[2]) && $class[2]) {

@@ -53,11 +53,9 @@ class MySQL extends DataBase {
 			global $db, $Config;
 			++$db->queries;
 			$db->time += $this->query['time'];
-			if (is_object($Config) && $Config->core['queries'] > 0) {
+			if (is_object($Config) && $Config->core['show_queries'] > 0) {
 				$this->queries['time'][] = $this->query['time'];
-				if ($Config->core['queries'] > 1) {
-					$this->queries['text'][] = htmlspecialchars($this->query['text']);
-				}
+				$this->queries['text'][] = xap($this->query['text']);
 			}
 			if ($this->query['resource']) {
 				return $this->query['resource'];

@@ -1,22 +1,17 @@
-@charset "utf-8";
-header * {
-	overflow: hidden;
-}
-#header {
-	margin-bottom: 10px;
-	height: 110px;
+#header_zone {
+	height: 30px;
 	position: fixed;
+	top: 0px;
 	width: 100%;
-	z-index: 3;
 }
-#header_green, #header_black, #header_dark_green {
+#header_green, #header_black, #header_light_green {
 	border-radius: 0px 0px 10px 10px;
 	-moz-border-radius: 0px 0px 10px 10px;
 	position: fixed;
 	top: 0px;
 	width: 100%;
 }
-#header_dark_green {
+#header_light_green {
 	height: 20px;
 	margin-top: -19px;
 	z-index: 3;
@@ -39,19 +34,22 @@ header * {
 	right: 0px;
 	top: 0px;
 	width: 252px;
+	z-index: 3;
 }
 #avatar_header {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
-	display: inline-block;
-	margin: 5px;
+	float: left;
 	height: 80px;
+	margin: 5px;
+	position: fixed;
 	width: 80px;
 }
 #user_info_header {
-	display: inline-block;
-	margin: 5px 5px 5px 0px;
+	float: right;
 	height: 82px;
+	margin: 5px 5px 5px 90px;
+	position: fixed;
 	width: 148px;
 }
 #main-menu, #main-submenu, #menu-more {
@@ -61,11 +59,7 @@ header * {
 	position: fixed;
 	text-align: left;
 	top: 0px;
-}
-#main-menu > menu {
-	font-size: 40px;
-	margin: 0px;
-	padding: 5px 0px 0px 5px;
+	z-index: 3;
 }
 #main-menu > menu > a, #main-submenu > menu > a, #menu-more > menu > a {
 	border-bottom: none;
@@ -74,6 +68,11 @@ header * {
 	-o-transition: all 0.3s linear;
 	-moz-transition: all 0.3s linear;
 	-webkit-transition: all 0.3s linear;
+}
+#main-menu > menu {
+	font-size: 40px;
+	margin: 0px;
+	padding: 5px 0px 0px 5px;
 }
 #main-submenu {
 	line-height: 20px;

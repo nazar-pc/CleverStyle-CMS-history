@@ -37,8 +37,12 @@ if (isset($_POST['edit_settings'])) {
 	}
 	if (strval($_POST['edit_settings']) == 'apply') {
 		if ($Config->rebuild_cache()) {
+			if (isset($_POST['visual_style'])) {
+				$Page->rebuild_cache = true;
+			}
 			$Page->title($L->settings_applied);
 			$Page->Top .= '<div class="green notice">'.$L->settings_applied.$L->check_applied.'</div>';
+			$Page->js("\$(document).ready(function(){save = true;});\n", 'code');
 			global $Admin;
 			$Admin->cancel = '';
 		} else {

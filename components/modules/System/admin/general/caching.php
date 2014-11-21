@@ -2,6 +2,7 @@
 global $L, $Config, $Admin;
 if (isset($Config->routing['current'][2])) {
 	global $Page;
+	$Admin->form = false;
 	if ($Config->routing['current'][2] == 'settings') {
 		if ($Config->rebuild_cache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
@@ -11,7 +12,7 @@ if (isset($Config->routing['current'][2])) {
 	} elseif ($Config->routing['current'][2] == 'jscss') {
 		$list = get_list(PCACHE, '/(.*)\.(css|js)$/i');
 		foreach ($list as $item) {
-			unlink(PCACHE.'/'.$item);
+			unlink(PCACHE.DS.$item);
 		}
 		$Page->rebuild_cache = true;
 		$Page->Content = '<div class="green">'.$L->done.'</div>';
