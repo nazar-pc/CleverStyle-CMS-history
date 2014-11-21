@@ -1,18 +1,98 @@
 <?php
 global $Config, $Index, $L, $db;
-$a = &$Index;
-$db_users_data = $db->{0}->columns('[prefix]users');
-$db_users_items = array();
-foreach ($db_users_data as $column) {
-	$db_users_items[] = $column['Field'];
+$a				= &$Index;
+$db_id			= $Config->components['modules']['System']['db']['users'];
+$search_columns	= $db->$db_id->columns('[prefix]users');
+$columns		= isset($_POST['columns']) && $_POST['columns'] ? explode(';', $_POST['columns']) : array('id', 'login', 'username', 'email', 'groups');
+$limit			= isset($_POST['search_limit']) ? (int)$_POST['search_limit'] : 100;
+$start			= isset($_POST['search_start']) ? (int)$_POST['search_start']-1 : 0;
+$search_text	= isset($_POST['search_text']) ? $_POST['search_text'] : '';
+$columns_list	= '';
+$a->buttons		= false;
+$search_modes	= array(
+	'=', '!=', '>', '<', '>=', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'REGEXP', 'NOT REGEXP'
+);
+$search_mode	= isset($_POST['search_mode']) && in_array($_POST['search_mode'], $search_modes) ? $_POST['search_mode'] : '';
+foreach ($search_columns as $column) {
+	$columns_list .= h::li(
+		$column,
+		array(
+			 'style'	=> 'display: inline-block;',
+			 'class'	=> in_array($column, $columns) ? 'ui-selected' : ''
+		)
+	);
 }
-unset($db_users_data, $column);
+unset($column);
+$columns = array('id')+array_intersect($search_columns, $columns);
+$search_column = isset($_POST['search_column']) && in_array($_POST['search_column'], $search_columns) ? $_POST['search_column'] : '';
+//Closures for constructing WHERE part of SQL query
+if ($search_column) {
+	$where_func = function ($in) {
+		return str_replace('%%', $_POST['search_column'], $in);
+	};
+} else {
+	$where_func = function ($in) use ($search_columns) {
+		$return = array();
+		foreach ($search_columns as $column) {
+			$return[] = str_replace('%%', $column, $in);
+		}
+		return implode(' OR ', $return);
+	};
+}
+//Applying (if necessary) filter
+$where = 1;
+if ($search_text && $search_mode) {
+	switch ($_POST['search_mode']) {
+		case '=':
+		case '!=':
+		case '>':
+		case '<':
+		case '>=':
+		case '<=':
+		case 'LIKE':
+		case 'NOT LIKE':
+		case 'REGEXP':
+		case 'NOT REGEXP':
+			$search_text_ = $db->$db_id->sip($search_text);
+			$where = $where_func('`%%` '.$search_mode." ".$search_text_);
+			unset($search_text_);
+			break;
+		case 'IN':
+		case 'NOT IN':
+			$search_text_ = "'".implode("', '", _trim(explode(',', $search_text), "\n'"))."'";
+			$where = $where_func('`%%` '.$search_mode.' ('.$search_text_.')');
+			unset($search_text_);
+			break;
+	}
+}
+$results_count	= $db->$db_id->qf('SELECT COUNT(`id`) AS `count` FROM [prefix]users WHERE '.$where);
+if ($results_count = $results_count['count']) {
+	$users_data		= $db->$db_id->qfa('SELECT `'.implode('`, `', $columns).'` FROM [prefix]users WHERE '.$where.' LIMIT '.($start*$limit).', '.$limit);
+}
+$users_list		= array(
+	h::{'th.ui-widget-header.ui-corner-all'}()
+);
+$users_list_template = h::{'td.ui-state-default.ui-corner-all'}('%s');
+foreach ($columns as $column) {
+	$users_list[0] .= h::{'th.ui-widget-header.ui-corner-all'}($column);
+	$users_list_template .= h::{'td.ui-state-default.ui-corner-all'}('%s');
+}
+$users_list[0] = h::tr($users_list[0]);
+$users_list_template = h::tr($users_list_template);
+if ($results_count && is_array($users_data)) {
+	foreach ($users_data as $item) {
+		//TODO need real actions
+		$action = 'action';
+		$users_list[] = vsprintf($users_list_template, array($action)+$item);
+	}
+}
+unset($users_list_template, $item, $action);
 $a->content(
 	h::{'div#search_users_tabs'}(
 		h::ul(
 			h::li(
 				h::a(
-					'search',
+					$L->search,
 					array(
 						 'href' => '#search_settings'
 					)
@@ -20,191 +100,89 @@ $a->content(
 			).
 			h::li(
 				h::a(
-					'sort',
+					$L->show_columns,
 					array(
-						 'href' => '#sort_settings'
-					)
-				)
-			).
-			h::li(
-				h::a(
-					'columns',
-					array(
-						 'href' => '#show_columns'
+						 'href' => '#columns_settings'
 					)
 				)
 			)
 		).
 		h::{'div#search_settings'}(
-			'tab1'
+			h::{'select.form_element'}(
+				array(
+					'in'		=> array_merge(array($L->all_columns), $search_columns),
+					'values'	=> array_merge(array(''), $search_columns)
+				),
+				array(
+					'selected'	=> $search_column ?: '',
+					'name'		=> 'search_column'
+				)
+			).
+			$L->search_mode.' '.
+			h::{'select.form_element'}(
+				$search_modes,
+				array(
+					'selected'	=> $search_mode ?: 'LIKE',
+					'name'		=> 'search_mode'
+				)
+			).
+			h::{'input.form_element'}(
+				array(
+					'value'			=> $search_text,
+					'name'			=> 'search_text',
+					'placeholder'	=> $L->search_text
+				)
+			).
+			$L->page.' '.
+			h::{'input.form_element[type=number]'}(
+				array(
+					'value'	=> $start+1,
+					'min'	=> 1,
+					'size'	=> 4,
+					'name'	=> 'search_start'
+				)
+			).
+			$L->items.' '.
+			h::{'input.form_element[type=number]'}(
+				array(
+					'value'	=> $limit,
+					'min'	=> 1,
+					'size'	=> 5,
+					'name'	=> 'search_limit'
+				)
+			),
+			array(
+				'style'	=> 'text-align: left;'
+			)
 		).
-		h::{'div#sort_settings'}(
-			'tab2'
-		).
-		h::{'div#show_columns'}(
+		h::{'div#columns_settings'}(
 			h::ol(
-				h::li(
-					$db_users_items,
-					array(
-						'style'	=> 'width: 20%; display: inline-block;'
-					)
+				$columns_list
+			).
+			h::{'input#columns[type=hidden]'}(
+				array(
+					'name'	=> 'columns'
 				)
 			)
 		)
 	).
-	h::{'table.admin_table.left_even.right_odd'}(
-		h::tr(
-			h::td(h::info('session_expire')).
-			h::td(
-				h::{'input.form_element[type=number]'}(
-					array(
-						'name'			=> 'core[session_expire]',
-						'value'			=> $Config->core['session_expire'],
-						'min'			=> 1
-					)
-				).
-				$L->seconds
-			)
-		).
-		h::tr(
-			h::td(h::info('login_attempts_block_count')).
-			h::td(
-				h::{'input.form_element[type=number]'}(
-					array(
-						'name'			=> 'core[login_attempts_block_count]',
-						'value'			=> $Config->core['login_attempts_block_count'],
-						'min'			=> 0,
-						'onClick'		=> 'if ($(this).val() == 0) { $(\'#login_attempts_block_count\').hide(); } else { $(\'#login_attempts_block_count\').show(); }',
-						'onChange'		=> 'if ($(this).val() == 0) { $(\'#login_attempts_block_count\').hide(); } else { $(\'#login_attempts_block_count\').show(); }'
-					)
-				)
-			)
-		).
-		h::tr(
-			h::td(h::info('login_attempts_block_time')).
-			h::td(
-				h::{'input.form_element[type=number]'}(
-					array(
-						'name'			=> 'core[login_attempts_block_time]',
-						'value'			=> $Config->core['login_attempts_block_time'],
-						'min'			=> 1
-					)
-				).
-				$L->seconds
-			),
-			array(
-				 'id'		=> 'login_attempts_block_count',
-				 'style'	=> $Config->core['login_attempts_block_count'] == 0 ? 'display: none;' : ''
-			)
-		).
-		h::tr(
-			h::td(h::info('password_min_length')).
-			h::td(
-				h::{'input.form_element[type=number]'}(
-					array(
-						'name'			=> 'core[password_min_length]',
-						'value'			=> $Config->core['password_min_length'],
-						'min'			=> 1
-					)
-				)
-			)
-		).
-		h::tr(
-			h::td(h::info('password_min_strength')).
-			h::td(
-				h::{'input.form_element[type=range]'}(
-					array(
-						'name'			=> 'core[password_min_strength]',
-						'value'			=> $Config->core['password_min_strength'],
-						'min'			=> 0,
-						'max'			=> 7
-					)
-				)
-			)
-		).
-		h::tr(
-			h::td(h::info('allow_user_registration')).
-			h::td(
-				h::{'input[type=radio]'}(
-					array(
-						'name'			=> 'core[allow_user_registration]',
-						'checked'		=> $Config->core['allow_user_registration'],
-						'value'			=> array(0, 1),
-						'in'			=> array($L->off, $L->on),
-						'onClick'		=> array(
-							'$(\'.allow_user_registration\').hide();',
-							'$(\'.allow_user_registration\').show();'.
-							'if (!$(\'#require_registration_confirmation input[value=1]\').prop(\'checked\')) {'.
-								'$(\'.require_registration_confirmation\').hide();'.
-							'}'
-						)
-					)
-				)
-			)
-		).
-		h::{'tr.allow_user_registration'}(
-			h::td(h::info('require_registration_confirmation')).
-			h::{'td#require_registration_confirmation'}(
-				h::{'input[type=radio]'}(
-					array(
-						'name'			=> 'core[require_registration_confirmation]',
-						'checked'		=> $Config->core['require_registration_confirmation'],
-						'value'			=> array(0, 1),
-						'in'			=> array($L->off, $L->on),
-						'onClick'		=> array(
-							'$(\'.require_registration_confirmation\').hide();',
-							'$(\'.require_registration_confirmation\').show();'
-						)
-					)
-				)
-			),
-			array(
-				 'style'	=> $Config->core['allow_user_registration'] == 0 ? 'display: none;' : ''
-			)
-		).
-		h::{'tr.allow_user_registration.require_registration_confirmation'}(
-			h::td(h::info('registration_confirmation_time')).
-			h::td(
-				h::{'input.form_element[type=number]'}(
-					array(
-						 'name'			=> 'core[registration_confirmation_time]',
-						 'value'		=> $Config->core['registration_confirmation_time'],
-						 'min'			=> 1
-					)
-				)
-			),
-			array(
-				 'style'	=> $Config->core['allow_user_registration'] == 0 ||
-					 				$Config->core['require_registration_confirmation'] == 1 ? '' : 'display: none;'
-			)
-		).
-		h::{'tr.allow_user_registration.require_registration_confirmation'}(
-			h::td(h::info('autologin_after_registration')).
-			h::td(
-				h::{'input[type=radio]'}(
-					array(
-						'name'			=> 'core[autologin_after_registration]',
-						'checked'		=> $Config->core['autologin_after_registration'],
-						'value'			=> array(0, 1),
-						'in'			=> array($L->off, $L->on)
-					)
-				)
-			),
-			array(
-				 'style'	=> $Config->core['allow_user_registration'] == 0 ||
-					 				$Config->core['require_registration_confirmation'] == 1 ? '' : 'display: none;'
-			)
-		).
-		h::tr(
-			h::td($L->site_rules).
-				h::td(
-					h::{'textarea#site_rules.EDITORH.form_element'}(
-						$Config->core['rules'],
-						array('name' => 'core[rules]')
-					)
-				)
+	h::{'button[type=submit'}(
+		$L->search,
+		array(
+			 'style'	=> 'margin: 5px 100% 5px 0;'
 		)
-	)
+	).
+	h::{'p.left'}(
+		$L->founded_users($results_count).
+		($results_count > $limit ? ' / '.$L->page_from($start+1, ceil($results_count/$limit)) : '')
+	).
+	h::{'table.admin_table.center_all'}(
+		implode('', $users_list)
+	).
+	h::{'p.left'}(
+	$L->founded_users($results_count).
+		($results_count > $limit ? ' / '.$L->page_from($start+1, ceil($results_count/$limit)) : '')
+)
 );
-unset($a);
+unset($a, $columns_list);
 ?>

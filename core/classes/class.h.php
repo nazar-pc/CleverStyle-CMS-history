@@ -540,7 +540,7 @@ class h {
 			}
 			if (!$selected && $function == 'select') {
 				if (!isset($in['add'][0])) {
-					$in['add'][0] = ' selected';
+					$in['add'][0] = 'selected';
 				} else {
 					$in['add'][0] .= ' selected';
 				}

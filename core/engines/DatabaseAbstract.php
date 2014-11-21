@@ -65,35 +65,43 @@ abstract class DatabaseAbstract {
 	abstract function free ($query_resource = false);
 	//Получение списка полей таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
-	function fields ($table, $like = false, $result_type = MYSQL_ASSOC) {
+	function fields ($table, $like = false) {
 		if(!$table) {
 			return false;
 		}
 		if ($like) {
-			return $this->qfa('SHOW FIELDS FROM `'.$table.'` LIKE \''.$like.'\'', $result_type);
+			$fields = $this->qfa('SHOW FIELDS FROM `'.$table.'` LIKE \''.$like.'\'');
 		} else {
-			return $this->qfa('SHOW FIELDS FROM `'.$table.'`', $result_type);
+			$fields = $this->qfa('SHOW FIELDS FROM `'.$table.'`');
 		}
+		foreach ($fields as &$field) {
+			$field = $field['Field'];
+		}
+		return $fields;
 	}
 	//Получение списка колонок таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
-	function columns ($table, $like = false, $result_type = MYSQL_ASSOC) {
+	function columns ($table, $like = false) {
 		if(!$table) {
 			return false;
 		}
 		if ($like) {
-			return $this->qfa('SHOW COLUMNS FROM `'.$table.'` LIKE \''.$like.'\'', $result_type);
+			$columns = $this->qfa('SHOW COLUMNS FROM `'.$table.'` LIKE \''.$like.'\'');
 		} else {
-			return $this->qfa('SHOW COLUMNS FROM `'.$table.'`', $result_type);
+			$columns = $this->qfa('SHOW COLUMNS FROM `'.$table.'`');
 		}
+		foreach ($columns as &$column) {
+			$column = $column['Field'];
+		}
+		return $columns;
 	}
 	//Получение списка таблиц БД (если БД не указана - используется текущая)
 	//([похожих_на [, тип_возвращаемого_массива]]])
-	function tables ($like = false, $result_type = MYSQL_ASSOC) {
+	function tables ($like = false) {
 		if ($like) {
-			return $this->qfa('SHOW TABLES FROM `'.$this->database.'` LIKE \''.$like.'\'', $result_type);
+			return $this->qfa('SHOW TABLES FROM `'.$this->database.'` LIKE \''.$like.'\'');
 		} else {
-			return $this->qfa('SHOW TEBLES FROM `'.$this->database.'`', $result_type);
+			return $this->qfa('SHOW TEBLES FROM `'.$this->database.'`');
 		}
 	}
 	/**

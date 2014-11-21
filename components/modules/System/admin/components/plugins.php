@@ -24,7 +24,7 @@ if ($mode && $rc[2] == 'enable') {
 unset($rc, $mode);
 $plugins = get_list(PLUGINS, false, 'd');
 $plugins_list = h::tr(
-	h::{'td.ui-widget-header.ui-corner-all'}(
+	h::{'th.ui-widget-header.ui-corner-all'}(
 		array(
 			$L->plugin_name,
 			$L->state,

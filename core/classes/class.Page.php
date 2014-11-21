@@ -584,7 +584,7 @@ class Page {
 	 */
 	protected function get_header_info () {
 		global $User, $L;
-		if ($User->is('user')) {
+		if (is_object ($User) && $User->is('user')) {
 			if ($User->avatar) {
 				$this->user_avatar_image = 'url('.$User->avatar.')';
 			} else {

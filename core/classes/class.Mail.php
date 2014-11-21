@@ -21,6 +21,7 @@ class Mail extends PHPMailer {
 		$this->IsHTML();
 	}
 	/**
+	 * Sending of email
 	 * @param array|string $email				if adresses without names - string or 1-dimentional array<br>
 	 * 											else - 2-dimentional array must be given
 	 * @param string $subject					Mail subject

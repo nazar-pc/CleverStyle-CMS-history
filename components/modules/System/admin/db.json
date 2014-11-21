@@ -12,8 +12,6 @@
 				"password_hash",
 				"email",
 				"email_hash",
-				"groups",
-				"permissions",
 				"language",
 				"timezone",
 				"regdate",

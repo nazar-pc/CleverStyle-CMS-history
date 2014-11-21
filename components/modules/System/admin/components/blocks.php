@@ -12,7 +12,7 @@ if ($mode && $rc[2] == 'settings') {
 	$a->content(
 		h::{'table.admin_table.center_all'}(
 			h::tr(
-				h::{'td.ui-widget-header.ui-corner-all'}(
+				h::{'th.ui-widget-header.ui-corner-all'}(
 					array(
 						h::info('block_title'),
 						h::info('block_active'),

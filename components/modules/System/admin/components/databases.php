@@ -29,7 +29,7 @@ if (isset($rc[2])) {
 		$a->content(
 			h::{'table.admin_table.center_all'}(
 				h::tr(
-					h::{'td.ui-widget-header.ui-corner-all'}(
+					h::{'th.ui-widget-header.ui-corner-all'}(
 						array(
 							$rc[2] == 'add' ? h::info('db_mirror') : false,
 							h::info('db_host'),
@@ -191,7 +191,7 @@ if (isset($rc[2])) {
 } else {
 	$test_dialog = true;
 	$db_list = h::tr(
-		h::{'td.ui-widget-header.ui-corner-all'}(
+		h::{'th.ui-widget-header.ui-corner-all'}(
 			array(
 				$L->action,
 				$L->db_host,

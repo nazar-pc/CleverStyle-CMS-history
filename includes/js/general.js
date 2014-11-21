@@ -193,11 +193,19 @@ $(function() {
 	$('#search_users_tabs').tabs({
 		cookie: {}
 	});
-	$('#show_columns ol').css({
+	$('#columns_settings ol').css({
 		'list-style-type'	: 'none',
 		'margin'			: 0,
 		'padding'			: 0
-	}).selectable().children('li').css({//TODO Serialization of selected items and accounting last search
+	}).selectable({
+		stop: function() {
+			var result = new Array();
+			$(".ui-selected", this).each(function() {
+				result.push($(this).text().trim());
+			});
+			$("#columns").val(result.join(';'));
+		}
+	}).children('li').css({//TODO Serialization of selected items and accounting last search
 		'margin'			: '3px',
 		'padding'			: '5px',
 		'width'				: 'auto'

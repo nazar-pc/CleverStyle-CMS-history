@@ -60,7 +60,7 @@ if ($mode && $rc[2] == 'install') {
 			$dbs_name[] = $db_data['name'].' ('.$db_data['host'].' / '.$db_data['type'].')';
 		}
 	}
-	$db_list[] = h::{'td.ui-widget-header.ui-corner-all'}(
+	$db_list[] = h::{'th.ui-widget-header.ui-corner-all'}(
 		array(
 			h::info('module_db'),
 			h::info('system_db')
@@ -112,7 +112,7 @@ if ($mode && $rc[2] == 'install') {
 		}
 	}
 	unset($i, $storage_data);
-	$storage_list[] = h::{'td.ui-widget-header.ui-corner-all'}(
+	$storage_list[] = h::{'th.ui-widget-header.ui-corner-all'}(
 		array(
 			h::info('module_storage'),
 			h::info('system_storage')
@@ -153,14 +153,9 @@ if ($mode && $rc[2] == 'install') {
 	$Page->warning($L->changing_settings_warning);
 } else {
 	unset($mode, $rc);
-	$db_users_data = $db->{0}->columns('[prefix]users');
-	$db_users_items = array();
-	foreach ($db_users_data as $column) {
-		$db_users_items[] = $column['Field'];
-	}
-	unset($db_users_data, $column);
+	$db_users_items = $db->{0}->columns('[prefix]users');
 	$modules_list = h::tr(
-		h::{'td.ui-widget-header.ui-corner-all'}(
+		h::{'th.ui-widget-header.ui-corner-all'}(
 			array(
 				$L->module_name,
 				$L->state,
@@ -186,7 +181,7 @@ if ($mode && $rc[2] == 'install') {
 				if (!empty($lost_columns)) {
 					$addition_state .= h::{'a.nul.pointer'}(
 						h::icon('alert'),
-						array(
+						array(//TODO click to fix
 							'data-title'	=> $L->missing_users_columns.':'.h::br(2).implode(', ', $lost_columns).h::br(2).$L->click_to_fix
 						)
 					);
@@ -361,7 +356,7 @@ if ($mode && $rc[2] == 'install') {
 						'data-title'	=> $mdata['active'] == 1 ? $L->enabled : ($mdata['active'] == 2 ? $L->disabled : $L->uninstalled.' ('.$L->not_installed.')')
 					)
 				).
-					$addition_state
+				$addition_state
 			).
 			h::{'td.ui-state-default.ui-corner-all.modules_config_buttons'}($action)
 		);

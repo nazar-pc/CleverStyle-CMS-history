@@ -117,12 +117,19 @@ class User {
 		//Загружаем данные пользователя
 		//Точка возврата, выполняется, если аккаунт блокирован, неактивирован, или отключен
 		getting_user_data:
+		unset($data);
+		$data = &$this->data[$this->id];
 		if (!($data = $Cache->{'users/'.$this->id})) {
 			$data = $this->db()->qf(
-				'SELECT `id`, `login`, `username`, `groups`, `permissions`, `language`, `timezone`, `status`, `block_until`, `avatar` FROM `[prefix]users` '.
+				'SELECT `login`, `username`, `language`, `timezone`, `status`, `block_until`, `avatar` FROM `[prefix]users` '.
 					'WHERE `id` = '.$this->id.' LIMIT 1'
 			);
 			if (is_array($data)) {
+				$data['groups'] = $this->db()->qfa('SELECT `group` FROM `[prefix]users_groups` WHERE `id` = '.$this->id);
+				foreach ($data['groups'] as &$group) {
+					$group = $group['group'];
+				}
+				unset($group);
 				$Cache->{'users/'.$this->id} = $data;
 				if ($data['status'] != 1) {
 					if ($data['status'] == 0) {
@@ -154,35 +161,44 @@ class User {
 		if ($this->id == 1) {
 			$this->current['is']['guest'] = true;
 		} else {
-			//Определяем типы пользователей
-			$groups = explode(',', $this->groups);
-			if (in_array(1, $groups)) {
+			//Checking of user type
+			if (in_array(1, $this->groups)) {
 				$this->current['is']['admin']	= true;
 				$this->current['is']['user']	= true;
-			} elseif (in_array(2, $groups)) {
+			} elseif (in_array(2, $this->groups)) {
 				$this->current['is']['user']	= true;
-			} elseif (in_array(3, $groups)) {
+			} elseif (in_array(3, $this->groups)) {
 				$this->current['is']['bot']		= true;
 			}
-			//Определяем права доступа, с учётом индивидуальных прав.
-			//Цифра 2 в маске пользователя прав означает перепись любого предыдущего значения права доступа запретом,
-			//поэтому после сложения делаем замену 2 на 0
-			$permissions = '';
-			foreach ($groups as $group_id) {
-				if ($group_id < 1) {
+			//Checking of the rights of user's groups
+			$this->permissions = array();
+			foreach ($this->groups as $group) {
+				if ($group < 1) {
 					continue;
 				}
-				if (!($group_data = $Cache->{'groups/'.$group_id})) {
-					$Cache->{'groups/'.$group_id} = $group_data = $this->db()->qf(
-						'SELECT `permissions`, `data` FROM `[prefix]groups` WHERE `id` = '.$group_id.' LIMIT 1'
+				if (!($group_data = $Cache->{'groups/'.$group})) {
+					$group_data = $this->db()->qf(
+						'SELECT `title`, `description`, `data` FROM `[prefix]groups` WHERE `id` = '.$group.' LIMIT 1'
 					);
+					$group_data['permissions'] = array();
+					$permissions = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]groups_permissions` WHERE `id` = '.$group);
+					foreach ($permissions as &$permission) {
+						$group_data['permissions'][$permission['permission']] = $permission['value'];
+					}
+					unset($permission, $permissions);
+					$Cache->{'groups/'.$group} = $group_data;
 				}
-				$permissions = strtr($permissions | $group_data['permissions'], 2, 0);
+				$this->permissions = array_merge($this->permissions, $group_data['permissions']);
 			}
 			unset($groups, $group_id, $group_data);
-			$this->permissions = strtr($this->permissions | $permissions, 2, 0);
+			//Applying individual permissions
+			$permissions = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]users_permissions` WHERE `id` = '.$this->id);
+			foreach ($permissions as $permission) {
+				$this->permissions[$permission['permission']] = $permission['value'];
+			}
+			unset($permission, $permissions);
 		}
-		//Если не гость - применяем некоторые индивидуальные настройки
+		//If not guest - apply some individual settings
 		if ($this->id != 1) {
 			if ($this->timezone) {
 				date_default_timezone_set($this->timezone);
@@ -192,6 +208,9 @@ class User {
 			}
 		}
 		$this->init = true;
+		if (!$Cache->users_columns) {
+			$Cache->users_columns = $this->db()->columns('[prefix]users');
+		}
 	}
 	/**
 	 * @param array|string $item
@@ -681,11 +700,14 @@ class User {
 		$this->update_cache = array();
 		unset($id, $data);
 		//Update users data
+		$users_columns = $Cache->users_columns;
 		if (is_array($this->data_set) && !empty($this->data_set)) {
 			foreach ($this->data_set as $id => &$data_set) {
 				$data = array();
 				foreach ($data_set as $i => &$val) {
-					$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
+					if (in_array($i, $users_columns) && $i != 'id') {
+						$data[] = '`'.$i.'` = '.$this->db_prime()->sip($val);
+					}
 				}
 				$this->db_prime()->q('UPDATE `[prefix]users` SET '.implode(', ', $data).' WHERE `id` = '.$id);
 				unset($i, $val, $data);
