@@ -24,7 +24,7 @@ class Text {
 			}
 		}
 		$language = $language ?: $this->language;
-		if (!($result = $Cache->{'texts/'.$database.'/'.$id})) {
+		if (($result = $Cache->{'texts/'.$database.'/'.$id}) === false) {
 			global $db;
 			$result = $db->$database->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
 			$result = _json_decode($result['text']);
@@ -162,4 +162,3 @@ class Text {
 	 */
 	function __clone () {}
 }
-?>

@@ -59,11 +59,12 @@ if ($mode && $rc[2] == 'settings') {
 						h::{'input[type=radio]'}(
 							array(
 								'name'		=> 'block[expire][state]',
-								'checked'	=> ($block['expire'] != 0),
-								'value'		=> array(1, 0),
-								'in'		=> array($L->as_specified, $L->never)
+								'checked'	=> $block['expire'] != 0,
+								'value'		=> array(0, 1),
+								'in'		=> array($L->never, $L->as_specified)
 							)
-						).h::br(2).
+						).
+						h::br(2).
 						h::{'input.form_element[type=datetime-local]'}(
 							array(
 								'name'		=> 'block[expire][date]',

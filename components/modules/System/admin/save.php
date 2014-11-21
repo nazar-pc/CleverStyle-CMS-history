@@ -38,4 +38,3 @@ if ($_POST['edit_settings'] == 'apply' && $Cache->cache) {
 } elseif ($_POST['edit_settings'] == 'cancel' && $Cache->cache) {
 	$Index->cancel();
 }
-?>

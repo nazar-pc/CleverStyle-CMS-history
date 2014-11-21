@@ -14,9 +14,9 @@ class User {
 					)
 				),
 				$id						= false,	//id текущего пользователя
-				$update_cache			= array(),	//Нужно ли обновлять кеш данных текущего пользователя
-				$data					= array(),	//Локальный кеш данных пользователя
-				$data_set				= array(),	//Измененные данные пользователя, которыми по завершению нужно обновить данные в БД
+				$update_cache			= array(),	//Нужно ли обновлять кеш данных пользователей
+				$data					= array(),	//Локальный кеш данных пользователей
+				$data_set				= array(),	//Измененные данные пользователей, которыми по завершению нужно обновить данные в БД
 				$db						= false,	//Ссылка на объект БД
 				$db_prime				= false,	//Ссылка на объект основной БД
 				$cache					= array(),	//Кеш с некоторыми временными данными
@@ -61,7 +61,7 @@ class User {
 		} else {
 			unset($test);
 			//Получаем список известных ботов
-			if (!($bots = $Cache->{'users/bots'})) {
+			if (($bots = $Cache->{'users/bots'}) === false) {
 				$bots = $this->db()->qfa('SELECT `id`, `login`, `email` FROM `[prefix]users` WHERE 3 IN (`groups`)');
 				if (is_array($bots) && !empty($bots)) {
 					foreach ($bots as &$bot) {
@@ -88,7 +88,7 @@ class User {
 			//Если список известных ботов не пустой - определяем бота
 			if (is_array($bots) && !empty($bots)) {
 				//Загружаем данные
-				if (!($this->id = $Cache->{'users/'.$bot_hash})) {
+				if (($this->id = $Cache->{'users/'.$bot_hash}) === false) {
 					//Данных нет - ищем бота в списке известных
 					foreach ($bots as &$bot) {
 						foreach ($bot['login'] as $login) {
@@ -123,7 +123,7 @@ class User {
 		getting_user_data:
 		unset($data);
 		$data = &$this->data[$this->id];
-		if (!($data = $Cache->{'users/'.$this->id})) {
+		if (($data = $Cache->{'users/'.$this->id}) === false) {
 			$data = $this->db()->qf(
 				'SELECT `login`, `username`, `language`, `timezone`, `status`, `block_until`, `avatar`
 				FROM `[prefix]users`
@@ -148,7 +148,7 @@ class User {
 						goto getting_user_data;
 					}
 				} elseif ($data['block_until'] > TIME) {
-					$Page->warning($L->your_account_blocked_until.' '.date($L->_full_date, $data['block_until']));
+					$Page->warning($L->your_account_blocked_until.' '.date($L->_datetime, $data['block_until']));
 					//Отмечаем как гостя, и получаем данные заново
 					$this->id = 1;
 					$this->del_session();
@@ -183,8 +183,8 @@ class User {
 			}
 		}
 		$this->init = true;
-		if (!($this->users_columns	= $Cache->users_columns)) {
-			$this->users_columns	= $Cache->users_columns = $this->db()->columns('[prefix]users');
+		if (($this->users_columns = $Cache->users_columns) === false) {
+			$this->users_columns = $Cache->users_columns = $this->db()->columns('[prefix]users');
 		}
 	}
 	/**
@@ -284,11 +284,11 @@ class User {
 		$user = (int)($user ?: $this->id);
 		if (is_array($item)) {
 			foreach ($item as $i => &$v) {
-				if (in_array($i, $this->users_columns)) {
+				if (in_array($i, $this->users_columns) && $i != 'id') {
 					$this->set($i, $v, $user);
 				}
 			}
-		} elseif (in_array($item, $this->users_columns)) {
+		} elseif (in_array($item, $this->users_columns) && $item != 'id') {
 			$this->update_cache[$user] = true;
 			$this->data[$user][$item] = $value;
 			if ($this->init) {
@@ -340,7 +340,7 @@ class User {
 		return isset($this->current['is'][$mode]) && $this->current['is'][$mode];
 	}
 	/**
-	 * Returns user id by login or password hash (sha224)
+	 * Returns user id by login or email hash (sha224)
 	 * @param  string $login_hash
 	 * @return bool|int
 	 */
@@ -363,7 +363,7 @@ class User {
 	function get_user_groups ($user = false) {
 		global $Cache;
 		$user = (int)($user ?: $this->id);
-		if (!($groups = $Cache->{'users_groups/'.$user})) {
+		if (($groups = $Cache->{'users_groups/'.$user}) === false) {
 			$groups = $this->db()->qfa('SELECT `group` FROM `[prefix]users_groups` WHERE `id` = '.$user);
 			if (is_array($groups)) {
 				foreach ($groups as &$group) {
@@ -382,7 +382,7 @@ class User {
 	function get_user_permissions ($user = false) {
 		global $Cache;
 		$user = (int)($user ?: $this->id);
-		if (!($permissions = $Cache->{'users/permissions/'.$user})) {
+		if (($permissions = $Cache->{'users/permissions/'.$user}) === false) {
 			$permissions_array = $this->db()->qfa(
 				'SELECT `permission`, `value`
 				FROM `[prefix]users_permissions`
@@ -408,7 +408,7 @@ class User {
 	function get_group_data ($group) {
 		global $Cache;
 		$group = (int)$group;
-		if (!($group_data = $Cache->{'groups/'.$group})) {
+		if (($group_data = $Cache->{'groups/'.$group}) === false) {
 			return $Cache->{'groups/'.$group} = $this->db()->qf(
 				'SELECT `title`, `description`, `data`
 				FROM `[prefix]groups`
@@ -425,7 +425,7 @@ class User {
 	function get_group_permissions ($group) {
 		global $Cache;
 		$group = (int)$group;
-		if (!($group_permissions = $Cache->{'groups/permissions/'.$group})) {
+		if (($group_permissions = $Cache->{'groups/permissions/'.$group}) === false) {
 			$group_permissions_list = $this->db()->qfa(
 				'SELECT `permission`, `value`
 				FROM `[prefix]groups_permissions`
@@ -813,6 +813,10 @@ class User {
 		$this->reg_id = 0;
 	}
 	/**
+	 * Cloning restriction
+	 */
+	function __clone () {}
+	/**
 	 * Saving cache changing, and users data
 	 */
 	function __finish () {
@@ -842,8 +846,4 @@ class User {
 		}
 		$this->data_set = array();
 	}
-	/**
-	 * Cloning restriction
-	 */
-	function __clone () {}
 }

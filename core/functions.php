@@ -184,17 +184,10 @@
 		while ($file = _readdir($dirc)) {
 			if (
 				(
-					$mask &&
-					!preg_match($mask, $file) &&
-					(
-						!$subfolders ||
-						!_is_dir($dir.$file)
-					)
+					$mask && !preg_match($mask, $file) &&
+					(!$subfolders || !_is_dir($dir.$file))
 				) ||
-				$file == '.' ||
-				$file == '..' ||
-				$file == '.htaccess' ||
-				$file == '.htpasswd'
+				$file == '.' || $file == '..' || $file == '.htaccess' || $file == '.htpasswd'
 			) {
 				continue;
 			}
@@ -436,7 +429,10 @@
 		}
 		return false;
 	}
-	//Очистка системного кеша
+	/**
+	 * System cache cleaning
+	 * @return bool
+	 */
 	function flush_cache () {
 		$ok = true;
 		$list = get_list(CACHE, false, 'fd', true, true, 'name|desc');
@@ -456,7 +452,10 @@
 		}
 		return $ok;
 	}
-	//Очисистка публичного кеша
+	/**
+	 * Public cache cleaning
+	 * @return bool
+	 */
 	function flush_pcache () {
 		$ok = true;
 		$list = get_list(PCACHE, false, 'fd', true, true, 'name|desc');
@@ -474,7 +473,6 @@
 		unset($list);
 		return $ok;
 	}
-	//Обработка замыканий
 	/**
 	 * Closure processing
 	 * @param Closure[] $functions
@@ -726,8 +724,8 @@
 	}
 	//Почти идеальная функция для защиты от XSS-атак
 	//Название xap - сокращено от XSS Attack Protection
-	function xap ($in, $html = false) {
-		if ($html) {
+	function xap ($in, $html = 'text') {
+		if ($html === true) {
 			//Делаем безопасный html
 			$in = preg_replace(
 				'/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i',
@@ -751,6 +749,8 @@
 				$in
 			); //Обезвреживаем внешние ссылки
 			return $in;
+		} elseif ($html === false) {
+			return strip_tags($in);
 		} else {
 			//Приводим всё в вид для чтения
 			return htmlentities($in);
@@ -892,25 +892,25 @@
 	 */
 	function get_timezones_list () {
 		global $Cache;
-		if (!($timezones = $Cache->timezones)) {
+		if (($timezones = $Cache->timezones) === false) {
 			$tzs = timezone_abbreviations_list();
 			$timezones_ = $timezones = array();
 			foreach ($tzs as &$tz) {
 				foreach ($tz as &$v) {
 					if ($v['timezone_id']) {
-						$sign = $v['offset'] < 0 ? '-' : '+';
+						/*$sign = $v['offset'] < 0 ? '-' : '+';*/
 						$v['o'] = abs($v['offset']);
-						$sec	= fmod($v['o'], 60);
+						/*$sec	= fmod($v['o'], 60);
 						$min	= fmod(floor($v['o']/60), 60);
-						$hour	= floor($v['o']/3600);
+						$hour	= floor($v['o']/3600);*/
 						$id		= explode('/', $v['timezone_id']);
 						$timezones_[$id[0].$v['offset']]['id'] = &$v['timezone_id'];
-						$timezones_[$id[0].$v['offset']]['value'] = strtr($v['timezone_id'], '_', ' ').
+						$timezones_[$id[0].$v['offset']]['value'] = strtr($v['timezone_id'], '_', ' ')/*.//TODO function bug with time
 							' ('.$sign.
 								$hour.':'.
 								str_pad($min, 2, 0, STR_PAD_LEFT).':'.
 								str_pad($sec, 2, 0, STR_PAD_LEFT).
-							')';
+							')'*/;
 					}
 				}
 			}
@@ -924,7 +924,11 @@
 		}
 		return $timezones;
 	}
-	//Проверка сложности пароля (от 0 до 7)
+	/**
+	 * Check password strength
+	 * @param string $password
+	 * @return int In range [0..7]
+	 */
 	function password_check ($password) {
 		global $Config;
 		$min		= is_object($Config) ? $Config->core['password_min_length'] : 4;
@@ -956,10 +960,10 @@
 	/**
 	 * Generates passwords till 5 level of strength, 6-7 - only for humans:)
 	 * @param int $length
-	 * @param int $strength
+	 * @param int $strength In range [1..5], but it must be smaller, than $length
 	 * @return string
 	 */
-	function password_generate ($length = 10, $strength = 5) {
+	function password_generate ($length = 10, $strength = 5) {//TODO check correspondence with input strength and real strength of output password
 		static $special = array(
 			'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_',
 			'=', '+', '\\', '/', ';', ':', ',', '.', '?', '[', ']', '{', '}'

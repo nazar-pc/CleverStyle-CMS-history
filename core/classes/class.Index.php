@@ -9,6 +9,7 @@ class Index {
 				$menumore_auto	= false,
 
 				$savefile		= 'save',
+				$post_title		= '',
 				$form			= false,
 				$file_upload	= false,
 				$form_atributes	= array(),
@@ -118,6 +119,9 @@ class Index {
 				$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0];
 			}
 			unset($rc);
+			if ($this->post_title) {
+				$Page->title($this->post_title);
+			}
 		} elseif (!$this->api) {
 			$this->action = $Config->server['current_url'];
 			_include(MFOLDER.DS.$this->savefile.'.php', true, false);
@@ -318,35 +322,35 @@ class Index {
 	function save ($parts = null) {
 		global $L, $Page, $Config;
 		if ((($parts === null || is_array($parts) || in_array($parts, $Config->admin_parts)) && $Config->save($parts)) || $parts) {
-			$Page->title($L->settings_saved);
-			$Page->notice($L->settings_saved);
+			$this->post_title = $L->changes_saved;
+			$Page->notice($L->changes_saved);
 			return true;
 		} else {
-			$Page->title($L->settings_save_error);
-			$Page->warning($L->settings_save_error);
+			$this->post_title = $L->changes_save_error;
+			$Page->warning($L->changes_save_error);
 			return false;
 		}
 	}
 	function apply ($parts = null) {
 		global $L, $Page, $Config;
 		if (($parts === null && $Config->apply()) || $parts) {
-			$Page->title($L->settings_applied);
-			$Page->notice($L->settings_applied.$L->check_applied);
+			$this->post_title = $L->changes_applied;
+			$Page->notice($L->changes_applied.$L->check_applied);
 			$this->cancel = '';
 			global $Page;
 			$Page->js("\$(function(){save = true;});", 'code');
 			return true;
 		} else {
-			$Page->title($L->settings_apply_error);
-			$Page->warning($L->settings_apply_error);
+			$this->post_title = $L->changes_apply_error;
+			$Page->warning($L->changes_apply_error);
 			return false;
 		}
 	}
 	function cancel ($system = true) {
 		global $L, $Page, $Config;
 		$system && $Config->cancel();
-		$Page->title($L->settings_canceled);
-		$Page->notice($L->settings_canceled);
+		$this->post_title = $L->changes_canceled;
+		$Page->notice($L->changes_canceled);
 	}
 	/**
 	 * Adding functions for executing before initialization processing of modules

@@ -48,7 +48,7 @@ class Cache {
 			$item = str_replace('/', DS, $item);
 		}
 		if (_is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
-			if ($cache = @_json_decode($cache)) {
+			if (($cache = @_json_decode($cache)) !== false) {
 				return $cache;
 			} else {
 				_unlink(CACHE.DS.$item);

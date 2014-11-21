@@ -75,7 +75,7 @@ class HTTP extends StorageAbstract {
 		return $result[1];
 	}
 	function copy ($source, $dest) {
-		if (!($source == _realpath($source))) {
+		if (($source == _realpath($source)) === false) {
 			return false;
 		}
 		$temp = md5(uniqid(microtime(true)));
@@ -108,7 +108,7 @@ class HTTP extends StorageAbstract {
 			$temp = md5(uniqid(microtime(true)));
 		}
 		time_limit_pause();
-		if (!(_move_uploaded_file($filename, TEMP.DS.$temp))) {
+		if (_move_uploaded_file($filename, TEMP.DS.$temp) === false) {
 			time_limit_pause(false);
 			return false;
 		}
@@ -119,7 +119,7 @@ class HTTP extends StorageAbstract {
 		return (bool)$result[1];
 	}
 	function rename ($oldname, $newname) {
-		if (!($oldname == _realpath($oldname))) {
+		if (($oldname == _realpath($oldname)) === false) {
 			return false;
 		}
 		$temp = md5(uniqid(microtime(true)));
