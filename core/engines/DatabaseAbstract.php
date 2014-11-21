@@ -29,16 +29,13 @@ abstract class DatabaseAbstract {
 	//(текст_запроса)
 	abstract function q ($query = '');
 	//Подсчёт количества строк
-	//([id_запроса])
+	//([ресурс_запроса])
 	abstract function n ($query_resource = false);
-	//Очистка результатов запроса
-	//([id_запроса])
-	abstract function free ($query_resource = false);
 	//Получение результатов
-	//([id_запроса [, в_виде_массива_результатов [, тип_возвращаемого_массива]]])
+	//([ресурс_запроса [, в_виде_массива_результатов [, тип_возвращаемого_массива]]])
 	abstract function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 	//Упрощенный интерфейс метода для получения результата в виде массива
-	//([id_запроса [, тип_возвращаемого_массива]])
+	//([ресурс_запроса [, тип_возвращаемого_массива]])
 	function fa ($query_resource = false, $result_type = MYSQL_BOTH) {
 		return $this->f($query_resource, true, $result_type);
 	}
@@ -58,6 +55,12 @@ abstract class DatabaseAbstract {
 		}
 		return $this->qf($query, true, $result_type);
 	}
+	//id последнего insert запроса
+	//([ресурс_запроса])
+	abstract function insert_id ($query_resource = false);
+	//Очистка результатов запроса
+	//([ресурс_запроса])
+	abstract function free ($query_resource = false);
 	//Получение списка полей таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
 	function fields ($table, $like = false, $result_type = MYSQL_BOTH) {

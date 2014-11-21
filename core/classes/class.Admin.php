@@ -1,6 +1,6 @@
 <?php
 class Admin extends Module {
-	public		$parts = false,
+	public	$parts = false,
 				$subparts = false,
 				$mainsubmenu = '',
 				$menumore = '',

@@ -293,7 +293,7 @@ if ($mode && $rc[2] == 'install') {
 			);
 		}
 		//Когда модуль включен или отключен
-		if ($mdata['active'] == 1 || $mdata['active'] == 2) {
+		if ($mdata['active'] == 1 || $mdata['active'] == 0) {
 			$action .= (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1 ?
 				$a->a(
 					$a->button(
