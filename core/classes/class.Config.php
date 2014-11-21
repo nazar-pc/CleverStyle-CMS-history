@@ -1,7 +1,30 @@
 <?php
 class Config {
-	public	$admin_parts = array('core', 'db', 'storage', 'components', 'replace', 'routing'),
-			$mirror_index = -1;	//Индекс текущего адреса сайта в списке зеркал ("-1" - не зеркало, а основной домен)
+	public	$admin_parts	= array(		//Столбцы в БД в таблице конфигурации движка
+				'core',
+				'db',
+				'storage',
+				'components',
+				'replace',
+				'routing'
+			),
+			$server			= array(		//Массив некоторых настроек адресов, зеркал и прочего
+				'url'			=> false,
+				'protocol'		=> false,
+				'base_url'		=> false,
+				'all_mirrors'	=> array(	//Массив всех адресов, по которым разрешен доступ к сайту
+					'http'		=> array(),
+					'https'		=> array()
+				),
+				'referer'		=> array(
+					'url'		=> false,
+					'protocol'	=> false,
+					'host'		=> false,
+					'local'		=> false
+				)
+			),
+			$mirror_index	= -1;	//Индекс текущего адреса сайта в списке зеркал ('-1' - не зеркало, а основной домен)
+
 	//Инициализация параметров системы
 	function __construct () {
 		global $Cache;
@@ -44,41 +67,42 @@ class Config {
 	//Анализ и обработка текущего адреса страницы
 	private function routing () {
 		global $ADMIN, $API;
-		$this->server['url'] = urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-		$this->server['protocol'] = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-		$core_url = explode('://', $this->core['url'], 2);
-		$core_url[1] = explode(';', $core_url[1]);
+		$this->server['url']		= urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+		$this->server['protocol']	= isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+		$core_url					= explode('://', $this->core['url'], 2);
+		$core_url[1]				= explode(';', $core_url[1]);
 		//$core_url = array(0 => протокол, 1 => array(список из домена и IP адресов))
 		//Проверяем, сходится ли адрес с главным доменом
 		if ($core_url[0] == $this->server['protocol']) {
 			foreach ($core_url[1] as $url) {
 				if (mb_strpos($this->server['url'], $url) === 0) {
-					$this->server['base_url'] = $this->server['protocol'].'://'.$url;
-					$url_replace = $url;
+					$this->server['base_url']	= $this->server['protocol'].'://'.$url;
+					$url_replace				= $url;
 					break;
 				}
 			}
 		}
+		$this->server['all_mirrors'][$core_url[0]] = array_merge($this->server['all_mirrors'][$core_url[0]], $core_url[1]);
 		unset($core_url, $url);
 		//Если это не главный домен - ищем совпадение в зерказах
 		if (!isset($url_replace) && !empty($this->core['mirrors_url'])) {
 			$mirrors_url = explode("\n", $this->core['mirrors_url']);
-			foreach ($mirrors_url as $i => $mirror) {
-				$mirror_url = explode('://', $mirror, 2);
-				$mirror_url[1] = explode(';', $mirror_url[1]);
+			foreach ($mirrors_url as $i => $mirror_url) {
+				$mirror_url		= explode('://', $mirror_url, 2);
+				$mirror_url[1]	= explode(';', $mirror_url[1]);
 				//$mirror_url = array(0 => протокол, 1 => array(список из домена и IP адресов))
 				if ($mirror_url[0] == $this->server['protocol']) {
 					foreach ($mirror_url[1] as $url) {
 						if (mb_strpos($this->server['url'], $url) === 0) {
-							$this->server['base_url'] = $this->server['protocol'].'://'.$url;
-							$url_replace = $url;
-							$this->mirror_index = $i;
-							break;
+							$this->server['base_url']	= $this->server['protocol'].'://'.$url;
+							$url_replace				= $url;
+							$this->mirror_index			= $i;
+							break 2;
 						}
 					}
 				}
 			}
-			unset($mirrors_url, $mirror_url, $url, $i, $mirror);
+			unset($mirrors_url, $mirror_url, $url, $i);
 			//Если в зеркалах соответствие не найдено - зеркало не разрешено!
 			if ($this->mirror_index == -1) {
 				global $Error, $L;
@@ -91,11 +115,20 @@ class Config {
 			$this->server['base_url'] = '';
 			$Error->process($L->mirror_not_allowed, 'stop');
 		}
+		$mirrors_url = explode("\n", $this->core['mirrors_url']);
+		foreach ($mirrors_url as $mirror_url) {
+			$mirror_url										= explode('://', $mirror_url, 2);
+			$this->server['all_mirrors'][$mirror_url[0]]	= array_merge(
+				$this->server['all_mirrors'][$mirror_url[0]],
+				explode(';', $mirror_url[1])
+			);
+		}
+		unset($mirrors_url, $mirror_url);
 		//Подготавливаем адрес страницы без базовой части
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace, '', $this->server['url']), ' /\\'));
 		unset($url_replace);
-		$r = &$this->routing;
-		$rc = &$r['current'];
+		$r	= &$this->routing;
+		$rc	= &$r['current'];
 		//Получаем путь к странице в виде массива
 		$rc = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
 		//Если адрес похож на адрес админки
@@ -137,6 +170,17 @@ class Config {
 			array_pop($rc);
 		}
 		unset($rc, $r);
+		if (isset($_SERVER['HTTP_REFERER'])) {
+			$ref				= &$this->server['referer'];
+			$referer			= explode('://', $ref['url'] = $_SERVER['HTTP_REFERER']);
+			$referer[1]			= explode('/', $referer[1]);
+			$referer[1]			= $referer[1][0];
+			$ref['protocol']	= $referer[0];
+			$ref['host']		= $referer[1];
+			unset($referer);
+			$ref['local']		= in_array($ref['host'], $this->server['all_mirrors'][$ref['protocol']]);
+			unset($ref);
+		}
 	}
 	//Обновление информации о текущем наборе тем оформления
 	function reload_themes () {
@@ -146,7 +190,7 @@ class Config {
 			$this->core['color_schemes'][$theme] = array();
 			if (
 				file_exists(THEMES.'/'.$theme.'/schemes.json') &&
-				($schemes = json_decode_x(file_get_contents(THEMES.'/'.$theme.'/schemes.json'))) &&
+				($schemes = _json_decode(file_get_contents(THEMES.'/'.$theme.'/schemes.json'))) &&
 				is_array($schemes)
 			) {
 				foreach ($schemes as $scheme => $name) {
@@ -167,7 +211,7 @@ class Config {
 		$langlist = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?\.php$/i', 'f');
 		foreach ($langlist as $lang) {
 			if (file_exists(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json')) {
-				$lang_data = json_decode_x(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'));
+				$lang_data = _json_decode(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'));
 				$this->core['languages'][mb_substr($lang, 5, -4)] = $lang_data['name'];
 			} else {
 				$this->core['languages'][mb_substr($lang, 5, -4)] = ucfirst(mb_substr($lang, 5, -4));
@@ -189,7 +233,7 @@ class Config {
 		}
 		if (is_array($result)) {
 			foreach ($this->admin_parts as $part) {
-				$this->$part = json_decode_x($result[$part]);
+				$this->$part = _json_decode($result[$part]);
 			}
 			unset($part);
 		} else {
@@ -238,10 +282,10 @@ class Config {
 				if ($part == 'routing') {
 					$temp = $this->routing;
 					unset($temp['current']);
-					$query[] = '`'.$part.'` = '.$db->core()->sip(json_encode_x($temp));
+					$query[] = '`'.$part.'` = '.$db->core()->sip(_json_encode($temp));
 					continue;
 				}
-				$query[] = '`'.$part.'` = '.$db->core()->sip(json_encode_x($this->$part));
+				$query[] = '`'.$part.'` = '.$db->core()->sip(_json_encode($this->$part));
 			}
 		}
 		unset($parts, $part, $temp);

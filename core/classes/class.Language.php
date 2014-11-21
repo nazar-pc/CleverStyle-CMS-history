@@ -50,9 +50,9 @@ class Language {
 				$this->set($translate);
 				$Text->language($this->clang);
 				return true;
-			} elseif (include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
+			} elseif (_include(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
 				if (file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
-					$lang_data = json_decode_x(file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'));
+					$lang_data = _json_decode(file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'));
 					$this->clang = $lang_data['short_format'];
 					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $lang_data['locale']) : setlocale(LC_TIME, $lang_data['locale']);
 					unset($lang_data);

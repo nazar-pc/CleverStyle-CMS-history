@@ -49,7 +49,7 @@ if (isset($rc[2])) {
 							),
 							$a->select(
 								array(
-									'in'		=> filter(get_list(ENGINES, '/^storage\.[0-9a-z_\-]*?\.php$/i', 'f'), 'mb_substr', 8, -4)
+									'in'		=> _mb_substr(get_list(ENGINES, '/^storage\.[0-9a-z_\-]*?\.php$/i', 'f'), 8, -4)
 								),
 								array(
 									'name'		=> 'storage[connection]',

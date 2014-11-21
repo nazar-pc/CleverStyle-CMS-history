@@ -1,6 +1,6 @@
 function login (login, password) {
 	$.ajax(
-		base_url+"/api/user/login",
+		base_url+"/"+api+"/user/login",
 		{
 			type: 'post',
 			cache: false,
@@ -8,10 +8,18 @@ function login (login, password) {
 				login: hash('sha224', login)
 			},
     		success: function(data) {
-				alert(data);
+				if (data == 'false') {
+					this.error();
+				} else {
+					alert(data);
+				}
 			},
-    		error: function() {
-				alert("error");
+    		error: function(data) {
+				if (data) {
+					alert(data);
+				} else {
+					alert("error");
+				}
 			}
 		}
 	);

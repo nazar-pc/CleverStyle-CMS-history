@@ -34,7 +34,7 @@ class HTTP extends StorageAbstract {
 		if (empty($data)) {
 			return false;
 		} else {
-			$data['key'] = md5(md5(json_encode_x($data).$this->user).$this->password);
+			$data['key'] = md5(md5(_json_encode($data).$this->user).$this->password);
 		}
 		time_limit_pause();
 		$data = 'data='.json_encode($data).'&domain='.DOMAIN;
@@ -63,7 +63,7 @@ class HTTP extends StorageAbstract {
 			'subfolders' => $subfolders,
 			'sort' => $sort
 		));
-		return json_decode_x($result[1]);
+		return _json_decode($result[1]);
 	}
 	function file_get_contents ($filename, $flags = 0, $context = NULL, $offset = -1, $maxlen = -1) {
 		$result = $this->request(array('function' => __FUNCTION__, 'filename' => $filename, 'flags' => $flags, 'offset' => $offset, 'maxlen' => $maxlen));

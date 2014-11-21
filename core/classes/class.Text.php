@@ -1,5 +1,7 @@
 <?php
 class Text {
+	const	DELETE	= 10000;			//Число вставок, после которых будет произведена физическая очистка ненужных елементов
+										//так, как операция удаления достаточно накладная в плане ресурсов
 	private	$language,
 			$local_storage	= array(),	//Локальное хранилище, позволяет оптимизировать повторные запросы на получение текстов
 			$local_result	= array();	//Локальное хранилище результатов, хранит добавленные, или измененные тексты для
@@ -8,6 +10,7 @@ class Text {
 		$this->language = $language;
 	}
 	function get ($database, $id) {
+		$id = (int)$id;
 		if (isset($this->local_storage[$database.'_'.$id])) {
 			return $this->local_storage[$database.'_'.$id];
 		}
@@ -17,9 +20,9 @@ class Text {
 		} else {
 			global $db;
 			$result = $db->$database->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
-			$result = json_decode_x($result['text']);
+			$result = _json_decode($result['text']);
 		}
-		if (!is_array($result)) {
+		if (!is_array($result) || empty($result)) {
 			return false;
 		}
 		if (isset($result[$this->language])) {
@@ -32,13 +35,14 @@ class Text {
 			return false;
 		}
 	}
-	function set ($database, $id, $data = false) {
-		global $db;
-		if ($data === false || empty($data)) {
+	function set ($database, $id, $data) {
+		if (empty($data)) {
 			return false;
 		}
-		$result = $db->$database()->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.(int)$id.' LIMIT 1');
-		$result = json_decode_x($result['text']);
+		$id = (int)$id;
+		global $db;
+		$result = $db->$database()->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
+		$result = _json_decode($result['text']);
 		if (!is_array($result)) {
 			$result = array();
 		}
@@ -57,8 +61,12 @@ class Text {
 		if (isset($this->local_storage[$database.'_'.$id])) {
 			unset($this->local_storage[$database.'_'.$id]);
 		}
-		$this->local_result[$database.'_'.$id] = &$result;
-		return $db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(json_encode_x($result)).' WHERE `id` = '.(int)$id.' LIMIT 1');
+		if ($db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(_json_encode($result)).' WHERE `id` = '.$id.' LIMIT 1')) {
+			$this->local_result[$database.'_'.$id] = &$result;
+			return '{¶'.$id.'}';
+		} else {
+			return false;
+		}
 	}
 	function put ($database, $data, $relation = 'System', $relation_id = 0) {
 		if (empty($data)) {
@@ -88,20 +96,28 @@ class Text {
 		$id = $db->$database()->insert_id(
 			$db->$database()->q(
 				'INSERT INTO `[prefix]texts` (`relation`, `relation_id`, `text`) VALUES '.
-					'('.$db->$database()->sip($relation).', \''.$relation_id.'\', '.$db->$database()->sip(json_encode_x($result)).')'
+					'('.$db->$database()->sip($relation).', '.$db->$database()->sip($relation_id).', '.$db->$database()->sip(_json_encode($result)).')'
 			)
 		);
-		$this->local_result[$database.'_'.$id] = &$result;
-		return '{¶'.$id.'}';
+		if (!($id % self::DELETE)) { //Чистим устаревшие тексты после каждых self::DELETE новых записей
+			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
+		}
+		if ($id) {
+			$this->local_result[$database.'_'.$id] = &$result;
+			return '{¶'.$id.'}';
+		} else {
+			return false;
+		}
 	}
 	function del ($database, $id) {
+		$id = (int)$id;
 		if (isset($this->local_storage[$database.'_'.$id])) {
 			unset($this->local_storage[$database.'_'.$id]);
 		} elseif (isset($this->local_result[$database.'_'.$id])) {
 			unset($this->local_result[$database.'_'.$id]);
 		}
 		global $db;
-		return $db->$database()->q('DELETE FROM `[prefix]texts` WHERE `id` = '.(int)$id.' LIMIT 1');
+		return $db->$database()->q('UPDATE `[prefix]texts` SET `relation` = \'\', `relation_id` = 0, `text` = \'\' WHERE `id` = '.$id.' LIMIT 1');
 	}
 	function process ($database, $data) {
 		if (!is_object($database) || empty($data)) {

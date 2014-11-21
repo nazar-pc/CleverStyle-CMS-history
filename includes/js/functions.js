@@ -115,18 +115,18 @@ function db_test (url, added) {
 			}
 		});
 	} else {
-		var db = {
+		var db = json_encode({
 			type:		document.getElementsByName('db[type]').item(0).value,
 			name:		document.getElementsByName('db[name]').item(0).value,
 			user:		document.getElementsByName('db[user]').item(0).value,
 			password:	document.getElementsByName('db[password]').item(0).value,
 			host:		document.getElementsByName('db[host]').item(0).value,
 			codepage:	document.getElementsByName('db[codepage]').item(0).value
-		};
+		});
 		$.ajax({
 			url:		url,
 			type:		'POST',
-			data:		'db=' + $.toJSON(db),
+			data:		'db=' + db,
 			success:	function(result) {
 				clearInterval(test_interval);
 				$('#test_db').html(result);
@@ -149,21 +149,31 @@ function storage_test (url, added) {
 			}
 		});
 	} else {
-		var storage = {
+		var storage = json_encode({
 			url:		document.getElementsByName('storage[url]').item(0).value,
 			host:		document.getElementsByName('storage[host]').item(0).value,
 			connection:	document.getElementsByName('storage[connection]').item(0).value,
 			user:		document.getElementsByName('storage[user]').item(0).value,
 			password:	document.getElementsByName('storage[password]').item(0).value
-		};
+		});
 		$.ajax({
 			url:		url,
 			type:		'POST',
-			data:		'storage=' + $.toJSON(storage),
+			data:		'storage=' + storage,
 			success:	function(result) {
 				clearInterval(test_interval);
 				$('#test_storage').html(result);
 			}
 		});
 	}
+}
+//Для удобства и простоты - обертки для функций JavaScript с названиями аналогичных функций в PHP
+function json_encode (input) {
+	return $.toJSON(input);
+}
+function json_decode (input) {
+	return $.evalJSON(input);
+}
+function hash (variant, string) {
+	return new jsSHA(string).getHash(variant);
 }

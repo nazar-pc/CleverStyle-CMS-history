@@ -36,5 +36,5 @@ define('OUT_CLEAN', false);								//Включить захват вывода 
 OUT_CLEAN && ob_start();								//Захват вывода для избежания вывода нежелательных данных
 
 require_once DIR.DS.'core'.DS.'functions.php';			//Подключение библиотеки базовых функций
-require_x(DIR.DS.'core'.DS.'loader.php', true, true);	//Передача управления загрузчику движка
+_require(DIR.DS.'core'.DS.'loader.php', true, true);	//Передача управления загрузчику движка
 ?>

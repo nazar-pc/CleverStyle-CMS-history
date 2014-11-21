@@ -73,7 +73,7 @@ class Storage {
 				return false;
 			}
 		} else {
-			$storage = json_decode_x(filter($data, 'form'));
+			$storage = _json_decode(filter($data, 'form'));
 		}
 		unset($data);
 		if (is_array($storage)) {

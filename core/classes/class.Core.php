@@ -7,7 +7,7 @@ class Core {
 			$support = false;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
-		if (!require_x(CONFIG.DS.CDOMAIN.DS.'main.php', true, false)) {
+		if (!_require(CONFIG.DS.CDOMAIN.DS.'main.php', true, false)) {
 			header('HTTP/1.0 404 Not Found');
 			__finish();
 		}

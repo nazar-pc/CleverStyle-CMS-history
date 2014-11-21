@@ -41,7 +41,7 @@ define('STORAGES',		DIR.DS.'storages');			//Локальное хранилищ�
 define('THEMES',		DIR.DS.'themes');			//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы
-require_x(CORE.DS.'required_verions.php', true, true);
+_require(CORE.DS.'required_verions.php', true, true);
 
 $stop = 0;
 $timeload['loader_init'] = microtime(true);

@@ -20,7 +20,8 @@ class User {
 		//Не может установивить cookie - значит (вероятнее всего) бот
 		} else {
 			unset($test);
-			//Для бота символически логином является $_SERVER['HTTP_USER_AGENT'], а электронной почтой  - $_SERVER['REMOTE_ADDR'] (он же IP)
+			//Для бота символически логином является $_SERVER['HTTP_USER_AGENT'] (название робота),
+			//а электронной почтой  - $_SERVER['REMOTE_ADDR'] (IP робота)
 			$login_hash = hash('sha224', $this->current['user_agent']	= trim($_SERVER['HTTP_USER_AGENT']));
 			$email_hash = hash('sha224', $this->current['ip']			= $_SERVER['REMOTE_ADDR']);
 			if (!$this->data = $Cache->get('users/'.$login_hash)) {
@@ -93,9 +94,7 @@ class User {
 			return $this->db = $this->db_prime;
 		}
 		global $Config, $db;
-		$db_id = $Config->components['modules']['System']['db']['users'];
-		$this->db = $db->$db_id();
-		unset($db_id);
+		$this->db = $db->{$Config->components['modules']['System']['db']['users']}(); //Получаем и сохраняем ссылку для повторного доступа
 		return $this->db;
 	}
 	//Возвращает указатель на объект БД с пользователями, используется для изменения данных (всегда главная БД)
@@ -104,15 +103,21 @@ class User {
 			return $this->db_prime;
 		}
 		global $Config, $db;
-		$db_id = $Config->components['modules']['System']['db']['users'];
-		$this->db_prime = $db->$db_id();
-		unset($db_id);
+		$this->db_prime = $db->{$Config->components['modules']['System']['db']['users']}(); //Получаем и сохраняем ссылку для повторного доступа
 		return $this->db_prime;
 	}	
 	//Проверяет, кем является посетитель.
 	//Возможные значения '$mode': 'admin', 'user', 'guest', 'bot'
 	function is ($mode = 'user') {
 		return $this->current['is'][strtolower($mode)];
+	}
+	function login_check ($login_hash) {
+		return (bool)$this->db()->qf(
+			'SELECT `id` FROM [prefix]users WHERE '.
+				'`login_hash` = \''.$this->db()->sip($login_hash).'\' OR '.
+				'`email_hash` = \''.$this->db()->sip($login_hash).'\' '.
+				'LIMIT 1'
+		);
 	}
 	function get_header_info () {
 		global $Config, $Page, $L;

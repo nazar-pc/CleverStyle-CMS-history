@@ -37,7 +37,7 @@ class Cache {
 		}
 		global $Core;
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$item)) {
-			if ($cache = @json_decode_x($Core->decrypt($result))) {
+			if ($cache = @_json_decode($Core->decrypt($result))) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
 			}
@@ -74,7 +74,7 @@ class Cache {
 			global $Config;
 			$this->memcache->set(
 				DOMAIN.$item,
-				$Core->encrypt(json_encode_x($data)),
+				$Core->encrypt(_json_encode($data)),
 				zlib() && ($Config->core['zlib_compression'] || $Config->core['gzip_compression']) ? MEMCACHE_COMPRESSED : false,
 				$time
 			);

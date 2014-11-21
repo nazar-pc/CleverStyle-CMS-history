@@ -49,7 +49,7 @@ if ($mode && $rc[2] == 'settings') {
 						),
 						$a->select(
 							array(
-								'in'		=> filter(get_list(TEMPLATES.DS.'blocks', '/^block\.[0-9a-z_\-]*?\.(php|html)$/i', 'f'), 'mb_substr', 6)
+								'in'		=> _mb_substr(get_list(TEMPLATES.DS.'blocks', '/^block\.[0-9a-z_\-]*?\.(php|html)$/i', 'f'), 6)
 							),
 							array(
 								'name'		=> 'block[template]',
@@ -124,7 +124,7 @@ if ($mode && $rc[2] == 'settings') {
 		'right'		=> array(),
 		'bottom'	=> array()
 	);
-	$blocks = filter(get_list(BLOCKS, '/^block\.[0-9a-z_\-]*?\.php$/i', 'f'), 'mb_substr', 6, -4);
+	$blocks = _mb_substr(get_list(BLOCKS, '/^block\.[0-9a-z_\-]*?\.php$/i', 'f'), 6, -4);
 	$diff = array_diff(array_keys($Config->components['blocks']), $blocks);
 	$save = false;
 	if (!empty($diff)) {
@@ -240,44 +240,6 @@ if ($mode && $rc[2] == 'settings') {
 				'name'	=> 'position'
 			)
 		)
-	);
-	$Page->js(
-		'$(function () {'.
-			'$(\'#apply_settings, #save_settings\').click('.
-				'function () {'.
-					'$(\'#position\').val('.
-						'$.toJSON({'.
-							'top: $("#top_blocks_items").sortable(\'toArray\'),'.
-							'left: $("#left_blocks_items").sortable(\'toArray\'),'.
-							'invisible:	$("#invisible_blocks_items").sortable(\'toArray\'),'.
-							'right: $("#right_blocks_items").sortable(\'toArray\'),'.
-							'bottom: $("#bottom_blocks_items").sortable(\'toArray\')'.
-						'})'.
-					');'.
-				'}'.
-			');'.
-			'$("#top_blocks_items, #left_blocks_items, #invisible_blocks_items, #right_blocks_items, #bottom_blocks_items").sortable({'.
-				'connectWith: ".blocks_items",'.
-				'placeholder: "ui-state-default",'.
-				'items: "li:not(.ui-state-disabled)",'.
-				'cancel: ".ui-state-disabled",'.
-				'update: function (event, ui) {save = true;}'.
-			'}).disableSelection();'.
-		'});'.
-		'function blocks_toggle (position) {'.
-			'if ($(\'#\'+position+\'_blocks_items\').attr(\'data-mode\') == \'open\') {'.
-				'$(\'#\'+position+\'_blocks_items > li:not(.ui-state-disabled)\').slideUp(\'fast\');'.
-				'$(\'#\'+position+\'_blocks_items\').attr(\'data-mode\', \'close\');'.
-			'} else {'.
-				'$(\'#\'+position+\'_blocks_items > li:not(.ui-state-disabled)\').slideDown(\'fast\');'.
-				'$(\'#\'+position+\'_blocks_items\').attr(\'data-mode\', \'open\');'.
-			'}'.
-		'}',
-		'code'
-	);
-	$Page->css(
-		'.blocks_items {list-style-type: none; margin: 0; padding: 5px;} .blocks_items li {cursor: move; margin: 0 5px 5px 5px; padding: 5px;}',
-		'code'
 	);
 }
 unset($a, $rc, $mode);

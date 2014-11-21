@@ -49,14 +49,14 @@ class Index extends HTML {
 			$this->module = true;
 		}
 		foreach ($Config->components['plugins'] as $plugin) {
-			include_x(PLUGINS.DS.$plugin.DS.'index.php', true, false);
+			_include(PLUGINS.DS.$plugin.DS.'index.php', true, false);
 		}
 	}
 	function init () {
 		if (file_exists(MFOLDER.DS.'index.json')) {
-			$this->parts = json_decode_x(file_get_contents(MFOLDER.DS.'index.json'));
+			$this->parts = _json_decode(file_get_contents(MFOLDER.DS.'index.json'));
 		}
-		include_x(MFOLDER.DS.'index.php', true, false);
+		_include(MFOLDER.DS.'index.php', true, false);
 		global $Config, $L, $Page;
 		$this->admin && $Page->title($L->administration);
 		if (!$this->api) {
@@ -68,13 +68,13 @@ class Index extends HTML {
 				$rc[0] = $this->parts[0];
 			}
 			!$this->api && $Page->title($L->$rc[0]);
-			if ($this->admin && !include_x(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
-				include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
+			if ($this->admin && !_include(MFOLDER.DS.$rc[0].DS.$this->savefile.'.php', true, false)) {
+				_include(MFOLDER.DS.$this->savefile.'.php', true, false);
 			}
 			if (file_exists(MFOLDER.DS.$rc[0].'.json')) {
-				$this->subparts = json_decode_x(file_get_contents(MFOLDER.DS.$rc[0].'.json'));
+				$this->subparts = _json_decode(file_get_contents(MFOLDER.DS.$rc[0].'.json'));
 			}
-			include_x(MFOLDER.DS.$rc[0].'.php', true, false);
+			_include(MFOLDER.DS.$rc[0].'.php', true, false);
 			if (is_array($this->subparts)) {
 				if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
 					$rc[1] = $this->subparts[0];
@@ -83,14 +83,14 @@ class Index extends HTML {
 					$Page->title($L->$rc[1]);
 					$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0].'/'.$rc[1];
 				}
-				include_x(MFOLDER.DS.$rc[0].DS.$rc[1].'.php');
+				_include(MFOLDER.DS.$rc[0].DS.$rc[1].'.php');
 			} elseif (!$this->api) {
 				$this->action = ($this->admin ? ADMIN.'/' : '').MODULE.'/'.$rc[0];
 			}
 			unset($rc);
 		} elseif (!$this->api) {
 			$this->action = $Config->server['current_url'];
-			include_x(MFOLDER.DS.$this->savefile.'.php', true, false);
+			_include(MFOLDER.DS.$this->savefile.'.php', true, false);
 		}
 	}
 	function mainmenu () {
@@ -158,8 +158,11 @@ class Index extends HTML {
 										(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
 					'language = "'.$L->clanguage.'",'.
 					'lang = "'.$L->clang.'",'.
-					($User->is('admin') ? 'admin = "'.$ADMIN.'";' : '').
-					'api = "'.$API.'";',
+					'module = "'.MODULE.'",'.
+					($User->is('admin') ? 'admin = "'.$ADMIN.'",' : '').
+					'in_admin = '.(int)$this->admin.','.
+					'api = "'.$API.'",'.
+					'routing = '._json_encode($Config->routing['current']).';',
 				'code'
 			);
 		}

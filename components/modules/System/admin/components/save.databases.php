@@ -34,7 +34,7 @@ if (isset($_POST['mode'])) {
 			$update = true;
 		}
 	} elseif ($_POST['mode'] == 'config') {
-		include_x(MFOLDER.'/'.$Index->savefile.'.php', true, false);
+		_include(MFOLDER.'/'.$Index->savefile.'.php', true, false);
 	}
 	if ($update) {
 		$Index->save('db');

@@ -61,6 +61,7 @@ class Classes {
 			global $$class;
 			unset($this->LoadedObjects[$class]);
 			method_exists($$class, '__finish') && $$class->__finish();
+			$$class = NULL;
 			unset($GLOBALS[$class]);
 		}
 	}

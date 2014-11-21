@@ -193,9 +193,6 @@ class HTML {
 	function script		($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	function style		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
-	}
 	function i			($in = '', $data = array()) {
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
@@ -526,6 +523,18 @@ class HTML {
 		} elseif (is_array($data)) {
 			if (!isset($data['type'])) {
 				$data['type'] = 'button';
+			}
+		}
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function style		($in = '', $data = array()) {
+		if (is_array($in)) {
+			if (!isset($in['type'])) {
+				$in['type'] = 'text/css';
+			}
+		} elseif (is_array($data)) {
+			if (!isset($data['type'])) {
+				$data['type'] = 'text/css';
 			}
 		}
 		return $this->swrap($in, $data, __FUNCTION__);

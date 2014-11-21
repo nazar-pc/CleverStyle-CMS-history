@@ -15,33 +15,33 @@ class Page extends HTML {
 	
 				$pre_Body, $Header, $mainmenu, $mainsubmenu, $menumore, $Left, $Top, $Bottom, $Right, $Footer, $post_Body,
 	
-				$level		= array (
-								'Head'				=> 2,
-								'pre_Body'			=> 2,
-								'Header'			=> 4,
-								'mainmenu'			=> 3,
-								'mainsubmenu'		=> 3,
-								'menumore'			=> 3,
-								'user_avatar_text'	=> 5,
-								'user_info'			=> 5,
-								'debug_info'		=> 3,
-								'Left'				=> 3,
-								'Top'				=> 3,
-								'Content'			=> 8,
-								'Bottom'			=> 3,
-								'Right'				=> 3,
-								'Footer'			=> 4,
-								'post_Body'			=> 2
+				$level		= array (			//Количество табуляций для отступов при подстановке значений в шаблон по-умолчанию
+					'Head'				=> 2,
+					'pre_Body'			=> 2,
+					'Header'			=> 4,
+					'mainmenu'			=> 3,
+					'mainsubmenu'		=> 3,
+					'menumore'			=> 3,
+					'user_avatar_text'	=> 5,
+					'user_info'			=> 5,
+					'debug_info'		=> 3,
+					'Left'				=> 3,
+					'Top'				=> 3,
+					'Content'			=> 8,
+					'Bottom'			=> 3,
+					'Right'				=> 3,
+					'Footer'			=> 4,
+					'post_Body'			=> 2
 				);
 
 	protected	$Search		= array(),
 				$Replace	= array(),
 				$CssMin		= array(
-								'convert-named-color-values'	=> true,
-								'convert-hsl-color-values'		=> true,
-								'convert-rgb-color-values'		=> true,
-								'compress-color-values'			=> true,
-								'compress-unit-values'			=> true
+					'convert-named-color-values'	=> true,
+					'convert-hsl-color-values'		=> true,
+					'convert-rgb-color-values'		=> true,
+					'compress-color-values'			=> true,
+					'compress-unit-values'			=> true
 				);
 	
 	function __construct () {
@@ -74,14 +74,14 @@ class Page extends HTML {
 		if ($this->interface) {
 			ob_start();
 			if (is_object($Config) && !$stop && $Config->core['site_mode'] && (file_exists(THEMES.DS.$this->theme.DS.'index.html') || file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
-				require_x(THEMES.DS.$this->theme.DS.'prepare.php', true, false);
-				if (!include_x(THEMES.DS.$this->theme.DS.'index.php', true, false)) {
-					include_x(THEMES.DS.$this->theme.DS.'index.html', true);
+				_require(THEMES.DS.$this->theme.DS.'prepare.php', true, false);
+				if (!_include(THEMES.DS.$this->theme.DS.'index.php', true, false)) {
+					_include(THEMES.DS.$this->theme.DS.'index.html', true);
 				}
 			} elseif ($stop == 1 && file_exists(THEMES.DS.$this->theme.DS.'closed.html')) {
-				include_x(THEMES.DS.$this->theme.DS.'closed.html', 1);
+				_include(THEMES.DS.$this->theme.DS.'closed.html', 1);
 			} elseif ($stop == 2 && file_exists(THEMES.DS.$this->theme.DS.'error.html')) {
-				include_x(THEMES.DS.$this->theme.DS.'error.html', 1);
+				_include(THEMES.DS.$this->theme.DS.'error.html', 1);
 			} else {
 				echo	"<!doctype html>\n".
 						"<html>\n".
@@ -125,41 +125,29 @@ class Page extends HTML {
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
-			$this->core_css[1] = $this->style(
-				$Config->core['cache_compress_js_css'] ? CssMin::minify($this->core_css[1], $this->CssMin) : $this->core_css[1],
-				array(
-					'type' => 'text/css'
-				)
-			);
+			$this->core_css[1] = $this->style($this->core_css[1]);
 		}
 		if ($this->css[1]) {
-			$this->css[1] = $this->style(
-				$Config->core['cache_compress_js_css'] ? CssMin::minify($this->css[1], $this->CssMin) : $this->css[1],
-				array(
-					'type' => 'text/css'
-				)
-			);
+			$this->css[1] = $this->style($this->css[1]);
 		}
 		if ($this->core_js[1]) {
-			$this->core_js[1] = $this->script(
-				$Config->core['cache_compress_js_css'] ? JsMin::minify($this->core_js[1]) : $this->core_js[1]
-			);
+			$this->core_js[1] = $this->script($this->core_js[1]);
 		}
 		if ($this->js[1]) {
-			$this->js[1] = $this->script(
-				$Config->core['cache_compress_js_css'] ? JsMin::minify($this->js[1]) : $this->js[1]
-			);
+			$this->js[1] = $this->script($this->js[1]);
 		}
 		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
 						$this->meta(array('name'		=> 'keywords',			'content'	=> $this->Keywords)).
 						$this->meta(array('name'		=> 'description',		'content'	=> $this->Description)).
 						$this->meta(array('name'		=> 'generator',			'content'	=> $copyright[0])).
-						$this->link(array('rel'			=> 'shortcut icon',		'href'		=> 
-							file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ?
-								'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' :
-								file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ?
-									'themes/'.$this->theme.'/img/favicon.ico' :
-									'includes/img/favicon.ico'
+						$this->link(
+							array(
+								'rel'		=> 'shortcut icon',
+								'href'		=> file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ?
+												'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' :
+												file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ?
+												'themes/'.$this->theme.'/img/favicon.ico' :
+												'includes/img/favicon.ico'
 						)).
 						(is_object($Config) ? $this->base($Config->server['base_url']) : '').
 						$this->Head.
@@ -292,7 +280,7 @@ class Page extends HTML {
 		);
 		unset($theme_folder, $scheme_folder, $theme_pfolder, $scheme_pfolder);
 		if (!$for_cache && DS != '/') {
-			$this->get_list = filter($this->get_list, 'str_replace', DS, '/');
+			$this->get_list = _str_replace(DS, '/', $this->get_list);
 		}
 		sort($this->get_list['css']);
 		sort($this->get_list['js']);

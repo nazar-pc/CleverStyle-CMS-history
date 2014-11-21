@@ -11,7 +11,7 @@ if ($mode && $rc[2] == 'install') {
 			$L->installation_of_module.' '.$a->b($rc[3])
 		)
 	);
-	include_x(MODULES.DS.$rc[3].DS.$ADMIN.DS.'install'.DS.'form.php', false, false);
+	_include(MODULES.DS.$rc[3].DS.$ADMIN.DS.'install'.DS.'form.php', false, false);
 	$a->content(
 		$a->button(
 			$L->install,
@@ -35,7 +35,7 @@ if ($mode && $rc[2] == 'install') {
 			$L->uninstallation_of_module.' '.$a->b($rc[3])
 		)
 	);
-	include_x(MODULES.DS.$rc[3].DS.$ADMIN.DS.'uninstall'.DS.'form.php', false, false);
+	_include(MODULES.DS.$rc[3].DS.$ADMIN.DS.'uninstall'.DS.'form.php', false, false);
 	$a->content(
 		$a->button(
 			$L->uninstall,
@@ -74,7 +74,7 @@ if ($mode && $rc[2] == 'install') {
 			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	);
-	$db_json = json_decode_x(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
+	$db_json = _json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
 		$db_list[] = $a->td(
@@ -145,7 +145,7 @@ if ($mode && $rc[2] == 'install') {
 			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	);
-	$storage_json = json_decode_x(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
+	$storage_json = _json_decode(file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
 	foreach ($storage_json as $storage) {
 		$storage_translate = $rc[3].'_storage_'.$storage;
 		$storage_list[] = $a->td(
@@ -221,7 +221,7 @@ if ($mode && $rc[2] == 'install') {
 			$db_json = array();
 			//Настройки БД
 			if (file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
-				$db_json = json_decode_x(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
+				$db_json = _json_decode(file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
 				$lost_columns = array();
 				foreach ($db_json['users'] as $db_users_item) {
 					if (!in_array($db_users_item, $db_users_items)) {

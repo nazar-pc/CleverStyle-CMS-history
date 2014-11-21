@@ -6,7 +6,7 @@ IndexIgnore *.php *.pl *.cgi *.htaccess *.htpasswd
 RewriteEngine On
 RewriteRule .* index.php
 
-<Files 1.jpg> 
+<Files *.jpg> 
 	RewriteEngine Off
 </Files>
 <Files license.txt> 

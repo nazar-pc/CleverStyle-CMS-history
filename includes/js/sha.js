@@ -1168,7 +1168,3 @@
 
 	window.jsSHA = jsSHA;
 }());
-
-function hash (variant, string) {
-	return new jsSHA(string).getHash(variant);
-}

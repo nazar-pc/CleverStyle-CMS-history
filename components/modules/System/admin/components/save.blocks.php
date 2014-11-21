@@ -39,8 +39,8 @@ if ($mode && $rc[2] == 'enable') {
 	$save = true;
 }
 unset($mode);
-if ($rc[2] != 'edit' && isset($_POST['edit_settings']) && ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save')) {
-	$_POST['position'] = json_decode_x(filter($_POST['position'], 'form'));
+if ((!isset($rc[2]) || $rc[2] != 'edit') && isset($_POST['edit_settings']) && ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save')) {
+	$_POST['position'] = _json_decode(filter($_POST['position'], 'form'));
 	foreach ($_POST['position'] as $position => $items) {
 		foreach ($items as $position_id => $item) {
 			$Config->components['blocks'][$item]['position'] = $position;

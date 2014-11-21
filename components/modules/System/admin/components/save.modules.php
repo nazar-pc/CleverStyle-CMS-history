@@ -11,7 +11,7 @@ if (isset($_POST['update_modules_list'])) {
 		$update = true;
 	}
 } elseif (isset($_POST['install'], $_POST['module']) && !empty($_POST['module'])) {
-	if (!include_x(MODULES.DS.$_POST['module'].DS.$ADMIN.DS.'install'.DS.'process.php', false, false)) {
+	if (!_include(MODULES.DS.$_POST['module'].DS.$ADMIN.DS.'install'.DS.'process.php', false, false)) {
 		$modules[$_POST['module']]['active'] = 0;
 		if (isset($_POST['db']) && is_array($_POST['db'])) {
 			$modules[$_POST['module']]['db'] = $_POST['db'];
@@ -22,7 +22,7 @@ if (isset($_POST['update_modules_list'])) {
 		$update = true;
 	}
 } elseif (isset($_POST['uninstall'], $_POST['module'], $modules[$_POST['module']]) && !empty($_POST['module'])) {
-	if (!include_x(MODULES.DS.$_POST['module'].DS.$ADMIN.DS.'uninstall'.DS.'process.php', false, false)) {
+	if (!_include(MODULES.DS.$_POST['module'].DS.$ADMIN.DS.'uninstall'.DS.'process.php', false, false)) {
 		$modules[$_POST['module']] = array('active' => -1);
 		$update = true;
 	}

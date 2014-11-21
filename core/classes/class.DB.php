@@ -179,7 +179,7 @@ class DB {
 				return false;
 			}
 		} else {
-			$db = json_decode_x(filter($data, 'form'));
+			$db = _json_decode(filter($data, 'form'));
 		}
 		unset($data);
 		if (is_array($db)) {
