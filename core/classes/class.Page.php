@@ -34,7 +34,7 @@ class Page extends HTML {
 					'post_Body'			=> 2
 				);
 
-	private		$Search		= array(),
+	protected	$Search		= array(),
 				$Replace	= array();
 
 	function __construct () {

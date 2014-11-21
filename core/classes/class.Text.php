@@ -1,127 +1,148 @@
 <?php
 class Text {
-	private	$language,
-			$local_storage	= array(),	//Локальное хранилище, позволяет оптимизировать повторные запросы на получение текстов
-			$local_result	= array();	//Локальное хранилище результатов, хранит добавленные, или измененные тексты для
-										//оптимизации повторных запросов в БД
+	protected	$language;
+	/**
+	 * Sets current language
+	 * @param string $language
+	 */
 	function language ($language) {
-		$this->language = $language;
+		$this->language = (string)$language;
 	}
-	function get ($database, $id) {
+	/**
+	 * Gets text
+	 * @param int|string $database
+	 * @param int|string $id
+	 * @param null|string $language
+	 * @return bool|string
+	 */
+	function get ($database, $id, $language = null) {
 		global $Cache;
-		$id = (int)$id;
-		if (isset($this->local_storage[$database.'_'.$id])) {
-			return $this->local_storage[$database.'_'.$id];
-		} elseif ($result = $Cache->{'texts/'.$database.'_'.$id}) {
-			return $result;
+		if (!is_int($id)) {
+			$id = substr($id, 2, -1);
+			if (!is_int($id)) {
+				return false;
+			}
 		}
-		if (isset($this->local_result[$database.'_'.$id])) {
-			$result = &$this->local_result[$database.'_'.$id];
-			unset($this->local_result[$database.'_'.$id]);
-		} else {
+		$language = $language ?: $this->language;
+		if (!($result = $Cache->{'texts/'.$database.'/'.$id})) {
 			global $db;
 			$result = $db->$database->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
 			$result = _json_decode($result['text']);
-		}
-		if (!is_array($result) || empty($result)) {
-			return false;
-		} else {
-			$Cache->{'texts/'.$database.'_'.$id} = $result;
-		}
-		if (isset($result[$this->language]) && !empty($result[$this->language])) {
-			return $this->local_storage[$database.'_'.$id] = $result[$this->language];
-		} elseif (isset($result[0]) && !empty($result[0])) {
-			return $this->local_storage[$database.'_'.$id] = $result[0];
-		} elseif (current($result)) {
-			return $this->local_storage[$database.'_'.$id] = current($result);
-		} else {
-			return false;
-		}
-	}
-	function set ($database, $id, $data) {
-		if (empty($data)) {
-			return false;
-		}
-		$id = (int)$id;
-		global $db;
-		$result = $db->$database()->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
-		$result = _json_decode($result['text']);
-		if (!is_array($result)) {
-			$result = array();
-		}
-		if (is_array($data)) {
-			foreach ($data as $language => $translate) {
-				$result[$language] = $translate;
-			}
-			unset($language, $translate);
-		} else {
-			$result[0] = $data;
-		}
-		if (isset($this->local_storage[$database.'_'.$id])) {
-			unset($this->local_storage[$database.'_'.$id]);
-		}
-		if ($db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(_json_encode($result)).' WHERE `id` = '.$id.' LIMIT 1')) {
-			global $Cache;
-			$Cache->{'texts/'.$database.'_'.$id} = $result;
-			$this->local_result[$database.'_'.$id] = &$result;
-			return '{¶'.$id.'}';
-		} else {
-			return false;
-		}
-	}
-	function put ($database, $data, $relation = 'System', $relation_id = 0) {
-		if (empty($data)) {
-			return false;
-		}
-		global $db, $Config;
-		$result = array();
-		if (is_array($data)) {
-			foreach ($data as $language => &$translate) {
-				if (empty($translate)) {
-					continue;
-				}
-				$result[$language] = $translate;
-			}
-			unset($language, $translate);
-		} else {
-			$result[0] = $data;
-		}
-		if (!isset($result[0])) {
-			if (isset($result[$this->language])) {
-				$result[0] = $result[$this->language];
+			if (!is_array($result) || empty($result)) {
+				return false;
 			} else {
-				reset($result);
-				$result[0] = current($result);
+				$Cache->{'texts/'.$database.'/'.$id} = $result;
 			}
 		}
-		$id = $db->$database()->insert_id(
-			$db->$database()->q(
-				'INSERT INTO `[prefix]texts` (`relation`, `relation_id`, `text`) VALUES '.
-					'('.$db->$database()->sip($relation).', '.$db->$database()->sip($relation_id).', '.$db->$database()->sip(_json_encode($result)).')'
-			)
-		);
-		if ($id && $id % $Config->core['inserts_limit'] == 0) { //Чистим устаревшие тексты
-			$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = \'\' AND `relation` = \'\' AND `relation_id` = 0');
-		}
-		if ($id) {
-			global $Cache;
-			$Cache->{'texts/'.$database.'_'.$id} = $result;
-			$this->local_result[$database.'_'.$id] = &$result;
-			return '{¶'.$id.'}';
+		if (isset($result[$language]) && !empty($result[$language])) {
+			return $result[$language];
+		} elseif (current($result)) {
+			return current($result);
 		} else {
 			return false;
 		}
 	}
+	/**
+	 * Sets text
+	 * @param int|string $database
+	 * @param int|string $id
+	 * @param array|string $data
+	 * @param null|string $language
+	 * @return bool|string
+	 */
+	function set ($database, $id, $data, $language = null) {
+		global $Config, $Cache, $db;
+		if (empty($data)) {
+			return false;
+		}
+		$update = true;
+		if (!is_int($id)) {
+			$id = substr($id, 2, -1);
+			if (!is_int($id)) {
+				$update = false;
+			}
+		}
+		$result = array();
+		if (!$update) {
+			$language = $language ?: $this->language;
+			$result = $db->$database()->qf('SELECT `text` FROM `[prefix]texts` WHERE `id` = '.$id.' LIMIT 1');
+			$result = _json_decode($result['text']);
+			if (!is_array($result)) {
+				$result = array();
+			} else {
+				$update = false;
+			}
+		}
+		if (is_array($data)) {
+			foreach ($data as $l => $translate) {
+				$result[$l] = &$translate;
+			}
+			unset($l, $translate);
+		} else {
+			$result[$language] = $data;
+		}
+		$Cache->{'texts/'.$database.'/'.$id} = &$result;
+		if ($update) {
+			if ($db->$database()->q('UPDATE `[prefix]texts` SET `text` = '.$db->$database()->sip(_json_encode($result)).' WHERE `id` = '.$id.' LIMIT 1')) {
+				return '{¶'.$id.'}';
+			} else {
+				return false;
+			}
+		} else {
+			$id = $db->$database()->insert_id(
+				$db->$database()->q('INSERT INTO `[prefix]texts` (`text`) VALUES '.'('.$db->$database()->sip(_json_encode($result)).')')
+			);
+			if ($id && $id % $Config->core['inserts_limit'] == 0) { //Чистим устаревшие тексты
+				$db->$database()->q('DELETE FROM `[prefix]keys` WHERE `text` = null AND `relation` = null AND `relation_id` = 0');
+			}
+			if ($id) {
+				return '{¶'.$id.'}';
+			} else {
+				return false;
+			}
+		}
+	}
+	/*
+	 * Sets relation of text
+	 * @param int|string $database
+	 * @param int|string $id
+	 * @param string $relation
+	 * @param int $relation_id
+	 * @return bool|string
+	 */
+	/*function update_relation ($database, $id, $relation = 'System', $relation_id = 0) {
+		global $db;
+		if (!is_int($id)) {
+			$id = substr($id, 2, -1);
+			if (!is_int($id)) {
+				return false;
+			}
+		}
+		if ($db->$database()->q('UPDATE `[prefix]texts` SET
+				`relation` = '.$db->$database()->sip($relation).',
+				`relation_id` = '.(int)$relation_id.'
+			WHERE `id` = '.$id.' LIMIT 1'
+		)) {
+			return '{¶'.$id.'}';
+		} else {
+			return false;
+		}
+	}*/
+	/**
+	 * @param int|string $database
+	 * @param int|string $id
+	 * @return bool
+	 */
 	function del ($database, $id) {
-		$id = (int)$id;
-		if (isset($this->local_storage[$database.'_'.$id])) {
-			unset($this->local_storage[$database.'_'.$id]);
-		} elseif (isset($this->local_result[$database.'_'.$id])) {
-			unset($this->local_result[$database.'_'.$id]);
+		if (!is_int($id)) {
+			$id = substr($id, 2, -1);
+			if (!is_int($id)) {
+				return false;
+			}
 		}
 		global $db, $Cache;
-		$Cache->del('texts/'.$database.'_'.$id);
-		return $db->$database()->q('UPDATE `[prefix]texts` SET `relation` = \'\', `relation_id` = 0, `text` = \'\' WHERE `id` = '.$id.' LIMIT 1');
+		unset($Cache->{'texts/'.$database.'/'.$id});
+		return $db->$database()->q('UPDATE `[prefix]texts` SET `relation` = null, `relation_id` = 0, `text` = null WHERE `id` = '.$id.' LIMIT 1');
 	}
 	function process ($database, $data) {
 		if (!is_object($database) || empty($data)) {

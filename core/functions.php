@@ -152,6 +152,9 @@
 	}
 	//Функция для получения списка содержимого директории (и поддиректорий при необходимости)
 	function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $sort = false, $exclusion = false) {
+		if ($mode == 'df') {
+			$mode = 'fd';
+		}
 		$dir = rtrim($dir, DS).DS;
 		if (!_is_dir($dir) || ($exclusion !== false && _file_exists($dir.$exclusion))) {
 			return false;
@@ -912,7 +915,7 @@
 		static $mcrypt_data;
 		if (!isset($mcrypt_data)) {
 			ob_start();
-			phpinfo(INFO_MODULES);
+			@phpinfo(INFO_MODULES);
 			$mcrypt_version = ob_get_clean();
 			preg_match('/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)</', $mcrypt_version, $mcrypt_version);
 			$mcrypt_data[0] = $mcrypt_version[1] == 'enabled' ? trim($mcrypt_version[3]) : false;

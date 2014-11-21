@@ -35,18 +35,25 @@ class Cache {
 		} elseif ($item == 'cache') {
 			return $this->cache;
 		}
-		if (isset($this->local_storage[$item])) {
+		if (!MEMORY_SAVE && isset($this->local_storage[$item])) {
 			return $this->local_storage[$item];
 		}
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$item)) {
 			if ($cache = @_json_decode($cache)) {
-				$this->local_storage[$item] = $cache;
+				if (!MEMORY_SAVE) {
+					$this->local_storage[$item] = &$cache;
+				}
 				return $cache;
 			}
 		}
+		if (DS != '/') {
+			$item = str_replace('/', DS, $item);
+		}
 		if (_is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
 			if ($cache = @_json_decode($cache)) {
-				$this->local_storage[$item] = $cache;
+				if (!MEMORY_SAVE) {
+					$this->local_storage[$item] = &$cache;
+				}
 				return $cache;
 			} else {
 				_unlink(CACHE.DS.$item);
@@ -56,7 +63,9 @@ class Cache {
 		return false;
 	}
 	function set ($item, $data, $time = 0) {
-		$this->local_storage[$item] = $data;
+		if (!MEMORY_SAVE) {
+			$this->local_storage[$item] = $data;
+		}
 		$data = @_json_encode($data);
 		if (is_object($this->memcache)) {
 			global $Config;
@@ -140,11 +149,24 @@ class Cache {
 		return true;
 	}
 	function del ($item) {
-		unset($this->local_storage[$item]);
+		if (!MEMORY_SAVE) {
+			unset($this->local_storage[$item]);
+		}
 		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$item)) {
 			$this->memcache->delete(DOMAIN.$item);
 		}
+		if (DS != '/') {
+			$item = str_replace('/', DS, $item);
+		}
 		if (_is_writable(CACHE.DS.$item)) {
+			if (_is_dir(CACHE.DS.$item)) {
+				$files = get_list(CACHE.DS.$item, false, 'fd');
+				foreach ($files as $file) {
+					$this->del($item.'/'.$file);
+				}
+				unset($files, $file);
+				return _rmdir(CACHE.DS.$item);
+			}
 			if ($this->disk_size > 0) {
 				$size_file = _fopen(CACHE.DS.'size', 'c+b');
 				flock($size_file, LOCK_EX);
@@ -166,6 +188,8 @@ class Cache {
 			} else {
 				_unlink(CACHE.DS.$item);
 			}
+		} elseif (_file_exists(CACHE.DS.$item)) {
+			return false;
 		}
 		return true;
 	}
