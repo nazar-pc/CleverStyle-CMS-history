@@ -38,7 +38,7 @@ var loading_interval, loading_angle = 0;
 				});
 			} else if ($.browser.opera) {
 				bokeh.css({
-					'background': 'rgba('+bokehColour+', 0.4)'
+					'background': '-o-radial-gradient(contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))'
 				});
 			} else if ($.browser.mozilla) {
 				bokeh.css({

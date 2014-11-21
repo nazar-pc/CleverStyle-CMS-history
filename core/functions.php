@@ -100,7 +100,7 @@
 	function time_limit_pause ($pause = true) {
 		static $time_limit;
 		if (!isset($time_limit)) {
-			$time_limit = array('max_execution_time' => ini_get('max_execution_time'), 'max_input_time' => ini_get('max_input_time'));
+			$time_limit = ['max_execution_time' => ini_get('max_execution_time'), 'max_input_time' => ini_get('max_input_time')];
 		}
 		if ($pause) {
 			set_time_limit(900);
@@ -172,7 +172,7 @@
 					$mask && !preg_match($mask, $file) &&
 					(!$subfolders || !_is_dir($dir.$file))
 				) ||
-				$file == '.' || $file == '..' || $file == '.htaccess' || $file == '.htpasswd'
+				$file == '.' || $file == '..' || $file == '.htaccess' || $file == '.htpasswd' || $file == '.gitignore'
 			) {
 				continue;
 			}
@@ -587,11 +587,7 @@
 			case 'strtoupper':
 				return $mode($text);
 			default:
-				return str_replace(
-					array('&', '"', '<', '>'),
-					array('&amp;', '&quot;', '&lt;', '&gt;'),
-					trim($text)
-				);
+				return str_replace(['&', '"', '<', '>'], ['&amp;', '&quot;', '&lt;', '&gt;'], trim($text));
 		}
 	}
 	//Функции работы со строками аналоги системных, но вместо входящей строки могут принимать массив для его рекурсивной обработки
@@ -876,7 +872,7 @@
 						substr($hex, 24, 4).':'.
 						substr($hex, 28, 4);
 			if ($mode == 10) {
-				return array($result, false);
+				return [$result, false];
 			} else {
 				return $result;
 			}
@@ -960,10 +956,10 @@
 	 * @return string
 	 */
 	function password_generate ($length = 10, $strength = 5) {//TODO check correspondence with input strength and real strength of output password
-		static $special = array(
+		static $special = [
 			'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_',
 			'=', '+', '\\', '/', ';', ':', ',', '.', '?', '[', ']', '{', '}'
-		);
+		];
 		static $small, $capital;
 		if (!isset($small)) {
 			$small = [];
@@ -978,7 +974,7 @@
 			}
 		}
 		$password = [];
-		$symbols = array(0,1,2,3,4,5,6,7,8,9);
+		$symbols = [0,1,2,3,4,5,6,7,8,9];
 		if ($strength > 5) {
 			$strength = 5;
 		}
@@ -1087,21 +1083,19 @@
 				case 'collation_connection':
 				case 'collation_database':
 				case 'collation_server':
-					$sql_encoding .= h::{'tr td'}(
-						array(
-							$L->character_set_client,
-							$data[1]
-						)
-					);
+					$sql_encoding .= h::{'tr td'}([
+						$L->$data[0],
+						$data[1]
+					]);
 			}
 		}
 		return $sql_encoding;
 	}
 
 $temp = base64_decode('Y29weXJpZ2h0');
-$$temp = array(
+$$temp = [
 	0 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Generator
 	1 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExLTIwMTIgYnkgTW9rcnluc2t5aSBOYXphcg=='),															//Copyright
 	2 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Link
-);
+];
 unset($temp);

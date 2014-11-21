@@ -33,6 +33,13 @@ class MySQL extends DatabaseAbstract {
 	//Запрос в БД
 	//(текст_запроса)
 	function q ($query = '') {
+		if (is_array($query) && !empty($query)) {
+			$return = true;
+			foreach ($query as $q) {
+				$return = $return && $this->q($q);
+			}
+			return $return;
+		}
 		if(!$query) {
 			return false;
 		}

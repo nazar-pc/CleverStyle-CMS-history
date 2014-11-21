@@ -90,8 +90,10 @@ if (isset($_POST['update_modules_list'])) {
 				);
 				if (!empty($permissions_ids)) {
 					$permissions_ids = implode(',', $permissions_ids);
-					$User->db_prime()->q('DELETE FROM `[prefix]groups_permissions` WHERE `permission` IN ('.$permissions_ids.')');
-					$User->db_prime()->q('DELETE FROM `[prefix]users_permissions` WHERE `permission` IN ('.$permissions_ids.')');
+					$User->db_prime()->q([
+						'DELETE FROM `[prefix]groups_permissions` WHERE `permission` IN ('.$permissions_ids.')',
+						'DELETE FROM `[prefix]users_permissions` WHERE `permission` IN ('.$permissions_ids.')'
+					]);
 					global $Cache;
 					unset($Cache->{'permissions_table'}, $Cache->{'users/permissions'}, $Cache->{'groups/permissions'});
 				}

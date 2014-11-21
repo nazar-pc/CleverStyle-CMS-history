@@ -1,4 +1,12 @@
 $(function() {
+	if (
+		($.browser.msie && $.browser.version < 9) ||
+		($.browser.opera && $.browser.version < 11.1) ||
+		($.browser.webkit && $.browser.version < 534.24) ||
+		($.browser.mozilla && $.browser.version < 4)
+	) {
+		alert('Go away with your old browser! And come back with newer version, than now:)');
+	}
 	$(":radio").each(function () {
 		if (!$(this).hasClass('noui')) {
 			$(this).parent().buttonset();

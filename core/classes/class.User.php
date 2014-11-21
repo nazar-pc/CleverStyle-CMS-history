@@ -394,23 +394,36 @@ class User {
 		return is_array($data) && $data['id'] != 1 ? $data['id'] : false;
 	}
 	/**
+	 * @param int $group		Permission group
+	 * @param string $label		Permission label
 	 * @param bool|int $user
-	 * @return array|bool
+	 *
+	 * @return bool
 	 */
-	function get_user_groups ($user = false) {
-		global $Cache;
+	function permission ($group, $label, $user = false) {
 		$user = (int)($user ?: $this->id);
-		if (($groups = $Cache->{'users_groups/'.$user}) === false) {
-			$groups = $this->db()->qfa('SELECT `group` FROM `[prefix]users_groups` WHERE `id` = '.$user);
+		if (!isset($this->data[$user])) {
+			$data[$user] = [];
+		}
+		if (!isset($this->data[$user]['permissions'])) {
+			$groups = $this->get_user_groups($user);
+			$permissions = [];
 			if (is_array($groups)) {
-				foreach ($groups as &$group) {
-					$group = $group['group'];
+				foreach ($groups as $group_id) {
+					$permissions = array_merge($permissions, $this->get_group_permissions($group_id));
 				}
 			}
-			unset($group);
-			return $Cache->{'users_groups/'.$user} = $groups;
+			unset($groups, $group_id);
+			$this->data[$user]['permissions'] = array_merge($permissions, $this->get_user_permissions($user));
+			unset($permissions);
 		}
-		return $groups;
+		if (isset($this->permissions_table[$group], $this->permissions_table[$group][$label])) {
+			$permission = $this->permissions_table[$group][$label];
+			if (isset($this->data[$user]['permissions'][$permission])) {
+				return (bool)$this->data[$user]['permissions'][$permission];
+			}
+		}
+		return false;
 	}
 	/**
 	 * @param bool|int $user
@@ -446,6 +459,57 @@ class User {
 
 	}
 	/**
+	 * @param bool|int $user
+	 * @return array|bool
+	 */
+	function get_user_groups ($user = false) {
+		global $Cache;
+		$user = (int)($user ?: $this->id);
+		if (($groups = $Cache->{'users_groups/'.$user}) === false) {
+			$groups = $this->db()->qfa('SELECT `group` FROM `[prefix]users_groups` WHERE `id` = '.$user);
+			if (is_array($groups)) {
+				foreach ($groups as &$group) {
+					$group = $group['group'];
+				}
+			}
+			unset($group);
+			return $Cache->{'users_groups/'.$user} = $groups;
+		}
+		return $groups;
+	}
+	function set_user_groups () {//TODO set_user_groups
+
+	}
+	function add_group ($title, $description) {//TODO add_group
+
+	}
+	/**
+	 * Delete
+	 *
+	 * @param $group
+	 * @return bool
+	 */
+	function delete_group ($group) {
+		$group = (int)$group;
+		if ($group != 1 && $group != 2 && $group != 3) {
+			$return = $this->db_prime()->q([
+				'DELETE FROM `[prefix]groups` WHERE `id` = '.$group,
+				'DELETE FROM `[prefix]groups` WHERE `id` = '.$group,
+				'DELETE FROM `[prefix]users_groups` WHERE `group` = '.$group
+			]);
+			global $Cache;
+			unset(
+				$Cache->users_groups,
+				$Cache->{'users/permissions'},
+				$Cache->{'groups/'.$group},
+				$Cache->{'groups/permissions/'.$group}
+			);
+			return (bool)$return;
+		} else {
+			return false;
+		}
+	}
+	/**
 	 * @param int $group
 	 * @return array|bool
 	 */
@@ -469,7 +533,7 @@ class User {
 	 * @param int $group
 	 * @return array
 	 */
-	function get_group_permissions ($group) {//file_put_contents(DIR.DS.'test', $group."\n".MICROTIME."\n".print_r(debug_backtrace(), true)."\n\n\n\n", FILE_APPEND);
+	function get_group_permissions ($group) {
 		global $Cache;
 		$group = (int)$group;
 		if (($group_permissions = $Cache->{'groups/permissions/'.$group}) === false) {
@@ -491,41 +555,49 @@ class User {
 		}
 		return $group_permissions;
 	}
-	function set_group_permissions ($data, $group) {//TODO set_group_permissions
-
-	}
-
-	/**
-	 * @param int $group		Permission group
-	 * @param string $label		Permission label
-	 * @param bool|int $user
-	 *
-	 * @return bool
-	 */
-	function permission ($group, $label, $user = false) {
-		$user = (int)($user ?: $this->id);
-		if (!isset($this->data[$user])) {
-			$data[$user] = [];
+	function set_group_permissions ($data, $group) {
+		if (!is_array($data) || empty($data) || !$group) {
+			return false;
 		}
-		if (!isset($this->data[$user]['permissions'])) {
-			$groups = $this->get_user_groups($user);
-			$permissions = [];
-			if (is_array($groups)) {
-				foreach ($groups as $group_id) {
-					$permissions = array_merge($permissions, $this->get_group_permissions($group_id));
+		$group		= (int)$group;
+		$exitsing	= $this->db_prime()->qfa('SELECT `permission`, `value` FROM `[prefix]groups_permissions` WHERE `id` = '.$group);
+		$return		= true;
+		if (!empty($exitsing)) {
+			$update		= [];
+			foreach ($exitsing as $permission => $value) {
+				if (isset($data[$permission]) && $data[$permission] != $value) {
+					$update[] = 'UPDATE `[prefix]groups_permissions`
+						SET `value` = '.(int)(bool)$data[$permission].'
+						WHERE `permission` = '.$permission.' AND `id` = '.$group;
 				}
+				unset($data[$permission]);
 			}
-			unset($groups, $group_id);
-			$this->data[$user]['permissions'] = array_merge($permissions, $this->get_user_permissions($user));
-			unset($permissions);
+			unset($exitsing, $permission, $value);
+			if (!empty($update)) {
+				$return = $return && $this->db_prime()->q($update);
+			}
+			unset($update);
 		}
-		if (isset($this->permissions_table[$group], $this->permissions_table[$group][$label])) {
-			$permission = $this->permissions_table[$group][$label];
-			if (isset($this->data[$user]['permissions'][$permission])) {
-				return (bool)$this->data[$user]['permissions'][$permission];
+		if (!empty($data)) {
+			$insert	= [];
+			foreach ($data as $permission => $value) {
+				$insert[] = $group.', '.(int)$permission.', '.(int)(bool)$value;
+			}
+			unset($data, $permission, $value);
+			if (!empty($insert)) {
+				$return = $return && $this->db_prime()->q('INSERT INTO `[prefix]groups_permissions`
+						(`id`, `permission`, `value`)
+					VALUES
+						('.implode('), (', $insert).')'
+				);
 			}
 		}
-		return false;
+		global $Cache;
+		unset(
+			$Cache->{'users/permissions'},
+			$Cache->{'groups/permissions/'.$group}
+		);
+		return $return;
 	}
 	/**
 	 * Find the session by id, and return id of owner (user)
@@ -584,7 +656,7 @@ class User {
 			if ($this->db_prime()->qf('SELECT `id` FROM `[prefix]sessions` WHERE `id` = \''.$hash.'\' LIMIT 1')) {
 				continue;
 			}
-			$this->db_prime()->q(
+			$this->db_prime()->q([
 				'INSERT INTO `[prefix]sessions`
 					(`id`, `user`, `created`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`)
 						VALUES
@@ -597,15 +669,13 @@ class User {
 						\''.($ip = ip2hex($this->ip)).'\',
 						\''.($forwarded_for = ip2hex($this->forwarded_for)).'\',
 						\''.($client_ip = ip2hex($this->client_ip)).'\'
-					)'
-			);
-			$this->db_prime()->q(
+					)',
 				'UPDATE `[prefix]users`
-				SET
-					`lastlogin`	= '.TIME.',
-					`lastip`	= \''.$ip.'\'
-				WHERE `id` ='.$id
-			);
+					SET
+						`lastlogin`	= '.TIME.',
+						`lastip`	= \''.$ip.'\'
+					WHERE `id` ='.$id
+			]);
 			global $Cache;
 			$Cache->{'sessions/'.$hash} = $this->current['session'] = [
 				'user'			=> $id,
@@ -691,13 +761,12 @@ class User {
 			return;
 		}
 		if ($result) {
-			$this->db_prime()->q(
-				'UPDATE `[prefix]logins` '.
-					'SET `expire` = 0 '.
-					'WHERE '.
-						'`expire` > '.TIME.' AND ('.
-							'`login_hash` = \''.$login_hash.'\' OR `ip` = \''.ip2hex($this->ip).'\''.
-						')'
+			$this->db_prime()->q('UPDATE `[prefix]logins`
+				SET `expire` = 0
+				WHERE
+					`expire` > '.TIME.' AND (
+						`login_hash` = \''.$login_hash.'\' OR `ip` = \''.ip2hex($this->ip).'\'
+					)'
 			);
 		} else {
 			global $Config;
@@ -834,8 +903,8 @@ class User {
 		}
 		$this->reg_id = $data['id'];
 		$password	= password_generate($Config->core['password_min_length'], $Config->core['password_min_strength']);
-		$this->db_prime()->q(
-			'UPDATE `[prefix]users` SET
+		$this->db_prime()->q('UPDATE `[prefix]users`
+			SET
 				`password_hash` = \''.hash('sha512', $password).'\',
 				`status` = 1
 			WHERE `id` = '.$this->reg_id
@@ -854,7 +923,8 @@ class User {
 			return;
 		}
 		$this->add_session(1);
-		$this->db_prime()->q('UPDATE `[prefix]users` SET
+		$this->db_prime()->q('UPDATE `[prefix]users`
+			SET
 				`login` = null,
 				`login_hash` = null,
 				`username` = \'deleted\',

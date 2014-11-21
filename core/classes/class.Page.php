@@ -51,6 +51,8 @@ class Page {
 		$this->secret = uniqid();
 	}
 	function init ($name, $keywords, $description, $theme, $color_scheme) {
+		$this->theme = $theme;
+		$this->color_scheme = $color_scheme;
 		if ($this->init) {
 			return;
 		}
@@ -58,8 +60,6 @@ class Page {
 		$this->Title[0] = htmlentities($name, ENT_COMPAT, CHARSET);
 		$this->Keywords = $keywords;
 		$this->Description = $description;
-		$this->theme = $theme;
-		$this->color_scheme = $color_scheme;
 	}
 	function content ($add, $level = false) {
 		if ($level !== false) {
@@ -707,28 +707,28 @@ class Page {
 				$this->debug();
 			}
 			echo str_replace(
-					array(
-						'<!--debug_info-->',
-						'<!--generate time-->',
-						'<!--peak memory usage-->'
-					),
-					array(
-						$this->debug_info ? h::level(
-							h::{'div#debug'}(
-								h::level($this->debug_info),
-								array(
-									'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
-									'title'			=> $L->debug,
-									'style'			=> 'display: none;'
-								)
-							),
-							$this->level['debug_info']
-						) : '',
-						format_time(round($timeload['end'] - $timeload['start'], 5)),
-						format_filesize(memory_get_peak_usage(), 5)
-					),
-					$this->Html
-				);
+				[
+					'<!--debug_info-->',
+					'<!--generate time-->',
+					'<!--peak memory usage-->'
+				],
+				[
+					$this->debug_info ? h::level(
+						h::{'div#debug'}(
+							h::level($this->debug_info),
+							[
+								'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
+								'title'			=> $L->debug,
+								'style'			=> 'display: none;'
+							]
+						),
+						$this->level['debug_info']
+					) : '',
+					format_time(round($timeload['end'] - $timeload['start'], 5)),
+					format_filesize(memory_get_peak_usage(), 5)
+				],
+				$this->Html
+			);
 			if ($ob) {
 				ob_end_flush();
 			}

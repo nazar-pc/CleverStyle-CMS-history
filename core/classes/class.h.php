@@ -86,9 +86,9 @@ class h {
 	 * @return string
 	 */
 	static function url ($url, $absolute = false) {
-		if (substr($url, 0, 1) != '/' && substr($url, 0, 4) != 'http') {
+		if (substr($url, 0, 1) != '/' && substr($url, 0, 1) != '#' && substr($url, 0, 7) != 'http://' && substr($url, 0, 8) != 'https://') {
 			global $Config;
-			if (is_object($Config)) {
+			if ($absolute && is_object($Config)) {
 				return $Config->server['base_url'].'/'.$url;
 			}
 			return '/'.$url;

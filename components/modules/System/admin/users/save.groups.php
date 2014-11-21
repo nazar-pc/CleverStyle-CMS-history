@@ -13,28 +13,24 @@ if (isset($_POST['mode'])) {
 				'description',
 				'data'
 			);
-			$group_data['title'] = xap($group_data['title'], false);
 			foreach ($group_data as $item => &$value) {
 				if (in_array($item, $columns) && $item != 'data') {
 					$value = xap($value, false);
 				}
 			}
 			unset($item, $value, $columns);
+			//TODO use save_group_data here
 			$User->__finish();
 			$Index->save(true);
 		break;
 		case 'delete':
-			$id = (int)$_POST['id'];
-			if ($id != 1 && $id != 2 && $id != 3) {
-				$User->db_prime()->q('DELETE FROM `[prefix]groups` WHERE `id` = '.$id.';
-					DELETE FROM `[prefix]users_groups` WHERE `group` = '.$id
-				);
-				global $Cache;
-				unset($Cache->users_groups, $Cache->{'users/permissions'});
-				$Index->save(true);
-			}
+			$Index->save(
+				$User->delete_group($_POST['id'])
+			);
 		break;
 		case 'permissions':
-			//TODO use set_group_permissions
+			$Index->save(
+				$User->set_group_permissions($_POST['permission'], $_POST['id'])
+			);
 	}
 }

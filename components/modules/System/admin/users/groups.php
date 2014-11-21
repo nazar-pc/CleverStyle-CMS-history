@@ -48,11 +48,11 @@ if (isset($rc[2], $rc[3])) {
 				h::{'p.center_all'}(
 					$L->sure_delete_group($permission['title'])
 				).
-					h::{'input[type=hidden]'}([
-						'name'	=> 'id',
-						'value'	=> $rc[3]
-					]).
-					h::{'button[type=submit]'}($L->yes)
+				h::{'input[type=hidden]'}([
+					'name'	=> 'id',
+					'value'	=> $rc[3]
+				]).
+				h::{'button[type=submit]'}($L->yes)
 			);
 			global $Page;
 			$Page->warning($L->changing_settings_warning);
@@ -114,7 +114,11 @@ if (isset($rc[2], $rc[3])) {
 					h::{'ul li'}($tabs).
 					$tabs_content
 				).
-				h::br()
+				h::br().
+				h::{'input[type=hidden]'}([
+					'name'	=> 'id',
+					'value'	=> $rc[3]
+				])
 			);
 		break;
 	}

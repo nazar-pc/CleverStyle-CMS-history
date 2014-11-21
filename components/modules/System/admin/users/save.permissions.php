@@ -21,10 +21,11 @@ switch ($_POST['mode']) {
 	break;
 	case 'delete':
 		$id = (int)$_POST['id'];
-		$u_db->q('DELETE FROM `[prefix]permissions` WHERE `id` = '.$id.' LIMIT 1;
-			DELETE FROM `[prefix]groups_permissions` WHERE `permission` = '.$id.';
-			DELETE FROM `[prefix]users_permissions` WHERE `permission` = '.$id
-		);
+		$u_db->q([
+			'DELETE FROM `[prefix]permissions` WHERE `id` = '.$id.' LIMIT 1',
+			'DELETE FROM `[prefix]groups_permissions` WHERE `permission` = '.$id,
+			'DELETE FROM `[prefix]users_permissions` WHERE `permission` = '.$id
+		]);
 		unset($Cache->{'permissions_table'}, $Cache->{'users/permissions'}, $Cache->{'groups/permissions'});
 		$Index->save(true);
 		break;

@@ -43,7 +43,7 @@ abstract class DatabaseAbstract {
 	//(текст_запроса)
 	/**
 	 * @abstract
-	 * @param string $query
+	 * @param array|string $query
 	 * @return resource
 	 */
 	abstract function q ($query = '');

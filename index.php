@@ -13,7 +13,9 @@
 |		+ Opera Internet Browser		>= 11.10;							*|
 |		+ Microsoft Internet Explorer	>= 10;								*|
 |		+ Google Chrome					>= 11;								*|
+|			(Webkit 534.24+)												*|
 |		+ Safari						>= 5;								*|
+|			(Webkit 534.24+)												*|
 |		+ Mozilla Firefox				>= 4;								*|
 \****************************************************************************/
 
