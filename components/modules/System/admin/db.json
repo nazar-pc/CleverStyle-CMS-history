@@ -13,7 +13,7 @@
 					"password_hash",
 					"email",
 					"email_hash",
-					"group",
+					"groups",
 					"permissions",
 					"language",
 					"languages",

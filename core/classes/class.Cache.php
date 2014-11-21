@@ -104,24 +104,25 @@ class Cache {
 						foreach ($cache_list as $file) {
 							$this->size -= filesize($file);
 							unlink($file);
-							if ($this->size <= $this->disk_size) {
+							$disk_size = $this->disk_size*2/3;
+							if ($this->size <= $disk_size) {
 								break;
 							}
 						}
 						unset($cache_list, $file);
 					}
-					if (file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY) !== false) {
+					if (($return = file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY)) !== false) {
 						ftruncate($size_file, 0);
 						fseek($size_file, 0);
 						fwrite($size_file, $this->size > 0 ? $this->size : 0);
 					} else {
 						$this->size -= $dsize;
 					}
-					unset($dsize);
 					flock($size_file, LOCK_UN);
 					fclose($size_file);
+					return $return;
 				} else {
-					file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY);
+					return file_put_contents(CACHE.DS.$item, $data, LOCK_EX|FILE_BINARY);
 				}
 			} else {
 				global $Error, $L;

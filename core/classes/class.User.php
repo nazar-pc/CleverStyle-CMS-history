@@ -16,7 +16,7 @@ class User {
 		global $Cache, $Config;
 		$this->current['is']['admin']	= true;
 		//Пользователь может устанавливать cookies
-		if (setcookie($test = uniqid(), 'test')) {
+		if (!setcookie($test = uniqid(), 'test')) {
 			setcookie($test, '');
 			unset($test);
 			if (false) {
@@ -27,44 +27,83 @@ class User {
 		//Не может установивить cookie - значит (вероятнее всего) бот
 		} else {
 			unset($test);
+			//Получаем список известных ботов
+			if (!($bots = $Cache->get('bots'))) {
+				$bots = $this->db()->qfa('SELECT `id`, `login`, `email` WHERE 3 IN (`groups`)');
+				if (is_array($bots) && !empty($bots)) {
+					foreach ($bots as &$bot) {
+						$bot['login'] = _json_decode($bot['login']);
+						$bot['email'] = _json_decode($bot['email']);
+					}
+					unset($bot);
+					$Cache->set('bots', $bots);
+				}
+			}
 			//Устанавливаем метку, что это бот. В любом случае изменение любых настроек,
-			//в том числе и языка и интерфейса для него недоступно
+			//в том числе и языка и вида интерфейса для него недоступно
 			$this->current['is']['bot'] = true;
 			//Для бота символически логином является $_SERVER['HTTP_USER_AGENT'] (название робота),
 			//а электронной почтой  - $_SERVER['REMOTE_ADDR'] (IP робота)
-			$login_hash = hash('sha224', $this->current['user_agent']	= trim($_SERVER['HTTP_USER_AGENT']));
-			$email_hash = hash('sha224', $this->current['ip']			= $_SERVER['REMOTE_ADDR']);
-			$full_hash = substr($login_hash, 0, 28).substr($email_hash, 28, 56);
-			if (!$this->data = $Cache->get('users/'.$full_hash)) {
-				if ($this->data = $this->db()->qf(
-					'SELECT `id`, `permissions`, `language`, `languages`, `timezone` FROM `[prefix]users` WHERE '.
-						'`group` = \'3\' AND (`login_hash` = \''.$login_hash.'\' OR `email_hash` = \''.$email_hash.'\') LIMIT 1'
-				)) {
-					$Cache->set('users/'.$full_hash, $this->data);
-					if (!$group_data = $Cache->get('users_groups/3')) {
-						$Cache->set(
-							'users_groups/3',
-							$group_data = $this->db()->qf('SELECT `permissions` FROM `[prefix]users_groups` WHERE `id` = \'3\' LIMIT 1')
-						);
+			$user_agent	= $this->current['user_agent']	= $_SERVER['HTTP_USER_AGENT'];
+			$ip			= $this->current['ip']			= $_SERVER['REMOTE_ADDR'];
+			$bot_hash	= hash('sha224', $user_agent.$ip);
+			//Если список известных ботов не пустой - определяем бота
+			if (is_array($bots) && !empty($bots)) {
+				//Загружаем данные
+				if (!($this->data = $Cache->get('users/'.$bot_hash))) {
+					//Данных нет - ищем бота в списке известных
+					$id = false;
+					foreach ($bots as &$bot) {
+						foreach ($bot['login'] as $login) {
+							if ($user_agent == $login || preg_match($user_agent, $login)) {
+								$id = $bot['id'];
+								break 2;
+							}
+						}
+						foreach ($bot['email'] as $email) {
+							if ($ip == $email || preg_match($ip, $email)) {
+								$id = $bot['id'];
+								break 2;
+							}
+						}
 					}
-					//Определяем права доступа, с учётом индивидуальных прав.
-					//Цифра 2 в маске пользователя прав означает перепись любого соответствующего значения группы
-					//локальным значением пользователя - запретом, поэтому после сложения делаем замену
-					$this->data['permissions'] = str_replace(2, 0, $this->data['permissions'] | $group_data['permissions']);
-					unset($group_data);
-				//Если такого бота в БД нет - определяем, как гостя
-				} else {
-					$Cache->set('users/'.$full_hash, $this->data = 'guest');
+					unset($bots, $login, $email);
+					//Если получен id - бот найден
+					if ($id) {
+						$this->data = $this->db()->qf(
+							'SELECT `id`, `permissions`, `language`, `languages`, `timezone` FROM `[prefix]users` WHERE `id` = '.$id.' LIMIT 1'
+						);
+						$Cache->set('users/'.$bot_hash, $this->data);
+						if (!($group_data = $Cache->get('users_groups/3'))) {
+							$Cache->set(
+								'users_groups/3',
+								$group_data = $this->db()->qf('SELECT `permissions` FROM `[prefix]users_groups` WHERE `id` = 3 LIMIT 1')
+							);
+						}
+						//Определяем права доступа, с учётом индивидуальных прав.
+						//Цифра 2 в маске пользователя прав означает перепись любого соответствующего значения группы
+						//локальным значением пользователя - запретом, поэтому после сложения делаем замену
+						if ($group_data) {
+							$this->data['permissions'] = str_replace(2, 0, $this->data['permissions'] | $group_data['permissions']);
+						}
+						unset($group_data);
+					//Если такого бота в БД нет - определяем как гостя
+					} else {
+						$Cache->set('users/'.$full_hash, $this->data = 'guest');
+					}
 				}
+				unset($login_hash, $email_hash);
+			//Список ботов пустой - определяем как гостя
+			} else {
+				$Cache->set('users/'.$bot_hash, $this->data = 'guest');
 			}
-			unset($login_hash, $email_hash);
 		}
 		if ($this->data === 'guest') {
 			$this->current['is']['guest'] = true;
-			if (!$this->data = $Cache->get('users/guest')) {
+			if (!($this->data = $Cache->get('users/guest'))) {
 				$Cache->set(
 					'users/guest',
-					$this->data = $this->db()->qf('SELECT `id`, `permissions`, `language`, `timezone` FROM `[prefix]users` WHERE `id` = \'1\' LIMIT 1')
+					$this->data = $this->db()->qf('SELECT `id`, `permissions`, `language`, `timezone` FROM `[prefix]users` WHERE `id` = 1 LIMIT 1')
 				);
 			}
 		}

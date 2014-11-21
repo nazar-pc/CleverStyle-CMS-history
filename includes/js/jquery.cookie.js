@@ -52,6 +52,7 @@
  * @name $.cookie
  * @cat Plugins/Cookie
  * @author Klaus Hartl/klaus.hartl@stilbuero.de
+ * @modified expire format by Mokrynskyi Nazar/nazar-pc@yandex.ru
  */
 jQuery.cookie = function(name, value, options) {
     if (typeof value != 'undefined') { // name and value given, set cookie
@@ -65,7 +66,7 @@ jQuery.cookie = function(name, value, options) {
             var date;
             if (typeof options.expires == 'number') {
                 date = new Date();
-                date.setTime(date.getTime() + (options.expires * 24 * 60 * 60 * 1000));
+                date.setTime(options.expires);
             } else {
                 date = options.expires;
             }
