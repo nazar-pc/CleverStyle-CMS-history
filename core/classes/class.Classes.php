@@ -35,18 +35,19 @@ class Classes {
 								$this->LoadedObjects[$class[2]] = $class[2];
 								$$class[2] = new $class[0]();
 							}
-							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
+							$this->ObjectsList[$class[2]] = array(time_x(true), memory_get_usage());
 						} else {
 							global $$class[0];
 							if (!is_object($$class[0])) {
 								$this->LoadedObjects[$class[0]] = $class[0];
 								$$class[0] = new $class[0]();
 							}
-							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
+							$this->ObjectsList[$class[0]] = array(time_x(true), memory_get_usage());
 						}
 					}
 				} else {
-					$Error->process('{%CANT_LOAD_CLASS%} '.$class[0]);
+					global $Error, $L, $Page;
+					$Error->process($L->class.' '.$Page->b($class[0]).' '.$L->not_exists);
 				}
 			}
 		} else {
@@ -63,7 +64,7 @@ class Classes {
 			global $$class;
 			unset($this->LoadedObjects[$class]);
 			method_exists($$class, '__finish') && $$class->__finish();
-			$$class = NULL;
+			unset($$class, $GLOBALS[$class]);
 		}
 	}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы

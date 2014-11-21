@@ -75,34 +75,28 @@ class Config {
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
 		$r['current'] = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
-		if (mb_strtolower($r['current'][0]) == mb_strtolower($API)) {
-			if (!defined('API')) {
-				define('API', $API);
+		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
+			if (!defined('ADMIN')) {
+				define('ADMIN', true);
 			}
 			array_shift($r['current']);
-		} else {
-			define('API', false);
-			if (mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
-				if (!defined('ADMIN')) {
-					define('ADMIN', true);
-				}
-				array_shift($r['current']);
-			} else {
-				if (!defined('ADMIN')) {
-					define('ADMIN', false);
-				}
-			}
-			if (isset($r['current'][0]) && in_array($r['current'][0], array_keys($this->components['modules']))) {
-				if (!defined('MODULE')) {
-					define('MODULE', array_shift($r['current']));
-				}
-			} else {
-				if (!defined('MODULE')) {
-					define('MODULE', 'System');
-				}
-			}
-			$this->server['current_url'] = (ADMIN ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
 		}
+		if (isset($r['current'][0]) && in_array($r['current'][0], array_keys($this->components['modules']))) {
+			if (!defined('MODULE')) {
+				define('MODULE', array_shift($r['current']));
+			}
+		} else {
+			if (!defined('MODULE')) {
+				define('MODULE', 'System');
+			}
+		}
+		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($API)) {
+			if (!defined('API')) {
+				define('API', true);
+			}
+			array_shift($r['current']);
+		}
+		$this->server['current_url'] = (defined('ADMIN') ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
 		if (isset($_POST['nonterface'])) {
 			interface_off();
 		} elseif (isset($r['current'][count($r['current']) - 1]) && mb_strtolower($r['current'][count($r['current']) - 1]) == 'nointerface') {
@@ -139,12 +133,16 @@ class Config {
 	function reload_languages () {
 		unset($this->core['languages']);
 		$langlist = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?\.php$/i', 'f');
-		$langnames = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?$/i', 'f');
-		foreach ($langlist as $i => $lang) {
-			$this->core['languages'][mb_substr($lang, 5, -4)] = file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4));
+		foreach ($langlist as $lang) {
+			if (file_exists(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json')) {
+				$lang_data = (array)json_decode(file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4).'.json'));
+				$this->core['languages'][mb_substr($lang, 5, -4)] = $lang_data['name'];
+			} else {
+				$this->core['languages'][mb_substr($lang, 5, -4)] = ucfirst(mb_substr($lang, 5, -4));
+			}
 		}
 		asort($this->core['languages']);
-		unset($langlist, $langnames);
+		unset($langlist, $lang_data);
 	}
 	//Перестройка кеша настроек
 	function rebuild_cache ($query = true) {

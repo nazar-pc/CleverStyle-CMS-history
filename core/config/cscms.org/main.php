@@ -14,17 +14,17 @@ if (CDOMAIN !== 'cscms.org') {
 	exit;
 }
 unset($MULTIDOMAIN, $MULTIDOMAIN_CURRENT);
-isset($ADMIN)			|| $ADMIN			= 'admin';
-isset($API)				|| $API				= 'api';
-isset($DB_HOST)			|| $DB_HOST			= 'localhost';
-isset($DB_TYPE)			|| $DB_TYPE			= 'MySQL';
-isset($DB_NAME)			|| $DB_NAME			= 'CleverStyle';
-isset($DB_USER)			|| $DB_USER			= 'CleverStyle';
-isset($DB_PASSWORD)		|| $DB_PASSWORD		= '1111';
-isset($DB_PREFIX)		|| $DB_PREFIX		= 'prefix_';
-isset($DB_CODEPAGE)		|| $DB_CODEPAGE		= 'utf8';
-isset($LANGUAGE)		|| $LANGUAGE		= 'russian';
-isset($MEMCACHE_HOST)	|| $MEMCACHE_HOST	= 'localhost';
-isset($MEMCACHE_PORT)	|| $MEMCACHE_PORT	= '11211';
-$KEY										= 'f40fbea2ee5a24ce581fb53510883dfcf40fbea2ee5a24ce581fb535';
+$ADMIN			= 'admin';
+$API			= 'api';
+$DB_HOST		= 'localhost';
+$DB_TYPE		= 'MySQL';
+$DB_NAME		= 'CleverStyle';
+$DB_USER		= 'CleverStyle';
+$DB_PASSWORD	= '1111';
+$DB_PREFIX		= 'prefix_';
+$DB_CODEPAGE	= 'utf8';
+$LANGUAGE		= 'russian';
+$MEMCACHE_HOST	= 'localhost';
+$MEMCACHE_PORT	= '11211';
+$KEY			= 'f40fbea2ee5a24ce581fb53510883dfcf40fbea2ee5a24ce581fb535';
 ?>

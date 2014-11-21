@@ -4,23 +4,29 @@ class Core {
 	protected	$iv,
 				$td,
 				$key,
-				$support;
+				$support = false;
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
 		if (require_x(CONFIG.DS.DOMAIN.DS.'main.php', true, false)) {
-			define('CACHE', CORE.DS.'cache'.DS.CDOMAIN);	//Папка с кешем
+			define('CACHE',	CORE.DS.'cache'.DS.CDOMAIN);	//Папка с кешем
+			define('LOGS',	CORE.DS.'logs'.DS.CDOMAIN);		//Папка для логов
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_USER, $DB_PASSWORD, $DB_PREFIX, $DB_CODEPAGE, $KEY;
 			if(!is_dir(CACHE)) {
-				if (!mkdir(CACHE, 0600)) {
-					header('HTTP/1.0 404 Not Found');
-					__finish();
-				}
+				@mkdir(CACHE, 0600);
 			}
-			$check_mcrypt = check_mcrypt();
-			if ($this->support = $check_mcrypt[1]) {
-				$this->crypt_open('core', $KEY, mb_substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, 8), mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc',''));
+			if(!is_dir(LOGS)) {
+				@mkdir(LOGS, 0600);
 			}
-			unset($KEY);
+			if ($this->support = check_mcrypt()) {
+				$td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');
+				$this->crypt_open(
+					'core',
+					mb_substr($KEY, 0, mcrypt_enc_get_key_size($td)),
+					mb_substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, mcrypt_enc_get_iv_size($td)),
+					$td
+				);
+			}
+			unset($KEY, $td);
 		} else {
 			header('HTTP/1.0 404 Not Found');
 			__finish();
@@ -34,7 +40,7 @@ class Core {
 		$this->key[$name] = $key;
 		$this->iv[$name] = $iv;
 		if ($td === false) {
-			$this->td[$name] = &$td['core'];
+			$this->td[$name] = $td['core'];
 		} else {
 			$this->td[$name] = $td;
 		}
@@ -71,7 +77,7 @@ class Core {
 	}
 	//Отключение шифрования
 	function crypt_close ($name) {
-		if ($this->support && isset($this->td[$name])) {
+		if ($this->support && isset($this->td[$name]) && is_resource($this->td[$name])) {
 			mcrypt_module_close($this->td[$name]);
 			unset($this->key[$name], $this->iv[$name], $this->td[$name]);
 		}
@@ -82,7 +88,7 @@ class Core {
 			return;
 		}
 		foreach ($this->td as $td) {
-			mcrypt_module_close($td);
+			 is_resource($td) && mcrypt_module_close($td);
 		}
 		unset($this->key, $this->iv, $this->td);
 	}

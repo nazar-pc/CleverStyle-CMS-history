@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['edit_settings'])) {
-	global $Config, $db, $Page, $L, $Admin;
+	global $Config, $db, $Page, $L, $Admin, $Cache;
 	$apply_error = false;
 	if ($_POST['edit_settings'] == 'apply' || $_POST['edit_settings'] == 'save') {
 		foreach ($Config->admin_parts as $part) {

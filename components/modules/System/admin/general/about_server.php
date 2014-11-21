@@ -11,10 +11,10 @@ $a->content(
 			array(
 				$a->td($L->operation_system.':').$a->td(php_uname('s').' '.php_uname('r').' '.php_uname('v')),
 	
-				$a->td($L->server_type.':').$a->td($server = server_api()),
+				$a->td($L->server_type.':').$a->td(server_api()),
 	
-				strpos($server, 'Apache') !== false ?
-					$a->td($L->version.' Apache:').$a->td(apache_version ())
+				function_exists('apache_get_version') ?
+					$a->td($L->version.' Apache:').$a->td(apache_get_version())
 				: false,
 	
 				$a->td($L->allow_ram.':').$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('memory_limit'))),
@@ -107,7 +107,7 @@ $a->content(
 					array('class' => 'left_odd', 'style' => 'width: 100%;')
 				)
 			)
-		).(strpos($server, 'Apache') !== false ?
+		).(function_exists('apache_get_version') ?
 		$a->tr(
 			$a->td($L->configs.' "php.ini":').
 			$a->td(

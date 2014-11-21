@@ -2,24 +2,24 @@
 class Language {
 	public		$clanguage;
 	protected	$translate = array(),
-				$_need_to_rebuild_cache = false;
+				$need_to_rebuild_cache = false,
+				$initialized = false;
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
 		$this->change($LANGUAGE);
 	}
-	function init ($Config) {
-		if ($Config->core['allow_change_language'] && isset($_COOKIE['language']) && in_array(strval($_COOKIE['language']), $Config->core['active_languages'])) {
-			$this->change(strval($_COOKIE['language']));
-		} else {
+	function init ($Config = false) {
+		if ($Config !== false) {
 			$this->change($Config->core['language']);
 		}
-		if ($this->_need_to_rebuild_cache) {
+		if ($this->need_to_rebuild_cache) {
 			global $Cache;
 			if ($Cache->cache) {
 				$Cache->set('lang.'.$this->clanguage, $this->translate);
 			}
-			$this->_need_to_rebuild_cache = false;
+			$this->need_to_rebuild_cache = false;
+			$this->initialized = true;
 		}
 	}
 	function __get ($item) {
@@ -49,7 +49,17 @@ class Language {
 				if (!include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
 					return false;
 				} else {
-					$this->_need_to_rebuild_cache = true;
+					if (file_exists(LANGUAGES.'/'.$this->clanguage.'.json')) {
+						$lang_data = (array)json_decode(file_get_contents(LANGUAGES.'/'.$this->clanguage.'.json'));
+						$this->clang = $lang_data['short_format'];
+						unset($lang_data);
+					} else {
+						$this->clang = strtolower(mb_substr($this->clanguage, 0, 2));
+					}
+					$this->need_to_rebuild_cache = true;
+					if ($this->initialized) {
+						$this->init();
+					}
 					return true;
 				}
 			}

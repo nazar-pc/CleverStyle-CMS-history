@@ -598,7 +598,7 @@ class Page extends HTML {
 				}
 				$ob = false;
 			}
-			$timeload['end'] = microtime(true);
+			$timeload['end'] = time_x(true);
 			if (is_object($Config) && $Config->core['debug']) {
 				$this->debug();
 			}

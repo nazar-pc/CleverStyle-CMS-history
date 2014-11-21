@@ -1,19 +1,19 @@
 <?php
 class Index {
-	public	$preload	= array(),
-			$postload	= array();
+	/*public	$preload	= array(),
+			$postload	= array();*/
 	function __construct () {
-		global $Page, $L, $User, $Classes, $ADMIN;
-		if (ADMIN && $User->is_admin()) {
+		global $Page, $L, $User, $Classes, $ADMIN, $API;
+		if (defined('ADMIN') && $User->is_admin()) {
 			if ($User->is_admin()) {
 				define('MFOLDER', MODULES.DS.MODULE.DS.$ADMIN);
-				$Classes->load(array(
-									array('Admin', true)
-									)
-								);
+				$Classes->load('Admin', true);
 			} else {
 				
 			}
+		} elseif (defined('API')) {
+			define('MFOLDER', MODULES.DS.MODULE.DS.$API);
+			$Classes->load('Api', true);
 		} else {
 			define('MFOLDER', MODULES.DS.MODULE);
 			$Classes->load('Module', true);

@@ -4,17 +4,14 @@
 	top: 0px;
 	width: 100%;
 }
-#header_green, #header_black, #header_light_green {
+#header_green, #header_black {
 	border-radius: 0px 0px 10px 10px;
 	-moz-border-radius: 0px 0px 10px 10px;
 	position: fixed;
+	margin-right: 300px;
+	right: 0px;
 	top: 0px;
-	width: 100%;
-}
-#header_light_green {
-	height: 20px;
-	margin-top: -19px;
-	z-index: 3;
+	width: inherit;
 }
 #header_green {
 	height: 70px;
@@ -22,7 +19,6 @@
 }
 #header_black {
 	height: 115px;
-	right: 0px;
 	z-index: 1;
 }
 #user_header {

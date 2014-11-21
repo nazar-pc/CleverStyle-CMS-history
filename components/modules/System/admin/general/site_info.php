@@ -1,5 +1,5 @@
 <?php
-global $Config, $Admin;
+global $Config, $Admin, $L;
 $a = &$Admin;
 
 $a->content(
@@ -156,35 +156,6 @@ $a->content(
 						'value' => $Config->core['admin_phone'],
 						'class'	=> 'form_element',
 						'size'	=> 40
-					)
-				)
-			)
-		).
-		$a->tr(
-			$a->td($a->info('start_date')).
-			$a->td(
-				$a->input(
-					array(
-						'type'	=> 'date',
-						'name'	=> 'core[start_date]',
-						'value' => $Config->core['start_date'],
-						'class'	=> 'form_element'
-					)
-				)
-			)
-		).
-		$a->tr(
-			$a->td($a->info('time_of_site')).
-			$a->td(
-				$a->input(
-					array(
-						'type'	=> 'number',
-						'name'	=> 'core[time_of_site]',
-						'value' => (int)$Config->core['time_of_site'],
-						'class'	=> 'form_element',
-						'style'	=> 'width: 50px;',
-						'min'	=> -12,
-						'max'	=> 12
 					)
 				)
 			)

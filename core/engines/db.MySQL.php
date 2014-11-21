@@ -3,7 +3,7 @@ class MySQL extends DatabaseAbstract {
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница]]
 	function __construct ($database, $user = '', $password = '', $host = 'localhost', $codepage = false) {
-		$this->connecting_time = microtime(true);
+		$this->connecting_time = time_x(true);
 		$this->id = @mysql_connect($host, $user, $password);
 		if(is_resource($this->id)) {
 			if(!$this->select_db($database)) {
@@ -21,7 +21,7 @@ class MySQL extends DatabaseAbstract {
 			unset($this);
 			return false;
 		}
-		$this->connecting_time = microtime(true) - $this->connecting_time;
+		$this->connecting_time = time_x(true) - $this->connecting_time;
 		global $db;
 		$db->time += $this->connecting_time;
 		return $this->id;
@@ -40,11 +40,11 @@ class MySQL extends DatabaseAbstract {
 		if (is_resource($this->query['resource'])) {
 			@mysql_free_result($this->query['resource']);
 		}
-		$this->query['time'] = microtime(true);
+		$this->query['time'] = time_x(true);
 		$this->query['text'] = str_replace('[prefix]', $this->prefix, $query);
 		unset($this->query['resource']);
 		$this->query['resource'] = @mysql_query($this->query['text'], $this->id);
-		$this->query['time'] = round(microtime(true) - $this->query['time'], 6);
+		$this->query['time'] = round(time_x(true) - $this->query['time'], 6);
 		$this->time += $this->query['time'];
 		++$this->queries['num'];
 		global $db, $Config;

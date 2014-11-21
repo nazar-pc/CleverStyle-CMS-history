@@ -95,6 +95,10 @@ function __finish () {
 	}
 	exit;
 }
+//
+function time_x ($microtime = false) {
+	return ($microtime ? microtime(true) : time())-date('Z');
+}
 //Включение или отключение обработки ошибок
 function errors_on() {
 	global $Error;
@@ -325,10 +329,10 @@ function check_mcrypt ($n = 0) { //0 - версия библиотеки (и н�
 		ob_start();
 		phpinfo(8);
 		$mcrypt_version = ob_get_clean();
-		preg_match('/mcrypt support.*?(enabled|disabled).*?\n.*?Version <\/td><td class=\"v\">(.*) <\/td>/', $mcrypt_version, $mcrypt_version);
-		$mcrypt_data[0] = $mcrypt_version[1] != 'enabled' ?: $mcrypt_version[2];
+		preg_match('/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)</', $mcrypt_version, $mcrypt_version);
+		$mcrypt_data[0] = $mcrypt_version[1] == 'enabled' ? trim($mcrypt_version[3]) : false;
 		global $mcrypt;
-		$mcrypt_data[1] = $mcrypt_data[0] ? (bool)version_compare($mcrypt_version[2], $mcrypt, '>=') : false;
+		$mcrypt_data[1] = $mcrypt_data[0] ? (bool)version_compare($mcrypt_data[0], $mcrypt, '>=') : false;
 	}
 	return $mcrypt_data[$n];
 }
@@ -367,20 +371,7 @@ function server_api () {
 	ob_start();
 	phpinfo(5);
 	$tmp = ob_get_clean();
-	preg_match('/Server API <\/td><td class=\"v\">(.*) <\/td><\/tr>/', $tmp, $tmp);
-	if ($tmp[1]) {
-		return $tmp[1];
-	} else {
-		return $L->indefinite;
-	}
-}
-//Проверка версии веб-сервера Apache
-function apache_version () {
-	global $L;
-	ob_start();
-	phpinfo(8);
-	$tmp = ob_get_clean();
-	preg_match('/Apache Version <\/td><td class=\"v\">(.*) <\/td><\/tr>/', $tmp, $tmp);
+	preg_match('/Server API <\/td><td class=\"v\">(.*?) <\/td><\/tr>/', $tmp, $tmp);
 	if ($tmp[1]) {
 		return $tmp[1];
 	} else {
