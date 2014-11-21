@@ -28,9 +28,7 @@
 	background: rgba(0, 0, 0, 0.15);
 	border: 1px solid rgba(0, 0, 0, 0.6);
 	color: #fff;
-	font-size: 80px;
 	text-shadow:  0px 0px 20px #fff;
-	vertical-align: top;
 }
 #main-menu, #main-menu > a, #main-submenu > a {
 	color: #fff;

@@ -517,15 +517,19 @@ class Page extends HTML {
 					', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.round($database->time, 5).' '.$L->sec.':',
 					array('style' => 'padding-left: 20px;')
 				);
-				foreach ($database->queries['text'] as $i => $text) {
+				foreach ($database->queries['text'] as $i => &$text) {
 					$queries .= $this->code(
-						$text.$this->br().$this->br().'#'.$this->i(round($database->queries['time'][$i], 5).' '.$L->sec),
+						$text.
+						$this->br(2).
+						'#'.$this->i(round($database->queries['time'][$i], 5).' '.$L->sec).
+						($error = (strtolower(substr($text, 0, 6)) == 'select' && !$database->queries['resource'][$i]) ? '('.$L->error.')' : ''),
 						array(
 							'style' => 'border-left: 1px solid; display: block; margin: 10px 5px 10px 20px; padding-left: 10px; text-align: left;',
-							'class' => $database->queries['time'][$i] > 0.1 ? 'red' : ''
+							'class' => ($database->queries['time'][$i] > 0.1 ? 'red' : '').($error ? ' ui-state-error' : '')
 						)
 					);
 				}
+				unset($error);
 			}
 			unset($name, $database, $i, $text);
 			$debug_info =	$this->div(
@@ -575,6 +579,7 @@ class Page extends HTML {
 			);
 			unset($i, $v, $debug_info);
 		}
+		$this->debug_info = preg_replace($this->Search, $this->Replace, $this->debug_info);
 	}
 	//Запрет клонирования
 	function __clone () {}
@@ -586,7 +591,7 @@ class Page extends HTML {
 			ob_end_clean();
 		}
 		//Генерирование страницы в зависимости от ситуации
-		//Для AJAX запросов и API не выводится весь интерфейс страницы, только основное содержание
+		//Для AJAX и API запросов не выводится весь интерфейс страницы, только основное содержание
 		if (!$this->interface) {
 			//Обработка замены контента
 			echo preg_replace($this->Search, $this->Replace, $this->Content);
@@ -596,16 +601,14 @@ class Page extends HTML {
 			$this->prepare($stop);
 			//Обработка замены контента
 			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
-			//Вывод сгенерированной страницы
+			//Опеределение типа сжатия сжатия
+			$ob = false;
 			if (is_object($Config) && !zlib_autocompression() && $Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
 				ob_start('ob_gzhandler');
 				$ob = true;
-			} else {
-				if (is_object($Config) && $Config->core['zlib_compression'] && $Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
-					ini_set('zlib.output_compression', 'On');
-					ini_set('zlib.output_compression_level', $Config->core['zlib_compression_level']);
-				}
-				$ob = false;
+			} elseif (is_object($Config) && $Config->core['zlib_compression'] && $Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
+				ini_set('zlib.output_compression', 'On');
+				ini_set('zlib.output_compression_level', $Config->core['zlib_compression_level']);
 			}
 			$timeload['end'] = microtime(true);
 			if ($User->is('admin') && is_object($Config) && $Config->core['debug']) {
@@ -638,6 +641,7 @@ class Page extends HTML {
 				ob_end_flush();
 			}
 		}
+		//Обработка замены контента и вывод сгенерированной страницы
 	}
 }
 ?>

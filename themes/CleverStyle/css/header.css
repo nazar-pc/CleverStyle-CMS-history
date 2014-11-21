@@ -35,18 +35,33 @@
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	float: left;
+	font-size: 80px;
 	height: 80px;
+	line-height: 80px;
 	margin: 5px;
 	position: fixed;
 	width: 80px;
+	vertical-align: top;
 }
 #user_info_header {
 	float: right;
 	height: 82px;
 	margin: 5px 5px 5px 90px;
 	position: fixed;
-	width: 148px;
+	width: 157px;
 }
+#user_info_header > input[type=text] {
+	background: none;
+	border: #fff solid 1px;
+	margin-bottom: 5px;
+	width: 150px;
+	text-align: center;
+	background-image: -ms-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);
+	background-image: -moz-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);
+	/*background-image: -o-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);*/
+	background-color: #BEBEBE;
+	background-image: -webkit-radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);
+	background-image: radial-gradient(center, ellipse farthest-corner, #BEBEBE 0%, #FFFFFF 100%);}
 #main-menu, #main-submenu, #menu-more {
 	height: 40px;
 	left: 0px;

@@ -38,18 +38,15 @@ class MySQL extends DatabaseAbstract {
 		if (is_resource($this->query['resource'])) {
 			@mysql_free_result($this->query['resource']);
 		}
-		$this->query['time'] = microtime(true);
-		$this->query['text'] = str_replace('[prefix]', $this->prefix, $query);
-		unset($this->query['resource']);
-		$this->query['resource'] = @mysql_query($this->query['text'], $this->id);
-		$this->query['time'] = round(microtime(true) - $this->query['time'], 6);
-		$this->time += $this->query['time'];
-		++$this->queries['num'];
 		global $db, $Config;
+		$this->query['time']			= microtime(true);
+		$this->queries['text'][]		= $this->query['text']				= str_replace('[prefix]', $this->prefix, $query);
+		$this->queries['resource'][]	= (bool)$this->query['resource']	= @mysql_query($this->query['text'], $this->id);
+		$this->query['time']			= round(microtime(true) - $this->query['time'], 6);
+		$this->time						+= $this->query['time'];
+		$db->time						+= $this->queries['time'][]			= $this->query['time'];
+		++$this->queries['num'];
 		++$db->queries;
-		$db->time += $this->query['time'];
-		$this->queries['time'][] = $this->query['time'];
-		$this->queries['text'][] = $this->query['text'];
 		if ($this->query['resource']) {
 			return $this->query['resource'];
 		} else {

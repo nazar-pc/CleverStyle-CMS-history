@@ -253,10 +253,6 @@ class HTML {
 		$data['tag']	= __FUNCTION__;
 		return $this->iwrap($data);
 	}
-	function br			($in = array()) {
-		$in['tag'] = __FUNCTION__;
-		return $this->iwrap($in);
-	}
 	function hr			($in = array()) {
 		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
@@ -425,8 +421,12 @@ class HTML {
 				return $this->iwrap($in);
 			}
 		} else {
-			if (is_array($in)) {
-				$items = $this->array_flip($in, count($in['name']));
+			if (
+				(isset($in['name'])	&& is_array($in['name'])	&& ($num = count($in['name'])) > 1) ||
+				(isset($in['id'])	&& is_array($in['id'])		&& ($num = count($in['id'])) > 1)
+			) {
+				$items = $this->array_flip($in, $num);
+				unset($num);
 				$temp = '';
 				foreach ($items as $item) {
 					if (!isset($item['type'])) {
@@ -575,6 +575,10 @@ class HTML {
 		}
 		$data['level'] = false;
 		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function br			($repeat = 1) {
+		$in['tag'] = __FUNCTION__;
+		return str_repeat($this->iwrap($in), $repeat);
 	}
 	//Псевдо-элементы
 	function info		($in = '', $data = array()) {

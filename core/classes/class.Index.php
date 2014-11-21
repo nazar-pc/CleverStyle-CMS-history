@@ -278,7 +278,7 @@ class Index extends HTML {
 			$Page->Top .= $Page->div(
 				$L->settings_apply_error,
 				array(
-					'class'	=> 'red ui-state-highlight'
+					'class'	=> 'red ui-state-error'
 				)
 			);
 			return false;

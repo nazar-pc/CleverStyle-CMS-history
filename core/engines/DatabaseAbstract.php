@@ -5,17 +5,18 @@ abstract class DatabaseAbstract {
 				$prefix,							//Текущий префикс
 				$time,								//Массив для хранения общей длительности выполнения запросов
 				$query		= array(				//Массив для хранения данных последнего выполненого запроса
-								'start' => '',
-								'end' => '',
-								'time' => '',
-								'text' => '',
-								'resource' => '',
-								'id' => ''
+								'start'		=> '',
+								'end'		=> '',
+								'time'		=> '',
+								'text'		=> '',
+								'resource'	=> '',
+								'id'		=> ''
 							),
 				$queries	= array(				//Массив для хранения данных всех выполненых запросов
-								'num' => '',
-								'time' => array(),
-								'text' => array()
+								'num'		=> '',
+								'time'		=> array(),
+								'text'		=> array(),
+								'result'	=> array()
 							),
 				$connecting_time;					//Время соединения
 	protected	$id;								//Указатель на соединение с БД

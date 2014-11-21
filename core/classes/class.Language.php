@@ -15,9 +15,7 @@ class Language {
 		}
 		if ($this->need_to_rebuild_cache) {
 			global $Cache;
-			if ($Cache->cache) {
-				$Cache->set('lang.'.$this->clanguage, $this->translate);
-			}
+			$Cache->set('lang.'.$this->clanguage, $this->translate);
 			$this->need_to_rebuild_cache = false;
 			$this->initialized = true;
 		}
@@ -26,8 +24,8 @@ class Language {
 		return isset($this->translate[$item]) ? $this->translate[$item] : ucfirst(str_replace('_', ' ', $item));
 	}
 	function set ($item, $value = '') {
-		if ($item == 'translate' && is_array($value)) {
-			foreach ($value as $i => &$v) {
+		if (is_array($item)) {
+			foreach ($item as $i => &$v) {
 				$this->set($i, $v);
 			}
 		} else {
@@ -49,7 +47,7 @@ class Language {
 			global $Cache, $Text;
 			$this->clanguage = $language;
 			if ($translate = $Cache->get('lang.'.$this->clanguage)) {
-				$this->set('translate', $translate);
+				$this->set($translate);
 				$Text->language($this->clanguage);
 				return true;
 			} elseif (include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {

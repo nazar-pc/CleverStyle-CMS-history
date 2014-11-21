@@ -7,13 +7,13 @@ if (isset($Config->routing['current'][2])) {
 		if (flush_cache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
 		} else {
-			$Page->Content = '<div class="green">'.$L->error.'</div>';
+			$Page->Content = '<div class="red">'.$L->error.'</div>';
 		}
 	} elseif ($Config->routing['current'][2] == 'pcache') {
 		if (flush_pcache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
 		} else {
-			$Page->Content = '<div class="green">'.$L->error.'</div>';
+			$Page->Content = '<div class="red">'.$L->error.'</div>';
 		}
 	}
 } else {

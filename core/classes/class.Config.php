@@ -188,7 +188,7 @@ class Config {
 			$query[] = '`'.$part.'`';
 		}
 		unset($part);
-		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(DOMAIN).' LIMIT 1');
+		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = \''.DOMAIN.'\' LIMIT 1');
 		if (isset($this->routing['current'])) {
 			$current_routing = $this->routing['current'];
 		}
@@ -250,7 +250,7 @@ class Config {
 		}
 		unset($parts, $part, $temp);
 		global $db;
-		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $query).' WHERE `domain` = '.sip(DOMAIN).' LIMIT 1')) {
+		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $query).' WHERE `domain` = \''.DOMAIN.'\' LIMIT 1')) {
 			$this->apply();
 			return true;
 		}

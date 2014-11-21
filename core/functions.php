@@ -187,17 +187,18 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 				}
 				$prepare($list, $tmp, $dir.$file);
 				unset($tmp);
-			} else {
-				if ($with_path == true) {
+			}
+			if ($subfolders && is_dir($dir.$file)) {
+				if ($with_path == 1) {
 					$get_list = get_list($dir.$file, $mask, $mode, $with_path, $subfolders, $sort);
 					if (is_array($get_list)) {
-						array_merge($list, $get_list);
+						$list = array_merge($list, $get_list);
 					}
 					unset($get_list);
 				} elseif ($with_path) {
 					$get_list = get_list($dir.$file, $mask, $mode, $with_path.$file, $subfolders, $sort);
 					if (is_array($get_list)) {
-						array_merge($list, $get_list);
+						$list = array_merge($list, $get_list);
 					}
 					unset($get_list);
 				}
@@ -205,6 +206,7 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		}
 	}
 	closedir($dirc);
+	unset($prepare);
 	if (empty($list)) {
 		return $list;
 	} else {
@@ -212,9 +214,9 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 			if ($sort_x[0] == 'name') {
 				if (isset($sort_x[1]) && $sort_x[1] == 'desc') {
 					natcasesort($list);
+					$list = array_reverse($list);
 				} else {
 					natcasesort($list);
-					array_reverse($list);
 				}
 			} elseif ($sort_x[0] == 'date') {
 				if (isset($sort_x[1]) && $sort_x[1] == 'desc') {
@@ -252,10 +254,10 @@ function source_by_url ($url) {
 //Очистка системного кеша
 function flush_cache () {
 	$ok = true;
-	$list = get_list(CACHE);
+	$list = get_list(CACHE, false, 'fd', true, true, 'name|desc');
 	foreach ($list as $item) {
-		if (is_writable(CACHE.DS.$item)) {
-			unlink(CACHE.DS.$item);
+		if (is_writable($item)) {
+			is_dir($item) ? @rmdir($item) : @unlink($item);
 		} else {
 			$ok = false;
 		}
@@ -272,16 +274,16 @@ function flush_cache () {
 //Очисистка публичного кеша
 function flush_pcache () {
 	$ok = true;
-	$list = get_list(PCACHE);
+	$list = get_list(PCACHE, false, 'fd', true, true, 'name|desc');
 	foreach ($list as $item) {
-		if (is_writable(PCACHE.DS.$item)) {
-			unlink(PCACHE.DS.$item);
+		if (is_writable($item)) {
+			is_dir($item) ? @rmdir($item) : @unlink($item);
 		} else {
 			$ok = false;
 		}
 	}
 	unset($list, $item);
-	if (file_exists(CACHE.DS.'pcache_key')) {
+	if (is_writable(CACHE.DS.'pcache_key')) {
 		unlink(CACHE.DS.'pcache_key');
 	}
 	unset($list);

@@ -5,10 +5,10 @@ if (isset($_POST['edit_settings'])) {
 		foreach ($Config->admin_parts as $part) {
 			if (isset($_POST[$part])) {
 				$temp = &$Config->$part;
-				foreach ($_POST[$part] as &$value) {
-					$value = filter($value, 'form');
+				foreach ($_POST[$part] as $item => $value) {
+					$temp[$item] = filter($value, 'form');
 				}
-				unset($value);
+				unset($item, $value);
 				if ($part == 'routing' || $part == 'replace') {
 					$temp['in'] = explode("\n", $temp['in']);
 					$temp['out'] = explode("\n", $temp['out']);
