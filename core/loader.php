@@ -17,8 +17,9 @@ define('CORE',			DIR.DS.'core');				//Папка ядра
 	define('LANGUAGES',	CORE.DS.'languages');		//Папка с языковыми файлами
 define('INCLUDES',		DIR.DS.'includes');			//Папка с включениями
 	define('CSS',		INCLUDES.DS.'css');			//Папка с CSS стилями
+	define('IMG',		INCLUDES.DS.'img');			//Папка с изображениями
 	define('JS',		INCLUDES.DS.'js');			//Папка с JavaScript скриптами
-	define('TEMPLATES',	INCLUDES.DS.'templates');	//Папка с шаблонами
+define('TEMPLATES',		DIR.DS.'templates');		//Папка с шаблонами
 define('COMPONENTS',	DIR.DS.'components');		//Папка для компонентов
 	define('BLOCKS',	COMPONENTS.DS.'blocks');	//Папка для блоков
 	define('MODULES',	COMPONENTS.DS.'modules');	//Папка для модулей

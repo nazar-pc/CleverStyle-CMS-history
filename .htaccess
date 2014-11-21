@@ -1,7 +1,20 @@
 AddDefaultCharset utf-8
-Options -Indexes
+
+Options -All -Multiviews +FollowSymLinks
 IndexIgnore *.php *.pl *.cgi *.htaccess *.htpasswd
+
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ ./index.php [L]
+RewriteRule .* index.php
+
+<Files 1.jpg> 
+	RewriteEngine Off
+</Files>
+<Files license.txt> 
+	RewriteEngine Off
+</Files>
+<Files Storage.php> 
+	RewriteEngine Off
+</Files>
+<Files readme.html> 
+	RewriteEngine Off
+</Files>

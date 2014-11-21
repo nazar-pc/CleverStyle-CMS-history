@@ -1,4 +1,8 @@
 Allow from all
-<Files index.php>
+<Files *.php>
 	Deny from all
 </Files>
+<Files tiny_mce_gzip.php>
+	Allow from all
+</Files>
+RewriteEngine Off
