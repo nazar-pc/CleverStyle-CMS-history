@@ -89,4 +89,3 @@ class Storage {
 	 */
 	function __clone () {}
 }
-?>

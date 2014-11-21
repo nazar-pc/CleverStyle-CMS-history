@@ -2,15 +2,23 @@
 class Language {
 	public		$clanguage,								//Current language
 				$clang,									//Current language (short form)
-				$time = '';//TODO WTF?
+				$time = '';								//Closure for time processing
 	protected	$init = false,							//For single initialization
-				$translate = array(),					//Локальный кеш переводов
-				$need_to_rebuild_cache = false;			//Требуется пересобрать кеш
+				$translate = array(),					//Local cache of translations
+				$need_to_rebuild_cache = false;			//Necessity for cache rebuilding
+	/**
+	 * Set basic language
+	 */
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
 		$this->change($LANGUAGE);
 	}
+	/**
+	 * @param array $active_languages
+	 * @param string $language
+	 * @return void
+	 */
 	function init ($active_languages, $language) {
 		if ($this->init) {
 			return;
@@ -35,7 +43,7 @@ class Language {
 	/**
 	 * Set translation
 	 * @param array|string $item
-	 * @param null|strng $value
+	 * @param null|string $value
 	 * @return string
 	 */
 	function set ($item, $value = null) {
@@ -60,7 +68,7 @@ class Language {
 	 * Set translation
 	 * @see set()
 	 * @param array|string $item
-	 * @param null|strng $value
+	 * @param null|string $value
 	 * @return string
 	 */
 	function __set ($item, $value = null) {
@@ -182,4 +190,3 @@ class Language {
 	 */
 	function __clone () {}
 }
-?>

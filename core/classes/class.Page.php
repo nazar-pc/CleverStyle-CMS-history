@@ -34,7 +34,7 @@ class Page {
 
 	protected	$init = false,										//For single initialization
 				$secret,											//Secret phrase for separating internal
-																	//function calling from external one
+																	//function calling from external ones
 				$theme, $color_scheme, $pcache_basename, $includes,
 				$user_avatar_image, $user_avatar_text, $user_info,
 				$core_js	= array(0 => '', 1 => ''),
@@ -546,7 +546,7 @@ class Page {
 			foreach ($_COOKIE as $i => $v) {
 				$debug_info .= h::tr(
 					h::td($i.':', array('style' => 'width: 20%;')).
-					h::td(xap($v), array('style' => 'width: 80%;')), true
+					h::td(xap($v), array('style' => 'width: 80%;'))
 				);
 			}
 			unset($i, $v);
@@ -735,4 +735,3 @@ class Page {
 		//Обработка замены контента и вывод сгенерированной страницы
 	}
 }
-?>

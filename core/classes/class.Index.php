@@ -392,4 +392,3 @@ class Index {
 		closure_process($this->postload);
 	}
 }
-?>

@@ -106,7 +106,7 @@ class h {
 				($level ? "\n" : '');
 	}
 	//Метод для простой обертки контента парными тегами
-	static function swrap ($in = '', $data = '', $tag = 'div') {
+	static function swrap ($in = '', $data = array(), $tag = 'div') {
 		return self::wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
 	}
 	//Метод для разворота массива навыворот для select и radio
@@ -697,4 +697,3 @@ class h {
 		return implode("\n", $input);
 	}
 }
-?>

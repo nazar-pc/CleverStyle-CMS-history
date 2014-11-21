@@ -1,7 +1,9 @@
 <?php
 
 class User {
-	protected	$current				= array(
+	protected	$secret,							//Secret phrase for separating internal
+													//function calling from external ones
+				$current				= array(
 					'session'		=> false,
 					'is'			=> array(
 						'admin'			=> false,
@@ -19,9 +21,11 @@ class User {
 				$db_prime				= false,	//Ссылка на объект основной БД
 				$cache					= array(),	//Кеш с некоторыми временными данными
 				$init					= false,	//Текущее состояние инициализации
-				$reg_id					= 0;
+				$reg_id					= 0,
+				$users_columns			= array();	//Copy of columns list of users table for internal needs without Cache usage
 
 	function __construct () {
+		$this->secret = uniqid();
 		global $Cache, $Config, $Page, $L, $Key;
 		//Определяем системного пользователя
 		//Последний элемент в пути страницы - ключ
@@ -125,11 +129,7 @@ class User {
 					'WHERE `id` = '.$this->id.' LIMIT 1'
 			);
 			if (is_array($data)) {
-				$data['groups'] = $this->db()->qfa('SELECT `group` FROM `[prefix]users_groups` WHERE `id` = '.$this->id);
-				foreach ($data['groups'] as &$group) {
-					$group = $group['group'];
-				}
-				unset($group);
+				$data['groups'] = $this->get_user_groups();
 				$Cache->{'users/'.$this->id} = $data;
 				if ($data['status'] != 1) {
 					if ($data['status'] == 0) {
@@ -162,41 +162,14 @@ class User {
 			$this->current['is']['guest'] = true;
 		} else {
 			//Checking of user type
-			if (in_array(1, $this->groups)) {
+			if (in_array(1, $data['groups'])) {
 				$this->current['is']['admin']	= true;
 				$this->current['is']['user']	= true;
-			} elseif (in_array(2, $this->groups)) {
+			} elseif (in_array(2, $data['groups'])) {
 				$this->current['is']['user']	= true;
-			} elseif (in_array(3, $this->groups)) {
+			} elseif (in_array(3, $data['groups'])) {
 				$this->current['is']['bot']		= true;
 			}
-			//Checking of the rights of user's groups
-			$this->permissions = array();
-			foreach ($this->groups as $group) {
-				if ($group < 1) {
-					continue;
-				}
-				if (!($group_data = $Cache->{'groups/'.$group})) {
-					$group_data = $this->db()->qf(
-						'SELECT `title`, `description`, `data` FROM `[prefix]groups` WHERE `id` = '.$group.' LIMIT 1'
-					);
-					$group_data['permissions'] = array();
-					$permissions = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]groups_permissions` WHERE `id` = '.$group);
-					foreach ($permissions as &$permission) {
-						$group_data['permissions'][$permission['permission']] = $permission['value'];
-					}
-					unset($permission, $permissions);
-					$Cache->{'groups/'.$group} = $group_data;
-				}
-				$this->permissions = array_merge($this->permissions, $group_data['permissions']);
-			}
-			unset($groups, $group_id, $group_data);
-			//Applying individual permissions
-			$permissions = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]users_permissions` WHERE `id` = '.$this->id);
-			foreach ($permissions as $permission) {
-				$this->permissions[$permission['permission']] = $permission['value'];
-			}
-			unset($permission, $permissions);
 		}
 		//If not guest - apply some individual settings
 		if ($this->id != 1) {
@@ -208,8 +181,8 @@ class User {
 			}
 		}
 		$this->init = true;
-		if (!$Cache->users_columns) {
-			$Cache->users_columns = $this->db()->columns('[prefix]users');
+		if (!($this->users_columns	= $Cache->users_columns)) {
+			$this->users_columns	= $Cache->users_columns = $this->db()->columns('[prefix]users');
 		}
 	}
 	/**
@@ -221,9 +194,7 @@ class User {
 	function get ($item, $user = false, $stop_key = false) {
 		$user = (int)($user ?: $this->id);
 		global $Cache;
-		/**
-		 * Key of stopping, prohibits getting of data from db, when retrieves array of data
-		 */
+		//Key of stopping, prohibits getting of data from db, when retrieves array of data
 		static $_stop_key;
 		if (!isset($_stop_key)) {
 			$_stop_key = uniqid();
@@ -237,19 +208,19 @@ class User {
 		} elseif ($item == 'client_ip') {
 			return $this->data[$this->id][$item] = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : false;
 		}
-		/**
-		 * Link for simplier use
-		 */
+		//Link for simplier use
 		$data = &$this->data[$user];
 		//Если получаем массив значений
 		if (is_array($item)) {
 			$result = $new_items = array();
-			//Пытаемся достать значения с локального кеша, иначе составляем массив недоставющих значений
+			//Пытаемся достать значения с локального кеша, иначе составляем массив недостающих значений
 			foreach ($item as $i) {
-				if (($res = $this->get($i, $user, $_stop_key)) != $_stop_key) {
-					$result[$i] = $res;
-				} else {
-					$new_items[] = $i;
+				if (!in_array($i, $this->users_columns)) {
+					if (($res = $this->get($i, $user, $_stop_key)) != $_stop_key) {
+						$result[$i] = $res;
+					} else {
+						$new_items[] = $i;
+					}
 				}
 			}
 			if (empty($new_items)) {
@@ -271,7 +242,7 @@ class User {
 				return false;
 			}
 		//Если получаем одно значение
-		} else {
+		} elseif (in_array($item, $this->users_columns)) {
 			//Указатель начала получения данных
 			get_data:
 			//Если данные в локальном кеше - возвращаем
@@ -306,9 +277,11 @@ class User {
 		$user = (int)($user ?: $this->id);
 		if (is_array($item)) {
 			foreach ($item as $i => &$v) {
-				$this->set($i, $v, $user);
+				if (in_array($i, $this->users_columns)) {
+					$this->set($i, $v, $user);
+				}
 			}
-		} else {
+		} elseif (in_array($item, $this->users_columns)) {
 			$this->update_cache[$user] = true;
 			$this->data[$user][$item] = $value;
 			if ($this->init) {
@@ -324,9 +297,9 @@ class User {
 	}
 	/**
 	 * Returns link to the object of db for reading (can be mirror)
-	 * @return object
+	 * @return DatabaseAbstract
 	 */
-	protected function db () {
+	function db () {
 		if (is_object($this->db)) {
 			return $this->db;
 		}
@@ -340,9 +313,9 @@ class User {
 	}
 	/**
 	 * Returns link to the object of db for writting (always main db)
-	 * @return object
+	 * @return DatabaseAbstract
 	 */
-	protected function db_prime () {
+	function db_prime () {
 		if (is_object($this->db_prime)) {
 			return $this->db_prime;
 		}
@@ -377,9 +350,112 @@ class User {
 		return is_array($data) && $data['id'] != 1 ? $data['id'] : false;
 	}
 	/**
+	 * @param bool|int $user
+	 * @return array|bool
+	 */
+	function get_user_groups ($user = false) {
+		global $Cache;
+		$user = (int)($user ?: $this->id);
+		if (!($groups = $Cache->{'users_groups/'.$user})) {
+			$groups = $this->db()->qfa('SELECT `group` FROM `[prefix]users_groups` WHERE `id` = '.$user);
+			if (is_array($groups)) {
+				foreach ($groups as &$group) {
+					$group = $group['group'];
+				}
+			}
+			unset($group);
+			return $Cache->{'users_groups/'.$user} = $groups;
+		}
+		return $groups;
+	}
+	/**
+	 * @param bool|int $user
+	 * @return array|bool
+	 */
+	function get_user_permissions ($user = false) {
+		global $Cache;
+		$user = (int)($user ?: $this->id);
+		if (!($permissions = $Cache->{'users/permissions/'.$user})) {
+			$permissions_array = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]users_permissions` WHERE `id` = '.$this->id);
+			if (is_array($permissions_array)) {
+				$permissions = array();
+				foreach ($permissions_array as $permission) {
+					$permissions[$permission['permission']] = $permission['value'];
+				}
+				unset($permissions_array, $permission);
+				return $Cache->{'users/permissions/'.$user} = $permissions;
+			} else {
+				return $Cache->{'users/permissions/'.$user} = false;
+			}
+		}
+		return $permissions;
+	}
+	/**
+	 * @param int $group
+	 * @return array|bool
+	 */
+	function get_group_data ($group) {
+		global $Cache;
+		$group = (int)$group;
+		if (!($group_data = $Cache->{'groups/'.$group})) {
+			return $Cache->{'groups/'.$group} = $this->db()->qf(
+				'SELECT `title`, `description`, `data` FROM `[prefix]groups` WHERE `id` = '.$group.' LIMIT 1'
+			);
+		}
+		return $group_data;
+	}
+	/**
+	 * @param int $group
+	 * @return array
+	 */
+	function get_group_permissions ($group) {
+		global $Cache;
+		$group = (int)$group;
+		if (!($group_permissions = $Cache->{'groups/permissions/'.$group})) {
+			$group_permissions_list = $this->db()->qfa('SELECT `permission`, `value` FROM `[prefix]groups_permissions` WHERE `id` = '.$group);
+			if (is_array($group_permissions_list)) {
+				$group_permissions = array();
+				foreach ($group_permissions_list as &$permission) {
+					$group_permissions[$permission['permission']] = $permission['value'];
+				}
+				unset($group_permissions_list, $permission);
+				return $Cache->{'groups/permissions/'.$group} = $group_permissions;
+			} else {
+				return $Cache->{'groups/permissions/'.$group} = false;
+			}
+		}
+		return $group_permissions;
+	}
+	/**
+	 * @param string $permission Permission label
+	 * @param bool|int $user
+	 * @return bool
+	 */
+	function permission ($permission, $user = false) {
+		$user = (int)($user ?: $this->id);
+		if (!isset($this->data[$user])) {
+			$data[$user] = array();
+		}
+		if (!isset($this->data[$user]['permissions'])) {
+			$groups = $this->get_user_groups($user);
+			$permissions = array();
+			if (is_array($groups)) {
+				foreach ($groups as $group) {
+					$permissions = array_merge($permissions, $this->get_group_permissions($group));
+				}
+			}
+			$this->data[$user]['permissions'] = array_merge($permissions, $this->get_user_permissions($user));
+			unset($permissions);
+		}
+		if (isset($this->data[$user]['permissions'][$permission])) {
+			return (bool)$this->data[$user]['permissions'][$permission];
+		}
+		return false;
+	}
+	/**
 	 * Find the session by id, and return id of owner (user)
 	 * @param string $session_id
-	 * @return int
+	 * @return int User id
 	 */
 	function get_session ($session_id = '') {
 		$this->current['session'] = _getcookie('session');
@@ -495,7 +571,7 @@ class User {
 	/**
 	 * Check number of login attempts
 	 * @param string $login
-	 * @return int
+	 * @return int Number of attempts
 	 */
 	function login_attempts ($login = '') {
 		if (isset($this->cache['login_attempts'])) {
@@ -654,7 +730,7 @@ class User {
 		}
 		$this->reg_id = $data['id'];
 		$password	= password_generate($Config->core['password_min_length'], $Config->core['password_min_strength']);
-		!$this->db_prime()->q('UPDATE `[prefix]users` SET `password_hash` = \''.hash('sha512', $password).'\', `status` = 1 WHERE `id` = '.$this->reg_id);
+		$this->db_prime()->q('UPDATE `[prefix]users` SET `password_hash` = \''.hash('sha512', $password).'\', `status` = 1 WHERE `id` = '.$this->reg_id);
 		$this->add_session($this->reg_id);
 		return array(
 			'email'		=> $data['email'],
@@ -720,4 +796,3 @@ class User {
 	 */
 	function __clone () {}
 }
-?>

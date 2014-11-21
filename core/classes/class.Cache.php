@@ -58,6 +58,9 @@ class Cache {
 		return false;
 	}
 	function set ($item, $data, $time = 0) {
+		if ($data === null) {
+			$this->del($item);
+		}
 		$data = @_json_encode($data);
 		if (is_object($this->memcache)) {
 			global $Config;

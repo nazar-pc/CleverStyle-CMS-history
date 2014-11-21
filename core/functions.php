@@ -631,7 +631,7 @@
 		function _mb_strtoupper ($string, $encoding = false) {
 			return filter($string, 'mb_strtoupper', $encoding ?: mb_internal_encoding());
 		}
-	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче
+	//Аналог системной функции json_encode, корректно работает с кирилицей и делает результирующую строку короче,
 	//настоятельно рекомендуется к использованию вместо стандартной!
 	function _json_encode ($in) {
 		if (defined('JSON_UNESCAPED_UNICODE')) {				//for php 5.4

@@ -1,26 +1,26 @@
 $(function() {
-	$(":radio").each(function (index, element) {
-		if (!$(element).hasClass('noui')) {
-			$(element).parent().buttonset();
+	$(":radio").each(function () {
+		if (!$(this).hasClass('noui')) {
+			$(this).parent().buttonset();
 		}
 	});
-	$(":checkbox").each(function (index, element) {
-		if (!$(element).hasClass('noui')) {
-			if ($(element).parent('label')) {
-				$(element).parent().buttonset();
+	$(":checkbox").each(function () {
+		if (!$(this).hasClass('noui')) {
+			if ($(this).parent('label')) {
+				$(this).parent().buttonset();
 			} else {
-				$(element).button();
+				$(this).button();
 			}
 		}
 	});
-	$("select").each(function (index, element) {
-		if (!$(element).hasClass('noui')) {
-			//$(element).chosen(); //TODO Find some good replacement (or wait for jQuery UI 1.9)
+	$("select").each(function () {
+		if (!$(this).hasClass('noui')) {
+			//$(this).chosen(); //TODO Find some good replacement (or wait for jQuery UI 1.9)
 		}
 	});
-	$(":button").each(function (index, element) {
-		if (!$(element).hasClass('noui')) {
-			$(element).button();
+	$(":button").each(function (index) {
+		if (!$(this).hasClass('noui')) {
+			$(this).button();
 		}
 	});
 	$('.ui-button').disableSelection();
@@ -31,11 +31,11 @@ $(function() {
 			show:		'scale',
 			width:		'700'
 	});
-	$('.dialog').each(function (index, element) {
-		if ($(element).attr('data-dialog')) {
-			$(element).dialog($.secureEvalJSON($(element).attr('data-dialog')));
+	$('.dialog').each(function () {
+		if ($(this).attr('data-dialog')) {
+			$(this).dialog($.secureEvalJSON($(this).attr('data-dialog')));
 		} else {
-			$(element).dialog();
+			$(this).dialog();
 		}
 	});
 	$('#admin_form *').change(function(){
@@ -44,9 +44,9 @@ $(function() {
 	$('#admin_form:reset').change(function(){
 		save = false;
 	});
-	$('textarea').each(function (index, element) {
-		if (!$(element).is('.EDITOR, .EDITORH, .SEDITOR, .noresize')) {
-			$(element).autoResize();
+	$('textarea').each(function () {
+		if (!$(this).is('.EDITOR, .EDITORH, .SEDITOR, .noresize')) {
+			$(this).autoResize();
 		}
 	});
 	$('#login_slide').click(function () {

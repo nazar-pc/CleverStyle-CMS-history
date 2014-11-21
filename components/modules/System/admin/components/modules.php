@@ -19,7 +19,7 @@ if ($mode && $rc[2] == 'install') {
 				'name'		=> 'install'
 			)
 		).
-		h::{'input[type=hidden'}(
+		h::{'input[type=hidden]'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -41,7 +41,7 @@ if ($mode && $rc[2] == 'install') {
 				'name'		=> 'uninstall'
 			)
 		).
-		h::{'input[type=hidden'}(
+		h::{'input[type=hidden]'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -67,7 +67,7 @@ if ($mode && $rc[2] == 'install') {
 		)
 	);
 	$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
-	foreach ($db_json['db'] as $database) {
+	foreach ($db_json as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
 		$db_list[] = h::{'td.ui-state-default.ui-corner-all'}(
 			array(
@@ -142,7 +142,7 @@ if ($mode && $rc[2] == 'install') {
 		h::{'table.admin_table'}(
 			h::tr($storage_list)
 		).
-		h::{'input[type=hidden'}(
+		h::{'input[type=hidden]'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -153,7 +153,8 @@ if ($mode && $rc[2] == 'install') {
 	$Page->warning($L->changing_settings_warning);
 } else {
 	unset($mode, $rc);
-	$db_users_items = $db->{0}->columns('[prefix]users');
+	global $Cache;
+	$db_users_items = $Cache->users_columns;
 	$modules_list = h::tr(
 		h::{'th.ui-widget-header.ui-corner-all'}(
 			array(
@@ -167,26 +168,8 @@ if ($mode && $rc[2] == 'install') {
 		//Когда модуль включен или отключен$action = '';
 		$addition_state = $action = '';
 		if ($mdata['active'] == 1 || $mdata['active'] == 0) {
-			$db_json = array();
 			//Настройки БД
 			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'db.json') && count($Config->db) > 1) {
-				$db_json = _json_decode(_file_get_contents(MODULES.DS.$module.DS.$ADMIN.DS.'db.json'));
-				$lost_columns = array();
-				foreach ($db_json['users'] as $db_users_item) {
-					if (!in_array($db_users_item, $db_users_items)) {
-						$lost_columns[] = $db_users_item;
-					}
-				}
-				unset($db_users_item, $db_json);
-				if (!empty($lost_columns)) {
-					$addition_state .= h::{'a.nul.pointer'}(
-						h::icon('alert'),
-						array(//TODO click to fix
-							'data-title'	=> $L->missing_users_columns.':'.h::br(2).implode(', ', $lost_columns).h::br(2).$L->click_to_fix
-						)
-					);
-				}
-				unset($lost_columns);
 				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('gear'),
@@ -374,4 +357,3 @@ if ($mode && $rc[2] == 'install') {
 		)
 	);
 }
-?>

@@ -1,8 +1,8 @@
 <?php
-global $Config, $Index, $L, $db;
+global $Config, $Index, $L, $db, $Cache, $User;
 $a				= &$Index;
-$db_id			= $Config->components['modules']['System']['db']['users'];
-$search_columns	= $db->$db_id->columns('[prefix]users');
+$u_db			= $User->db();
+$search_columns	= $Cache->users_columns;
 $columns		= isset($_POST['columns']) && $_POST['columns'] ? explode(';', $_POST['columns']) : array('id', 'login', 'username', 'email', 'groups');
 $limit			= isset($_POST['search_limit']) ? (int)$_POST['search_limit'] : 100;
 $start			= isset($_POST['search_start']) ? (int)$_POST['search_start']-1 : 0;
@@ -53,7 +53,7 @@ if ($search_text && $search_mode) {
 		case 'NOT LIKE':
 		case 'REGEXP':
 		case 'NOT REGEXP':
-			$search_text_ = $db->$db_id->sip($search_text);
+			$search_text_ = $u_db->sip($search_text);
 			$where = $where_func('`%%` '.$search_mode." ".$search_text_);
 			unset($search_text_);
 			break;
@@ -65,9 +65,9 @@ if ($search_text && $search_mode) {
 			break;
 	}
 }
-$results_count	= $db->$db_id->qf('SELECT COUNT(`id`) AS `count` FROM [prefix]users WHERE '.$where);
+$results_count	= $u_db->qf('SELECT COUNT(`id`) AS `count` FROM [prefix]users WHERE '.$where);
 if ($results_count = $results_count['count']) {
-	$users_data		= $db->$db_id->qfa('SELECT `'.implode('`, `', $columns).'` FROM [prefix]users WHERE '.$where.' LIMIT '.($start*$limit).', '.$limit);
+	$users_data		= $u_db->qfa('SELECT `'.implode('`, `', $columns).'` FROM [prefix]users WHERE '.$where.' LIMIT '.($start*$limit).', '.$limit);
 }
 $users_list		= array(
 	h::{'th.ui-widget-header.ui-corner-all'}()
@@ -100,7 +100,7 @@ $a->content(
 			).
 			h::li(
 				h::a(
-					$L->show_columns,
+					h::info('show_columns'),
 					array(
 						 'href' => '#columns_settings'
 					)
@@ -185,4 +185,3 @@ $a->content(
 )
 );
 unset($a, $columns_list);
-?>

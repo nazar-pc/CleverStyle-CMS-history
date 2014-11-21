@@ -25,25 +25,64 @@ abstract class DatabaseAbstract {
 	
 	//Создание подключения
 	//(название_бд, пользователь, пароль [, хост [, кодовая страница]]
+	/**
+	 * @param string $database
+	 * @param string $user
+	 * @param string $password
+	 * @param string $host
+	 * @param bool|string $codepage
+	 */
 	abstract function __construct ($database, $user = '', $password = '', $host = 'localhost', $codepage = false);
 	//Смена текущей БД
+	/**
+	 * @abstract
+	 * @param string $database
+	 */
 	abstract function select_db ($database);
 	//Запрос в БД
 	//(текст_запроса)
+	/**
+	 * @abstract
+	 * @param string $query
+	 * @return resource
+	 */
 	abstract function q ($query = '');
 	//Подсчёт количества строк
 	//([ресурс_запроса])
+	/**
+	 * @abstract
+	 * @param bool|resource $query_resource
+	 * @return int|bool
+	 */
 	abstract function n ($query_resource = false);
 	//Получение результатов
 	//([ресурс_запроса [, в_виде_массива_результатов [, тип_возвращаемого_массива]]])
+	/**
+	 * @abstract
+	 * @param bool|resource $query_resource
+	 * @param bool $array
+	 * @param int $result_type
+	 * @return array|bool
+	 */
 	abstract function f ($query_resource = false, $array = false, $result_type = MYSQL_ASSOC);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 	//Упрощенный интерфейс метода для получения результата в виде массива
 	//([ресурс_запроса [, тип_возвращаемого_массива]])
+	/**
+	 * @param bool|resource $query_resource
+	 * @param int $result_type
+	 * @return array|bool
+	 */
 	function fa ($query_resource = false, $result_type = MYSQL_ASSOC) {
 		return $this->f($query_resource, true, $result_type);
 	}
 	//Запрос с получением результатов, результаты запросов кешируются при соответствующей настройке сайта
 	//(текст_запроса [, тип_возвращаемого_массива [, в_виде массива]])
+	/**
+	 * @param string $query
+	 * @param bool $array
+	 * @param int $result_type
+	 * @return array|bool
+	 */
 	function qf ($query = '', $array = false, $result_type = MYSQL_ASSOC) {
 		if (!$query) {
 			return false;
@@ -52,6 +91,11 @@ abstract class DatabaseAbstract {
 	}
 	//Упрощенный интерфейс метода выполнения запроса с получением результата в виде массива
 	//(текст_запроса [, тип_возвращаемого_массива])
+	/**
+	 * @param string $query
+	 * @param int $result_type
+	 * @return array|bool
+	 */
 	function qfa ($query = '', $result_type = MYSQL_ASSOC) {
 		if (!$query) {
 			return false;
@@ -59,12 +103,26 @@ abstract class DatabaseAbstract {
 		return $this->qf($query, true, $result_type);
 	}
 	//id последнего insert запроса
+	/**
+	 * @abstract
+	 * @return int Id of last inserted row
+	 */
 	abstract function insert_id ();
 	//Очистка результатов запроса
 	//([ресурс_запроса])
+	/**
+	 * @abstract
+	 * @param bool|resource $query_resource
+	 * @result bool
+	 */
 	abstract function free ($query_resource = false);
 	//Получение списка полей таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
+	/**
+	 * @param string $table
+	 * @param bool|string $like
+	 * @return array|bool
+	 */
 	function fields ($table, $like = false) {
 		if(!$table) {
 			return false;
@@ -81,6 +139,11 @@ abstract class DatabaseAbstract {
 	}
 	//Получение списка колонок таблицы
 	//(название_таблицы [, похожих_на [, тип_возвращаемого_массива]])
+	/**
+	 * @param string $table
+	 * @param bool|string $like
+	 * @return array|bool
+	 */
 	function columns ($table, $like = false) {
 		if(!$table) {
 			return false;
@@ -120,4 +183,3 @@ abstract class DatabaseAbstract {
 	//Отключение от БД
 	abstract function __destruct ();
 }
-?>
