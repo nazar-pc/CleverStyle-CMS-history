@@ -1,0 +1,54 @@
+@charset "utf-8";
+body {
+	background-color: #666;
+}
+a {
+	color: #07f;
+	border-bottom: 1px dashed #07f;
+}
+.form_element, .form_element:hover, .form_element:focus {
+	background: #fff;
+	border-color: rgba(0,0,255,0.3);
+	color: #999;
+}
+.form_element:hover, .form_element:focus {
+	background: #fff;
+	box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
+	-moz-box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
+	-webkit-box-shadow: 2px 2px 5px rgba(0,0,255,0.3);
+	color: #333;
+}
+.green {
+	box-shadow: 0px 0px 7px #0f0;
+	-moz-box-shadow: 0px 0px 7px #0f0;
+	-webkit-box-shadow: 0px 0px 7px #0f0;
+}
+.red {
+	box-shadow: 0px 0px 7px #f00;
+	-moz-box-shadow: 0px 0px 7px #f00;
+	-webkit-box-shadow: 0px 0px 7px #f00;
+}
+.grey {
+	box-shadow: 0px 0px 7px #999;
+	-moz-box-shadow: 0px 0px 7px #999;
+	-webkit-box-shadow: 0px 0px 7px #999;
+}
+.white, a:hover.white  {
+	border: none;
+	color: #fff;
+	text-decoration: none;
+}
+a.black, a:hover.black {
+	border: none;
+	color: #000;
+	text-decoration: none;
+}
+.greybg1 {
+	background-color: #999;
+}
+.greybg2 {
+	background-color: #bbb;
+}
+.greybg3 {
+	background-color: #ddd;
+}

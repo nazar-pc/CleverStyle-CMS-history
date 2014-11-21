@@ -1,0 +1,134 @@
+var isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
+var Doc = document;
+window['textarea'] = 0;
+window['textareas'] = 0;
+function ext_textareas (id, num, w, h) {
+	content = string_trim(Doc.getElementById(id).value);
+	this.id = id;
+	style = ' style="text-align: left; white-space: pre;';
+	if (w) {
+		style += ' width: '+w+'px;';
+	}
+	if (h) {
+		style += ' height: '+h+'px;';
+	}
+	style += '"';
+	$(Doc.getElementById(this.id)).replaceWith(
+		'<input name="'+this.id+'" id="'+this.id+'" type="hidden" value="'+content+'">'
+		+'<article contenteditable="true"'+style+' autofocus=""><div id="area_'+this.id+'" name="area_'+this.id+'" style="line-height: 16px; padding: 0px 1px;" class="form_element"></div></article>');
+	Doc.getElementById('area_'+this.id).innerHTML = (content ? content : '<br>');
+	window['textareas']++;
+}
+function ext_textarea (id, num, w, h) {
+	if (Doc.designMode) {
+		content = string_trim(Doc.getElementById(id).value);
+		this.id = id;
+		style = '';
+		if (w) {
+			style += ' width="'+w+'"';
+		}
+		if (h) {
+			style += ' height="'+h+'"';
+		}
+		$(Doc.getElementById(id)).replaceWith(
+			'<input name="'+this.id+'" id="'+this.id+'" type="hidden" value="'+content+'">'
+			+'<iframe id="frame_'+this.id+'" frameborder="0" src="#"'+style+' class="form_element" scrolling="yes"></iframe>'
+			+'<p style="margin: 0px;"><button type="button" onclick="setBold('+num+')" class="bold">Ж</button>'
+			+'<button type="button" onclick="setItal('+num+')" class="ital">К</button>'
+			+'<button type="button" onclick="setUnder('+num+')" class="under">Ч</button></p>'
+			);
+		this.iframe = (isGecko) ? Doc.getElementById('frame_'+this.id) : frames['frame_'+this.id];
+		this.iWin = (isGecko) ? this.iframe.contentWindow : this.iframe.window;
+		this.iDoc = (isGecko) ? this.iframe.contentDocument : this.iframe.document;
+		
+		this.iDoc.open();
+		this.iDoc.write(
+						'<html><head>'
+						+$('head').html()
+						+'</head><body id="editor"'
+						+' style="white-space: pre; background: #fff; margin: 5px;"'
+						+'>'+(content ? content : '<br>')+'</body></html>');
+		this.iDoc.close();
+	
+		onkeypress = function () {
+			$('form').change();
+		}
+		
+		if(this.iDoc.addEventListener) {
+			this.iDoc.addEventListener('keyup', onkeypress, false);
+		}
+		window['textarea']++;
+		this.iDoc.designMode = (isGecko) ? "on" : "On";
+	}
+}
+function setBold(id) {
+	window['textarea'+id].iWin.focus();
+	window['textarea'+id].iWin.document.execCommand("bold", null, "");
+}
+function setItal(id) {
+	window['textarea'+id].iWin.focus();
+	window['textarea'+id].iWin.document.execCommand("italic", null, "");
+}
+function setUnder(id) {
+	window['textarea'+id].iWin.focus();
+	window['textarea'+id].iWin.document.execCommand("underline", null, "");
+}
+function init_textarea () {
+	var t = document.getElementsByTagName('textarea');
+	tl = t.length;
+	if (browser == 'Opera') {
+		w = 290;
+	} else if (browser == 'Chrome') {
+		w = 275;
+	} else if (browser == 'Safari') {
+		w = 265;
+	} else if (browser == 'Firefox') {
+		w = 250;
+	} else if (browser == 'MSIE') {
+		w = 267;
+	}
+	x = 0;
+	for (var ti = 0; ti < tl; ti++) {
+		if ($(t.item(x)).hasClass('NO_EDITOR')) {
+			x++;
+			continue;
+		}
+		if ($(t.item(x)).hasClass('S_EDITOR')) {
+			window['textareas'+window['textareas']] = new ext_textareas(t.item(x).name, window['textareas'], w);
+		} else {
+			window['textarea'+window['textarea']] = new ext_textarea(t.item(x).name, window['textarea'], w);
+		}
+	}
+}
+function uninit_textarea () {
+	$('form').change();
+	for (var i = 0; i < window['textareas']; i++) {
+		if (window['textareas'+i].id) {
+			id = window['textareas'+i].id;
+			Doc.getElementById(id).value = string_trim(Doc.getElementById('area_'+id).innerHTML);
+		}
+	}
+	for (var i = 0; i < window['textarea']; i++) {
+		if (id = window['textarea'+i].id) {
+			Doc.getElementById(id).value = string_trim(window['textarea'+i].iDoc.getElementsByTagName('body').item(0).innerHTML);
+		}
+	}
+}
+function reinit_textarea () {
+	for (var i = 0; i < window['textareas']; i++) {
+		if (window['textareas'+i].id) {
+			id = window['textareas'+i].id;
+			Doc.getElementById('area_'+id).innerHTML = Doc.getElementById(id).value ? Doc.getElementById(id).value : '<br>';
+		}
+	}
+	for (var i = 0; i < window['textarea']; i++) {
+		if (id = window['textarea'+i].id) {
+			window['textarea'+i].iDoc.getElementsByTagName('body').item(0).innerHTML = Doc.getElementById(id).value ? Doc.getElementById(id).value : '<br>';
+		}
+	}
+
+}
+$(function () { init_textarea(); });
+window.onkeypress = function () { $('form').change(); };
+window.onreset = function () { reinit_textarea(); };
+window.onsubmit = function () { uninit_textarea(); };

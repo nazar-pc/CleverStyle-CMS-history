@@ -1,0 +1,61 @@
+@charset "utf-8";
+body {
+	font-family: Arial, Tahoma, Verdana;
+	font-size: 11px;
+	margin: 0px;
+	overflow-x: hidden;
+	padding: 0px;
+	width: 100%;
+}
+body * {
+	overflow: visible;
+}
+body[id=textarea] {
+	width: auto;
+}
+#body {
+	padding: 7px;
+}
+#body > table {
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	padding: 5px 0px;
+	margin-top: 20px;
+	width: 100%;
+}
+a {
+	text-decoration: none;
+}
+a:hover {
+	border-bottom-style: solid;
+}
+a[target="_blank"]::after, a[target="_new"]::after {
+    content: "↑";
+}
+a[href^="http://"]::after {
+    content: "↗";
+}
+.form_element, .form_element:hover, .form_element:focus {
+	border: solid 1px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+header, footer {
+	width: 100%;
+	text-align: center;
+	margin: 0px;
+	padding: 0px;
+}
+.green, .red, .grey {
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	z-index: 1;
+}
+.background {
+	position:absolute;
+	z-index:-100;
+}
+.r-table td {
+	border-radius: 5px;
+	padding: 5px;
+}
