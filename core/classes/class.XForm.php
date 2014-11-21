@@ -1,128 +1,146 @@
 <?php
+//Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным синтаксисом
 class XForm {
-	public	$return = false;
+	public	$return = true;
 	private	$n = 0;
-	function form ($mode, $method = 'post', $action = '', $id = false, $return = -1, $add = '', $class = '', $name = false) {
-		if ($return === -1) {
-			$return = $this->return;
+	//Отступы строк для красивого исходного кода
+	function level ($in, $level = 1) {
+		if ($level < 1) {
+			return $in;
 		}
-		if (!$mode) {
-			return false;
-		}
-		if ($mode == 'o' && $id) {
-			$Content = '<form method="'.$method.'"'.($action ? ' action="'.$action.'"' : '').($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n";
-		} elseif ($mode == 'c') {
-			$Content = "</form>\n";
+		return preg_replace('/^(.*)$/m', str_repeat("\t", $level).'$1', $in);
+	}
+	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
+	function content ($add, $level = false) {
+		if ($level !== false) {
+			$this->Content .= $this->level($add, $level);
 		} else {
-			$Content = '<form method="'.$method.'"'.($action ? ' action="'.$action.'"' : '').($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n".$mode."</form>\n";
-		}
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $Content;
+			$this->Content .= $add;
 		}
 	}
-	function table ($mode, $id = false, $return = -1, $add = '', $class = '', $name = false) {
-		if ($return === -1) {
-			$return = $this->return;
+	//Функция для обертки контента парными тегами
+	function wrap ($data = array()) {
+		$in = $add = '';
+		$tag = 'div';
+		$quote = '"';
+		$level = 1;
+		if (isset($data['in'])) {
+			$in = $data['in'];
+			unset($data['in']);
 		}
-		if (!$mode) {
-			return false;
+		if (isset($data['tag'])) {
+			$tag = $data['tag'];
+			unset($data['tag']);
 		}
-		if ($mode == 'o' && $id) {
-			$Content = '<table'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n";
-		} elseif ($mode == 'c') {
-			$Content = "</table>\n";
-		} elseif (is_array($mode)) {
-			$Content = '';
-			foreach ($mode as $item) {
-				$Content .= $this->tr($this->td($item, true), true);
+		if (isset($data['add'])) {
+			$add = ' '.$data['add'];
+			unset($data['add']);
+		}
+		if (isset($data['quote'])) {
+			$quote = $data['quote'];
+			unset($data['quote']);
+		}
+		if (isset($data['level'])) {
+			$level = $data['level'];
+			unset($data['level']);
+		}
+		asort($data);
+		foreach ($data as $key => $value) {
+			if (empty($key)) {
+				continue;
 			}
-			if (!empty($Content)) {
-				$Content = $this->table($Content, $id, true, $add, $class, $name);
+			$add .= ' '.$key.'='.$quote.$value.$quote;
+		}
+		return '<'.$tag.$add.'>'.($level ? "\n" : '').$this->level($in ?: ($in === false ? '' : ($level ? "&nbsp;\n" : '')), $level).'</'.$tag.'>'.($level ? "\n" : '');
+	}
+	//Функция для простой обертки контента парными тегами
+	function swrap ($in = '', $data = array(), $tag = 'div') {
+		return $this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
+	}
+	//Функция для обертки контента непарными тегами
+	function inline ($data = array()) {
+		$in = $add = '';
+		$tag = 'input';
+		$quote = '"';
+		if (isset($data['in'])) {
+			$in = $data['in'];
+			unset($data['in']);
+		}
+		if (isset($data['tag'])) {
+			$tag = $data['tag'];
+			unset($data['tag']);
+		}
+		if (isset($data['add'])) {
+			$add = $data['add'];
+			unset($data['add']);
+		}
+		if (isset($data['quote'])) {
+			$quote = $data['quote'];
+			unset($data['quote']);
+		}
+		asort($data);
+		foreach ($data as $key => $value) {
+			$add .= ' '.$key.'='.$quote.$value.$quote;
+		}
+		return '<'.$tag.' '.$add.">\n".$in."\n";
+	}
+	
+	function form ($in = '', $data = array()) {
+		return $this->swrap($in, $data, 'form');
+	}
+	function table ($in = array(), $data = array(), $data2 = array()) {
+		if (is_array($in)) {
+			if (empty($data2)) {
+				$temp = '';
+				foreach ($in as $item) {
+					$temp .= $this->tr($this->td($item));
+				}
+				return $this->swrap($temp, $data, 'table');
+			} elseif (is_array($data)) {
+				$temp = '';
+				foreach ($in as $i => $item) {
+					$temp .= $this->tr($this->td($item).$this->td($data[$i]));
+				}
+				return $this->swrap($temp, $data, 'table');
 			}
 		} else {
-			$Content = '<table'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n".$this->Page->level($mode)."</table>\n";
-		}
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $this->Page->level($Content);
+			return $this->swrap($in, $data, 'table');
 		}
 	}
-	function tr ($mode, $return = -1, $add = '', $class = '', $id = false, $name = false) {
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$mode) {
-			return false;
-		}
-		if ($mode == 'o') {
-			$Content = '<tr'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n";
-		} elseif ($mode == 'c') {
-			$Content = "</tr>\n";
+	function tr ($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, 'tr');
+			}
+			return $temp;
 		} else {
-			$Content = '<tr'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n".$this->Page->level($mode)."</tr>\n";
-		}
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $this->Page->level($Content, 2);
+			return $this->swrap($in, $data, 'tr');
 		}
 	}
-	function td ($mode, $return = -1, $add = '', $class = '', $id = false, $name = false) {
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$mode) {
-			return false;
-		}
-		if ($mode == 'o') {
-			$Content = '<td'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n";
-		} elseif ($mode == 'c') {
-			$Content = "</td>\n";
+	function td ($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, 'td');
+			}
+			return $temp;
 		} else {
-			$Content = '<td'.($id ? ' id="'.$id.'"' : '').($name ? ' name="'.$name.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n".$this->Page->level($mode ?: '&nbsp;')."</td>\n";
-		}
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $this->Page->level($Content, 3);
+			return $this->swrap($in, $data, 'td');
 		}
 	}
-	function label ($mode, $id = false, $return = -1, $add = '', $class = '') {
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$mode) {
-			return false;
-		}
-		if ($mode == 'o') {
-			$Content = $this->Page->level('<label'.($id ? ' for="'.$id.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n", 4);
-		} elseif ($mode == 'c') {
-			$Content = $this->Page->level("</label>\n", 4);
-		} else {
-			$Content = '<label'.($id ? ' for="'.$id.'"' : '').($class ? ' class="'.$class.'"' : '').$add.">\n".$this->Page->level($mode)."</label>\n";
-		}
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $Content;
-		}
+	function div ($in = '', $data = array()) {
+		return $this->swrap($in, $data);
 	}
-	function info ($title, $return = -1) {
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$title) {
-			return false;
-		}
-		$title_info = $title.'_info';
-		if ($return) {
-			return $this->L->$title.'<sup title="'.$this->L->$title_info."\"> (!) </sup>:\n";
-		} else {
-			$this->Content .= $this->Page->level($this->L->$title.'<sup title="'.$this->L->$title.'_info'."\"> (!) </sup>:\n", 5);
-		}
+	function p ($in = '', $data = array()) {
+		return $this->swrap($in, $data, 'p');
+	}
+	function label ($in = '', $data = array()) {
+		return $this->swrap($in, $data, 'label');
+	}
+	function info ($in = '') {
+		$info = $in.'_info';
+		return $this->swrap($this->L->$in, array('data-title' => $this->L->$info, 'class' => 'info'), 'div');
 	}
 	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
 		++$this->n;
@@ -156,7 +174,7 @@ class XForm {
 			if ($type == 'text') {
 				$Content = '<input name="'.$id.'" id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			} elseif ($type == 'checkbox' || $type == 'radio') {
-				$Content = '<input id="'.$this->n.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, $this->n, $return).$devider."\n";
+				$Content = '<input id="'.$this->n.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, array('for' => $this->n)).$devider."\n";
 			} else {
 				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[0]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			}
@@ -167,7 +185,7 @@ class XForm {
 		if ($return) {
 			return $Content;
 		} else {
-			$this->Content .= $this->Page->level($Content, 5);
+			$this->Content .= $this->level($Content, 5);
 		}
 	}
 	function select ($id, $options, $values = false, $size = 1, $return = -1, $add = '', $array_options_add = false, $classes = '', $array_if = false) {
@@ -188,45 +206,41 @@ class XForm {
 				}
 				$Content[] = $this->select($i, $v, array($values[0], $values[$i]), 0, true, is_array($add) ? $add[$i] : '', is_array($array_options_add) ? $array_options_add[$i] : '', is_array($classes) ? $classes[$i] : '', is_array($array_if) ? $array_if[$i] : $array_if);
 			}
-			$Content = '<select name="'.$id.'" id="'.$id.'" size="'.$size.'"'.(!empty($classes) ? ' class="'.(is_array($classes) ? $classes[0] : $classes).'"' : '').(is_array($add) ? $add[0] : $add).">\n".$this->Page->level(implode("\n", $Content))."</select>\n";
+			$Content = '<select name="'.$id.'" id="'.$id.'" size="'.$size.'"'.(!empty($classes) ? ' class="'.(is_array($classes) ? $classes[0] : $classes).'"' : '').(is_array($add) ? $add[0] : $add).">\n".$this->level(implode("\n", $Content))."</select>\n";
 		} else {
 			$Content = "<option value=\"".filter($values[1])."\"".($values[0] == $values[1] || $array_if ? ' selected' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$options."</option>\n";
 		}
 		if ($return) {
 			return $Content;
 		} else {
-			$this->Content .= $this->Page->level($Content, 5);
+			$this->Content .= $this->level($Content, 5);
 		}
 	}
-	function textarea ($id, $value = '', $return = -1, $add = '', $class = '', $cols = false, $rows = false) {
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$id) {
-			return;
-		}
-		$time = microtime();
-		$Content = '<textarea name="'.$id.'" id="'.$id.'" '.($cols ? ' cols="'.$cols.'"' : '').($rows ? ' rows="'.$rows.'"' : '').($class ? ' class="'.$class.'"' : '').$add.'>[textarea '.$time."]</textarea>\n";
-		$this->Page->replace('[textarea '.$time.']', is_array($value) ? implode("\n", $value) : $value);
-		if ($return) {
-			return $Content;
+	function textarea ($in = '', $data = array()) {
+		$time = md5(microtime());
+		if (is_array($in)) {
+			if (isset($in['in'])) {
+				$this->Page->replace('[textarea '.$time.']', is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$in['in'] = '[textarea '.$time.']';
+			}
 		} else {
-			$this->Content .= $this->Page->level($Content, 5);
+			$this->Page->replace('[textarea '.$time.']', is_array($in) ? implode("\n", $in) : $in);
+			$in = '[textarea '.$time.']';
 		}
+		$data['level'] = false;
+		return $this->swrap($in, $data, 'textarea');
 	}
-	function button ($value, $type = 'button', $name = '', $return = -1, $add = '', $class = '', $id = '') {
-		if ($return === -1) {
-			$return = $this->return;
+	function button ($in = '', $data = array()) {
+		if (is_array($in)) {
+			if (!isset($in['type'])) {
+				$in['type'] = 'button';
+			}
+		} elseif (is_array($data)) {
+			if (!isset($data['type'])) {
+				$data['type'] = 'button';
+			}
 		}
-		if (!$value) {
-			return;
-		}
-		$Content = '<button id="'.($id ?: $name).'"'.($name ? ' name="'.$name.'"' : '').' type="'.$type.'"'.($class ? ' class="'.$class.'"' : '').$add.'>'.$value."</button>\n";
-		if ($return) {
-			return $Content;
-		} else {
-			$this->Content .= $this->Page->level($Content, 5);
-		}
+		return $this->swrap($in, $data, 'button');
 	}
 }
 ?>

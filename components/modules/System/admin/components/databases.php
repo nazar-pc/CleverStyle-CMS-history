@@ -1,7 +1,5 @@
 <?php
 global $Config, $Admin, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE;
-$a = &$Admin;
-$a->return = true;
 $dbs = array(isset($Config->routing['current'][3]) ? $Config->routing['current'][3] : -1, -1, 0);
 $dbsname = array('', $L->separate_db, $L->coredb);
 foreach ($Config->db as $i => $db) {
@@ -10,6 +8,7 @@ foreach ($Config->db as $i => $db) {
 		$dbsname[] = $db['name'];
 	}
 }
+$a = &$Admin;
 if (isset($Config->routing['current'][2])) {
 	$a->apply_button = false;
 	if ($Config->routing['current'][2] == 'add' || ($Config->routing['current'][2] == 'edit' && isset($Config->routing['current'][3]))) {
@@ -22,16 +21,21 @@ if (isset($Config->routing['current'][2])) {
 			}
 		}
 		$a->action = ADMIN.'/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1];
-		$a->table(
+		$a->Content .= $a->table(
 			$a->tr(
-				$a->td($a->info('dbmirror'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbhost'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbtype'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbprefix'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbname'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbuser'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbpass'), true, ' style="text-align: center;"').
-				$a->td($a->info('dbcodepage'), true, ' style="text-align: center;"')
+				$a->td(
+					array(
+						$a->info('dbmirror'),
+						$a->info('dbhost'),
+						$a->info('dbtype'),
+						$a->info('dbprefix'),
+						$a->info('dbname'),
+						$a->info('dbuser'),
+						$a->info('dbpass'),
+						$a->info('dbcodepage')
+					),
+					array('style' => 'text-align: center;')
+				)
 			).
 			$a->tr(
 				$a->td(
@@ -44,7 +48,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						false,
 						'form_element'
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->input(
@@ -55,7 +59,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'form_element',
 						10
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->select(
@@ -67,7 +71,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						false,
 						'form_element'
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->input(
@@ -78,7 +82,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'form_element',
 						10
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->input(
@@ -89,7 +93,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'form_element',
 						10
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->input(
@@ -100,7 +104,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'form_element',
 						10
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->input(
@@ -111,7 +115,7 @@ if (isset($Config->routing['current'][2])) {
 						'',
 						'form_element',
 						10
-					), true, ' style="text-align: center;"'
+					), array('style' => 'text-align: center;')
 				).
 				$a->td(
 					$a->input(
@@ -129,9 +133,9 @@ if (isset($Config->routing['current'][2])) {
 						$Config->routing['current'][2] == 'edit' ? 'edit' : 'add'
 					).
 					(isset($Config->routing['current'][3]) ? $a->input('hidden', 'database', $Config->routing['current'][3]) : '').
-					(isset($Config->routing['current'][4]) ? $a->input('hidden', 'mirror', $Config->routing['current'][4]) : ''), true, ' style="text-align: center;"'
+					(isset($Config->routing['current'][4]) ? $a->input('hidden', 'mirror', $Config->routing['current'][4]) : ''), array('style' => 'text-align: center;')
 				)
-			), '', false, ' style="width: 100%"', 'admin_table'
+			), array('style' => 'width: 100%;', 'class' => 'admin_table')
 		);
 		if (isset($database)) {
 			unset($database);
@@ -159,42 +163,30 @@ if (isset($Config->routing['current'][2])) {
 	}
 } else {
 	$db_list =	$a->tr(
-					$a->td($L->action, true, ' style="text-align: center;"', 'greybg1 white').
-					$a->td($L->dbhost, true, ' style="text-align: center;"', 'greybg1 white').
-					$a->td($L->dbtype, true, ' style="text-align: center;"', 'greybg1 white').
-					$a->td($L->dbprefix, true, ' style="text-align: center;"', 'greybg1 white').
-					$a->td($L->dbname, true, ' style="text-align: center;"', 'greybg1 white').
-					$a->td($L->dbuser, true, ' style="text-align: center;"', 'greybg1 white').
-					$a->td($L->dbcodepage, true, ' style="text-align: center;"', 'greybg1 white')
+					$a->td(
+						array($L->action, $L->dbhost, $L->dbtype, $L->dbprefix, $L->dbname, $L->dbuser, $L->dbcodepage),
+						array('style' => 'text-align: center;', 'class' => 'greybg1 white')
+					)
 				).
 				$a->tr(
 					$a->td(
+						array(
 							'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/0" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
-							true,
-							' style="text-align: left;"',
-							'greybg2 green').
-					$a->td($DB_HOST, true, ' style="text-align: center;"', 'greybg2 green').
-					$a->td($DB_TYPE, true, ' style="text-align: center;"', 'greybg2 green').
-					$a->td($DB_PREFIX, true, ' style="text-align: center;"', 'greybg2 green').
-					$a->td($DB_NAME, true, ' style="text-align: center;"', 'greybg2 green').
-					$a->td('*****', true, ' style="text-align: center;"', 'greybg2 green').
-					$a->td($DB_CODEPAGE, true, ' style="text-align: center;"', 'greybg2 green')
+							$DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, '*****', $DB_CODEPAGE
+						),
+						array('style' => 'text-align: center;', 'class' => 'greybg2 green')
+					)
 				);
 	foreach ($Config->db[0]['mirrors'] as $m => $mirror) {
 		if (is_array($mirror) && !empty($mirror)) {
 			$db_list .=	$a->tr(
 							$a->td(
-								'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/0/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/0/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
-								true,
-								' style="text-align: left;"',
-								'greybg3'
-							).
-							$a->td($mirror['host'], true, ' style="text-align: center;"', 'greybg3').
-							$a->td($mirror['type'], true, ' style="text-align: center;"', 'greybg3').
-							$a->td($mirror['prefix'], true, ' style="text-align: center;"', 'greybg3').
-							$a->td($mirror['name'], true, ' style="text-align: center;"', 'greybg3').
-							$a->td($mirror['user'], true, ' style="text-align: center;"', 'greybg3').
-							$a->td($mirror['codepage'], true, ' style="text-align: center;"', 'greybg3')
+								array(
+									'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/0/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/0/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
+									$mirror['host'], $mirror['type'], $mirror['prefix'], $mirror['name'], $mirror['user'], $mirror['codepage']
+								),
+								array('style' => 'text-align: center;', 'class' => 'greybg3')
+							)
 						);
 		}
 	}
@@ -202,49 +194,38 @@ if (isset($Config->routing['current'][2])) {
 		if (is_array($db) && !empty($db) && $i) {
 			$db_list .=	$a->tr(
 							$a->td(
-								'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'" class="black">'.$L->edit.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'" class="black">'.$L->delete.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i.'" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
-								true,
-								' style="text-align: left;"',
-								'greybg2'
-							).
-							$a->td($db['host'], true, ' style="text-align: center;"', 'greybg2').
-							$a->td($db['type'], true, ' style="text-align: center;"', 'greybg2').
-							$a->td($db['prefix'], true, ' style="text-align: center;"', 'greybg2').
-							$a->td($db['name'], true, ' style="text-align: center;"', 'greybg2').
-							$a->td($db['user'], true, ' style="text-align: center;"', 'greybg2').
-							$a->td($db['codepage'], true, ' style="text-align: center;"', 'greybg2')
+								array(
+									'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'" class="black">'.$L->edit.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'" class="black">'.$L->delete.'&nbsp;'.$L->db.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i.'" class="black">'.$L->add.'&nbsp;'.$L->mirror.'</a>',
+									$db['host'], $db['type'], $db['prefix'], $db['name'], $db['user'], $db['codepage']
+								),
+								array('style' => 'text-align: center;', 'class' => 'greybg2')
+							)
 						);
-						foreach ($Config->db[$i]['mirrors'] as $m => $mirror) {
-							if (is_array($mirror) && !empty($mirror)) {
-								$db_list .=	$a->tr(
-												$a->td(
-													'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
-													true,
-													' style="text-align: left;"',
-													'greybg3'
-												).
-												$a->td($mirror['host'], true, ' style="text-align: center;"', 'greybg3').
-												$a->td($mirror['type'], true, ' style="text-align: center;"', 'greybg3').
-												$a->td($mirror['prefix'], true, ' style="text-align: center;"', 'greybg3').
-												$a->td($mirror['name'], true, ' style="text-align: center;"', 'greybg3').
-												$a->td($mirror['user'], true, ' style="text-align: center;"', 'greybg3').
-												$a->td($mirror['codepage'], true, ' style="text-align: center;"', 'greybg3')
-											);
-							}
-						}
+			foreach ($Config->db[$i]['mirrors'] as $m => $mirror) {
+				if (is_array($mirror) && !empty($mirror)) {
+					$db_list .=	$a->tr(
+									$a->td(
+										array(
+											'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m.'" class="black">'.$L->edit.'&nbsp;'.$L->mirror.'</a><br><a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m.'" class="black">'.$L->delete.'&nbsp;'.$L->mirror.'</a>',
+											$mirror['host'], $mirror['type'], $mirror['prefix'], $mirror['name'], $mirror['user'], $mirror['codepage']
+										),
+										array('style' => 'text-align: center;', 'class' => 'greybg3')
+									)
+								);
+				}
+			}
 		}
 	}
-	$a->table(
+	$a->Content .= $a->table(
 		$db_list.
 		$a->tr(
 			$a->td (
 				'<a href="admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add" class="black">+'.$L->databasex."</a><br>\n",
-				true,
-				' colspan="7" style="text-align: left;"'
+				array('colspan' => 7, 'style' => 'text-align: left;')
 			)
 		).
 		$a->tr(
-			$a->td($a->info('db_balance'), true, ' colspan="4"').
+			$a->td($a->info('db_balance'), array('colspan' => 4)).
 			$a->td(
 				$a->input(
 					'radio',
@@ -255,11 +236,12 @@ if (isset($Config->routing['current'][2])) {
 					array('', 'form_element green', 'form_element red'),
 					true,
 					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
-				), true, ' colspan="3"'
+				),
+				array('colspan' => 3)
 			)
 		).
 		$a->tr(
-			$a->td($a->info('maindb_for_write'), true, ' colspan="4"').
+			$a->td($a->info('maindb_for_write'), array('colspan' => 4)).
 			$a->td(
 				$a->input(
 					'radio',
@@ -271,9 +253,11 @@ if (isset($Config->routing['current'][2])) {
 					true,
 					array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
 				).
-				$a->input('hidden', 'mode', 'config'), true, ' colspan="3"'
+				$a->input('hidden', 'mode', 'config'),
+				array('colspan' => 3)
 			)
-		), '', false, ' style="text-align: center; width: 100%;"', 'admin_table r-table'
+		),
+		array('style' => 'text-align: center; width: 100%;', 'class' => 'admin_table r-table')
 	);
 }
 unset($a);

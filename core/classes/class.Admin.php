@@ -32,9 +32,6 @@ class Admin extends Module {
 		unset($r);
 		$this->mainmenu();
 	}
-	function content ($Content) {
-		$this->Content .= $Content;
-	}
 	function mainsubmenu () {
 		$this->mainsubmenu = '';
 		foreach ($this->parts as $part) {
@@ -60,7 +57,7 @@ class Admin extends Module {
 			$this->Page->content(
 				$this->form(
 					$this->Content.
-					$this->Page->level(
+					$this->level(
 						$this->input(
 							'hidden',
 							$this->Config->routing['current'][1]
@@ -77,12 +74,13 @@ class Admin extends Module {
 						.($this->apply_button ? "	<button id=\"cancel_settings\" type=\"submit\"".$this->cancel.">".$this->L->cancel."</button>\n" : '')
 						."	<button type=\"reset\">".$this->L->reset."</button>\n"
 					: ''),
-					'post',
-					$this->action,
-					'admin_form',
-					true,
-					' onReset="javascript: save = 0;"',
-					'admin_form'
+					array(
+						'method' => 'post',
+						'action' => $this->action,
+						'id' => 'admin_form',
+						'onReset' => 'javascript: save = 0;',
+						'class' => 'admin_form'
+					)
 				), 1
 			);
 		} else {

@@ -1,26 +1,20 @@
 <?php
 class Language {
 	public		$clanguage;
-	protected	$Config,
+	protected	$Config = false,
 				$translate = array();
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
-		$this->clanguage = $LANGUAGE;
-		if (!include_x(LANGUAGES.DS.'lang.'.$LANGUAGE.'.php')) {
-			global $stop, $Classes;
-			$stop = 2;
-			$Classes->__destruct();
-			exit;
-		}
+		$this->change($LANGUAGE);
 	}
 	function init ($Config) {
 		$this->Config = $Config;
-		$this->clanguage = $Config->core['language'];
 		if ($this->Config->core['allow_change_language'] && isset($_COOKIE['language']) && in_array(strval($_COOKIE['language']), $this->Config->core['active_languages'])) {
-			$this->clanguage = strval($_COOKIE['language']);
+			$this->change(strval($_COOKIE['language']));
+		} else {
+			$this->change($Config->core['language']);
 		}
-		include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php');
 	}
 	function __get ($item) {
 		return isset($this->translate[$item]) ? $this->translate[$item] : ucfirst(str_replace('_', ' ', $item));
@@ -35,10 +29,27 @@ class Language {
 		}
 	}
 	function change ($language) {
-		if ($this->Config->core['allow_change_language'] && in_array($language, $this->Config->core['active_languages'])) {
-			$this->clanguage = $language;
-			include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php');
+		if ($language === $this->clanguage) {
+			return true;
 		}
+		if ($this->Config === false || ($this->Config->core['allow_change_language'] && in_array($language, $this->Config->core['active_languages']))) {
+			global $Cache;
+			$this->clanguage = $language;
+			if ($translate = $Cache->get('lang.'.$this->clanguage)) {
+				$this->__set('translate', $translate);
+				return true;
+			} else {
+				if (!include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
+					global $stop, $Classes;
+					$stop = 2;
+					$Classes->__destruct();
+					exit;
+				}
+				$Cache->set('lang.'.$this->clanguage, $this->translate);
+				return true;
+			}
+		}
+		return false;
 	}
 }
 ?>

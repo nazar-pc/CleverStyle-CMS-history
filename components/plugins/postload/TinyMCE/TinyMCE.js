@@ -5,7 +5,7 @@ $(document).ready(
 			themes : "simple,advanced",
 			languages : "en,ru,uk"
 		});
-		$('.EDITOR').tinymce({
+		$('textarea.EDITOR').tinymce({
 			doctype : '<!doctype html>',
 			theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
 			skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
@@ -22,7 +22,7 @@ $(document).ready(
 			theme_advanced_resizing : true,
 			file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''
 		});
-		$('.EDITORH').tinymce({
+		$('textarea.EDITORH').tinymce({
 			doctype : '<!doctype html>',
 			theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
 			skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
@@ -45,7 +45,7 @@ $(document).ready(
 				height: 550
 			});
 		}*/
-		$('.SEDITOR').tinymce({
+		$('textarea.SEDITOR').tinymce({
 			doctype : '<!doctype html>',
 			theme : typeof(tinymce_theme_mini) != 'undefined' ? tinymce_theme_mini : "simple",
 			skin : typeof(tinymce_skin_mini) != 'undefined' ? tinymce_skin_mini : "o2k7",

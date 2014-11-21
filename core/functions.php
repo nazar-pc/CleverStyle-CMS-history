@@ -93,7 +93,7 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 		}
 	}
 	while ($file = readdir($dirc[$l])) {
-		if ((!$mask || preg_match($mask, $file) || ($subfolders && is_dir($dir.$file))) && $file != '.' && $file != '..') {
+		if ((!$mask || preg_match($mask, $file) || ($subfolders && is_dir($dir.$file))) && $file != '.' && $file != '..' && $file != '.htaccess' && $file != '.htpasswd') {
 			if (is_file($dir.$file) && ($mode == 'f' || $mode == 'fd')) {
 				if ($with_path == 1) {
 					$list[] = $dir.$file;

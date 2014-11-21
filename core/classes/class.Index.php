@@ -15,7 +15,7 @@ class Index {
 		}
 		include_x(MFOLDER.DS.'index.php');
 		include_x(PLUGINS.DS.'postload'.DS.'TinyMCE'.DS.'index.php');
-		include_x(PLUGINS.DS.'postload'.DS.'TinyMCE'.DS.'index.php');
+		//include_x(PLUGINS.DS.'postload'.DS.'TinyMCE'.DS.'index.php');
 		//include_x(PLUGINS.'/postload/AjexFileManager/index.php');
 	}
 }

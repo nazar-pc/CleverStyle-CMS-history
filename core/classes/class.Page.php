@@ -61,7 +61,9 @@ class Page extends XForm {
 				$Page;
 	
 	function init ($Config) {
+		global $L;
 		$this->Config = $Config;
+		$this->L = $L;
 		$this->Title[0] = $this->Config->core['name'];
 		$this->Keywords = $this->Config->core['keywords'];
 		$this->Description = $this->Config->core['description'];
@@ -264,22 +266,6 @@ class Page extends XForm {
 	function title ($add) {
 		$this->Title[] = $add;
 	}
-	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
-	function content ($add, $l = false) {
-		if ($l) {
-			$this->Content .= $this->level($add, $l);
-		} else {
-			$this->Content .= $add;
-		}
-	}
-	//Отступы строк для красивого исходного кода
-	function level ($in, $l = 1) {
-		$padding = '';
-		for ($i = 0; $i < $l; ++$i) {
-			$padding .= '	';
-		}
-		return preg_replace('/^(.*)$/m', $padding.'$1', $in);
-	}
 	//Загрузка списка JavaScript и CSS файлов
 	function get_list () {
 		$this->get_list = array(
@@ -414,7 +400,7 @@ class Page extends XForm {
 		$footer = "<div id=\"copyright\">\n	$copyright[2] $copyright[3]\n</div>\n";
 		if (!$stop) {
 			$footer = "<div id=\"execution_info\">\n	".$L->page_generated.' <!--generate time--> '
-					.$L->sec.', '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.', '.$L->peak_memory_usage." <!--peak memory usage-->\n</div>\n".$footer;
+					.$L->sec.', '.(is_object($db) ? $db->queries : 0).' '.$L->queries_to_db.' '.$L->during.' '.(is_object($db) ? round($db->time, 5) : 0).' '.$L->sec.', '.$L->peak_memory_usage." <!--peak memory usage-->\n</div>\n".$footer;
 		}
 		return $footer;
 	}
@@ -425,43 +411,57 @@ class Page extends XForm {
 		if ($this->Config->core['show_objects_data']) {
 			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\'); ">►'.$L->objects."</p>\n";
 			global $Classes, $timeload, $loader_init_memory;
-			$debug_info = '<p>'.$L->total_list.': '.implode(', ', array_keys($Classes->ObjectsList))."</p>\n"
-						.'<p style="font-weight: bold;">'.$L->loader.":</p>\n"
-						.'<p style="padding-left: 20px;">'.$L->initialisation_duration.': '.round($timeload['loader_init'] - $timeload['start'], 5).' '.$L->sec."</p>\n"
-						.'<p style="padding-left: 20px;">'.$L->memory_usage.': '.formatfilesize($loader_init_memory, 5)."</p>\n";
+			$debug_info =	$this->p(
+								$L->total_list.': '.implode(', ', array_keys($Classes->ObjectsList))
+							).$this->p(
+								$L->loader,
+								array('style' => 'font-weight: bold;')
+							).$this->p(
+								$L->initialisation_duration.': '.round($timeload['loader_init'] - $timeload['start'], 5).' '.$L->sec,
+								array('style' => 'padding-left: 20px;')
+							).$this->p(
+								$L->memory_usage.': '.formatfilesize($loader_init_memory, 5),
+								array('style' => 'padding-left: 20px;')
+							);
 			$last = $timeload['loader_init'];
 			foreach ($Classes->ObjectsList as $object => $data) {
-				$debug_info .= '<p style="font-weight: bold;">'.$object.":</p>\n"
-								.'<p style="padding-left: 20px;">'.$L->initialisation_duration.': '.round($data[0] - $last, 5).' '.$L->sec."</p>\n"
-								.'<p style="padding-left: 20px;">'.$L->time_from_start_execution.': '.round($data[0] - $timeload['start'], 5).' '.$L->sec."</p>\n"
-								.'<p style="padding-left: 20px;">'.$L->memory_usage.': '.formatfilesize($data[1], 5)."</p>\n";
+				$debug_info .=	$this->p(
+									$object,
+									array('style' => 'font-weight: bold;')
+								).$this->p(
+									$L->initialisation_duration.': '.round($data[0] - $last, 5).' '.$L->sec,
+									array('style' => 'padding-left: 20px;')
+								).$this->p(
+									$L->time_from_start_execution.': '.round($data[0] - $timeload['start'], 5).' '.$L->sec,
+									array('style' => 'padding-left: 20px;')
+								).$this->p(
+									$L->memory_usage.': '.formatfilesize($data[1], 5),
+									array('style' => 'padding-left: 20px;')
+								);
 				$last = $data[0];
 			}
-			$this->debug_info .= "<div id=\"debug_objects\" style=\"display: none; padding-left: 20px;\">\n".$this->level($debug_info)."</div>\n";
+			$this->debug_info .= $this->div(
+									$this->level($debug_info),
+									array('id' => 'debug_objects', 'style' => 'display: none; padding-left: 20px;')
+								);
 			unset($loader_init_memory, $last, $object, $data, $debug_info);
 		}
 		//Данные пользователя
 		if ($this->Config->core['show_user_data']) {
 			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\'); ">►'.$L->user_data."</p>\n";
 			global $Classes, $timeload, $loader_init_memory;
-			$debug_info = '<p>'.$L->total_list.': '.implode(', ', array_keys($Classes->ObjectsList))."</p>\n"
-						.'<p style="font-weight: bold;">'.$L->loader.":</p>\n"
-						.'<p style="padding-left: 20px;">'.$L->initialisation_duration.': '.round($timeload['loader_init'] - $timeload['start'], 5).' '.$L->sec."</p>\n"
-						.'<p style="padding-left: 20px;">'.$L->memory_usage.': '.formatfilesize($loader_init_memory, 5)."</p>\n";
-			/*$last = $timeload['loader_init'];
-			foreach ($Classes->ObjectsList as $object => $data) {
-				$debug_info .= '<p style="font-weight: bold;">'.$object.":</p>\n"
-								.'<p style="padding-left: 20px;">'.$L->initialisation_duration.': '.round($data[0] - $last, 5).' '.$L->sec."</p>\n"
-								.'<p style="padding-left: 20px;">'.$L->time_from_start_execution.': '.round($data[0] - $timeload['start'], 5).' '.$L->sec."</p>\n"
-								.'<p style="padding-left: 20px;">'.$L->memory_usage.': '.formatfilesize($data[1], 5)."</p>\n";
-				$last = $data[0];
-			}*/
 			$this->debug_info .= "<div id=\"debug_user\" style=\"display: none;\">\n".$this->level($debug_info)."</div>\n";
 			unset($loader_init_memory, $last, $object, $data, $debug_info);
 		}
 		//Запросы в БД
 		if ($this->Config->core['show_queries']) {
-			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\'); ">►'.$L->queries."</p>\n";
+			$this->debug_info .= $this->p(
+									'►'.$L->queries,
+									array(
+										'class' => 'notice',
+										'onClick' => 'javascript: $(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
+									)
+								);
 			global $db;
 			//Показываем только запросы в БД
 			if ($this->Config->core['show_queries'] == 1) {
@@ -472,7 +472,10 @@ class Page extends XForm {
 					}
 				}
 				unset($database, $query);
-				$debug_info = $this->table(array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.($db->queries ? ':' : '')), $queries), 'debug_queries', true, ' style="display: none; padding-left: 20px; width: 100%; word-wrap: break-word;"');
+				$debug_info =	$this->table(
+									array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.($db->queries ? ':' : '')), $queries),
+									array('id' => 'debug_queries', 'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;')
+								);
 				unset($queries);
 			//Показываем запросы в БД и время выполнения запросов
 			} elseif ($this->Config->core['show_queries'] == 2) {
@@ -482,12 +485,18 @@ class Page extends XForm {
 						if ($database->queries['time'][$i] < 0.1) {
 							$queries[] = '<hr>'.$text.'; #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>';
 						} else {
-							$queries[] = '<div class="notice red" style="text-align: left;"><hr>'.$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i></div>';
+							$queries[] = $this->div(
+											'<hr>'.$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
+											array('class' => 'notice red', 'style' => 'text-align: left;')
+										);
 						}
 					}
 				}
 				unset($database, $i, $text);
-				$debug_info = $this->table(array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')), $queries), 'debug_queries', true, ' style="display: none; padding-left: 20px; width: 100%; word-wrap: break-word;"');
+				$debug_info = $this->table(
+								array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')), $queries),
+								array('id' => 'debug_queries', 'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;')
+							);
 				unset($queries);
 			//Показываем детальную информацию о запросах в БД
 			} elseif ($this->Config->core['show_queries'] == 3) {
@@ -495,9 +504,8 @@ class Page extends XForm {
 								$L->false_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->false_connections)) ?: $L->no).'</b>',
 								$L->succesful_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->succesful_connections)) ?: $L->no).'</b>',
 								$L->mirrors_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->mirrors)) ?: $L->no).'</b>',
-								$L->active_connections.':'
+								$L->active_connections.':'.(!count($db->connections) ? ' <b>'.$L->no.'</b>' : '')
 							);
-				
 				foreach ($db->connections as $name => $database) {
 					if ($name == $database->database) {
 						if ($name == 'core') {
@@ -506,38 +514,61 @@ class Page extends XForm {
 					} else {
 						$name = ($name != 'core' ? $name : $L->coredb).'('.$database->database.')';
 					}
-					$queries[] = '<div style="padding-left: 20px;">'.$name.', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.round($database->time, 5).' '.$L->sec.':</div>';
+					$queries[] = $this->div(
+									$name.', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).
+									', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.round($database->time, 5).' '.$L->sec.':',
+									array('style' => 'padding-left: 20px;')
+								);
 					
 					foreach ($database->queries['text'] as $i => $text) {
-						if ($database->queries['time'][$i] < 0.1) {
-							$queries[] = '<div style="padding-left: 40px;"><hr>'.$text.'; #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i></div>';
-						} else {
-							$queries[] = '<div class="notice red" style="padding-left: 40px; text-align: left;"><hr>'.$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i></div>';
-						}
+						$queries[] = $this->div(
+										'<hr>'.$text.'; #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
+										array(
+											'style' => 'padding-left: 40px;'.($database->queries['time'][$i] < 0.1 ? ' text-align: left;' : ''),
+											'class' => $database->queries['time'][$i] < 0.1 ? 'notice red' : ''
+										)
+									);
 					}
 				}
 				unset($database, $i, $text);
-				$debug_info = $this->table(array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')), $queries), 'debug_queries', true, ' style="display: none; padding-left: 20px; width: 100%; word-wrap: break-word;"');
+				$debug_info =	$this->table(
+									array_merge(
+										array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')),
+										$queries
+									),
+									array(
+										'id' => 'debug_queries',
+										'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;'
+									)
+								);
 				unset($queries);
 			}
-			//print_r($db);
 			$this->debug_info .= $debug_info;
 			unset($i, $v, $debug_info);
 		}
 		//Cookies
 		if ($this->Config->core['show_cookies']) {
-			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\'); ">►'.$L->cookies."</p>\n";
+			$this->debug_info .= $this->p(
+									'►'.$L->cookies,
+									array(
+										'class' => 'notice',
+										'onClick' => 'javascript: $(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
+									)
+								);
 			$debug_info = $this->tr(
-								$this->td($L->key.':', true, ' style="font-weight: bold; width: 20%;"').
-								$this->td($L->value, true, ' style="width: 80%;"'), true
-							);;
+								$this->td($L->key.':', array('style' => 'font-weight: bold; width: 20%;')).
+								$this->td($L->value, array('style' => 'width: 80%;'))
+							);
 			foreach ($_COOKIE as $i => $v) {
 				$debug_info .= $this->tr(
-									$this->td($i.':', true, ' style="font-weight: bold; width: 20%;"').
-									$this->td(xap($v), true, ' style="width: 80%;"'), true
+									$this->td($i.':', array('style' => 'font-weight: bold; width: 20%;')).
+									$this->td(xap($v), array('style' => 'width: 80%;')), true
 								);
 			}
-			$this->debug_info .= "<div id=\"debug_cookies\" style=\"display: none;\">\n".$this->level($this->table($debug_info, false, true, ' style="padding-left: 20px; width: 100%;"'))."</div>\n";
+			$this->debug_info .= $this->div(
+									$this->level($this->table($debug_info, false, true, ' style="padding-left: 20px; width: 100%;"')),
+									array('id' => 'debug_cookies', 'style' => 'display: none;')
+								);
 			unset($i, $v, $debug_info);
 		}
 	}
@@ -566,11 +597,11 @@ class Page extends XForm {
 			//Обработка замены контента
 			$this->Html = str_replace($this->Search, $this->Replace, $this->Html);
 			//Вывод сгенерированной страницы
-			if (!zlib_autocompression() && $this->Config->core['gzip_compression'] && zlib() && !$Error->num()) {
+			if (!zlib_autocompression() && $this->Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
 				ob_start('ob_gzhandler');
 				$ob = true;
 			} else {
-				if ($this->Config->core['zlib_compression'] && $this->Config->core['zlib_compression_level']) {
+				if ($this->Config->core['zlib_compression'] && $this->Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
 					ini_set('zlib.output_compression', 'On');
 					ini_set('zlib.output_compression_level', $this->Config->core['zlib_compression_level']);
 				}

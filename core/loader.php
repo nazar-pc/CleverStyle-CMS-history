@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
 ini_set('display_errors', 1);
 header('Content-Type: text/html; charset=utf-8');
+mb_internal_encoding("UTF-8");
 
 //Задание базовых констант с путями системных папок
 define('DOMAIN', $_SERVER['HTTP_HOST']);			//Доменное имя текущего сайта
