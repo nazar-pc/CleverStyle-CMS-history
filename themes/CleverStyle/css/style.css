@@ -104,10 +104,6 @@ select {
 	width: 250px;
 }
 
-textarea.wide {
-	width: 80% !important;
-}
-
 textarea {
 	overflow-x  : auto;
 	height      : 5em;

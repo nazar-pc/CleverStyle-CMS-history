@@ -438,8 +438,10 @@
 		"g"								: "Г",
 		"g_info"						: "Гость",
 	//Groups
-		"groups"	: "Группы",
-		//Permissios
+		"groups"				: "Группы",
+		"group_title"			: "Название группы",
+		"edit_group_data"		: "Редактировать данные группы",
+	//Permissios
 		"permissions"	: "Права",
 		//Statistic
 		"statistic"	: "Статистика",

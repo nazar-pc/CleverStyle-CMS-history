@@ -417,7 +417,7 @@ class User {
 			);
 		}
 		return $group_data;
-	}
+	}//TODO set_group_data
 	/**
 	 * @param int $group
 	 * @return array
@@ -478,7 +478,6 @@ class User {
 	function get_session ($session_id = '') {
 		$this->current['session'] = _getcookie('session');
 		$session_id = $session_id ?: $this->current['session'];
-
 		global $Cache, $Config;
 		$result = false;
 		if ($session_id && !($result = $Cache->{'sessions/'.$session_id})) {
