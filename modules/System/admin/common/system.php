@@ -35,13 +35,12 @@ $a->table(
 	$a->tr(
 		$a->td($a->info('closed_text')).
 		$a->td(
-			
 			$a->textarea(
 				'core[closed_text]',
 				$Config->core['closed_text'],
 				true,
 				'',
-				'form_element'
+				'EDITOR'
 			)
 		)
 	).
@@ -81,7 +80,7 @@ $a->table(
 				'core[debug]',
 				array(intval($Config->core['debug']), 1, 0),
 				true,
-				array('', ' onClick="$(\'#debug_form\').css(\'display\', \'none\');"', ' onClick="$(\'#debug_form\').css(\'display\', \'\');"'),
+				array('', ' onClick="$(\'#debug_form\').css(\'display\', \'\');"', ' onClick="$(\'#debug_form\').css(\'display\', \'none\');"'),
 				array('', 'green', 'red'),
 				true,
 				array('', '&nbsp;'.$L->on, '&nbsp;'.$L->off)
@@ -94,12 +93,12 @@ $a->table(
 			$a->input(
 				'radio',
 				'core[queries]',
-				array(intval($Config->core['queries']), 0, 1, 2),
+				array(intval($Config->core['queries']), 0, 1, 2, 3),
 				true,
 				'',
-				array('', 'red', 'green', 'green'),
+				array('', 'red', 'green', 'green', 'green'),
 				true,
-				array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time),
+				array('', '&nbsp;'.$L->dont_show_queries, '&nbsp;'.$L->show_queries, '&nbsp;'.$L->show_queries_and_time, '&nbsp;'.$L->show_queries_extended),
 				true,
 				'<br>'
 			).'<br>'.
@@ -117,25 +116,27 @@ $a->table(
 			).
 			$a->input(
 				'checkbox',
-				'core[show_session_vars]',
-				array(intval($Config->core['show_session_vars']), 1),
+				'core[show_user_data]',
+				array(intval($Config->core['show_user_data']), 1),
 				true,
 				'',
 				'form_element',
 				true,
-				$L->show_session_vars,
+				$L->show_user_data,
 				true,
 				'<br>'
 			).
 			$a->input(
 				'checkbox',
-				'core[show_global_vars]',
-				array(intval($Config->core['show_global_vars']), 1),
+				'core[show_objects_data]',
+				array(intval($Config->core['show_objects_data']), 1),
 				true,
 				'',
 				'form_element',
 				true,
-				$L->show_global_vars
+				$L->show_objects_data,
+				true,
+				'<br>'
 			), true, ' style="'.($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;"', '', 'debug_form'
 		)
 	).
@@ -159,13 +160,19 @@ $a->table(
 		$a->td(
 			$a->table(
 				$a->tr(
+					$a->td($a->info('routing_in')).
+					$a->td($a->info('routing_out'))
+				).
+				$a->tr(
 					$a->td(
 						$a->textarea(
 							'routing[in]',
 							$Config->routing['in'],
 							true,
 							'',
-							'form_element S_EDITOR'
+							'form_element',
+							30,
+							3
 						), true, ' style="width: 50%;"'
 					).
 					$a->td(
@@ -174,7 +181,9 @@ $a->table(
 							$Config->routing['out'],
 							true,
 							'',
-							'form_element S_EDITOR'
+							'form_element',
+							30,
+							3
 						), true, ' style="width: 50%;"'
 					)
 				), false, true, ' style="width: 100%;"'
@@ -182,9 +191,13 @@ $a->table(
 		)
 	).
 	$a->tr(
-		$a->td($a->info('routing')).
+		$a->td($a->info('replace')).
 		$a->td(
 			$a->table(
+				$a->tr(
+					$a->td($a->info('replace_in')).
+					$a->td($a->info('replace_out'))
+				).
 				$a->tr(
 					$a->td(
 						$a->textarea(
@@ -192,7 +205,9 @@ $a->table(
 							$Config->replace['in'],
 							true,
 							'',
-							'form_element S_EDITOR'
+							'form_element',
+							30,
+							3
 						), true, ' style="width: 50%;"'
 					).
 					$a->td(
@@ -201,7 +216,9 @@ $a->table(
 							$Config->replace['out'],
 							true,
 							'',
-							'form_element S_EDITOR'
+							'form_element',
+							30,
+							3
 						), true, ' style="width: 50%;"'
 					)
 				), false, true, ' style="width: 100%;"'

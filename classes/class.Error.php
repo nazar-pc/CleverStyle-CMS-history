@@ -41,7 +41,7 @@ class Error {
 							($Config->core['admin_mail'] ? $L->admin_mail.': <a href="mailto:'.$Config->core['admin_mail']."\">".$Config->core['admin_mail']."</a><br>\n" : '')
 							.($Config->core['admin_phone'] ? $L->admin_phone.': '.$Config->core['admin_phone']."<br>\n" : '')
 						: '')
-						.'<hr size="1" noshade><br>\n'
+						."<hr size=\"1\" noshade><br>\n"
 					);
 				break;
 				

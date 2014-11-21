@@ -102,20 +102,23 @@ class Config {
 	function reload_themes () {
 		$this->core['themes'] = get_list(THEMES, false, 'd');
 		global $color_schemes, $color_schemes_name;
+		unset($color_schemes, $color_schemes_name);
+		asort($this->core['themes']);
 		foreach ($this->core['themes'] as $theme) {
-			require_x(THEMES.'/'.$theme.'/config.php', 1, 0);
+			global $color_schemes, $color_schemes_name;
+			require_x(THEMES.'/'.$theme.'/config.php', 0, 0);
 			if (is_array($color_schemes) && !empty($color_schemes)) {
 				foreach ($color_schemes as $i => $scheme) {
 					$this->core['color_schemes'][$theme][$scheme] = $color_schemes_name[$i] ?: $scheme;
 				}
-				unset($color_schemes, $color_schemes_name, $scheme);
 			} else {
 				$color_schemes = get_list(THEMES.'/'.$theme.'/schemes', false, 'd');
 				foreach ($color_schemes as $scheme) {
 					$this->core['color_schemes'][$theme][$scheme] = $scheme;
 				}
-				unset($color_schemes, $color_schemes_name, $scheme);
 			}
+			asort($this->core['color_schemes'][$theme]);
+			$color_schemes = $color_schemes_name = array();
 		}
 	}
 	//Обновление списка текущих языков
@@ -126,6 +129,7 @@ class Config {
 		foreach ($langlist as $i => $lang) {
 			$this->core['languages'][substr($lang, 5, -4)] = file_get_contents(LANGUAGES.'/'.substr($lang, 0, -4));
 		}
+		asort($this->core['languages']);
 		unset($langlist, $langnames);
 	}
 	//Перестройка кеша настроек

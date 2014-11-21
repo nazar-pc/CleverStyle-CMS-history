@@ -11,6 +11,8 @@ class Page extends XForm {
 			$Title = array(),
 
 			$Head,
+			$core_js = array(0 => '', 1 => ''),
+			$core_css = array(0 => '', 1 => ''),
 			$js = array(0 => '', 1 => ''),
 			$css = array(0 => '', 1 => ''),
 
@@ -45,7 +47,8 @@ class Page extends XForm {
 
 	protected	$Search = array(),
 				$Replace = array(),
-				$Config;
+				$Config,
+				$Page;
 	
 	function init ($Config) {
 		$this->Config = $Config;
@@ -54,87 +57,12 @@ class Page extends XForm {
 		$this->Description = $this->Config->core['description'];
 		$this->theme = $this->Config->core['theme'];
 		$this->color_scheme = $this->Config->core['color_scheme'];
-	}
-	//Обработка шаблона и подготовка данных к выводу
-	protected function prepare ($stop) {
-		global $copyright;
-		//Загрузка настроек оформления и шаблона темы
-		$this->load($stop);
-		//Загрузка стилей и скриптов
-		$this->get_js_css();
-		//Формирование заголовка
-		if (!$stop) {
-			foreach ($this->Title as $i => $v) {
-				if (!trim($v)) {
-					unset($this->Title[$i]);
-				} else {
-					$this->Title[$i] = trim($v);
-				}
-			}
-			$this->Title = $this->Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
-			$this->Title[0] = implode(' '.trim($this->Config->core['title_delimiter']).' ', $this->Title);
-		}
-		//Формирование содержимого <head>
-		if ($this->js[1]) {
-			$this->js[1] = "<script>\n".$this->js[1]."</script>\n";
-			$this->js[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1];
-		}
-		if ($this->css[1]) {
-			$this->css[1] = "<style type=\"text/css\">\n".$this->css[1]."</style>\n";
-			$this->css[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1];
-		}
-		$this->Head = "<title>".$this->Title[0]."</title>\n"
-						."<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
-						."<meta name=\"author\" content=\"Mokrynskyi Nazar\">\n"
-						."<meta name=\"copyright\" content=\"$copyright[0]\">\n"
-						."<meta name=\"keywords\" content=\"$this->Keywords\">\n"
-						."<meta name=\"description\" content=\"$this->Description\">\n"
-						."<meta name=\"robots\" content=\"index, follow\">\n"
-						."<meta name=\"revisit-after\" content=\"1 days\">\n"
-						."<meta name=\"generator\" content=\"$copyright[1]\">\n"
-						."<link rel=\"shortcut icon\" href=\"".(file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico') ? 'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' : file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ? 'themes/'.$this->theme.'/img/favicon.ico' : 'includes/img/favicon.ico')."\">\n"
-						.(is_object($this->Config) ? "<base href=\"".$this->Config->server['base_url']."\">\n" : '')
-						.$this->Head.implode('', $this->css).implode('', $this->js);
-		$this->Footer .= $this->footer($stop);
-		//Подстановка контента в шаблон
-		$construct['in'] = array(
-								'<!--title-->',
-								'<!--head-->',
-								'<!--pre_Body-->',
-								'<!--header-->',
-								'<!--main-menu-->',
-								'<!--main-submenu-->',
-								'<!--menu-more-->',
-								'<!--left_blocks-->',
-								'<!--top_blocks-->',
-								'<!--content-->',
-								'<!--bottom_blocks-->',
-								'<!--right_blocks-->',
-								'<!--footer-->',
-								'<!--post_Body-->'
-								);
-		$construct['out'] = array(
-									$this->Title[0],
-									$this->level($this->Head, $this->level['Head']),
-									$this->level($this->pre_Body, $this->level['pre_Body']),
-									$this->level($this->Header, $this->level['Header']),
-									$this->level($this->mainmenu, $this->level['mainmenu']),
-									$this->level($this->mainsubmenu, $this->level['mainsubmenu']),
-									$this->level($this->menumore, $this->level['menumore']),
-									$this->level($this->Left, $this->level['Left']),
-									$this->level($this->Top, $this->level['Top']),
-									$this->level($this->Content, $this->level['Content']),
-									$this->level($this->Bottom, $this->level['Bottom']),
-									$this->level($this->Right, $this->level['Right']),
-									$this->level($this->Footer, $this->level['Footer']),
-									$this->level($this->post_Body, $this->level['post_Body'])
-								 );
-		$this->Html = str_replace($construct['in'], $construct['out'], $this->Html);
+		$this->Page = $this;
 	}
 	//Загрузка и обработка темы оформления, подготовка шаблона
 	protected function load($stop) {
 		//Определение темы оформления
-		if ($this->Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $this->Config->core['themes'])) {
+		if ($this->Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $this->Config->core['active_themes'])) {
 			$this->theme = strval($_COOKIE['theme']);
 		}
 		if ($this->Config->core['site_mode']) {
@@ -179,8 +107,96 @@ class Page extends XForm {
 		}
 		$this->Html = ob_get_clean();
 	}
+	//Обработка шаблона и подготовка данных к выводу
+	protected function prepare ($stop) {
+		global $copyright;
+		//Загрузка настроек оформления и шаблона темы
+		$this->load($stop);
+		//Загрузка стилей и скриптов
+		$this->get_js_css();
+		//Формирование заголовка
+		if (!$stop) {
+			foreach ($this->Title as $i => $v) {
+				if (!trim($v)) {
+					unset($this->Title[$i]);
+				} else {
+					$this->Title[$i] = trim($v);
+				}
+			}
+			$this->Title = $this->Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
+			$this->Title[0] = implode(' '.trim($this->Config->core['title_delimiter']).' ', $this->Title);
+		}
+		//Формирование содержимого <head>
+		if ($this->core_css[1]) {
+			$this->core_css[1] = "<style type=\"text/css\">\n".$this->core_css[1]."</style>\n";
+			$this->core_css[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : $this->core_css[1];
+		}
+		if ($this->css[1]) {
+			$this->css[1] = "<style type=\"text/css\">\n".$this->css[1]."</style>\n";
+			$this->css[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : $this->css[1];
+		}
+		if ($this->core_js[1]) {
+			$this->core_js[1] = "<script>\n".$this->core_js[1]."</script>\n";
+			$this->core_js[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : $this->core_js[1];
+		}
+		if ($this->js[1]) {
+			$this->js[1] = "<script>\n".$this->js[1]."</script>\n";
+			$this->js[1] = $this->Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : $this->js[1];
+		}
+		$this->Head = "<title>".$this->Title[0]."</title>\n"
+						."<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
+						."<meta name=\"author\" content=\"Mokrynskyi Nazar\">\n"
+						."<meta name=\"copyright\" content=\"$copyright[0]\">\n"
+						."<meta name=\"keywords\" content=\"$this->Keywords\">\n"
+						."<meta name=\"description\" content=\"$this->Description\">\n"
+						."<meta name=\"robots\" content=\"index, follow\">\n"
+						."<meta name=\"revisit-after\" content=\"1 days\">\n"
+						."<meta name=\"generator\" content=\"$copyright[1]\">\n"
+						."<link rel=\"shortcut icon\" href=\"".(file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico') ? 'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' : file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ? 'themes/'.$this->theme.'/img/favicon.ico' : 'includes/img/favicon.ico')."\">\n"
+						.(is_object($this->Config) ? "<base href=\"".$this->Config->server['base_url']."\">\n" : '')
+						.$this->Head
+						.implode('', $this->core_css)
+						.implode('', $this->css)
+						.implode('', $this->core_js)
+						.implode('', $this->js);
+		$this->Footer .= $this->footer($stop);
+		//Подстановка контента в шаблон
+		$construct['in'] = array(
+								'<!--title-->',
+								'<!--head-->',
+								'<!--pre_Body-->',
+								'<!--header-->',
+								'<!--main-menu-->',
+								'<!--main-submenu-->',
+								'<!--menu-more-->',
+								'<!--left_blocks-->',
+								'<!--top_blocks-->',
+								'<!--content-->',
+								'<!--bottom_blocks-->',
+								'<!--right_blocks-->',
+								'<!--footer-->',
+								'<!--post_Body-->'
+								);
+		$construct['out'] = array(
+									$this->Title[0],
+									$this->level($this->Head, $this->level['Head']),
+									$this->level($this->pre_Body, $this->level['pre_Body']),
+									$this->level($this->Header, $this->level['Header']),
+									$this->level($this->mainmenu, $this->level['mainmenu']),
+									$this->level($this->mainsubmenu, $this->level['mainsubmenu']),
+									$this->level($this->menumore, $this->level['menumore']),
+									$this->level($this->Left, $this->level['Left']),
+									$this->level($this->Top, $this->level['Top']),
+									$this->level($this->Content, $this->level['Content']),
+									$this->level($this->Bottom, $this->level['Bottom']),
+									$this->level($this->Right, $this->level['Right']),
+									$this->level($this->Footer, $this->level['Footer']),
+									$this->level($this->post_Body, $this->level['post_Body'])
+								 );
+		$this->Html = str_replace($construct['in'], $construct['out'], $this->Html);
+	}
 	//Задание елементов замены в исходном коде
-	function replace ($search, $replace='') {
+	function replace ($search, $replace = '') {
 		if (is_array($search)) {
 			foreach ($search as $i => $val) {
 				$this->Search[] = $val;
@@ -192,30 +208,46 @@ class Page extends XForm {
 		}
 	}
 	//Добавление ссылок на подключаемые JavaScript файлы
-	function javascript ($add, $mode='file') {
+	function javascript ($add, $mode = 'file', $core = false) {
 		if (is_array($add)) {
 			foreach ($add as $script) {
-				$this->javascript($script);
+				$this->javascript($script, $mode, $core);
 			}
 		} elseif ($add) {
-			if ($mode == 'file') {
-				$this->js[0] .= "<script src=\"$add\"></script>\n";
-			} elseif ($mode == 'code') {
-				$this->js[1] .= $this->level($add);
+			if ($core) {
+				if ($mode == 'file') {
+					$this->core_js[0] .= "<script src=\"$add\"></script>\n";
+				} elseif ($mode == 'code') {
+					$this->core_js[1] .= $this->level($add);
+				}
+			} else {
+				if ($mode == 'file') {
+					$this->js[0] .= "<script src=\"$add\"></script>\n";
+				} elseif ($mode == 'code') {
+					$this->js[1] .= $this->level($add);
+				}
 			}
 		}
 	}
 	//Добавление ссылок на подключаемые CSS стили
-	function css ($add, $mode='file') {
+	function css ($add, $mode = 'file', $core = false) {
 		if (is_array($add)) {
 			foreach ($add as $style) {
-				$this->css($style);
+				$this->css($style, $mode, $core);
 			}
 		} elseif ($add) {
-			if ($mode == 'file') {
-				$this->css[0] .= "<link href=\"$add\" type=\"text/css\" rel=\"StyleSheet\">\n";
-			} elseif ($mode == 'code') {
-				$this->css[1] = $add;
+			if ($core) {
+				if ($mode == 'file') {
+					$this->core_css[0] .= "<link href=\"$add\" type=\"text/css\" rel=\"StyleSheet\">\n";
+				} elseif ($mode == 'code') {
+					$this->core_css[1] = $add;
+				}
+			} else {
+				if ($mode == 'file') {
+					$this->css[0] .= "<link href=\"$add\" type=\"text/css\" rel=\"StyleSheet\">\n";
+				} elseif ($mode == 'code') {
+					$this->css[1] = $add;
+				}
 			}
 		}
 	}
@@ -224,7 +256,7 @@ class Page extends XForm {
 		$this->Title[] = $add;
 	}
 	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
-	function content ($add, $l=false) {
+	function content ($add, $l = false) {
 		if ($l) {
 			$this->Content .= $this->level($add, $l);
 		} else {
@@ -239,8 +271,8 @@ class Page extends XForm {
 		}
 		$footer = "<div id=\"copyright\">\n	$copyright[2] $copyright[3]\n</div>\n";
 		if (!$stop) {
-			$footer = "<div id=\"execution_info\">\n	$L->page_generated <!--generate time-->"
-					." $L->sec, $db->queries $L->queries $L->during ".round($db->time, 5)." $L->sec, $L->peak_memory_usage <!--peak memory usage-->\n</div>\n".$footer;
+			$footer = "<div id=\"execution_info\">\n	".$L->page_generated.' <!--generate time--> '
+					.$L->sec.', '.$db->queries.' '.$L->queries.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.', '.$L->peak_memory_usage." <!--peak memory usage-->\n</div>\n".$footer;
 		}
 		return $footer;
 	}
@@ -271,23 +303,23 @@ class Page extends XForm {
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.'/'.$file.'css')) {
-					$this->css('includes/cache/'.$file.'css');
+					$this->css('includes/cache/'.$file.'css', 'file', true);
 				}
 			}
 			//Подключение JavaScript
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.'/'.$file.'js')) {
-					$this->javascript('includes/cache/'.$file.'js');
+					$this->javascript('includes/cache/'.$file.'js', 'file', true);
 				}
 			}
 		} else {
 			//Подключение CSS стилей
 			foreach ($this->get_list['css'] as $file) {
-				$this->css($file);
+				$this->css($file, 'file', true);
 			}
 			//Подключение JavaScript
 			foreach ($this->get_list['js'] as $file) {
-				$this->javascript($file);
+				$this->javascript($file, 'file', true);
 			}
 		}
 	}
@@ -341,7 +373,7 @@ class Page extends XForm {
 		}
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
-		if (strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'ajax' || isset($_POST['ajax'])) {
+		if (strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'ajax' || isset($_POST['ajax']) || defined('AJAX')) {
 			//Обработка замены контента
 			$this->Html = str_replace($this->Search, $this->Replace, $this->Html);
 			echo $this->Content;

@@ -105,8 +105,9 @@ class XForm {
 		if (!$title) {
 			return false;
 		}
+		$title_info = $title.'_info';
 		if ($return) {
-			return $this->L->$title.'<sup title="'.$this->L->$title.'_info'."\"> (!) </sup>:\n";
+			return $this->L->$title.'<sup title="'.$this->L->$title_info."\"> (!) </sup>:\n";
 		} else {
 			$this->Content .= $this->Page->level($this->L->$title.'<sup title="'.$this->L->$title.'_info'."\"> (!) </sup>:\n", 5);
 		}
@@ -137,7 +138,7 @@ class XForm {
 										$devider
 										);
 			}
-			$Content = implode($devider, $Content);
+			$Content = implode('', $Content);
 		} else {
 			if ($type == 'text' || $type == 'checkbox' || $type == 'radio') {
 				$Content = '<input name="'.$id.'"'.($type == 'radio' ? '' : ' id="'.$id.'"').(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($type == 'text' ? ' size="'.$array_if_size.'"' : ($values[0] == $values[1] && $array_if_size ? ' checked' : '')).($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
@@ -154,7 +155,7 @@ class XForm {
 			$this->Content .= $this->Page->level($Content, 5);
 		}
 	}
-	function select ($id, $options, $values = false, $size = 1, $return = -1, $add = '', $array_options_add = false, $classes = '', $array_if = true) {
+	function select ($id, $options, $values = false, $size = 1, $return = -1, $add = '', $array_options_add = false, $classes = '', $array_if = false) {
 		if ($return == -1) {
 			$return = $this->return;
 		}
@@ -174,7 +175,7 @@ class XForm {
 			}
 			$Content = '<select name="'.$id.'" id="'.$id.'" size="'.$size.'"'.(!empty($classes) ? ' class="'.(is_array($classes) ? $classes[0] : $classes).'"' : '').(is_array($add) ? $add[0] : $add).">\n".$this->Page->level(implode("\n", $Content))."</select>\n";
 		} else {
-			$Content = "<option value=\"".filter($values[1])."\"".($values[0] == $values[1] && $array_if ? ' selected' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$options."</option>\n";
+			$Content = "<option value=\"".filter($values[1])."\"".($values[0] == $values[1] || $array_if ? ' selected' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$options."</option>\n";
 		}
 		if ($return) {
 			return $Content;
@@ -182,14 +183,16 @@ class XForm {
 			$this->Content .= $this->Page->level($Content, 5);
 		}
 	}
-	function textarea ($id, $value = '', $return = -1, $add = '', $class = '', $cols = 39, $rows = 5) {
+	function textarea ($id, $value = '', $return = -1, $add = '', $class = '', $cols = false, $rows = false) {
 		if ($return == -1) {
 			$return = $this->return;
 		}
 		if (!$id) {
 			return;
 		}
-		$Content = '<textarea name="'.$id.'" id="'.$id.'" cols="'.$cols.'" rows="'.$rows.'"'.($class ? ' class="'.$class.'"' : '').$add.'>'.textarea($value)."</textarea>\n";
+		$time = microtime();
+		$Content = '<textarea name="'.$id.'" id="'.$id.'" '.($cols ? ' cols="'.$cols.'"' : '').($rows ? ' rows="'.$rows.'"' : '').($class ? ' class="'.$class.'"' : '').$add.'>[textarea '.$time."]</textarea>\n";
+		$this->Page->replace('[textarea '.$time.']', is_array($value) ? implode("\n", $value) : $value);
 		if ($return) {
 			return $Content;
 		} else {

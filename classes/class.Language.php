@@ -1,13 +1,12 @@
 <?php
 class Language {
-	public		$current,
-				$list = array();
+	public		$clang;
 	protected	$Config,
 				$translate = array();
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
-		if (!include_x(LANGUAGES.'/lang.'.$LANGUAGE.'.php', 1)) {
+		if (!include_x(LANGUAGES.'/lang.'.$LANGUAGE.'.php')) {
 			global $stop, $Classes;
 			$stop = 2;
 			$Classes->__destruct();
@@ -16,15 +15,14 @@ class Language {
 	}
 	function init ($Config) {
 		$this->Config = $Config;
-		$this->current = $Config->core['language'];
-		$this->list = $Config->core['languages'];
-		if ($this->Config->core['allow_change_language'] && isset($_COOKIE['lang']) && in_array(strval($_COOKIE['lang']), $this->Config->core['languages'])) {
-			$this->theme = strval($_COOKIE['theme']);
+		$this->clang = $Config->core['language'];
+		if ($this->Config->core['allow_change_language'] && isset($_COOKIE['language']) && in_array(strval($_COOKIE['language']), $this->Config->core['active_languages'])) {
+			$this->clang = strval($_COOKIE['language']);
 		}
-		include_x(LANGUAGES.'/lang.'.$this->current.'.php', 1);
+		include_x(LANGUAGES.'/lang.'.$this->clang.'.php');
 	}
 	function __get ($item) {
-		return isset($this->translate[$item]) ? $this->translate[$item] : $item;
+		return isset($this->translate[$item]) ? $this->translate[$item] : ucfirst(str_replace('_', ' ', $item));
 	}
 	function __set ($item, $value = '') {
 		if ($item == 'translate' && is_array($value)) {
@@ -35,9 +33,10 @@ class Language {
 			$this->translate[$item] = $value;
 		}
 	}
-	function change ($lang) {
-		if ($this->Config->core['allow_change_language'] && isset($_COOKIE['lang']) && in_array(strval($_COOKIE['lang']), $this->Config->core['languages'])) {
-			$this->theme = strval($_COOKIE['theme']);
+	function change ($language) {
+		if ($this->Config->core['allow_change_language'] && in_array($language, $this->Config->core['active_languages'])) {
+			$this->clang = $language;
+			include_x(LANGUAGES.'/lang.'.$this->clang.'.php');
 		}
 	}
 }

@@ -38,7 +38,9 @@ $a->table(
 				$Config->core['mirrors'],
 				true,
 				'',
-				'form_element S_EDITOR'
+				'form_element',
+				39,
+				3
 			)
 		)
 	).

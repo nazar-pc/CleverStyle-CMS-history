@@ -11,19 +11,19 @@ if (isset($_POST['edit_settings'])) {
 			if ($part == 'core') {
 				foreach ($Config->array_list as $v) {
 					if (!is_array($temp[$v])) {
-						$temp[$v] = explode('<br>', $temp[$v]);
+						$temp[$v] = explode("\n", $temp[$v]);
 					}
 					foreach ($temp[$v] as $i => $val) {
 						if (empty($temp[$v][$i])) {
 							unset($temp[$v][$i]);
 						}
 					}
-					$temp[$v] = implode('<br>', $temp[$v]);
+					$temp[$v] = implode("\n", $temp[$v]);
 				}
 			}
 			if ($part == 'routing' || $part == 'replace') {
-				$temp['in'] = explode('<br>', $temp['in']);
-				$temp['out'] = explode('<br>', $temp['out']);
+				$temp['in'] = explode("\n", $temp['in']);
+				$temp['out'] = explode("\n", $temp['out']);
 				foreach ($temp['in'] as $i => $val) {
 					if (empty($val)) {
 						unset($temp['in'][$i]);
@@ -31,7 +31,7 @@ if (isset($_POST['edit_settings'])) {
 					}
 				}
 			}
-			$update[] = "`$part` = ".sip(serialize($temp));
+			$update[] = '`'.$part.'` = '.sip(serialize($temp));
 			unset($temp);
 		}
 	}
@@ -42,8 +42,7 @@ if (isset($_POST['edit_settings'])) {
 			global $Admin;
 			$Admin->cancel = '';
 		} else {
-			global $Error;
-			$Error->show($L->settings_apply_error);
+			$Page->title($L->settings_apply_error);
 			$Page->Top .= '<div class="red notice">'.$L->settings_apply_error.'</div>';
 			$apply_error = true;
 		}
@@ -57,8 +56,7 @@ if (isset($_POST['edit_settings'])) {
 //				$Page->rebuild_cache('css');
 //			}
 		} else {
-			global $Error;
-			$Error->show($L->settings_save_error);
+			$Page->title($L->settings_save_error);
 			$Page->Top .= '<div class="red notice">'.$L->settings_save_error.'</div>';
 		}
 	}

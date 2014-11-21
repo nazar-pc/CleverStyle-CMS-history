@@ -1,10 +1,16 @@
 <?php
 //Интерфейс для работы с классами
 class Classes {
-	protected $LoadedClasses = array();
-	//Метод добавления объектов в список для удаления в конце работы
+	public		$ObjectsList = array(	//Массив со списком объектов, и данными о занятом объеме памяти после их объектов,
+					0 => array()		//и длительностью их содания
+				);
+	protected	$LoadedObjects = array();
+	function __construct () {
+		$this->ClassesList[0] = array(get_time(), memory_get_usage());
+	}
+	//Метод добавления объектов в список для их разрушения в конце работы
 	function add ($name) {
-		$this->LoadedClasses[$name] = $name;
+		$this->LoadedObjects[$name] = $name;
 	}
 	//Метод подключения классов
 	function load ($class, $create = false, $custom = false) {
@@ -28,21 +34,21 @@ class Classes {
 					if ($class[1]) {
 						if (isset($class[2]) && $class[2]) {
 							global $$class[2];
-							$this->LoadedClasses[$class[2]] = $class[2];
+							$this->LoadedObjects[$class[2]] = $class[2];
 							if (!is_object($$class[2])) {
 								$$class[2] = new $class[0]();
 							}
-							$timeload['Load class '.$class[0]] = get_time();
+							$this->ClassesList[$class[2]] = array(get_time(), memory_get_usage());
 						} else {
 							global $$class[0];
-							$this->LoadedClasses[$class[0]] = $class[0];
+							$this->LoadedObjects[$class[0]] = $class[0];
 							if (!is_object($$class[0])) {
 								$$class[0] = new $class[0]();
 							}
-							$timeload['Load class '.$class[0]] = get_time();
+							$this->ClassesList[$class[0]] = array(get_time(), memory_get_usage());
 						}
 					} else {
-						$this->LoadedClasses[$class[0]] = $class[0];
+						$this->LoadedObjects[$class[0]] = $class[0];
 					}
 				} else {
 					$Error->show('{%CANT_LOAD_CLASS%} '.$class[0]);
@@ -60,29 +66,32 @@ class Classes {
 			}
 		} else {
 			global $$class;
-			unset($this->LoadedClasses[$class], $$class);
+			unset($this->LoadedObjects[$class], $$class);
 		}
 	}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __destruct () {
-		foreach ($this->LoadedClasses as $class) {
-			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config') {
+		foreach ($this->LoadedObjects as $class) {
+			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config' && $class != 'User') {
 				$this->unload($class);
 			}
 		}
-		if (isset($this->LoadedClasses['Page'])) {
+		if (isset($this->LoadedObjects['Page'])) {
 			global $Page;
 			$Page->generate();
 			$this->unload('Page');
 		}
-		if (isset($this->LoadedClasses['db'])) {
+		if (isset($this->LoadedObjects['db'])) {
 			$this->unload('db');
 		}
-		if (isset($this->LoadedClasses['Core'])) {
+		if (isset($this->LoadedObjects['Core'])) {
 			$this->unload('Core');
 		}
-		if (isset($this->LoadedClasses['Config'])) {
+		if (isset($this->LoadedObjects['Config'])) {
 			$this->unload('Config');
+		}
+		if (isset($this->LoadedObjects['User'])) {
+			$this->unload('User');
 		}
 	}
 }

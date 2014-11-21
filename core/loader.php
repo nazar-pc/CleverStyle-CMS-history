@@ -18,6 +18,8 @@ define('CSS', DIR.'/includes/css');					//Папка с CSS включениям
 define('PCACHE', DIR.'/includes/cache');			//Папка с публичным кешем (доступным пользователю)
 define('LOGS', DIR.'/logs');						//Папка для логов
 define('MODULES', DIR.'/modules');					//Папка для модулей
+define('PLUGINS', DIR.'/plugins');					//Папка для плагинов
+define('BLOCKS', DIR.'/blocks');					//Папка для блоков
 define('THEMES', DIR.'/themes');					//Папка с темами
 
 //Загрузка информации о минимально необходимой конфигурации системы

@@ -3,25 +3,44 @@ global $Config, $Admin, $L;
 $Config->reload_themes();
 $a = &$Admin;
 $a->return = true;
-asort($Config->core['color_schemes'][$Config->core['theme']]);
 foreach ($Config->core['color_schemes'][$Config->core['theme']] as $color_scheme => $color_scheme_name) {
 	$color_schemes[] = $color_scheme;
 	$color_schemes_name[] = $color_scheme_name;
 }
-unset($color_scheme, $color_scheme_name);
+$active_themes = array('');
+foreach ($Config->core['themes'] as $theme) {
+	$active_themes[] = in_array($theme, $Config->core['active_themes']);
+}
+unset($color_scheme, $color_scheme_name, $theme);
 $a->table(
 	$a->tr(
 		$a->td($a->label($a->info('current_theme'), 'core[theme]')).
 		$a->td(
 			$a->select(
 				'core[theme]',
-				array_merge(array($Config->core['theme']), $Config->core['themes']),
+				array_merge(array($Config->core['theme']), $Config->core['active_themes']),
 				false,
 				5,
 				true,
-				' onClick="$(\'#apply_settings\').click();"',
+				' onClick="javascript: $(\'#apply_settings\').click();"',
 				false,
 				'form_element'
+			)
+		)
+	).
+	$a->tr(
+		$a->td($a->label($a->info('active_themes'), 'core[active_themes][]')).
+		$a->td(
+			$a->select(
+				'core[active_themes][]',
+				array_merge(array(''), $Config->core['themes']),
+				false,
+				5,
+				true,
+				' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').click();"',
+				false,
+				'form_element',
+				$active_themes
 			)
 		)
 	).
@@ -34,7 +53,7 @@ $a->table(
 				array_merge(array($Config->core['color_scheme']), $color_schemes),
 				5,
 				true,
-				' onClick="$(\'#apply_settings\').click();"',
+				' onClick="javascript: $(\'#apply_settings\').click();"',
 				false,
 				'form_element'
 			)

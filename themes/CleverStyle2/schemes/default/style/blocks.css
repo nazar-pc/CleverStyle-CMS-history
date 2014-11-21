@@ -1,0 +1,15 @@
+@charset "utf-8";
+td#left_blocks > aside > div, td#right_blocks > aside > div {
+/*	background: rgba(255, 255, 255, 0.7);*/
+/*	box-shadow: 0px 0px 15px #fff;
+	-moz-box-shadow: 0px 0px 15px #fff;
+	-webkit-box-shadow: 0px 0px 15px #fff;*/
+}
+footer > div#footer {
+	background: rgba(255, 255, 255, 0.3);
+	color: #fff;
+}
+footer > div#footer > div > a {
+	border-color: #fff;
+	color: #fff;
+}

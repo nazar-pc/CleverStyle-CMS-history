@@ -1,10 +1,26 @@
 <?php
-global $Config, $db, $Page, $L, $Admin;
+global $Config, $db, $Page, $L, $Admin, $DB_NAME;
 if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == 'databases') {
 	if (isset($_POST['mode'])) {
 		$update = false;
 		if ($_POST['mode'] == 'add') {
-			if ($_POST['dbname'] && $_POST['dbname']) {
+			foreach ($Config->db as $i => $cdb) {
+				if ($i) {
+					$dbs[] = $cdb['name'];
+				} else {
+					$dbs[] = $DB_NAME;
+				}
+				if (count($cdb['mirrors'])) {
+					foreach ($cdb['mirrors'] as $mirror) {
+						$dbs[] = $mirror['name'];
+					}
+				}
+			}
+			unset($i, $cdb, $mirror);
+			if (in_array($_POST['dbname'], $dbs)) {
+				$Page->title($L->db_already_exists);
+				$Page->Top .= '<div class="red notice">'.$L->db_already_exists.'</div>';
+			} elseif ($_POST['dbname']) {
 				if (!$_POST['dbhost']) {
 					global $DB_HOST;
 					$_POST['dbhost'] = $DB_HOST;
@@ -35,8 +51,25 @@ if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == '
 				unset($database);
 				$update = true;
 			}
+			unset($dbs);
 		} elseif ($_POST['mode'] == 'edit') {
-			if ($_POST['dbname'] && $_POST['dbname']) {
+			foreach ($Config->db as $i => $cdb) {
+				if ($i) {
+					$dbs[] = $cdb['name'];
+				} else {
+					$dbs[] = $DB_NAME;
+				}
+				if (count($cdb['mirrors'])) {
+					foreach ($cdb['mirrors'] as $mirror) {
+						$dbs[] = $mirror['name'];
+					}
+				}
+			}
+			unset($i, $cdb, $mirror);
+			if (in_array($_POST['dbname'], $dbs) && ((!isset($_POST['mirror']) && $Config->db[$_POST['database']]['name'] != $_POST['dbname']) || (isset($_POST['mirror']) && $Config->db[$_POST['database']]['mirrors'][$_POST['mirror']]['name'] != $_POST['dbname']))) {
+				$Page->title($L->db_already_exists);
+				$Page->Top .= '<div class="red notice">'.$L->db_already_exists.'</div>';
+			} elseif ($_POST['dbname'] && (isset($_POST['mirror']) || $_POST['database'] > 0)) {
 				if (!$_POST['dbhost']) {
 					global $DB_HOST;
 					$_POST['dbhost'] = $DB_HOST;
@@ -98,8 +131,7 @@ if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == '
 				$Page->Top .= '<div class="green notice">'.$L->settings_saved.'</div>';
 				$Config->rebuild_cache();
 			} else {
-				global $Error;
-				$Error->show($L->settings_save_error);
+				$Page->title($L->settings_save_error);
 				$Page->Top .= '<div class="red notice">'.$L->settings_save_error.'</div>';
 			}
 		}

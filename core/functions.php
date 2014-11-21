@@ -190,14 +190,6 @@ function filter($text, $mode = '', $data = false, $data2 = 'null') {
 		}
 	}
 }
-//Функция обработки мультистоковых данных для текстовых полей
-function textarea ($in) {
-	if (is_array($in)) {
-		return implode('', $in);
-	} elseif ($in) {
-		return $in;
-	}
-}
 //Идеальная функция для 100% защиты от SQL-инъекций
 //Название sip - сокращено от SQL Injection Protection
 //Copyright © CleverStyle, 2011

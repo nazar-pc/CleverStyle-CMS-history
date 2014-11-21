@@ -20,12 +20,12 @@ $a->table(
 		)
 	).
 	$a->tr(
-		$a->td($a->info('cache_size')).
+		$a->td($a->info('disk_cache_size')).
 		$a->td(
 			$a->input(
 				'number',
-				'core[cache_size]',
-				intval($Config->core['cache_size']),
+				'core[disk_cache_size]',
+				intval($Config->core['disk_cache_size']),
 				true,
 				' min="1" style="width: 90px;"',
 				'form_element'
