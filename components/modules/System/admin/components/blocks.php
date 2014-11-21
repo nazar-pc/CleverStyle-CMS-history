@@ -62,7 +62,7 @@ if ($mode && $rc[2] == 'settings') {
 							array(
 								'type'		=> 'datetime-local',
 								'name'		=> 'block[start]',
-								'value'		=> date('Y-m-d\TH:i', $block['start'] ?: time()),
+								'value'		=> date('Y-m-d\TH:i', $block['start'] ?: TIME),
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
@@ -81,7 +81,7 @@ if ($mode && $rc[2] == 'settings') {
 							array(
 								'type'		=> 'datetime-local',
 								'name'		=> 'block[expire][date]',
-								'value'		=> date('Y-m-d\TH:i', $block['expire'] ?: time()),
+								'value'		=> date('Y-m-d\TH:i', $block['expire'] ?: TIME),
 								'class'		=> 'form_element',
 								'size'		=> 10
 							)
@@ -145,7 +145,7 @@ if ($mode && $rc[2] == 'settings') {
 				'position_id'	=> $num++,
 				'template'		=> 'default.html',
 				'permissions'	=> '',
-				'start'			=> time(),
+				'start'			=> TIME,
 				'expire'		=> 0,
 				'update'		=> 0,
 				'data'			=> ''

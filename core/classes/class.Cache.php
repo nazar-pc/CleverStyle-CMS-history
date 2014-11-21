@@ -42,7 +42,7 @@ class Cache {
 				return $cache;
 			}
 		}
-		if (file_exists(CACHE.DS.$item) && is_readable(CACHE.DS.$item) && $cache = file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
+		if (is_file(CACHE.DS.$item) && is_readable(CACHE.DS.$item) && $cache = file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
 			if ($cache = (CACHE_ENCRYPT ? $Core->decrypt($cache) : @_json_decode($cache))) {
 				$this->local_storage[$item] = $cache;
 				return $cache;
@@ -69,6 +69,12 @@ class Cache {
 		if ($this->disk) {
 			if (strpos($item, '/') !== false) {
 				$subitems = explode('/', $item);
+				$subitems[count($subitems) - 1] = trim($subitems[count($subitems) - 1]);
+				if (empty($subitems[count($subitems) - 1])) {
+					global $Error, $L;
+					$Error->process($L->file.' '.CACHE.DS.$item.' '.$L->not_exists);
+					return false;
+				}
 				$item = str_replace('/', DS, $item);
 				$max = count($subitems) - 1;
 				foreach ($subitems as $i => $subitem) {
@@ -137,7 +143,7 @@ class Cache {
 		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$item)) {
 			$this->memcache->delete(DOMAIN.$item, $time);
 		}
-		if (file_exists(CACHE.DS.$item) && is_writable(CACHE.DS.$item)) {
+		if (is_writable(CACHE.DS.$item)) {
 			if ($this->disk_size > 0) {
 				$size_file = fopen(CACHE.DS.'size', 'c+b');
 				flock($size_file, LOCK_EX);

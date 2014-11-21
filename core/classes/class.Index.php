@@ -164,7 +164,9 @@ class Index extends HTML {
 					($User->is('admin') ? 'admin = "'.$ADMIN.'",' : '').
 					'in_admin = '.(int)$this->admin.','.
 					'api = "'.$API.'",'.
-					'routing = '._json_encode($Config->routing['current']).';',
+					'routing = '._json_encode($Config->routing['current']).','.
+					'cache = '.$Config->core['disk_cache'].','.
+					'pcache = '.$Config->core['cache_compress_js_css'].';',
 				'code'
 			);
 		}
@@ -259,21 +261,11 @@ class Index extends HTML {
 			$parts
 		) {
 			$Page->title($L->settings_saved);
-			$Page->Top .= $Page->div(
-				$L->settings_saved,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
+			$Page->notice($L->settings_saved);
 			return true;
 		} else {
 			$Page->title($L->settings_save_error);
-			$Page->Top .= $Page->div(
-				$L->settings_save_error,
-				array(
-					'class'	=> 'red ui-state-error'
-				)
-			);
+			$Page->warning($L->settings_save_error);
 			return false;
 		}
 	}
@@ -284,24 +276,14 @@ class Index extends HTML {
 			$parts
 		) {
 			$Page->title($L->settings_applied);
-			$Page->Top .= $Page->div(
-				$L->settings_applied.$L->check_applied,
-				array(
-					'class'	=> 'green ui-state-highlight'
-				)
-			);
+			$Page->notice($L->settings_applied.$L->check_applied);
 			$this->cancel = '';
 			global $Page;
 			$Page->js("\$(function(){save = true;});", 'code');
 			return true;
 		} else {
 			$Page->title($L->settings_apply_error);
-			$Page->Top .= $Page->div(
-				$L->settings_apply_error,
-				array(
-					'class'	=> 'red ui-state-error'
-				)
-			);
+			$Page->warning($L->settings_apply_error);
 			return false;
 		}
 	}
@@ -309,12 +291,7 @@ class Index extends HTML {
 		global $L, $Page, $Config;
 		$system && $Config->cancel();
 		$Page->title($L->settings_canceled);
-		$Page->Top .= $Page->div(
-			$L->settings_canceled,
-			array(
-				'class'	=> 'green ui-state-highlight'
-			)
-		);
+		$Page->notice($L->settings_canceled);
 	}
 	function method ($method) {
 		if (isset($this->custom_methods[$method]['pre'])) {

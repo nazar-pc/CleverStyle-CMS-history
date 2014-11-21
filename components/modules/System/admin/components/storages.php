@@ -120,12 +120,7 @@ if (isset($rc[2])) {
 		unset($module, $mdata, $storage_name);
 		if (!empty($content)) {
 			global $Page;
-			$Page->Top .= $a->div(
-				$L->storage_used_by_modules.': '.implode(', ', $content),
-				array(
-					'class'	=> 'red ui-state-default'
-				)
-			);
+			$Page->warning($L->storage_used_by_modules.': '.implode(', ', $content));
 		} else {
 			$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 			$a->content(

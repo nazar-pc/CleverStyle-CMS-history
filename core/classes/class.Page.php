@@ -60,12 +60,12 @@ class Page extends HTML {
 	protected function load($stop) {
 		global $Config;
 		//Определение темы оформления
-		if (is_object($Config) && $Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array($_COOKIE['theme'], $Config->core['active_themes'])) {
-			$this->theme = $_COOKIE['theme'];
+		if (is_object($Config) && $Config->core['allow_change_theme'] && _getcookie('theme') && in_array(_getcookie('theme'), $Config->core['active_themes'])) {
+			$this->theme = _getcookie('theme');
 		}
 		if (is_object($Config) && $Config->core['site_mode']) {
-			if ($Config->core['allow_change_theme'] && isset($_COOKIE['color_scheme']) && in_array($_COOKIE['color_scheme'], $Config->core['color_schemes'])) {
-				$this->color_scheme = $_COOKIE['color_scheme'];
+			if ($Config->core['allow_change_theme'] && _getcookie('color_scheme') && in_array(_getcookie('color_scheme'), $Config->core['color_schemes'])) {
+				$this->color_scheme = _getcookie('color_scheme');
 			}
 		}
 		//Задание названия файлов кеша
@@ -216,7 +216,9 @@ class Page extends HTML {
 	function js ($add, $mode = 'file', $core = false) {
 		if (is_array($add)) {
 			foreach ($add as $script) {
-				$this->js($script, $mode, $core);
+				if ($script) {
+					$this->js($script, $mode, $core);
+				}
 			}
 		} elseif ($add) {
 			if ($core) {
@@ -238,7 +240,9 @@ class Page extends HTML {
 	function css ($add, $mode = 'file', $core = false) {
 		if (is_array($add)) {
 			foreach ($add as $style) {
-				$this->css($style, $mode, $core);
+				if ($style) {
+					$this->css($style, $mode, $core);
+				}
 			}
 		} elseif ($add) {
 			if ($core) {
@@ -550,6 +554,24 @@ class Page extends HTML {
 			unset($i, $v, $debug_info);
 		}
 		$this->debug_info = preg_replace($this->Search, $this->Replace, $this->debug_info);
+	}
+	//Отображение уведомления
+	function notice ($text) {
+		$this->Top .= $this->div(
+			$text,
+			array(
+				'class'	=> 'green ui-state-highlight'
+			)
+		);
+	}
+	//Отображение предупреждения
+	function warning ($text) {
+		$this->Top .= $this->div(
+			$text,
+			array(
+				'class'	=> 'red ui-state-error'
+			)
+		);
 	}
 	//Запрет клонирования
 	function __clone () {}

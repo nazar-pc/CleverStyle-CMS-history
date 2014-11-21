@@ -501,26 +501,42 @@
 	function _json_decode ($in, $depth = 512) {
 		return @json_decode($in, true, $depth);
 	}
-	//
-	function _setcookie ($name, $value, $expire = 0) {
-		static $domains = false, $paths = false;
+	//Функция для выставления cookies на все зеркала сайта, параметры как у стандартной функции setcookie(),
+	//только упущены параметры $path и $domain
+	function _setcookie ($name, $value, $expire = 0, $secure = false, $httponly = false) {
+		static $domains = false, $paths = false, $prefix = false;
 		global $Config;
 		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
 			if (!$domains) {
-				$domains	= array_merge($Config->core['cookie_domain'], explode("\n", $Config->core['mirrors_cookie_domain']));
-				$paths		= array_merge($Config->core['cookie_path'], explode("\n", $Config->core['mirrors_cookie_path']));
+				$domains	= array_merge((array)$Config->core['cookie_domain'], explode("\n", $Config->core['mirrors_cookie_domain']));
+				$paths		= array_merge((array)$Config->core['cookie_path'], explode("\n", $Config->core['mirrors_cookie_path']));
 				foreach ($domains as $i => $domain) {
 					if (empty($domain)) {
 						unset($domains[$i], $paths[$i]);
 					}
 				}
 				unset($i, $domain);
+				$prefix = substr(md5($Config->core['url']), 0, 5).'_';
 			}
+			$return = true;
 			foreach ($domains as $i => $domain) {
-				setcookie($name, $value, $expire, $paths[$i], $domain);
+				$return = $return && setcookie($prefix.$name, $value, $expire, isset($paths[$i]) ? $paths[$i] : '/', $domain, $secure, $httponly);
 			}
+			return $return;
 		} else {
-			setcookie($name, $value, $expire);
+			return setcookie($name, $value, $expire, '/', $_SERVER['HTTP_HOST'], $secure, $httponly);
+		}
+	}
+	function _getcookie ($name) {
+		static $prefix = false;
+		global $Config;
+		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
+			if (!$prefix) {
+				$prefix = substr(md5($Config->core['url']), 0, 5).'_';
+			}
+			return isset($_COOKIE[$prefix.$name]) ? $_COOKIE[$prefix.$name] : false;
+		} else {
+			return isset($_COOKIE[$name]) ? $_COOKIE[$name] : false;
 		}
 	}
 	//Почти идеальная функция для защиты от XSS-атак
@@ -537,6 +553,64 @@
 			//Приводим всё в вид для чтения
 			return htmlentities($in);
 		}
+	}
+	//Функция для конвертации IPv4 и IPv6 адресов в hex значение для помещения в БД
+	function ip2hex ($ip) {
+		$hex = '';
+		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
+			$isIPv4 = true;
+		} elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false) {
+			$isIPv4 = false;
+		} else {
+			return false;
+		}
+		//Формат IPv4
+		if($isIPv4) {
+			$parts = explode('.', $ip);
+			foreach ($parts as &$part) {
+				$part = str_pad(dechex($part), 2, '0', STR_PAD_LEFT);
+			}
+			unset($part);
+			$ip			= '::'.$parts[0].$parts[1].':'.$parts[2].$parts[3];
+			$hex		= implode('', $parts);
+		//Формат IPv6
+		} else {
+			$parts		= explode(':', $ip);
+			$last_part	= count($parts) - 1;
+			//Если смешанный IPv6/IPv4, конвертируем окончание в IPv6
+			if(filter_var($parts[$last_part], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
+				$parts[$last_part] = explode('.', $parts[$last_part]);
+				foreach ($parts[$last_part] as &$part) {
+					$part = str_pad(dechex($part), 2, '0', STR_PAD_LEFT);
+				}
+				unset($part);
+				$parts[]			= $parts[$last_part][2].$parts[$last_part][3];
+				$parts[$last_part]	= $parts[$last_part][0].$parts[$last_part][1];
+			}
+			$numMissing		= 8 - count($parts);
+			$expandedParts	= array();
+			$expansionDone	= false;
+			foreach($parts as $part) {
+				if(!$expansionDone && $part == '') {
+					for($i = 0; $i <= $numMissing; ++$i) {
+						$expandedParts[] = '0000';
+					}
+					$expansionDone = true;
+				} else {
+					$expandedParts[] = $part;
+				}
+			}
+			foreach($expandedParts as &$part) {
+				$part = str_pad($part, 4, '0', STR_PAD_LEFT);
+			}
+			$ip = implode(':', $expandedParts);
+			$hex = implode('', $expandedParts);
+		}
+		//Проверяем окончательный IP
+		if(filter_var($ip, FILTER_VALIDATE_IP) === false) {
+			return false;
+		}
+		return strtolower(str_pad($hex, 32, '0', STR_PAD_LEFT));
 	}
 	//Некоторые функции для определение состояния сервера
 	//Проверка версии БД

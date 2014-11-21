@@ -6,7 +6,6 @@
 				],
 	"users" :	[
 					"id",
-					"key",
 					"login",
 					"login_hash",
 					"username",

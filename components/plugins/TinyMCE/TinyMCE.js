@@ -1,9 +1,11 @@
 $(function() {
-	tinyMCE_GZ.init({
-		plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,insertdatetime,preview,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,inlinepopups,autosave,advlist",
-		themes : "simple,advanced",
-		languages : "en,ru,uk"
-	});
+	if (pcache) {
+		tinyMCE_GZ.init({
+			plugins : "advhr,advimage,advlink,advlist,autolink,autosave,contextmenu,directionality,emotions,fullscreen,inlinepopups,insertdatetime,layer,media,nonbreaking,noneditable,pagebreak,paste,preview,save,searchreplace,style,table,template,visualchars,xhtmlxtras",
+			themes : "simple,advanced",
+			languages : "en,ru,uk"
+		});
+	}
 	$('textarea.EDITOR').tinymce({
 		doctype : '<!doctype html>',
 		theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
@@ -18,10 +20,11 @@ $(function() {
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "center",
 		theme_advanced_statusbar_location : "bottom",
-		theme_advanced_resizing : true,
-		file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''
+		theme_advanced_resizing : true/*,
+		file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''*/
 	});
 	$('textarea.EDITORH').tinymce({
+		debug: true,
 		doctype : '<!doctype html>',
 		theme : typeof(tinymce_theme) != 'undefined' ? tinymce_theme : "advanced",
 		skin : typeof(tinymce_skin) != 'undefined' ? tinymce_skin : "o2k7",
@@ -35,8 +38,8 @@ $(function() {
 		theme_advanced_toolbar_location : "external",
 		theme_advanced_toolbar_align : "center",
 		theme_advanced_statusbar_location : "bottom",
-		theme_advanced_resizing : true,
-		file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''
+		theme_advanced_resizing : true/*,
+		file_browser_callback : typeof(EditorCallback) != 'undefined' ? 'EditorCallback' : ''*/
 	});
 	$('textarea.SEDITOR').tinymce({
 		doctype : '<!doctype html>',

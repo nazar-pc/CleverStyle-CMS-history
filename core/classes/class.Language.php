@@ -11,7 +11,7 @@ class Language {
 	}
 	function init ($Config = false) {
 		if ($Config !== false) {
-			$this->change($Config->core['language']);
+			$this->change(_getcookie('language') && in_array(_getcookie('language'), $Config->core['active_languages']) ? _getcookie('language') : $Config->core['language']);
 		}
 		if ($this->need_to_rebuild_cache) {
 			global $Cache;
@@ -39,6 +39,9 @@ class Language {
 		$this->set($item, $value);
 	}
 	function change ($language) {
+		if (empty($language)) {
+			return false;
+		}
 		global $Config;
 		if ($language === $this->clanguage) {
 			return true;

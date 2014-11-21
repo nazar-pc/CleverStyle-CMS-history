@@ -117,12 +117,7 @@ if ($mode && $rc[2] == 'install') {
 	);
 	unset($db_list);
 	global $Page;
-	$Page->Top .= $a->div(
-		$L->changing_settings_warning,
-		array(
-			'class'	=> 'red ui-state-error'
-		)
-	);
+	$Page->warning($L->changing_settings_warning);
 } elseif ($mode && $rc[2] == 'storage' && isset($Config->components['modules'][$rc[3]]) && count($Config->storage) > 1) {
 	$a->buttons = true;
 	$a->apply = false;
@@ -188,12 +183,7 @@ if ($mode && $rc[2] == 'install') {
 	);
 	unset($storage_list);
 	global $Page;
-	$Page->Top .= $a->div(
-		$L->changing_settings_warning,
-		array(
-			'class'	=> 'red ui-state-error'
-		)
-	);
+	$Page->warning($L->changing_settings_warning);
 } else {
 	unset($mode, $rc);
 	$db_users_data = $db->core()->columns('[prefix]users');
