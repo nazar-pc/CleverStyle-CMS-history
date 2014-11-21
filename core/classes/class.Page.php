@@ -270,13 +270,13 @@ class Page {
 		} elseif ($add) {
 			if ($secret == $this->secret) {
 				if ($mode == 'file') {
-					$this->core_css[0] .= h::link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
+					$this->core_css[0] .= h::link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'stylesheet'));
 				} elseif ($mode == 'code') {
 					$this->core_css[1] = $add."\n";
 				}
 			} else {
 				if ($mode == 'file') {
-					$this->css[0] .= h::link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
+					$this->css[0] .= h::link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'stylesheet'));
 				} elseif ($mode == 'code') {
 					$this->css[1] = $add."\n";
 				}
@@ -410,7 +410,7 @@ class Page {
 		if (!($copyright && is_array($copyright))) {
 			exit;
 		}
-		$footer = h::div($copyright[1].' '.$copyright[2], array('id'	=> 'copyright'));
+		$footer = h::div($copyright[1].h::br().$copyright[2], array('id'	=> 'copyright'));
 		if (!$stop) {
 			$footer =	h::div(
 							$L->page_generated.' <!--generate time--> '.
@@ -718,7 +718,8 @@ class Page {
 								h::level($this->debug_info),
 								array(
 									'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
-									'title'			=> $L->debug
+									'title'			=> $L->debug,
+									'style'			=> 'display: none;'
 								)
 							),
 							$this->level['debug_info']

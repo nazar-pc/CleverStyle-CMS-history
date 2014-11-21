@@ -58,7 +58,6 @@ if (isset($rc[2], $rc[3])) {
 					)
 				)
 			);
-
 		break;
 		case 'edit':
 			$a->apply		= false;
@@ -335,6 +334,52 @@ if (isset($rc[2], $rc[3])) {
 				)
 			);
 		break;
+		case 'deactivate':
+			$a->buttons		= false;
+			$a->cancel_back	= true;
+			$user_data		= $User->get(array('login', 'username'), $rc[3]);
+			$a->content(
+				h::{'p.center_all'}(
+					$L->sure_deactivate_user($user_data['username'] ?: $user_data['login'])
+				).
+				h::{'input[type=hidden]'}(
+					array(
+						'name'	=> 'id',
+						'value'	=> $rc[3]
+					)
+				).
+				h::{'input[type=hidden]'}(
+					array(
+						'name'	=> 'mode',
+						'value'	=> 'deactivate'
+					)
+				).
+				h::{'button[type=submit]'}($L->yes)
+			);
+			break;
+		case 'activate':
+			$a->buttons		= false;
+			$a->cancel_back	= true;
+			$user_data		= $User->get(array('login', 'username'), $rc[3]);
+			$a->content(
+				h::{'p.center_all'}(
+					$L->sure_activate_user($user_data['username'] ?: $user_data['login'])
+				).
+				h::{'input[type=hidden]'}(
+					array(
+						'name'	=> 'id',
+						'value'	=> $rc[3]
+					)
+				).
+				h::{'input[type=hidden]'}(
+					array(
+						'name'	=> 'mode',
+						'value'	=> 'activate'
+					)
+				).
+				h::{'button[type=submit]'}($L->yes)
+			);
+			break;
 	}
 } else {
 	$a->buttons		= false;

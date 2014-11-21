@@ -1,6 +1,12 @@
 <?php
 class Text {
 	protected	$language;
+	function __construct () {
+		global $L;
+		if (is_object($L)) {
+			$this->language($L->clanguage);
+		}
+	}
 	/**
 	 * Sets current language
 	 * @param string $language

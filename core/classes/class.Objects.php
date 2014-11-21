@@ -1,10 +1,10 @@
 <?php
-//Интерфейс для работы с глобальными системными объектами
+//For working with global system objects
 class Objects {
-	public	$Loaded		= array(),	//Массив со списком объектов, и данными о занятом объеме памяти
-									//после их создания, и длительностью содания
+	public	$Loaded				= array(),	//Массив со списком объектов, и данными о занятом объеме памяти
+											//после их создания, и длительностью содания
 			$unload_priority	= array('Key', 'Page', 'User', 'Config', 'db', 'Error', 'L', 'Text', 'Cache', 'Core', 'Storage');
-	private	$List = array();
+	private	$List				= array();
 	//Добавление в список объектов для их разрушения по окончанию работы
 	function add ($name) {
 		$this->List[$name] = $name;
@@ -15,29 +15,42 @@ class Objects {
 		if (empty($class)) {
 			return false;
 		} elseif (!$stop && !is_array($class)) {
-			if (class_exists($class)) {
+			$loader = false;
+			if (substr($class, 0, 1) == '_') {
+				$class	= substr($class, 1);
+				$loader	= true;
+			}
+			if ($loader || class_exists($class)) {
 				//Используем заданное имя для объекта
 				if ($custom_name !== false) {
 					global $$custom_name;
-					if (!is_object($$custom_name)) {
-						$this->List[$custom_name] = $custom_name;
-						$$custom_name = new $class();
-						$this->Loaded[$custom_name] = array(microtime(true), memory_get_usage());
+					if (!is_object($$custom_name) || is_a($$custom_name, 'Loader')) {
+						if ($loader) {
+							$$custom_name				= new Loader($custom_name, $class);
+						} else {
+							$this->List[$custom_name]	= $custom_name;
+							$$custom_name				= new $class();
+							$this->Loaded[$custom_name]	= array(microtime(true), memory_get_usage());
+						}
 					}
 					return $$custom_name;
 				//Для имени объекта используем название класса
 				} else {
 					global $$class;
-					if (!is_object($$class)) {
-						$this->List[$class] = $class;
-						$$class = new $class();
-						$this->Loaded[$class] = array(microtime(true), memory_get_usage());
+					if (!is_object($$class) || is_a($$class, 'Loader')) {
+						if ($loader) {
+							$$class					= new Loader($class, $class);
+						} else {
+							$this->List[$class]		= $class;
+							$$class					= new $class();
+							$this->Loaded[$class]	= array(microtime(true), memory_get_usage());
+						}
 					}
 					return $$class;
 				}
 			} else {
-				global $Error, $L, $Page;
-				$Error->process($L->class.' '.$Page->b($class).' '.$L->not_exists, 'stop');
+				global $Error, $L;
+				$Error->process($L->class.' '.h::b($class).' '.$L->not_exists, 'stop');
 				return false;
 			}
 		} elseif (!$stop && is_array($class)) {
@@ -88,4 +101,3 @@ class Objects {
 		exit;
 	}
 }
-?>

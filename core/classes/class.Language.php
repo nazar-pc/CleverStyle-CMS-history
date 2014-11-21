@@ -86,12 +86,15 @@ class Language {
 		if ($language == $this->clanguage) {
 			return true;
 		}
-		global $Config, $Cache, $Text;
+		global $Config;
 		if (!is_object($Config) || ($Config->core['multilanguage'] && in_array($language, $Config->core['active_languages']))) {
+			global $Cache, $Text;
 			$this->clanguage = $language;
 			if ($translate = $Cache->{'language/'.$this->clanguage}) {
 				$this->set($translate);
-				$Text->language($this->clang);
+				if (!is_a($Text, 'Loader')) {
+					$Text->language($this->clang);
+				}
 				return true;
 			} elseif (_file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
 				$data = _file(LANGUAGES.'/lang.'.$this->clanguage.'.json', FILE_SKIP_EMPTY_LINES);
@@ -113,7 +116,9 @@ class Language {
 					$this->translate['clocale'] = $this->clang.'_'.mb_strtoupper($this->clang);
 				}
 				setlocale(LC_TIME | (defined('LC_MESSAGES') ? LC_MESSAGES : 0), $this->clocale);
-				$Text->language($this->clang);
+				if (!is_a($Text, 'Loader')) {
+					$Text->language($this->clang);
+				}
 				$this->need_to_rebuild_cache = true;
 				if ($this->init) {
 					$this->init($Config->core['active_languages'], $language);

@@ -43,4 +43,3 @@ define('DIR', path_to_str(__DIR__));					//Алиас корневой папк�
 chdir(DIR);
 define('CUSTOM_DIR', DIR.DS.'custom');					//Custom files directory
 _require(DIR.DS.'core'.DS.'loader.php', true, true);	//Передача управления загрузчику движка
-?>

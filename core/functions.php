@@ -6,17 +6,11 @@
 		if (USE_CUSTOM) {
 			function _require ($file, $once = false, $show_errors = true) {
 				$file = str_to_path($file);
-				if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
+				if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file)) || file_exists($file_x = $file)) {
 					if ($once) {
 						return require_once $file_x;
 					} else {
 						return require $file_x;
-					}
-				} elseif (file_exists($file)) {
-					if ($once) {
-						return require_once $file;
-					} else {
-						return require $file;
 					}
 				} else {
 					global $L, $Error;
@@ -29,17 +23,11 @@
 			}
 			function _include ($file, $once = false, $show_errors = true) {
 				$file = str_to_path($file);
-				if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file))) {
+				if (file_exists($file_x = str_replace(DIR, CUSTOM_DIR, $file)) || file_exists($file_x = $file)) {
 					if ($once) {
 						return include_once $file_x;
 					} else {
 						return include $file_x;
-					}
-				} elseif (file_exists($file)) {
-					if ($once) {
-						return include_once $file;
-					} else {
-						return include $file;
 					}
 				} else {
 					global $L, $Error;
@@ -1179,7 +1167,7 @@
 $temp = base64_decode('Y29weXJpZ2h0');
 $$temp = array(
 	0 => base64_decode('Q2xldmVyU3R5bGUgQ01TIGJ5IE1va3J5bnNreWkgTmF6YXI='),																		//Генератор
-	1 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExIGJ5IE1va3J5bnNreWkgTmF6YXI='),																	//Копирайт
+	1 => base64_decode('Q29weXJpZ2h0IChjKSAyMDExLTIwMTIgYnkgTW9rcnluc2t5aSBOYXphcg=='),															//Копирайт
 	2 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Ссылка
 );
 unset($temp);

@@ -131,7 +131,7 @@ if (isset($rc[2])) {
 				if (isset($mdata['db']) && is_array($mdata['db'])) {
 					foreach ($mdata['db'] as $db_name) {
 						if ($db_name == $rc[3]) {
-							$content[] = $a->b($module);
+							$content[] = h::b($module);
 							break;
 						}
 					}
@@ -146,8 +146,8 @@ if (isset($rc[2])) {
 			$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 			$a->content(
 				h::{'p.center_all'}(
-					$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' '.
-					$a->b(
+					$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.h::b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' '.
+					h::b(
 						isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']
 					).
 					' ('.
@@ -170,19 +170,19 @@ if (isset($rc[2])) {
 		global $Page, $db;
 		if (isset($rc[4])) {
 			$Page->content(
-				$Page->{'p.test_result'}(
+				h::{'p.test_result'}(
 					$db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail
 				)
 			);
 		} elseif (isset($rc[3])) {
 			$Page->content(
-				$Page->{'p.test_result'}(
+				h::{'p.test_result'}(
 					$db->test(array($rc[3])) ? $L->success : $L->fail
 				)
 			);
 		} else {
 			$Page->content(
-				$Page->{'p.test_result'}(
+				h::{'p.test_result'}(
 					$db->test($_POST['db']) ? $L->success : $L->fail
 				)
 			);

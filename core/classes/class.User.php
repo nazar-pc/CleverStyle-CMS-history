@@ -131,7 +131,6 @@ class User {
 				LIMIT 1'
 			);
 			if (is_array($data)) {
-				$data['groups'] = $this->get_user_groups();
 				$Cache->{'users/'.$this->id} = $data;
 				if ($data['status'] != 1) {
 					if ($data['status'] == 0) {
@@ -164,14 +163,16 @@ class User {
 			$this->current['is']['guest'] = true;
 		} else {
 			//Checking of user type
-			if (in_array(1, $data['groups'])) {
+			$groups = $this->get_user_groups();
+			if (in_array(1, $groups)) {
 				$this->current['is']['admin']	= true;
 				$this->current['is']['user']	= true;
-			} elseif (in_array(2, $data['groups'])) {
+			} elseif (in_array(2, $groups)) {
 				$this->current['is']['user']	= true;
-			} elseif (in_array(3, $data['groups'])) {
+			} elseif (in_array(3, $groups)) {
 				$this->current['is']['bot']		= true;
 			}
+			unset($groups);
 		}
 		//If not guest - apply some individual settings
 		if ($this->id != 1) {

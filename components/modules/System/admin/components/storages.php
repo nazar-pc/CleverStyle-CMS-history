@@ -89,7 +89,7 @@ if (isset($rc[2])) {
 			if (isset($mdata['storage']) && is_array($mdata['storage'])) {
 				foreach ($mdata['storage'] as $storage_name) {
 					if ($storage_name == $rc[3]) {
-						$content[] = $a->b($module);
+						$content[] = h::b($module);
 						break;
 					}
 				}
@@ -104,7 +104,7 @@ if (isset($rc[2])) {
 			$a->content(
 				h::{'p.center_all'}(
 					$L->sure_to_delete.' '.$L->storage.' '.
-					$a->b($Config->storage[$rc[3]]['host'].'/'.$Config->storage[$rc[3]]['connection']).'?'.
+					h::b($Config->storage[$rc[3]]['host'].'/'.$Config->storage[$rc[3]]['connection']).'?'.
 					h::{'input[type=hidden]'}(array('name'	=> 'mode',		'value'		=> 'delete')).
 					h::{'input[type=hidden]'}(array('name'	=> 'storage',	'value'		=> $rc[3]))
 				).
@@ -117,9 +117,9 @@ if (isset($rc[2])) {
 		$a->form = false;
 		global $Page, $Storage;
 		if (isset($rc[3])) {
-			$Page->Content = $Page->{'p.test_result'}($Storage->test(array($rc[3])) ? $L->success : $L->fail);
+			$Page->Content = h::{'p.test_result'}($Storage->test(array($rc[3])) ? $L->success : $L->fail);
 		} else {
-			$Page->Content = $Page->{'p.test_result'}($Storage->test($_POST['storage']) ? $L->success : $L->fail);
+			$Page->Content = h::{'p.test_result'}($Storage->test($_POST['storage']) ? $L->success : $L->fail);
 		}
 	}
 } else {

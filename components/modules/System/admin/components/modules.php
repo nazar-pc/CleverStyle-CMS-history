@@ -8,7 +8,7 @@ if ($mode && $rc[2] == 'install') {
 	$a->cancel_back = true;
 	$a->content(
 		$a->p(
-			$L->installation_of_module.' '.$a->b($rc[3])
+			$L->installation_of_module.' '.h::b($rc[3])
 		)
 	);
 	_include(MODULES.DS.$rc[3].DS.$ADMIN.DS.'install'.DS.'form.php', false, false);
@@ -30,7 +30,7 @@ if ($mode && $rc[2] == 'install') {
 	$a->cancel_back = true;
 	$a->content(
 		$a->p(
-			$L->uninstallation_of_module.' '.$a->b($rc[3])
+			$L->uninstallation_of_module.' '.h::b($rc[3])
 		)
 	);
 	_include(MODULES.DS.$rc[3].DS.$ADMIN.DS.'uninstall'.DS.'form.php', false, false);

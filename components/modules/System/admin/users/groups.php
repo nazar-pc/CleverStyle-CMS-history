@@ -101,5 +101,6 @@ if (isset($rc[2], $rc[3])) {
 		h::{'table.admin_table.center_all'}(
 			$groups_list
 		)//TODO make add group function
+	//TODO write set and delete group functions in Index
 	);
 }
