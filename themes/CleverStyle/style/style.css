@@ -38,6 +38,6 @@ header, footer {
 	z-index: 1;
 }
 .background {
-	position:absolute;
-	z-index:-100;
+	position: absolute;
+	z-index: -100;
 }

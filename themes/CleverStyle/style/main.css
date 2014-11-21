@@ -6,7 +6,7 @@ body {
 	padding: 0px;
 	width: 100%;
 }
-body * {
+#body * {
 	overflow: visible;
 }
 body[id=textarea] {

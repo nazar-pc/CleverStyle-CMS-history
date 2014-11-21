@@ -6,7 +6,7 @@ class Config {
 	//Инициализация параметров системы
 	function __construct () {
 		global $Cache;
-		$this->admin_parts = array('db', 'core', 'components', 'replace', 'routing');
+		$this->admin_parts = array('core', 'db', 'storage', 'components', 'replace', 'routing');
 		//Считывание настроек с кеша и определение недостающих данных
 		$config = $Cache->get('config');
 		if (isset($config) && is_array($config)) {
@@ -64,12 +64,12 @@ class Config {
 			if ($this->mirror_index == -1) {
 				global $Error, $L;
 				$this->server['base_url'] = '';
-				$Error->show($L->mirror_not_allowed, 'stop');
+				$Error->process($L->mirror_not_allowed, 'stop');
 			}
 		} else {
 			global $Error, $L;
 			$this->server['base_url'] = '';
-			$Error->show($L->mirror_not_allowed, 'stop');
+			$Error->process($L->mirror_not_allowed, 'stop');
 		}
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
@@ -151,7 +151,7 @@ class Config {
 					$query[$id] = '`'.$q.'`';
 				}
 			}
-			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), 1);
+			$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = '.sip(CDOMAIN), false, 1);
 			foreach ($query as $q) {
 				$q = trim($q, '`');
 				if ($q == 'routing' && isset($this->routing['current'])) {

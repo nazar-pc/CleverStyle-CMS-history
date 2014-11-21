@@ -87,23 +87,15 @@ class Admin extends Module {
 							'name'	=> $Config->routing['current'][1]
 						)
 					).
-					$this->input(
-						array(
-							'type'	=> 'hidden',
-							'id'	=> 'edit_settings',
-							'name'	=> 'edit_settings',
-							'value'	=> 'save'
-						)
-					).
 					($this->buttons ?
 						($this->apply_button ?
-							$this->button($L->apply,	array('id'		=> 'apply_settings',	'type'	=> 'submit'))
+							$this->button($L->apply,	array('name' => 'edit_settings', 'id' => 'apply_settings', 'type' => 'submit', 'value' => 'apply'))
 						: '')
-							.$this->button($L->save,	array('id'		=> 'save_settings',		'type'	=> 'submit'))
+							.$this->button($L->save,	array('name' => 'edit_settings', 'id' => 'save_settings', 'type' => 'submit', 'value' => 'save'))
 						.($this->apply_button ?
-							$this->button($L->cancel,	array('id'		=> 'cancel_settings',	'type'	=> 'submit', 'add'	=> $this->cancel))
+							$this->button($L->cancel,	array('name' => 'edit_settings', 'id' => 'cancel_settings', 'type' => 'submit', 'value' => 'cancel',	'add'	=> $this->cancel))
 						: '')
-							.$this->button($L->reset,	array('type'	=> 'reset'))
+							.$this->button($L->reset,	array('id'	=> 'reset_settings', 'type'	=> 'reset'))
 					: ''),
 					array(
 						'method'	=> 'post',

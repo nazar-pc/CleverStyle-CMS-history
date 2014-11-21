@@ -50,7 +50,7 @@ class MySQL extends DataBase {
 		global $db, $Config;
 		++$db->queries;
 		$db->time += $this->query['time'];
-		if (is_object($Config) && $Config->core['show_queries'] > 0) {
+		if (!is_object($Config) || $Config->core['show_queries'] > 0) {
 			$this->queries['time'][] = $this->query['time'];
 			$this->queries['text'][] = xap($this->query['text']);
 		}
@@ -74,7 +74,7 @@ class MySQL extends DataBase {
 	}
 	//Получение результатов
 	//([id_запроса [, тип_возвращаемого_массива [, в_виде_массива_результатов]]])
-	function f ($query_resource = false, $result_type = MYSQL_BOTH, $array = false) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 		if (!$query_resource) {
 			$query_resource = $this->query['resource'];
 		}
@@ -87,6 +87,18 @@ class MySQL extends DataBase {
 			}
 		} else {
 			return false;
+		}
+	}
+	//Очистка результатов запроса
+	//([id_запроса])
+	function free ($query_resource = false) {
+		if($query_resource === false) {
+			$query_resource = $this->query['resource'];
+		}
+		if(is_resource($query_resource)) {
+			return mysql_free_result($query_resource);
+		} else {
+			return true;
 		}
 	}
 	//Информация о MySQL-сервере

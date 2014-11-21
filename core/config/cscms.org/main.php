@@ -3,15 +3,17 @@ global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_USER, $DB_PASSWORD, $DB_PREFIX, $DB_COD
 if (defined('CDOMAIN')) {
 	$MULTIDOMAIN_CURRENT = 'f40fbea2ee5a24ce581fb53510883dfcf40fbea2ee5a24ce581fb535';
 	if ($MULTIDOMAIN !== $MULTIDOMAIN_CURRENT) {
+		header("HTTP/1.0 404 Not Found");
 		exit;
 	}
 } else {
 	define('CDOMAIN', 'cscms.org');
 }
-if (CDOMAIN !== DOMAIN) {
+if (CDOMAIN !== 'cscms.org') {
+	header("HTTP/1.0 404 Not Found");
 	exit;
 }
-unset($MULTIDOMAIN);
+unset($MULTIDOMAIN, $MULTIDOMAIN_CURRENT);
 isset($ADMIN)			|| $ADMIN			= 'admin';
 isset($API)				|| $API				= 'api';
 isset($DB_HOST)			|| $DB_HOST			= 'localhost';

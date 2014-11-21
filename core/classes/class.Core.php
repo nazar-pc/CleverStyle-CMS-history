@@ -8,12 +8,11 @@ class Core {
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
 		if (require_x(CONFIG.DS.DOMAIN.DS.'main.php', true)) {
+			define('CACHE', CORE.DS.'cache'.DS.CDOMAIN);	//Папка с кешем
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_USER, $DB_PASSWORD, $DB_PREFIX, $DB_CODEPAGE, $KEY;
 			if(!is_dir(CACHE)) {
 				if (!mkdir(CACHE, 0600)) {
-					@trigger_error('{%CREATE_CACHE_DIR_ERROR%}', 'stop');
-					global $stop;
-					$stop = 2;
+					header("HTTP/1.0 404 Not Found");
 					__finish();
 				}
 			}
@@ -23,7 +22,8 @@ class Core {
 			}
 			unset($KEY);
 		} else {
-			@trigger_error('{%CANT_GET_CONFIG_ERROR%}', 'stop');
+			header("HTTP/1.0 404 Not Found");
+			__finish();
 		}
 	}
 	//Инициализация шифрования

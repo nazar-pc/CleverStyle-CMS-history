@@ -48,7 +48,7 @@ class Classes {
 						$this->LoadedObjects[$class[0]] = $class[0];
 					}
 				} else {
-					$Error->show('{%CANT_LOAD_CLASS%} '.$class[0]);
+					$Error->process('{%CANT_LOAD_CLASS%} '.$class[0]);
 				}
 			}
 		} else {
@@ -71,7 +71,7 @@ class Classes {
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __finish () {
 		foreach ($this->LoadedObjects as $class) {
-			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config' && $class != 'User' && $class != 'Error' && $class != 'L') {
+			if ($class != 'db' && $class != 'Cache' && $class != 'Core' && $class != 'Config' && $class != 'Error' && $class != 'L' && $class != 'User' && $class != 'Page') {
 				$this->unload($class);
 			}
 		}
@@ -80,9 +80,6 @@ class Classes {
 		}
 		if (isset($this->LoadedObjects['db'])) {
 			$this->unload('db');
-		}
-		if (isset($this->LoadedObjects['Core'])) {
-			$this->unload('Core');
 		}
 		if (isset($this->LoadedObjects['Config'])) {
 			$this->unload('Config');
@@ -95,6 +92,12 @@ class Classes {
 		}
 		if (isset($this->LoadedObjects['L'])) {
 			$this->unload('L');
+		}
+		if (isset($this->LoadedObjects['Cache'])) {
+			$this->unload('Cache');
+		}
+		if (isset($this->LoadedObjects['Core'])) {
+			$this->unload('Core');
 		}
 		exit;
 	}

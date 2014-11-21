@@ -53,7 +53,8 @@ class Cache {
 			file_put_contents(CACHE.DS.$label, $Core->encrypt(serialize($data)), LOCK_EX);
 			return true;
 		} else {
-			trigger_error($L->file.' '.CACHE.DS.$label.' '.$L->not_writable);
+			global $Error;
+			$Error->process($L->file.' '.CACHE.DS.$label.' '.$L->not_writable);
 			return false;
 		}
 	}

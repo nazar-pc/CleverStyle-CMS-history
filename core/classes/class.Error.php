@@ -71,17 +71,15 @@ class Error {
 				break;
 			}
 		} else {
-			if ($errstr != 'stop') {
-				$Page->title($L->error.': '.$errno);
-				$Page->content('<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br>\n");
-			} else {
-				$Page->Title = array($L->error.': '.$errno);
-				//$Page->Content = '<h2 align="center"><span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br></h2>\n";
-			}
 			if ($errstr == 'stop') {
+				$Page->Title = array($L->error.': '.$errno);
+				$Page->Content = '<h2 align="center"><span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br></h2>\n";
 				global $stop;
 				$stop = 2;
 				__finish();
+			} else {
+				$Page->title($L->error.': '.$errno);
+				$Page->content('<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br>\n");
 			}
 		}
 	}

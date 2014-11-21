@@ -24,7 +24,7 @@ $a->content(
 						'name' => 'core[language]',
 						'selected' => $Config->core['language'],
 						'size' => 5,
-						'add' => ' onClick="$(\'#apply_settings\').mousedown().click();"',
+						'add' => ' onClick="$(\'#apply_settings\').click();"',
 						'class' => 'form_element'
 					)
 				)

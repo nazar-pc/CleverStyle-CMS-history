@@ -1,17 +1,18 @@
-#header_light_green {
-	background: rgba(255, 255, 255, 0.5);
-	box-shadow: 0px 0px 60px #fff, 0px 0px 60px #fff;
-	-moz-box-shadow: 0px 0px 60px #fff;
-	-webkit-box-shadow: 0px 0px 60px #fff;
-}
 #header_green {
-	background: #6ebc00;
-	box-shadow: 0px 0px 50px #ddd;
-	-moz-box-shadow: 0px 0px 50px #ddd;
-	-webkit-box-shadow: 0px 0px 50px #ddd;
+	background: rgb(110, 188, 0);
+	background: -ms-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background: -moz-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background: -o-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background: -webkit-linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
+	background: linear-gradient(top, rgb(203, 255, 129) 0%, rgb(110, 188, 0) 80%);
 }
 #header_black {
-	background: #000;
+	background: rgb(0, 0, 0);
+	background: -ms-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background: -moz-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background: -o-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background: -webkit-linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
+	background: linear-gradient(top, rgb(125, 125, 125) 0%, rgb(0, 0, 0) 90%);
 	box-shadow: 0px 7px 20px #000;
 	-moz-box-shadow: 0px 7px 20px #000;
 	-webkit-box-shadow: 0px 7px 20px #000;
@@ -39,11 +40,11 @@
 	text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.7);
 }
 #menu-more > menu {
-	color: #6ebc00;
+	color: rgb(110, 188, 0);
 }
 #menu-more > menu > a {
-	border-top: 2px solid #6ebc00;
-	color: #6ebc00;
+	border-top: 2px solid rgb(110, 188, 0);
+	color: rgb(110, 188, 0);
 }
 #menu-more > menu > a:hover, #menu-more > menu > a.active {
 	border-top-color: #ddd;

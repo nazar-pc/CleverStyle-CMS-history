@@ -4,7 +4,7 @@ a {
 }
 .form_element, .form_element:hover, .form_element:focus {
 	background: #fff;
-	border-color: #6ebc00;
+	border-color: rgb(110, 188, 0);
 }
 .green {
 	box-shadow: 0px 0px 7px #0f0;

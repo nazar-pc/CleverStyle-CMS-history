@@ -35,7 +35,7 @@ $(document).ready(
 				show:		'scale',
 				width:		'700'
 		});
-		$('#test_db').dialog({
+		$('#test_db, #test_storage').dialog({
 				autoOpen:	false,
 				height:		'75',
 				hide:		'puff',
@@ -52,21 +52,6 @@ $(document).ready(
 		$('#admin_form:reset').change(
 			function(){
 				save = false;
-			}
-		);
-		$('#admin_form > #apply_settings').mousedown(
-			function () {
-				$('#admin_form > #edit_settings').val('apply');
-			}
-		);
-		$('#admin_form > #save_settings').mousedown(
-			function () {
-				$('#admin_form > #edit_settings').val('save');
-			}
-		);
-		$('#admin_form > #cancel_settings').mousedown(
-			function () {
-				$('#admin_form > #edit_settings').val('cancel');
 			}
 		);
 		$('textarea').each(
@@ -134,7 +119,7 @@ function db_test (url, added) {
 	$('#test_db').html('<div id="test_progress" style="width: 100%"></div>');
 	$($('#test_progress')).progressbar({value: 1});
 	$('#test_db').dialog('open');
-	test_interval = setInterval(function () {progress(element)}, 100);
+	var test_interval = setInterval(function () {progress(element)}, 100);
 	if (added == true) {
 		$.ajax({
 			url:		url,
@@ -160,6 +145,38 @@ function db_test (url, added) {
 			success:	function(result) {
 				clearInterval(test_interval);
 				$('#test_db').html(result);
+			}
+		});
+	}
+}
+function storage_test (url, added) {
+	$('#test_storage').html('<div id="test_progress" style="width: 100%"></div>');
+	$($('#test_progress')).progressbar({value: 1});
+	$('#test_storage').dialog('open');
+	test_interval = setInterval(function () {progress(element)}, 100);
+	if (added == true) {
+		$.ajax({
+			url:		url,
+			type:		'POST',
+			success:	function(result) {
+				clearInterval(test_interval);
+				$('#test_storage').html(result);
+			}
+		});
+	} else {
+		var db = {
+			type:		document.getElementsByName('storage[connection]').item(0).value,
+			user:		document.getElementsByName('storage[user]').item(0).value,
+			password:	document.getElementsByName('storage[password]').item(0).value,
+			host:		document.getElementsByName('storage[host]').item(0).value
+		};
+		$.ajax({
+			url:		url,
+			type:		'POST',
+			data:		'db=' + $.toJSON(db),
+			success:	function(result) {
+				clearInterval(test_interval);
+				$('#test_storage').html(result);
 			}
 		});
 	}

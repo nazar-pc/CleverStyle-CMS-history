@@ -13,7 +13,7 @@ if (isset($Config->routing['current'][2])) {
 			}
 		} elseif ($Config->routing['current'][2] == 'add') {
 			$dbs = array(-1, 0);
-			$dbsname = array($L->separate_db, $L->coredb);
+			$dbsname = array($L->separate_db, $L->core_db);
 			foreach ($Config->db as $i => $db) {
 				if ($i) {
 					$dbs[] = $i;
@@ -155,7 +155,10 @@ if (isset($Config->routing['current'][2])) {
 			$a->tr(
 				$a->td(
 					$L->sure_to_delete.' '.$L->db.' <b>'.
-					(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['name'] : $Config->db[$Config->routing['current'][3]]['name']).'</b>?',
+					(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['name'] : $Config->db[$Config->routing['current'][3]]['name']).
+					' ('.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['host'] : $Config->db[$Config->routing['current'][3]]['host']).
+					'/'.(isset($Config->routing['current'][4]) ? $Config->db[$Config->routing['current'][3]]['mirrors'][$Config->routing['current'][4]]['type'] : $Config->db[$Config->routing['current'][3]]['type']).
+					')</b>?',
 					array('style'	=> 'text-align: center;')
 				)
 			).
@@ -217,21 +220,21 @@ if (isset($Config->routing['current'][2])) {
 							'href'		=> $a->action.'/add/'.$i,
 							'class'		=> 'black'
 						)
-					).'<br>'.($i ? 
+					).$a->br().($i ? 
 					$a->a(
 						$L->edit.' '.$L->db,
 						array(
 							'href'		=> $a->action.'/edit/'.$i,
 							'class'		=> 'black'
 						)
-					).'<br>'.
+					).$a->br().
 					$a->a(
 						$L->delete.' '.$L->db,
 						array(
 							'href'		=> $a->action.'/delete/'.$i,
 							'class'		=> 'black'
 						)
-					).'<br>' : '').
+					).$a->br() : '').
 					$a->a(
 						$L->test_connection,
 						array(
@@ -263,14 +266,14 @@ if (isset($Config->routing['current'][2])) {
 									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i.'/'.$m,
 									'class'		=> 'black'
 								)
-							).'<br>'.
+							).$a->br().
 							$a->a(
 								$L->delete.' '.$L->mirror,
 								array(
 									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
 									'class'		=> 'black'
 								)
-							).'<br>'.
+							).$a->br().
 							$a->a(
 								$L->test_connection,
 								array(
@@ -303,7 +306,7 @@ if (isset($Config->routing['current'][2])) {
 					array(
 						'onMouseDown' => 'javasript: location.href= \'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add\';'
 					)
-				).'<br>',
+				).$a->br(),
 				array(
 					'colspan'	=> 7,
 					'style'		=> 'text-align: left;'

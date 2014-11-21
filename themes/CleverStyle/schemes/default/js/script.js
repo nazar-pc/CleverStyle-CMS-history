@@ -1,3 +1,4 @@
+var loading_interval, loading_angle = 0;
 function background() {
 	var height = document.body.clientHeight > window.innerHeight ? document.body.clientHeight : window.innerHeight;
 	num = Math.round(height/40);
@@ -27,14 +28,25 @@ function background() {
 					'border': '1px solid rgba('+bokehColour+', 0.5)',
 					'overflow': 'hidden'
 				});
-		if ($.browser.opera || $.browser.msie) {
+		if ($.browser.msie && $.browser.version >= 10) {
+			bokeh.css({
+				'background': '-ms-radial-gradient(contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))'
+			});
+		} else if ($.browser.msie && $.browser.version == 9) {
 			bokeh.css({
 				'background': 'rgba('+bokehColour+', 0.4)'
 			});
-		} else {
+		} else if ($.browser.opera) {
 			bokeh.css({
-				'background': '-moz-radial-gradient(contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))',
-				'background-image': '-webkit-gradient(radial, center center, 0, center center, 70.5, from(rgba('+bokehColour+', 0.7)), to(rgba('+bokehColour+',0.3)))'
+				'background': 'rgba('+bokehColour+', 0.4)'
+			});
+		} else if ($.browser.mozilla) {
+			bokeh.css({
+				'background': '-moz-radial-gradient(contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))'
+			});
+		} else if ($.browser.webkit) {
+			bokeh.css({
+				'background': '-webkit-radial-gradient(contain, rgba('+bokehColour+', 0.7), rgba('+bokehColour+',0.3))'
 			});
 		}
 		bokeh.appendTo("#background");
@@ -81,26 +93,36 @@ $(document).ready(
 				}
 			}
 		);
-		if (!$.browser.msie) {
-			$('#loading > div').css('opacity', 1);		
-			$('#loading').addClass('active');
+		if ($.browser.msie) {
+			$('#loading').attr('style', '-ms-transform: rotate('+(++loading_angle)+'deg)');
+			loading_interval = setInterval(function () {$('#loading').attr('style', '-ms-transform: rotate('+(loading_angle += 3)+'deg)');}, 50);
+		} else {
+			$('#loading').css(
+				{
+					"-ms-transform" : 'rotate('+(++loading_angle)+'deg)',
+					"-moz-transform" : 'rotate('+(++loading_angle)+'deg)',
+					"-o-transform" : 'rotate('+(++loading_angle)+'deg)',
+					"-webkit-transform" : 'rotate('+(++loading_angle)+'deg)',
+					"transform" : 'rotate('+(++loading_angle)+'deg)'
+				}
+			);
+			loading_interval = setInterval(function () {$('#loading').css({"-moz-transform" : 'rotate('+(++loading_angle)+'deg)', "-o-transform" : 'rotate('+(++loading_angle)+'deg)', "-webkit-transform" : 'rotate('+(++loading_angle)+'deg)', "transform" : 'rotate('+(++loading_angle)+'deg)'});}, 50);
 		}
+		$('#loading > div').css('opacity', 1);
 		background();
 	}
 );
 $(
 	function(){
-		if (!$.browser.msie) {
-			setTimeout(
-				function(){
-					$('#loading > div').css('opacity', 0);
-					setTimeout(
-						function(){
-							$('#loading').remove();
-						}, 1000
-					);
-				}, 1000
-			);
-		}
+		setTimeout(
+			function(){
+				$('#loading > div').css('opacity', 0);
+				setTimeout(
+					function(){
+						clearInterval(loading_interval);
+					}, 1000
+				);
+			}, 1000
+		);
 	}
 );

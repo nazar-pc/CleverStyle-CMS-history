@@ -34,6 +34,8 @@ if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == '
 				unset($Config->db[intval($_POST['database'])]);
 				$update = true;
 			}
+		} elseif ($_POST['mode'] == 'config') {
+			include_x(MFOLDER.'/'.$Admin->savefile.'.php', true, false);
 		}
 		if ($update) {
 			if ($db->core()->q('UPDATE `[prefix]config` SET `db` = '.sip(serialize($Config->db)).' WHERE `domain` = '.sip(CDOMAIN))) {
@@ -46,9 +48,40 @@ if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == '
 			}
 		}
 		unset($update);
-		if ($_POST['mode'] == 'config') {
-			include_x(MFOLDER.'/'.$Admin->savefile.'.php', true, false);
+	}
+}
+if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == 'storages') {
+	if (isset($_POST['mode'])) {
+		$update = false;
+		if ($_POST['mode'] == 'add') {
+			foreach ($_POST['storage'] as $item => $value) {
+				$_POST['storage'][$item] = strval($value);
+			}
+			$Config->storage[] = $_POST['storage'];
+			unset($item, $value, $_POST['storage']);
+			$update = true;
+		} elseif ($_POST['mode'] == 'edit') {
+			$cstorage = &$Config->storage[intval($_POST['storage_id'])];
+			foreach ($_POST['storage'] as $item => $value) {
+				$cstorage[$item] = strval($value);
+			}
+			unset($cstorage, $item, $value, $_POST['storage']);
+			$update = true;
+		} elseif ($_POST['mode'] == 'delete' && isset($_POST['storage'])) {
+			unset($Config->storage[intval($_POST['storage'])]);
+			$update = true;
 		}
+		if ($update) {
+			if ($db->core()->q('UPDATE `[prefix]config` SET `storage` = '.sip(serialize($Config->storage)).' WHERE `domain` = '.sip(CDOMAIN))) {
+				$Page->title($L->settings_saved);
+				$Page->Top .= '<div class="green notice">'.$L->settings_saved.'</div>';
+				flush_cache();
+			} else {
+				$Page->title($L->settings_save_error);
+				$Page->Top .= '<div class="red notice">'.$L->settings_save_error.'</div>';
+			}
+		}
+		unset($update);
 	}
 }
 ?>

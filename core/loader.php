@@ -4,14 +4,12 @@ global $timeload, $Classes, $loader_init_memory;
 error_reporting(PHP_INT_MAX);
 //error_reporting(0);
 ini_set('display_errors', 1);
-//ini_set('display_errors', 0);
 //header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("UTF-8");
 
 //Задание базовых констант с путями системных папок
 define('DOMAIN', $_SERVER['HTTP_HOST']);			//Доменное имя текущего сайта
 define('CORE', DIR.DS.'core');						//Папка ядра
-	define('CACHE', CORE.DS.'cache'.DS.DOMAIN);		//Папка с кешем
 	define('CLASSES', CORE.DS.'classes');			//Папка с классами
 	define('CONFIG', CORE.DS.'config');				//Папка конфигурации
 	define('DB', CORE.DS.'db_engines');				//Папка движками БД
@@ -30,9 +28,6 @@ define('THEMES', DIR.DS.'themes');					//Папка с темами
 //Загрузка информации о минимально необходимой конфигурации системы
 require_x(CORE.DS.'required_verions.php');
 
-//Подключение интерфейса для работы с классами
-require_x(CLASSES.DS.'class.Classes.php');
-
 $stop = 0;
 $timeload['loader_init'] = microtime(true);
 $loader_init_memory = memory_get_usage(true);
@@ -49,6 +44,7 @@ $Classes->load(
 		array('Page', true),					//Создание объекта генерирования страницы
 		array('Error', true),					//Создание объекта обработки ошибок
 		array('DB', true, 'db'),				//Создание объекта БД
+		array('Storage', true),					//Создание объекта Хранилищ
 		array('Config', true),					//Создание объекта настроек
 		array('User', true),					//Создание объекта пользователя
 		array('Component', true)				//Создание объекта, который управляет обработкой компонентов

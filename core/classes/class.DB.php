@@ -135,9 +135,9 @@ class DB {
 			if (!is_array($mirror)) {
 				global $Error, $L;
 				if ($connection == 'core') {
-					$Error->show($L->error_core_db, 'stop');
+					$Error->process($L->error_core_db, 'stop');
 				} else {
-					$Error->show($L->error_db.' '.$connection);
+					$Error->process($L->error_db.' '.$connection);
 				}
 				return false;
 			}

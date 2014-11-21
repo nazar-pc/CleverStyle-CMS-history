@@ -91,15 +91,15 @@ class Page extends HTML {
 			} elseif ($stop == 2 && file_exists(THEMES.DS.$this->theme.DS.'error.html')) {
 				include_x(THEMES.DS.$this->theme.DS.'error.html', 1);
 			} else {
-				echo "<!doctype html>\n"
-					."<html>\n"
-					."	<head>\n"
-					."<!--head-->\n"
-					."	</head>\n"
-					."	<body>\n"
-					."<!--content-->\n"
-					."	</body>\n"
-					."</html>";
+				echo	"<!doctype html>\n".
+						"<html>\n".
+						"	<head>\n".
+						"<!--head-->\n".
+						"	</head>\n".
+						"	<body>\n".
+						"<!--content-->\n".
+						"	</body>\n".
+						"</html>";
 			}
 			$this->Html = ob_get_clean();
 		}
@@ -129,33 +129,37 @@ class Page extends HTML {
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
-			$this->core_css[1] = '<style type="text/css">'.($Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : "\n".$this->core_css[1])."</style>\n";
+			$this->core_css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->core_css[1], 'css') : "\n".$this->core_css[1], array('type' => 'text/css'));
 		}
 		if ($this->css[1]) {
-			$this->css[1] = '<style type="text/css">'.($Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : "\n".$this->css[1])."</style>\n";
+			$this->css[1] = $this->style($Config->core['cache_compress_js_css'] ? $this->filter($this->css[1], 'css') : "\n".$this->css[1], array('type' => 'text/css'));
 		}
 		if ($this->core_js[1]) {
-			$this->core_js[1] = '<script>'.($Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : "\n".$this->core_js[1])."</script>\n";
+			$this->core_js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->core_js[1], 'js') : "\n".$this->core_js[1]);
 		}
 		if ($this->js[1]) {
-			$this->js[1] = '<script>'.($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : "\n".$this->js[1])."</script>\n";
+			$this->js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : "\n".$this->js[1]);
 		}
-		$this->Head = "<title>".$this->Title[0]."</title>\n"
-						."<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
-						."<meta name=\"author\" content=\"Mokrynskyi Nazar\">\n"
-						."<meta name=\"copyright\" content=\"$copyright[0]\">\n"
-						."<meta name=\"keywords\" content=\"$this->Keywords\">\n"
-						."<meta name=\"description\" content=\"$this->Description\">\n"
-						."<meta name=\"robots\" content=\"index, follow\">\n"
-						."<meta name=\"revisit-after\" content=\"1 days\">\n"
-						."<meta name=\"generator\" content=\"$copyright[1]\">\n"
-						."<link rel=\"shortcut icon\" href=\"".(file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ? 'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' : file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ? 'themes/'.$this->theme.'/img/favicon.ico' : 'includes/img/favicon.ico')."\">\n"
-						.(is_object($Config) ? "<base href=\"".$Config->server['base_url']."\">\n" : '')
-						.$this->Head
-						.implode('', $this->core_css)
-						.implode('', $this->css)
-						.implode('', $this->core_js)
-						.implode('', $this->js);
+		$this->Head =	$this->swrap($this->Title[0], '', 'title').
+						$this->meta(array('http-equiv'	=> 'Content-Type',	'content'	=> 'text/html; charset=utf-8')).
+						$this->meta(array('name'		=> 'author',		'content'	=> 'Mokrynskyi Nazar')).
+						$this->meta(array('name'		=> 'copyright',		'content'	=> $copyright[0])).
+						$this->meta(array('name'		=> 'keywords',		'content'	=> $this->Keywords)).
+						$this->meta(array('name'		=> 'description',	'content'	=> $this->Description)).
+						$this->meta(array('name'		=> 'generator',		'content'	=> $copyright[1])).
+						$this->link(array('rel'			=> 'shortcut icon',	'href'		=> 
+							file_exists(THEMES.'/'.$this->theme.'/'.$this->color_scheme.'/'.'img/favicon.ico') ?
+								'themes/'.$this->theme.'/'.$this->color_scheme.'/img/favicon.ico' :
+								file_exists(THEMES.'/'.$this->theme.'/img/favicon.ico') ?
+									'themes/'.$this->theme.'/img/favicon.ico' :
+									'includes/img/favicon.ico'
+						)).
+						(is_object($Config) ? $this->base($Config->server['base_url']) : '').
+						$this->Head.
+						implode('', $this->core_css).
+						implode('', $this->css).
+						implode('', $this->core_js).
+						implode('', $this->js);
 		$this->Footer .= $this->footer($stop);
 		//Подстановка контента в шаблон
 		$construct['in'] = array(
@@ -255,7 +259,7 @@ class Page extends HTML {
 				}
 			} else {
 				if ($mode == 'file') {
-					$this->css[0] .= "<link href=\"$add\" type=\"text/css\" rel=\"StyleSheet\">\n";
+					$this->css[0] .= $this->link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
 				} elseif ($mode == 'code') {
 					$this->css[1] = $add;
 				}
@@ -296,22 +300,25 @@ class Page extends HTML {
 			return;
 		}
 		if ($Config->core['cache_compress_js_css']) {
+			global $Cache;
 			//Проверка текущего кеша
-			if (!file_exists(PCACHE.DS.$this->cache_list[0].'css') && !file_exists(PCACHE.DS.$this->cache_list[0].'js') && !file_exists(PCACHE.DS.$this->cache_list[1].'css') && !file_exists(PCACHE.DS.$this->cache_list[1].'js') && !file_exists(PCACHE.DS.$this->cache_list[2].'css') && !file_exists(PCACHE.DS.$this->cache_list[2].'js')) {
+			if (!(file_exists(PCACHE.DS.$this->cache_list[0].'css') || file_exists(PCACHE.DS.$this->cache_list[0].'js') || file_exists(PCACHE.DS.$this->cache_list[1].'css') || file_exists(PCACHE.DS.$this->cache_list[1].'js') || file_exists(PCACHE.DS.$this->cache_list[2].'css') || file_exists(PCACHE.DS.$this->cache_list[2].'js')) || !$Cache->get('pcache_key')) {
 				$this->rebuild_cache();
 			}
+			$key = $Cache->get('pcache_key');
 			//Подключение CSS стилей
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.DS.$file.'css')) {
-					$this->css('includes/cache/'.$file.'css', 'file', true);
+					$this->css('includes/cache/'.$file.'css?'.$key, 'file', true);
 				}
 			}
 			//Подключение JavaScript
 			foreach ($this->cache_list as $file) {
 				if (file_exists(PCACHE.DS.$file.'js')) {
-					$this->js('includes/cache/'.$file.'js', 'file', true);
+					$this->js('includes/cache/'.$file.'js?'.$key, 'file', true);
 				}
 			}
+			unset($key);
 		} else {
 			$this->get_list();
 			//Подключение CSS стилей
@@ -326,7 +333,9 @@ class Page extends HTML {
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {
+		global $Cache;
 		$this->get_list();
+		$key = '';
 		foreach ($this->get_list as $part => $array) {
 			foreach ($array as $i => $files) {
 				if (!is_array($files)) {
@@ -348,19 +357,19 @@ class Page extends HTML {
 					unlink($file);
 				}
 				$temp_cache = $this->filter($temp_cache, $part);
-				/*$cache = fopen($file, 'w');
-				fwrite($cache, $temp_cache);
-				fclose($cache);*/
-				$file = PCACHE.DS.$this->cache_list[$i]/*.'gz.'*/.$part;
+				$file = PCACHE.DS.$this->cache_list[$i].$part;
 				if (file_exists($file)) {
 					unlink($file);
 				}
 				$cache = gzopen($file, 'w9');
 				gzwrite($cache, $temp_cache);
 				gzclose($cache);
-				unset($temp_cache);
+				$key .= md5($temp_cache);
+				unset($temp_cache, $cache);
 			}
 		}
+		$Cache->set('pcache_key', mb_substr(md5($key), 0, 5));
+		unset($key);
 	}
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
@@ -400,10 +409,15 @@ class Page extends HTML {
 		if (!($copyright && is_array($copyright))) {
 			exit;
 		}
-		$footer = "<div id=\"copyright\">\n	$copyright[2] $copyright[3]\n</div>\n";
+		$footer = $this->div($copyright[2].' '.$copyright[3], array('id'	=> 'copyright'));
 		if (!$stop) {
-			$footer = "<div id=\"execution_info\">\n	".$L->page_generated.' <!--generate time--> '
-					.$L->sec.', '.(is_object($db) ? $db->queries : 0).' '.$L->queries_to_db.' '.$L->during.' '.(is_object($db) ? round($db->time, 5) : 0).' '.$L->sec.', '.$L->peak_memory_usage." <!--peak memory usage-->\n</div>\n".$footer;
+			$footer =	$this->div(
+							$L->page_generated.' <!--generate time--> '.
+							$L->sec.', '.(is_object($db) ? $db->queries : 0).' '.$L->queries_to_db.' '.$L->during.' '.(is_object($db) ? round($db->time, 5) : 0).' '.$L->sec.
+							', '.$L->peak_memory_usage.' <!--peak memory usage-->',
+							array('id'	=> 'execution_info')
+						).
+						$footer;
 		}
 		return $footer;
 	}
@@ -413,7 +427,13 @@ class Page extends HTML {
 		//Объекты
 		if ($Config->core['show_objects_data']) {
 			global $Classes, $timeload, $loader_init_memory;
-			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\'); ">►'.$L->objects."</p>\n";
+			$this->debug_info .= $this->p(
+				'►'.$L->objects,
+				array(
+					'class' => 'notice',
+					'onClick' => 'javascript: $(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
+				)
+			);
 			$debug_info =	$this->p(
 								$L->total_list.': '.implode(', ', array_keys($Classes->ObjectsList))
 							).$this->p(
@@ -451,33 +471,45 @@ class Page extends HTML {
 		}
 		//Данные пользователя
 		if ($Config->core['show_user_data']) {
-			$this->debug_info .= '<p class="notice" onClick="javascript: $(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\'); ">►'.$L->user_data."</p>\n";
+			$this->debug_info .= $this->p(
+				'►'.$L->user_data,
+				array(
+					'class' => 'notice',
+					'onClick' => 'javascript: $(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
+				)
+			);
 			global $Classes, $timeload, $loader_init_memory;
-			$this->debug_info .= "<div id=\"debug_user\" style=\"display: none;\">\n".$this->level(0)."</div>\n";
+			$this->debug_info .= $this->div(
+				'',
+				array(
+					'id' => 'debug_user',
+					'style' => 'display: none;'
+				)
+			);
 			unset($loader_init_memory, $last, $object, $data);
 		}
 		//Запросы в БД
 		if ($Config->core['show_queries']) {
 			$this->debug_info .= $this->p(
-									'►'.$L->queries,
-									array(
-										'class' => 'notice',
-										'onClick' => 'javascript: $(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
-									)
-								);
+				'►'.$L->queries,
+				array(
+					'class' => 'notice',
+					'onClick' => 'javascript: $(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
+				)
+			);
 			//Показываем только запросы в БД
 			if ($Config->core['show_queries'] == 1) {
 				$queries = array();
 				foreach ($db->connections as $database) {
 					foreach ($database->queries['text'] as $query) {
-						$queries[] = '<hr>'.$query;
+						$queries[] = $this->hr().$query;
 					}
 				}
 				unset($database, $query);
 				$debug_info =	$this->table(
-									array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.($db->queries ? ':' : '')), $queries),
-									array('id' => 'debug_queries', 'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;')
-								);
+					array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.($db->queries ? ':' : '')), $queries),
+					array('id' => 'debug_queries', 'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;')
+				);
 				unset($queries);
 			//Показываем запросы в БД и время выполнения запросов
 			} elseif ($Config->core['show_queries'] == 2) {
@@ -485,64 +517,63 @@ class Page extends HTML {
 				foreach ($db->connections as $database) {
 					foreach ($database->queries['text'] as $i => $text) {
 						if ($database->queries['time'][$i] > 0.1) {
-							$queries[] = '<hr>'.$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>';
+							$queries[] = $this->hr().$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>';
 						} else {
 							$queries[] = $this->div(
-											'<hr>'.$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
-											array('class' => 'notice red', 'style' => 'text-align: left;')
-										);
+								$this->hr().$text.', #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
+								array('class' => 'notice red', 'style' => 'text-align: left;')
+							);
 						}
 					}
 				}
 				unset($database, $i, $text);
 				$debug_info = $this->table(
-								array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')), $queries),
-								array('id' => 'debug_queries', 'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;')
-							);
+					array_merge(array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')), $queries),
+					array('id' => 'debug_queries', 'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;')
+				);
 				unset($queries);
 			//Показываем детальную информацию о запросах в БД
 			} elseif ($Config->core['show_queries'] == 3) {
 				$queries = array(
-								$L->false_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->false_connections)) ?: $L->no).'</b>',
-								$L->succesful_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->succesful_connections)) ?: $L->no).'</b>',
-								$L->mirrors_connections.': <b>'.(implode('</b>, <b>', str_replace('core', $L->coredb, $db->mirrors)) ?: $L->no).'</b>',
-								$L->active_connections.':'.(!count($db->connections) ? ' <b>'.$L->no.'</b>' : '')
+								$L->false_connections.': '.$this->b(implode(', ', str_replace('core', $L->core_db, $db->false_connections)) ?: $L->no),
+								$L->succesful_connections.': '.$this->b(implode(', ', str_replace('core', $L->core_db, $db->succesful_connections)) ?: $L->no),
+								$L->mirrors_connections.': '.$this->b(implode(', ', str_replace('core', $L->core_db, $db->mirrors)) ?: $L->no),
+								$L->active_connections.': '.(!count($db->connections) ? $this->b($L->no) : '')
 							);
 				foreach ($db->connections as $name => $database) {
 					if ($name == $database->database) {
 						if ($name == 'core') {
-							$name = $L->coredb;
+							$name = $L->core_db;
 						}
 					} else {
-						$name = ($name != 'core' ? $name : $L->coredb).'('.$database->database.')';
+						$name = ($name != 'core' ? $name : $L->core_db).'('.$database->database.')';
 					}
 					$queries[] = $this->div(
-									$name.', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).
-									', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.round($database->time, 5).' '.$L->sec.':',
-									array('style' => 'padding-left: 20px;')
-								);
-					
+						$name.', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).
+						', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.round($database->time, 5).' '.$L->sec.':',
+						array('style' => 'padding-left: 20px;')
+					);
 					foreach ($database->queries['text'] as $i => $text) {
 						$queries[] = $this->div(
-										'<hr>'.$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
-										array(
-											'style' => 'padding-left: 40px;'.($database->queries['time'][$i] > 0.1 ? ' text-align: left;' : ''),
-											'class' => $database->queries['time'][$i] > 0.1 ? 'notice red' : ''
-										)
-									);
+							$this->hr().$text.(mb_substr($text, 0, -1) == ';' ? '' : ';').' #<i>'.round($database->queries['time'][$i], 5).' '.$L->sec.'</i>',
+							array(
+								'style' => 'padding-left: 40px;'.($database->queries['time'][$i] > 0.1 ? ' text-align: left;' : ''),
+								'class' => $database->queries['time'][$i] > 0.1 ? 'notice red' : ''
+							)
+						);
 					}
 				}
 				unset($database, $i, $text);
 				$debug_info =	$this->table(
-									array_merge(
-										array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')),
-										$queries
-									),
-									array(
-										'id' => 'debug_queries',
-										'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;'
-									)
-								);
+					array_merge(
+						array($L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.round($db->time, 5).' '.$L->sec.($db->queries ? ':' : '')),
+						$queries
+					),
+					array(
+						'id' => 'debug_queries',
+						'style' => 'display: none; padding-left: 20px; width: 100%; word-wrap: break-word;'
+					)
+				);
 				unset($queries);
 			}
 			$this->debug_info .= $debug_info;
@@ -551,26 +582,26 @@ class Page extends HTML {
 		//Cookies
 		if ($Config->core['show_cookies']) {
 			$this->debug_info .= $this->p(
-									'►'.$L->cookies,
-									array(
-										'class' => 'notice',
-										'onClick' => 'javascript: $(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
-									)
-								);
+				'►'.$L->cookies,
+				array(
+					'class' => 'notice',
+					'onClick' => 'javascript: $(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \'►\'; $(this).removeClass(\'open\');}else{add = \'▼\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
+				)
+			);
 			$debug_info = $this->tr(
-								$this->td($L->key.':', array('style' => 'font-weight: bold; width: 20%;')).
-								$this->td($L->value, array('style' => 'width: 80%;'))
-							);
+				$this->td($L->key.':', array('style' => 'font-weight: bold; width: 20%;')).
+				$this->td($L->value, array('style' => 'width: 80%;'))
+			);
 			foreach ($_COOKIE as $i => $v) {
 				$debug_info .= $this->tr(
-									$this->td($i.':', array('style' => 'font-weight: bold; width: 20%;')).
-									$this->td(xap($v), array('style' => 'width: 80%;')), true
-								);
+					$this->td($i.':', array('style' => 'font-weight: bold; width: 20%;')).
+					$this->td(xap($v), array('style' => 'width: 80%;')), true
+				);
 			}
 			$this->debug_info .= $this->div(
-									$this->level($this->table($debug_info, false, true, ' style="padding-left: 20px; width: 100%;"')),
-									array('id' => 'debug_cookies', 'style' => 'display: none;')
-								);
+				$this->level($this->table($debug_info, false, true, ' style="padding-left: 20px; width: 100%;"')),
+				array('id' => 'debug_cookies', 'style' => 'display: none;')
+			);
 			unset($i, $v, $debug_info);
 		}
 	}

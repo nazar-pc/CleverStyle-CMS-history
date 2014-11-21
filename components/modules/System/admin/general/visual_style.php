@@ -15,7 +15,7 @@ $a->content(
 						'name' => 'core[theme]',
 						'selected' => $Config->core['theme'],
 						'size' => 5,
-						'add' => ' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
+						'add' => ' onClick="javascript: $(\'#apply_settings\').click();"',
 						'class' => 'form_element'
 					)
 				)
@@ -32,7 +32,7 @@ $a->content(
 						'name' => 'core[active_themes][]',
 						'selected' => $Config->core['active_themes'],
 						'size' => 5,
-						'add' => ' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').mousedown().click();"',
+						'add' => ' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').click();"',
 						'class' => 'form_element'
 					)
 				)
@@ -50,7 +50,7 @@ $a->content(
 						'name' => 'core[color_scheme]',
 						'selected' => $Config->core['color_scheme'],
 						'size' => 5,
-						'add' => ' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
+						'add' => ' onClick="javascript: $(\'#apply_settings\').click();"',
 						'class' => 'form_element'
 					)
 				)

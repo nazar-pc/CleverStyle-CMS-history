@@ -31,9 +31,12 @@ abstract class DataBase {
 	//Подсчёт количества строк
 	//([id_запроса])
 	abstract function n ($query_resource = false);
+	//Очистка результатов запроса
+	//([id_запроса])
+	abstract function free ($query_resource = false);
 	//Получение результатов
 	//([id_запроса [, тип_возвращаемого_массива [, в_виде_массива_результатов]]])
-	abstract function f ($query_resource = false, $result_type = MYSQL_BOTH, $array = false);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	abstract function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH);	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 	//Упрощенный интерфейс метода для получения результата в виде массива
 	//([id_запроса [, тип_возвращаемого_массива]])
 	function fs ($query_resource = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
@@ -41,11 +44,11 @@ abstract class DataBase {
 	}
 	//Запрос с получением результатов, результаты запросов кешируются при соответствующей настройке сайта
 	//(текст_запроса [, тип_возвращаемого_массива [, в_виде массива]])
-	function qf ($query = '', $result_type = MYSQL_BOTH, $array = false) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
+	function qf ($query = '', $array = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
 		if (!$query) {
 			return false;
 		}
-		return $this->f($this->q($query), $result_type, $array);
+		return $this->f($this->q($query), $array, $result_type);
 	}
 	//Упрощенный интерфейс метода запроса с получением результата в виде массива
 	//(текст_запроса [, тип_возвращаемого_массива])
@@ -53,7 +56,7 @@ abstract class DataBase {
 		if (!$query) {
 			return false;
 		}
-		$this->qf($query, $result_type, true);
+		$this->qf($query, true, $result_type);
 	}
 	//Получение списка полей таблицы
 	//(название_таблицы [, похожих_на])
@@ -62,15 +65,11 @@ abstract class DataBase {
 			return false;
 		}
 		if ($like) {
-			$fields = $this->q('SHOW FIELDS FROM `'.$table.'` LIKE \''.$like.'\'');
+			$this->q('SHOW FIELDS FROM `'.$table.'` LIKE \''.$like.'\'');
 		} else {
-			$fields = $this->q('SHOW FIELDS FROM `'.$table.'`');
+			$this->q('SHOW FIELDS FROM `'.$table.'`');
 		}
-		if ($fields) {
-			return $this->f($fields);
-		} else {
-			return false;
-		}
+		return $this->f();
 	}
 	//Получение списка таблиц БД (если БД не указана - используется текущая)
 	//([название_БД [, похожих_на]])
@@ -79,15 +78,11 @@ abstract class DataBase {
 			$db_name = &$this->database;
 		}
 		if ($like) {
-			$tables = $this->q('SHOW TABLES FROM `'.$db_name.'` LIKE \''.$like.'\'');
+			$this->q('SHOW TABLES FROM `'.$db_name.'` LIKE \''.$like.'\'');
 		} else {
-			$tables = $this->q('SHOW TEBLES FROM `'.$db_name.'`');
+			$this->q('SHOW TEBLES FROM `'.$db_name.'`');
 		}
-		if ($tables) {
-			return $this->f($fields);
-		} else {
-			return false;
-		}
+		return $this->f();
 	}
 	//Информация о сервере
 	abstract function server ();

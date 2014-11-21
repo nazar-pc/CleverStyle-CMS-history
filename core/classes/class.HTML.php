@@ -73,7 +73,7 @@ abstract class HTML {
 		return '<'.$tag.$add.'>'.($level ? "\n" : '').$this->level($in ? $in.($level ? "\n" : '') : ($in === false ? '' : ($level ? "&nbsp;\n" : '')), $level).'</'.$tag.'>'.($level ? "\n" : '');
 	}
 	//Функция для простой обертки контента парными тегами
-	function swrap ($in = '', $data = array(), $tag = 'div') {
+	function swrap ($in = '', $data = '', $tag = 'div') {
 		return $this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
 	}
 	//Функция для разворота массива навыворот для select и radio
@@ -139,8 +139,17 @@ abstract class HTML {
 		return '<'.$tag.$add.'>'.$in."\n";
 	}
 	
+	function html ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function head ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function body ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
 	function form ($in = '', $data = array()) {
-		return $this->swrap($in, $data, 'form');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function table ($in = array(), $data = array(), $data2 = array()) {
 		if (is_array($in)) {
@@ -149,48 +158,48 @@ abstract class HTML {
 				foreach ($in as $item) {
 					$temp .= $this->tr($this->td($item));
 				}
-				return $this->swrap($temp, $data, 'table');
+				return $this->swrap($temp, $data, __FUNCTION__);
 			} elseif (is_array($data)) {
 				$temp = '';
 				foreach ($in as $i => $item) {
 					$temp .= $this->tr($this->td($item).$this->td($data[$i]));
 				}
-				return $this->swrap($temp, $data, 'table');
+				return $this->swrap($temp, $data, __FUNCTION__);
 			}
 		} else {
-			return $this->swrap($in, $data, 'table');
+			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
 	function tr ($in = '', $data = array()) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, 'tr');
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
 			}
 			return $temp;
 		} else {
-			return $this->swrap($in, $data, 'tr');
+			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
 	function td ($in = '', $data = array()) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, 'td');
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
 			}
 			return $temp;
 		} else {
-			return $this->swrap($in, $data, 'td');
+			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
 	function div ($in = '', $data = array()) {
-		return $this->swrap($in, $data);
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function p ($in = '', $data = array()) {
-		return $this->swrap($in, $data, 'p');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function label ($in = '', $data = array()) {
-		return $this->swrap($in, $data, 'label');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function info ($in = '', $data = array()) {
 		global $L;
@@ -202,7 +211,7 @@ abstract class HTML {
 		}
 		return $this->label($L->$in, array_merge(array('data-title' => $L->$info), $data));
 	}
-	function input ($in = '') {
+	function input ($in = array()) {
 		if (isset($in['type']) && $in['type'] == 'radio') {
 			if (is_array($in)) {
 				if (isset($in['checked'])) {
@@ -236,7 +245,7 @@ abstract class HTML {
 					if (isset($item['in'])) {
 						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
 					}
-					$item['tag'] = 'input';
+					$item['tag'] = __FUNCTION__;
 					if (isset($item['value'])) {
 						$item['value'] = filter($item['value']);
 					}
@@ -249,7 +258,7 @@ abstract class HTML {
 					$in['id'] = uniqid('input_');
 				}
 				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
-				$in['tag'] = 'input';
+				$in['tag'] = __FUNCTION__;
 				if (isset($in['value'])) {
 					$in['value'] = filter($in['value']);
 				}
@@ -263,7 +272,7 @@ abstract class HTML {
 					if (!isset($item['type'])) {
 						$item['type'] = 'text';
 					}
-					$item['tag'] = 'input';
+					$item['tag'] = __FUNCTION__;
 					if (isset($item['value'])) {
 						$item['value'] = filter($item['value']);
 					}
@@ -275,7 +284,7 @@ abstract class HTML {
 				if (!isset($in['type'])) {
 					$in['type'] = 'text';
 				}
-				$in['tag'] = 'input';
+				$in['tag'] = __FUNCTION__;
 				if (isset($in['value'])) {
 					$in['value'] = filter($in['value']);
 				}
@@ -284,59 +293,71 @@ abstract class HTML {
 		}
 	}
 	function select ($in = '', $data = array()) {
-		if (is_array($in)) {
-			if (!isset($in['value']) && isset($in['in'])) {
-				$in['value'] = &$in['in'];
-			}
-			if (!isset($in['in']) && isset($in['value'])) {
-				$in['in'] = &$in['value'];
-			}
-			if (!isset($in['value']) && !isset($in['in'])) {
-				return false;
-			}
-			if (isset($data['selected']) && is_array($in['value'])) {
-				if (!is_array($data['selected'])) {
-					$data['selected'] = array($data['selected']);
-				}
-				foreach ($in['value'] as $i => $v) {
-					if (in_array($v, $data['selected'])) {
-						if (!isset($in['add'][$i])) {
-							$in['add'][$i] = ' selected';
-						} else {
-							$in['add'][$i] .= ' selected';
-						}
-					}
-				}
-				unset($data['selected']);
-			}
-			if (isset($in['selected'])) {
-				if (is_array($in['selected'])) {
-					foreach ($in['selected'] as $i => $v) {
-						if (!isset($in['add'][$i])) {
-							$in['add'][$i] = $v ? ' selected' : '';
-						} else {
-							$in['add'][$i] .= $v ? ' selected' : '';
-						}
-					}
-				}
-				unset($in['selected']);
-			}
-			$options = $this->array_flip($in, isset($i) ? $i+1 : count($in['in']));
-			unset($in);
-			return $this->swrap($this->option($options), $data, 'select');
-		} else {
-			return $this->swrap($in, $data, 'select');
+		if (!is_array($in)) {
+			return $this->swrap($in, $data, __FUNCTION__);
 		}
+		if (!isset($in['value']) && isset($in['in'])) {
+			$in['value'] = &$in['in'];
+		}
+		if (!isset($in['in']) && isset($in['value'])) {
+			$in['in'] = &$in['value'];
+		}
+		if (!isset($in['value']) && !isset($in['in'])) {
+			return false;
+		}
+		$selected = false;
+		if (isset($data['selected']) && is_array($in['value'])) {
+			if (!is_array($data['selected'])) {
+				$data['selected'] = array($data['selected']);
+			}
+			foreach ($in['value'] as $i => $v) {
+				if (in_array($v, $data['selected'])) {
+					if (!isset($in['add'][$i])) {
+						$in['add'][$i] = ' selected';
+						$selected = true;
+					} else {
+						$in['add'][$i] .= ' selected';
+						$selected = true;
+					}
+				}
+			}
+			unset($data['selected']);
+		}
+		if (isset($in['selected'])) {
+			if (is_array($in['selected'])) {
+				foreach ($in['selected'] as $i => $v) {
+					if (!isset($in['add'][$i])) {
+						$in['add'][$i] = $v ? ' selected' : '';
+						$selected = true;
+					} else {
+						$in['add'][$i] .= $v ? ' selected' : '';
+						$selected = true;
+					}
+				}
+			}
+			unset($in['selected']);
+		}
+		if (!$selected) {
+			if (!isset($in['add'][0])) {
+				$in['add'][0] = ' selected';
+			} else {
+				$in['add'][0] .= ' selected';
+			}
+			unset($selected);
+		}
+		$options = $this->array_flip($in, isset($i) ? $i+1 : count($in['in']));
+		unset($in);
+		return $this->swrap($this->option($options), $data, __FUNCTION__);
 	}
 	function option ($in = '', $data = array()) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, 'option');
+				$temp .= $this->swrap($item, $data, __FUNCTION__);
 			}
 			return $temp;
 		} else {
-			return $this->swrap($in, $data, 'option');
+			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
 	function textarea ($in = '', $data = array()) {
@@ -352,7 +373,7 @@ abstract class HTML {
 			$in = $uniqid;
 		}
 		$data['level'] = false;
-		return $this->swrap($in, $data, 'textarea');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function button ($in = '', $data = array()) {
 		if (is_array($in)) {
@@ -364,19 +385,51 @@ abstract class HTML {
 				$data['type'] = 'button';
 			}
 		}
-		return $this->swrap($in, $data, 'button');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function menu ($in = '', $data = array()) {
-		return $this->swrap($in, $data, 'menu');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function a ($in = '', $data = array()) {
-		return $this->swrap($in, $data, 'a');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
 	function script ($in = '', $data = array()) {
-		return $this->swrap($in, $data, 'script');
+		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	function link ($in = '', $data = array()) {
-		$in['tag'] = 'link';
+	function link ($in = array()) {
+		$in['tag'] = __FUNCTION__;
+		return $this->iwrap($in);
+	}
+	function meta ($in = '', $data = array()) {
+		$in['tag'] = __FUNCTION__;
+		return $this->iwrap($in);
+	}
+	function base ($in = '') {
+		$data['href']	= $in;
+		$data['tag']	= __FUNCTION__;
+		return $this->iwrap($data);
+	}
+	function i ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function b ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function u ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function strong ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function em ($in = '', $data = array()) {
+		return $this->swrap($in, $data, __FUNCTION__);
+	}
+	function br ($in = array()) {
+		$in['tag'] = __FUNCTION__;
+		return $this->iwrap($in);
+	}
+	function hr ($in = array()) {
+		$in['tag'] = __FUNCTION__;
 		return $this->iwrap($in);
 	}
 }
