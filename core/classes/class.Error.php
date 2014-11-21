@@ -9,10 +9,10 @@ class Error {
 	function show ($errno, $errstr='', $errfile=true, $errline='', $log=0) {
 		global $L, $Page, $Config;
 		if ($errfile && $errline) {
-			++$this->num;
 			switch ($errno) {
 				case E_USER_ERROR:
 				case E_ERROR:
+					++$this->num;
 					$Page->title($L->fatal.' #'.$errno.': '.$errstr.' '.$L->page_generation_aborted.'...');
 					$Page->content(
 						'<p><span style="text-transform: uppercase; font-weight: bold;">'.$L->fatal.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
@@ -76,7 +76,6 @@ class Error {
 				global $Classes, $stop;
 				$stop = 2;
 				$Classes->__destruct();
-				exit;
 			}
 		}
 	}

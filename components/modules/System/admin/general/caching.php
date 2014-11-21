@@ -8,11 +8,7 @@ if (isset($Config->routing['current'][2])) {
 		foreach ($list as $item) {
 			unlink(CACHE.DS.$item);
 		}
-		if ($Config->rebuild_cache()) {
-			$Page->Content = '<div class="green">'.$L->done.'</div>';
-		} else {
-			$Page->Content = '<div class="red">'.$L->error.'</div>';
-		}
+		$Page->Content = '<div class="green">'.$L->done.'</div>';
 	} elseif ($Config->routing['current'][2] == 'jscss') {
 		$list = get_list(PCACHE);
 		foreach ($list as $item) {
@@ -69,7 +65,7 @@ if (isset($Config->routing['current'][2])) {
 					)
 				)
 			).
-			$a->tr(
+/*			$a->tr(
 				$a->td($a->info('memcached')).
 				$a->td(
 					$a->input(
@@ -84,7 +80,7 @@ if (isset($Config->routing['current'][2])) {
 					)
 				)
 			).
-			$a->tr(
+*/			$a->tr(
 				$a->td($a->info('zlib_compression')).
 				$a->td(
 					$a->input(

@@ -5,14 +5,10 @@
 |		+ PHP >= 5.3;														*|
 |		+ MySQL >= 5.0.7;													*|
 \****************************************************************************/
-//Убиваем небезопасные глобальные переменные
-function get_time() {
-	list($usec, $sec) = explode(' ',microtime());
-	return ((float)$usec + (float)$sec);
-}
 global $timeload;
 $timeload = array();
-$timeload['start'] = get_time();
+$timeload['start'] = microtime(true);
+//Убиваем небезопасные глобальные переменные
 unset($GLOBALS['HTTP_GET_VARS'], $GLOBALS['_SERVER']['argv'], $GLOBALS['_SERVER']['argc'], $GLOBALS['HTTP_SERVER_VARS']['argv'], $GLOBALS['HTTP_SERVER_VARS']['argc'], $_GET, $_REQUEST);
 //Некоторые базовые настройки:
 define('USE_CUSTOM', false);				//Использовать пользовательские файлы ядра

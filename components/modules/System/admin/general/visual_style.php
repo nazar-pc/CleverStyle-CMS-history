@@ -1,11 +1,6 @@
 <?php
 global $Config, $Admin, $L;
 $Config->reload_themes();
-$active_themes = array('');
-foreach ($Config->core['themes'] as $theme) {
-	$active_themes[] = in_array($theme, $Config->core['active_themes']);
-}
-unset($color_scheme, $color_scheme_name, $theme);
 $a = &$Admin;
 $a->content(
 	$a->table(
@@ -13,14 +8,16 @@ $a->content(
 			$a->td($a->label($a->info('current_theme'), array('for' => 'core[theme]'))).
 			$a->td(
 				$a->select(
-					'core[theme]',
-					array_merge(array($Config->core['theme']), $Config->core['active_themes']),
-					false,
-					5,
-					true,
-					' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
-					false,
-					'form_element'
+					array(
+						'in' => $Config->core['active_themes']
+					),
+					array(
+						'name' => 'core[theme]',
+						'selected' => $Config->core['theme'],
+						'size' => 5,
+						'add' => ' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
+						'class' => 'form_element'
+					)
 				)
 			)
 		).
@@ -28,15 +25,16 @@ $a->content(
 			$a->td($a->label($a->info('active_themes'), array('for' => 'core[active_themes][]'))).
 			$a->td(
 				$a->select(
-					'core[active_themes][]',
-					array_merge(array(''), $Config->core['themes']),
-					false,
-					5,
-					true,
-					' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').mousedown().click();"',
-					false,
-					'form_element',
-					$active_themes
+					array(
+						'in' => $Config->core['themes']
+					),
+					array(
+						'name' => 'core[active_themes][]',
+						'selected' => $Config->core['active_themes'],
+						'size' => 5,
+						'add' => ' multiple onChange="javascript: $(this).find(\'option[value=\\\''.$Config->core['theme'].'\\\']\').attr(\'selected\', \'selected\'); $(\'#apply_settings\').mousedown().click();"',
+						'class' => 'form_element'
+					)
 				)
 			)
 		).
@@ -44,14 +42,17 @@ $a->content(
 			$a->td($a->label($a->info('color_scheme'), array('for' => 'core[color_scheme]'))).
 			$a->td(
 				$a->select(
-					'core[color_scheme]',
-					array_merge(array($Config->core['color_schemes'][$Config->core['theme']][$Config->core['color_scheme']]), array_values($Config->core['color_schemes'][$Config->core['theme']])),
-					array_merge(array($Config->core['color_scheme']), array_keys($Config->core['color_schemes'][$Config->core['theme']])),
-					5,
-					true,
-					' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
-					false,
-					'form_element'
+					array(
+						'in' => array_values($Config->core['color_schemes'][$Config->core['theme']]),
+						'value' => array_keys($Config->core['color_schemes'][$Config->core['theme']])
+					),
+					array(
+						'name' => 'core[color_scheme]',
+						'selected' => $Config->core['color_scheme'],
+						'size' => 5,
+						'add' => ' onClick="javascript: $(\'#apply_settings\').mousedown().click();"',
+						'class' => 'form_element'
+					)
 				)
 			)
 		).

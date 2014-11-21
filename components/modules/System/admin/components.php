@@ -1,8 +1,7 @@
 <?php
 global $Admin;
-$Admin->default_subpart = 'modules';		//Подраздел по-умолчанию
 $Admin->subparts = array(					//Задаем список подразделов администрирования
-						'modules',
+						'modules',			//Первый - подраздел по-умолчанию
 						'blocks',
 						'plugins',
 						'databases',

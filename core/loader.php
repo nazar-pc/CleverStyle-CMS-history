@@ -1,6 +1,6 @@
 <?php
 global $timeload, $Classes, $loader_init_memory;
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 error_reporting(PHP_INT_MAX);
 ini_set('display_errors', 1);
 header('Content-Type: text/html; charset=utf-8');
@@ -32,10 +32,10 @@ require_x(CORE.DS.'required_verions.php');
 require_x(CLASSES.DS.'class.Classes.php');
 
 $stop = 0;
-$timeload['loader_init'] = get_time();
+$timeload['loader_init'] = microtime(true);
 $loader_init_memory = memory_get_usage();
-//Запуск ядра и первичных классов
-//ВНИМАНИЕ: Отключение создания следующих объектов почти на 100% приведет к полной неработоспособности движка!!!
+//Запуск ядра и первичных классов, создание необходимых объектов
+//ВНИМАНИЕ: Отключение создания следующих объектов или изменение порядка почти на 100% приведет к полной неработоспособности движка!!!
 //При необходимости изменения логики работы движка используйте пользовательские версии файлов
 $Classes = new Classes;							//Создание объекта подключения классов
 $Classes->load(
@@ -43,7 +43,7 @@ $Classes->load(
 		array('Core', true),					//Создание объекта ядра CMS
 		array('Cache', true),					//Создание объекта системного кеша
 		array('Language', true, 'L'),			//Создание объекта музьтиязычности
-		array('XForm'),							//Подгружение класса HTML формы для наследования другими классами
+		array('XForm'),							//Подгружение класса компонентов HTML страницы для наследования другими классами
 		array('Page', true),					//Создание объекта генерирования страницы
 		array('Error', true),					//Создание объекта обработки ошибок
 		array('DB', true, 'db'),				//Создание объекта БД
@@ -53,5 +53,4 @@ $Classes->load(
 	)
 );
 $Classes->__destruct();
-exit;
 ?>

@@ -17,12 +17,11 @@ class Core {
 					global $Classes, $stop;
 					$stop = 2;
 					$Classes->__destruct();
-					exit;
 				}
 			}
 			$check_mcrypt = check_mcrypt();
 			if ($this->support = $check_mcrypt[1]) {
-				$this->iv = substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, 8);
+				$this->iv = mb_substr(md5($DB_HOST.$DB_TYPE.$DB_NAME.$DB_USER.$DB_PASSWORD.$DB_PREFIX.$DB_CODEPAGE), 0, 8);
 				$this->td = mcrypt_module_open(MCRYPT_BLOWFISH,'','cbc','');
 			}
 		} else {

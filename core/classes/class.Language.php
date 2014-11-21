@@ -40,13 +40,11 @@ class Language {
 				return true;
 			} else {
 				if (!include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
-					global $stop, $Classes;
-					$stop = 2;
-					$Classes->__destruct();
-					exit;
+					return false;
+				} else {
+					$Cache->set('lang.'.$this->clanguage, $this->translate);
+					return true;
 				}
-				$Cache->set('lang.'.$this->clanguage, $this->translate);
-				return true;
 			}
 		}
 		return false;

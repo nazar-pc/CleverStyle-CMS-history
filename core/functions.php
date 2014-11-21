@@ -84,11 +84,11 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 	$list = array();
 	$l = 0;
 	$dirc[$l] = opendir($dir);
-	if (substr($dir, -1, 1) != DS) {
+	if (mb_substr($dir, -1, 1) != DS) {
 		$dir .= DS;
 	}
 	if ($with_path != 1 && $with_path) {
-		if (substr($with_path, -1, 1) != $DS) {
+		if (mb_substr($with_path, -1, 1) != $DS) {
 			$with_path .= $DS;
 		}
 	}
@@ -187,9 +187,9 @@ function filter($text, $mode = '', $data = false, $data2 = 'null') {
 			return htmlentities($text);
 		} elseif ($mode == 'substr') {
 			if ($data2 != 'null') {
-				return substr($text, $data, $data2);
+				return mb_substr($text, $data, $data2);
 			} else {
-				return substr($text, $data);
+				return mb_substr($text, $data);
 			}
 		} else {
 			return str_replace('"', '&quot;', trim($text));
@@ -272,7 +272,7 @@ function zlib () {
 }
 //Проверка автоматического сжатия страниц с помощью zlib
 function zlib_autocompression () {
-	return zlib() && strtolower(ini_get('zlib.output_compression')) == 'on';
+	return zlib() && mb_strtolower(ini_get('zlib.output_compression')) == 'on';
 }
 //Проверка состояния директивы register_globals
 function register_globals () {

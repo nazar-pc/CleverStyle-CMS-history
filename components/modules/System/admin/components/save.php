@@ -4,124 +4,34 @@ if (isset($Config->routing['current'][1]) && $Config->routing['current'][1] == '
 	if (isset($_POST['mode'])) {
 		$update = false;
 		if ($_POST['mode'] == 'add') {
-			foreach ($Config->db as $i => $cdb) {
-				if ($i) {
-					$dbs[] = $cdb['name'];
-				} else {
-					$dbs[] = $DB_NAME;
-				}
-				if (count($cdb['mirrors'])) {
-					foreach ($cdb['mirrors'] as $mirror) {
-						$dbs[] = $mirror['name'];
-					}
-				}
+			foreach ($_POST['db'] as $item => $value) {
+				$_POST['db'][$item] = strval($value);
 			}
-			unset($i, $cdb, $mirror);
-			if (in_array($_POST['dbname'], $dbs)) {
-				$Page->title($L->db_already_exists);
-				$Page->Top .= '<div class="red notice">'.$L->db_already_exists.'</div>';
-			} elseif ($_POST['dbname']) {
-				if (!$_POST['dbhost']) {
-					global $DB_HOST;
-					$_POST['dbhost'] = $DB_HOST;
-				}
-				if (!$_POST['dbcodepage']) {
-					global $DB_CODEPAGE;
-					$_POST['dbcodepage'] = $DB_CODEPAGE;
-				}
-				if (!$_POST['dbprefix']) {
-					global $DB_PREFIX;
-					$_POST['dbprefix'] = $DB_PREFIX;
-				}
-				if ($_POST['dbmirror'] == -1) {
-					$database = &$Config->db;
-				} else {
-					$database = &$Config->db[intval($_POST['dbmirror'])]['mirrors'];
-				}
-				$database[] = array(
-								'mirrors' => array(),
-								'host' => strval($_POST['dbhost']),
-								'type' => strval($_POST['dbtype']),
-								'prefix' => strval($_POST['dbprefix']),
-								'name' => strval($_POST['dbname']),
-								'user' => strval($_POST['dbuser']),
-								'password' => strval($_POST['dbpassword']),
-								'codepage' => strval($_POST['dbcodepage'])
-							);
-				unset($database);
-				$update = true;
+			unset($item, $value);
+			$_POST['db']['mirrors'] = array();
+			if (intval($_POST['db']['mirror']) == -1) {
+				$Config->db[] = $_POST['db'];
+			} else {
+				$Config->db[intval($_POST['db']['mirror'])]['mirrors'][] = $_POST['db'];
 			}
-			unset($dbs);
+			$update = true;
 		} elseif ($_POST['mode'] == 'edit') {
-			foreach ($Config->db as $i => $cdb) {
-				if ($i) {
-					$dbs[] = $cdb['name'];
-				} else {
-					$dbs[] = $DB_NAME;
-				}
-				if (count($cdb['mirrors'])) {
-					foreach ($cdb['mirrors'] as $mirror) {
-						$dbs[] = $mirror['name'];
-					}
-				}
+			if (isset($_POST['mirror'])) {
+				$cdb = &$Config->db[intval($_POST['database'])]['mirrors'][intval($_POST['mirror'])];
+			} else {
+				$cdb = &$Config->db[intval($_POST['database'])];
 			}
-			unset($i, $cdb, $mirror);
-			if (in_array($_POST['dbname'], $dbs) && ((!isset($_POST['mirror']) && $Config->db[$_POST['database']]['name'] != $_POST['dbname']) || (isset($_POST['mirror']) && $Config->db[$_POST['database']]['mirrors'][$_POST['mirror']]['name'] != $_POST['dbname']))) {
-				$Page->title($L->db_already_exists);
-				$Page->Top .= '<div class="red notice">'.$L->db_already_exists.'</div>';
-			} elseif ($_POST['dbname'] && (isset($_POST['mirror']) || $_POST['database'] > 0)) {
-				if (!$_POST['dbhost']) {
-					global $DB_HOST;
-					$_POST['dbhost'] = $DB_HOST;
-				}
-				if (!$_POST['dbcodepage']) {
-					global $DB_CODEPAGE;
-					$_POST['dbcodepage'] = $DB_CODEPAGE;
-				}
-				if (!$_POST['dbprefix']) {
-					global $DB_PREFIX;
-					$_POST['dbprefix'] = $DB_PREFIX;
-				}
-				$database = array(
-								'mirrors' => array(),
-								'host' => strval($_POST['dbhost']),
-								'type' => strval($_POST['dbtype']),
-								'prefix' => strval($_POST['dbprefix']),
-								'name' => strval($_POST['dbname']),
-								'user' => strval($_POST['dbuser']),
-								'password' => strval($_POST['dbpassword']),
-								'codepage' => strval($_POST['dbcodepage'])
-							);
-				$unset = false;
-				if (isset($_POST['mirror']) && $_POST['dbmirror'] != $_POST['database']) {
-					unset($Config->db[$_POST['database']]['mirrors'][$_POST['mirror']]);
-					$unset = true;
-				} elseif (!isset($_POST['mirror']) && $_POST['dbmirror'] != -1) {
-					unset($Config->db[$_POST['database']]);
-					$unset = true;
-				}
-				if ($_POST['dbmirror'] == -1) {
-					if ($unset) {
-						$Config->db[] = $database;
-					} else {
-						$Config->db[$_POST['database']] = $database;
-					}
-				} else {
-					if ($unset) {
-						$Config->db[intval($_POST['dbmirror'])]['mirrors'][] = $database;
-					} else {
-						$Config->db[intval($_POST['dbmirror'])]['mirrors'][$_POST['mirror']] = $database;
-					}
-				}
-				unset($database, $unset);
-				$update = true;
+			foreach ($_POST['db'] as $item => $value) {
+				$cdb[$item] = strval($value);
 			}
+			unset($cdb, $item, $value);
+			$update = true;
 		} elseif ($_POST['mode'] == 'delete' && isset($_POST['database'])) {
 			if (isset($_POST['mirror'])) {
-				unset($Config->db[$_POST['database']]['mirrors'][$_POST['mirror']]);
+				unset($Config->db[intval($_POST['database'])]['mirrors'][intval($_POST['mirror'])]);
 				$update = true;
-			} elseif ($_POST['database'] > 0) {
-				unset($Config->db[$_POST['database']]);
+			} elseif (intval($_POST['database']) > 0) {
+				unset($Config->db[intval($_POST['database'])]);
 				$update = true;
 			}
 		}

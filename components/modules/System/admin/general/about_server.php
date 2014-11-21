@@ -39,11 +39,11 @@ $a->content(
 						$a->td($L->memcache_lib.':').
 						$a->td($L->__get(memcache()), array('class' => memcache() ? 'green' : 'red'))
 					).
-					$a->tr(
+/*					$a->tr(
 						$a->td($L->memcached_lib.':').
 						$a->td($L->__get(memcached()), array('class' => memcached() ? 'green' : 'red'))
 					).
-					$a->tr(
+*/					$a->tr(
 						$a->td($L->mcrypt.':').
 						$a->td(check_mcrypt(1) ? $L->on : $L->off.'<sup title="'.$L->mcrypt_warning.'"> (!) </sup>', array('class' => check_mcrypt(1) ? 'green' : 'red'))
 					).(check_mcrypt(1) ?

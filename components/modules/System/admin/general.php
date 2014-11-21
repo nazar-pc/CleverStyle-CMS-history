@@ -1,8 +1,8 @@
 <?php
 global $Admin;
-$Admin->default_subpart = 'site_info';		//Подраздел по-умолчанию
+$Admin->save = true;						//Поддержка кросстраничного сохранения изменений
 $Admin->subparts = array(					//Задаем список подразделов администрирования
-						'site_info',
+						'site_info',		//Первый - подраздел по-умолчанию
 						'system',
 						'caching',
 						'visual_style',

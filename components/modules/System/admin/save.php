@@ -70,6 +70,5 @@ if (isset($_POST['edit_settings'])) {
 			$Page->Top .= '<div class="green notice">'.$L->settings_canceled.'</div>';
 		}
 	}
-	$Page->init($Config);
 }
 ?>

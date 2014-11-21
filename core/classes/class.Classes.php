@@ -36,14 +36,14 @@ class Classes {
 							if (!is_object($$class[2])) {
 								$$class[2] = new $class[0]();
 							}
-							$this->ObjectsList[$class[2]] = array(get_time(), memory_get_usage());
+							$this->ObjectsList[$class[2]] = array(microtime(true), memory_get_usage());
 						} else {
 							global $$class[0];
 							$this->LoadedObjects[$class[0]] = $class[0];
 							if (!is_object($$class[0])) {
 								$$class[0] = new $class[0]();
 							}
-							$this->ObjectsList[$class[0]] = array(get_time(), memory_get_usage());
+							$this->ObjectsList[$class[0]] = array(microtime(true), memory_get_usage());
 						}
 					} else {
 						$this->LoadedObjects[$class[0]] = $class[0];
@@ -91,6 +91,7 @@ class Classes {
 		if (isset($this->LoadedObjects['User'])) {
 			$this->unload('User');
 		}
+		exit;
 	}
 }
 ?>

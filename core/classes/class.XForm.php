@@ -2,7 +2,6 @@
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным синтаксисом
 class XForm {
 	public	$return = true;
-	private	$n = 0;
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
 		if ($level < 1) {
@@ -25,6 +24,9 @@ class XForm {
 		$quote = '"';
 		$level = 1;
 		if (isset($data['in'])) {
+			if ($data['in'] === false) {
+				return false;
+			}
 			$in = $data['in'];
 			unset($data['in']);
 		}
@@ -51,18 +53,37 @@ class XForm {
 			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
-		return '<'.$tag.$add.'>'.($level ? "\n" : '').$this->level($in ?: ($in === false ? '' : ($level ? "&nbsp;\n" : '')), $level).'</'.$tag.'>'.($level ? "\n" : '');
+		return '<'.$tag.$add.'>'.($level ? "\n" : '').$this->level($in ? $in.($level ? "\n" : '') : ($in === false ? '' : ($level ? "&nbsp;\n" : '')), $level).'</'.$tag.'>'.($level ? "\n" : '');
 	}
 	//Функция для простой обертки контента парными тегами
 	function swrap ($in = '', $data = array(), $tag = 'div') {
 		return $this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
 	}
+	//Функция для разворота массива навыворот для select и radio
+	function array_flip ($in, $num) {
+		$options = array();
+		foreach ($in as $i => $v) {
+			for ($n = 0; $n < $num; ++$n) {
+				if (is_array($v)) {
+					if (isset($v[$n])) {
+						$options[$n][$i] = $v[$n];
+					}
+				} else {
+					$options[$n][$i] = $v;
+				}
+			}
+		}
+		return $options;
+	}
 	//Функция для обертки контента непарными тегами
-	function inline ($data = array()) {
+	function iwrap ($data = array()) {
 		$in = $add = '';
 		$tag = 'input';
 		$quote = '"';
 		if (isset($data['in'])) {
+			if ($data['in'] === false) {
+				return false;
+			}
 			$in = $data['in'];
 			unset($data['in']);
 		}
@@ -80,9 +101,12 @@ class XForm {
 		}
 		asort($data);
 		foreach ($data as $key => $value) {
+			if (empty($key)) {
+				continue;
+			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
-		return '<'.$tag.' '.$add.">\n".$in."\n";
+		return '<'.$tag.$add.'>'.$in."\n";
 	}
 	
 	function form ($in = '', $data = array()) {
@@ -142,8 +166,73 @@ class XForm {
 		$info = $in.'_info';
 		return $this->swrap($this->L->$in, array('data-title' => $this->L->$info, 'class' => 'info'), 'div');
 	}
+	function inputx ($in = '') {
+		if ($in['type'] == 'radio') {
+			if (is_array($in)) {
+				if (isset($in['checked'])) {
+					foreach ($in['value'] as $i => $v) {
+						if ($v == $in['checked']) {
+							if (!isset($in['add'][$i])) {
+								$in['add'][$i] = ' checked';
+							} else {
+								$in['add'][$i] .= ' checked';
+							}
+							break;
+						}
+					}
+					unset($in['checked']);
+				}
+				$items = $this->array_flip($in, count($in['in']));
+				unset($in, $v, $i);
+				$temp = '';
+				foreach ($items as $item) {
+					if (!isset($item['id'])) {
+						$item['id'] = uniqid('input_');
+					}
+					if (isset($item['in'])) {
+						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
+					}
+					$item['tag'] = 'input';
+					$temp .= $this->iwrap($item);
+				}
+				unset($items, $item);
+				return $temp;
+			} else {
+				if (!isset($in['id'])) {
+					$in['id'] = uniqid('input_');
+				}
+				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
+				$in['tag'] = 'input';
+				return $this->iwrap($in);
+			}
+		} else {
+			if (is_array($in)) {
+				$items = $this->array_flip($in, count($in['name']));
+				$temp = '';
+				foreach ($items as $item) {
+					if (!isset($item['id'])) {
+						$item['id'] = uniqid('input_');
+					}
+					if (isset($item['in'])) {
+						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
+					}
+					$item['tag'] = 'input';
+					$temp .= $this->iwrap($item);
+				}
+				unset($items, $item);
+				return $temp;
+			} else {
+				if (!isset($in['id'])) {
+					$in['id'] = uniqid('input_');
+				}
+				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
+				$in['tag'] = 'input';
+				return $this->iwrap($in);
+			}
+		}
+	}
 	function input ($type, $id, $values = '', $return = -1, $add = '', $classes = '', $array_if_size = 40, $array_text = '', $label = true, $devider = '') {
-		++$this->n;
+		$uniqid = uniqid('input_');
 		if ($return === -1) {
 			$return = $this->return;
 		}
@@ -174,7 +263,7 @@ class XForm {
 			if ($type == 'text') {
 				$Content = '<input name="'.$id.'" id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'" size="'.$array_if_size.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			} elseif ($type == 'checkbox' || $type == 'radio') {
-				$Content = '<input id="'.$this->n.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, array('for' => $this->n)).$devider."\n";
+				$Content = '<input id="'.$uniqid.'" name="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[1]).'"' : ($values !== '' ? ' value="'.filter($values).'"' : '')).' type="'.$type.'"'.($values[0] == $values[1] && $array_if_size ? ' checked' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$this->label($array_text, array('for' => $uniqid)).$devider."\n";
 			} else {
 				$Content = '<input name="'.$id.'"'.($type == 'number' || $type == 'date' || $type == 'hidden' ? '' : ' size="'.$array_if_size.'"').' id="'.$id.'"'.(is_array($values) ? ' value="'.filter($values[0]).'"' : $values !== '' ? ' value="'.filter($values).'"' : '').' type="'.$type.'"'.($classes ? ' class="'.$classes.'"' : '').$add.'>'.$array_text."\n";
 			}
@@ -188,44 +277,72 @@ class XForm {
 			$this->Content .= $this->level($Content, 5);
 		}
 	}
-	function select ($id, $options, $values = false, $size = 1, $return = -1, $add = '', $array_options_add = false, $classes = '', $array_if = false) {
-		if ($return === -1) {
-			$return = $this->return;
-		}
-		if (!$id || empty($options)) {
-			return;
-		}
-		if (is_array($options)) {
-			if (!is_array($values)) {
-				$values = $options;
+	function select ($in = '', $data = array()) {
+		if (is_array($in)) {
+			if (!isset($in['value']) && isset($in['in'])) {
+				$in['value'] = &$in['in'];
 			}
-			$Content = array();
-			foreach ($options as $i => $v) {
-				if (!$i) {
-					continue;
+			if (!isset($in['in']) && isset($in['value'])) {
+				$in['in'] = &$in['value'];
+			}
+			if (!isset($in['value']) && !isset($in['in'])) {
+				return false;
+			}
+			if (isset($data['selected']) && is_array($in['value'])) {
+				if (!is_array($data['selected'])) {
+					$data['selected'] = array($data['selected']);
 				}
-				$Content[] = $this->select($i, $v, array($values[0], $values[$i]), 0, true, is_array($add) ? $add[$i] : '', is_array($array_options_add) ? $array_options_add[$i] : '', is_array($classes) ? $classes[$i] : '', is_array($array_if) ? $array_if[$i] : $array_if);
+				foreach ($in['value'] as $i => $v) {
+					if (in_array($v, $data['selected'])) {
+						if (!isset($in['add'][$i])) {
+							$in['add'][$i] = ' selected';
+						} else {
+							$in['add'][$i] .= ' selected';
+						}
+					}
+				}
+				unset($data['selected']);
 			}
-			$Content = '<select name="'.$id.'" id="'.$id.'" size="'.$size.'"'.(!empty($classes) ? ' class="'.(is_array($classes) ? $classes[0] : $classes).'"' : '').(is_array($add) ? $add[0] : $add).">\n".$this->level(implode("\n", $Content))."</select>\n";
+			if (isset($in['selected'])) {
+				if (is_array($in['selected'])) {
+					foreach ($in['selected'] as $i => $v) {
+						if (!isset($in['add'][$i])) {
+							$in['add'][$i] = $v ? ' selected' : '';
+						} else {
+							$in['add'][$i] .= $v ? ' selected' : '';
+						}
+					}
+				}
+				unset($in['selected']);
+			}
+			$options = $this->array_flip($in, isset($i) ? $i+1 : count($in['in']));
+			unset($in);
+			return $this->swrap($this->option($options), $data, 'select');
 		} else {
-			$Content = "<option value=\"".filter($values[1])."\"".($values[0] == $values[1] || $array_if ? ' selected' : '').($classes ? ' class="'.$classes.'"' : '').$add.'>'.$options."</option>\n";
+			return $this->swrap($in, $data, 'select');
 		}
-		if ($return) {
-			return $Content;
+	}
+	function option ($in = '', $data = array()) {
+		if (is_array($in)) {
+			$temp = '';
+			foreach ($in as $item) {
+				$temp .= $this->swrap($item, $data, 'option');
+			}
+			return $temp;
 		} else {
-			$this->Content .= $this->level($Content, 5);
+			return $this->swrap($in, $data, 'option');
 		}
 	}
 	function textarea ($in = '', $data = array()) {
-		$time = md5(microtime());
+		$uniqid = uniqid('textarea_');
 		if (is_array($in)) {
 			if (isset($in['in'])) {
-				$this->Page->replace('[textarea '.$time.']', is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
-				$in['in'] = '[textarea '.$time.']';
+				$this->Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+				$in['in'] = $uniqid;
 			}
 		} else {
-			$this->Page->replace('[textarea '.$time.']', is_array($in) ? implode("\n", $in) : $in);
-			$in = '[textarea '.$time.']';
+			$this->Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+			$in = $uniqid;
 		}
 		$data['level'] = false;
 		return $this->swrap($in, $data, 'textarea');

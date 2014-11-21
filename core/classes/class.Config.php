@@ -63,14 +63,14 @@ class Config {
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($uri_replace[1], '', $this->server['url']), ' /\\'));
 		$r = &$this->routing;
 		$r['current'] = explode('/', str_replace($r['in'], $r['out'], $this->server['url']));
-		if (strtolower($r['current'][0]) == $API) {
+		if (mb_strtolower($r['current'][0]) == mb_strtolower($API)) {
 			if (!defined('API')) {
 				define('API', $API);
 			}
 			array_shift($r['current']);
 		} else {
 			define('API', false);
-			if (strtolower($r['current'][0]) == $ADMIN) {
+			if (mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
 				if (!defined('ADMIN')) {
 					define('ADMIN', $ADMIN);
 				}
@@ -123,7 +123,7 @@ class Config {
 		$langlist = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?\.php$/i', 'f');
 		$langnames = get_list(LANGUAGES, '/^lang\.[0-9a-z_\-]*?$/i', 'f');
 		foreach ($langlist as $i => $lang) {
-			$this->core['languages'][substr($lang, 5, -4)] = file_get_contents(LANGUAGES.'/'.substr($lang, 0, -4));
+			$this->core['languages'][mb_substr($lang, 5, -4)] = file_get_contents(LANGUAGES.'/'.mb_substr($lang, 0, -4));
 		}
 		asort($this->core['languages']);
 		unset($langlist, $langnames);

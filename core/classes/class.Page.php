@@ -210,10 +210,16 @@ class Page extends XForm {
 	function replace ($search, $replace = '') {
 		if (is_array($search)) {
 			foreach ($search as $i => $val) {
+				if (mb_substr($val, 0, 1) != '/') {
+					$val = '/'.$val.'/';
+				}
 				$this->Search[] = $val;
 				$this->Replace[] = $replace[$i];
 			}
 		} else {
+			if (mb_substr($search, 0, 1) != '/') {
+				$search = '/'.$search.'/';
+			}
 			$this->Search[] = $search;
 			$this->Replace[] = $replace;
 		}
@@ -280,7 +286,7 @@ class Page extends XForm {
 					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'js', '/(.*)\.js$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/js', true, '/')
 				)
 		);
-		for ($i = 0; $i <= 0; ++$i) {
+		for ($i = 0; $i <= 2; ++$i) {
 			if (is_array($this->get_list['css'][$i])) {
 				sort($this->get_list['css'][$i]);
 			}
@@ -365,10 +371,10 @@ class Page extends XForm {
 	//Подстановка изображений при сжатии CSS
 	function images_substitution (&$data, $file) {
 		preg_match_all('/url\((.*?)\)/', $data, $images);
-		chdir(strtr(substr($file, 0, strrpos($file, '/')), '/', DS));
+		chdir(strtr(mb_substr($file, 0, mb_strrpos($file, '/')), '/', DS));
 		unset($format, $images[0]);
 		foreach ($images[1] as $image) {
-			$format = substr($image, -3);
+			$format = mb_substr($image, -3);
 			if ($format == 'peg') {
 				$format = 'jpg';
 			} elseif (!($format == 'jpg' || $format == 'png' || $format == 'gif')) {
@@ -580,7 +586,7 @@ class Page extends XForm {
 		}
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
-		if (strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
+		if (mb_strtolower($this->Config->routing['current'][count($this->Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
 			//Перестроение кеша при необходимости
 			if ($this->rebuild_cache) {
 				$this->load(false);
@@ -588,14 +594,14 @@ class Page extends XForm {
 				$this->rebuild_cache();
 			}
 			//Обработка замены контента
-			$this->Html = str_replace($this->Search, $this->Replace, $this->Html);
+			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			echo $this->Content;
 		} else {
 			global $stop, $Error, $L, $timeload;
 			//Обработка шаблона, наполнение его содержимым
 			$this->prepare($stop);
 			//Обработка замены контента
-			$this->Html = str_replace($this->Search, $this->Replace, $this->Html);
+			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			//Вывод сгенерированной страницы
 			if (!zlib_autocompression() && $this->Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
 				ob_start('ob_gzhandler');
@@ -607,7 +613,7 @@ class Page extends XForm {
 				}
 				$ob = false;
 			}
-			$timeload['end'] = get_time();
+			$timeload['end'] = microtime(true);
 			if ($this->Config->core['debug']) {
 				$this->debug();
 			}

@@ -157,7 +157,7 @@ $a->content(
 						)
 					)
 				),
-				array('style' => ($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;"', 'class' => 'debug_form')
+				array('id' => 'debug_form', 'style' => ($Config->core['debug'] == 0 ? 'display: none; ' : '').'padding-left: 20px;"', 'class' => 'debug_form')
 			)
 		).
 		$a->tr(
