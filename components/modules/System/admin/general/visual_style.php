@@ -3,11 +3,11 @@ global $Config, $Index, $L;
 $Config->reload_themes();
 $a = &$Index;
 $a->content(
-	$a->{'table.admin_table.left_even.right_odd'}(
-		$a->tr(
-			$a->td($a->info('current_theme')).
-			$a->td(
-				$a->{'select#change_theme.form_element'}(
+	h::{'table.admin_table.left_even.right_odd'}(
+		h::tr(
+			h::td(h::info('current_theme')).
+			h::td(
+				h::{'select#change_theme.form_element'}(
 					$Config->core['active_themes'],
 					array(
 						'name'		=> 'core[theme]',
@@ -17,10 +17,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('active_themes')).
-			$a->td(
-				$a->{'select#change_active_themes.form_element'}(
+		h::tr(
+			h::td(h::info('active_themes')).
+			h::td(
+				h::{'select#change_active_themes.form_element'}(
 					$Config->core['themes'],
 					array(
 						'name'		=> 'core[active_themes][]',
@@ -31,10 +31,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('color_scheme')).
-			$a->td(
-				$a->{'select#change_color_scheme.form_element'}(
+		h::tr(
+			h::td(h::info('color_scheme')).
+			h::td(
+				h::{'select#change_color_scheme.form_element'}(
 					$Config->core['color_schemes'][$Config->core['theme']],
 					array(
 						'name'		=> 'core[color_scheme]',
@@ -44,10 +44,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('allow_change_theme')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::tr(
+			h::td(h::info('allow_change_theme')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'		=> 'core[allow_change_theme]',
 						'checked'	=> $Config->core['allow_change_theme'],

@@ -3,11 +3,11 @@ global $Config, $Index, $L;
 $a = &$Index;
 
 $a->content(
-	$a->{'table.admin_table.left_even.right_odd'}(
-		$a->tr(
-			$a->td($a->info('session_expire')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+	h::{'table.admin_table.left_even.right_odd'}(
+		h::tr(
+			h::td(h::info('session_expire')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[session_expire]',
 						'value'			=> $Config->core['session_expire'],
@@ -17,10 +17,10 @@ $a->content(
 				$L->seconds
 			)
 		).
-		$a->tr(
-			$a->td($a->info('login_attempts_block_count')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::tr(
+			h::td(h::info('login_attempts_block_count')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[login_attempts_block_count]',
 						'value'			=> $Config->core['login_attempts_block_count'],
@@ -31,10 +31,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('login_attempts_block_time')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::tr(
+			h::td(h::info('login_attempts_block_time')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[login_attempts_block_time]',
 						'value'			=> $Config->core['login_attempts_block_time'],
@@ -48,10 +48,10 @@ $a->content(
 				 'style'	=> $Config->core['login_attempts_block_count'] == 0 ? 'display: none;' : ''
 			)
 		).
-		$a->tr(
-			$a->td($a->info('password_min_length')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::tr(
+			h::td(h::info('password_min_length')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[password_min_length]',
 						'value'			=> $Config->core['password_min_length'],
@@ -60,10 +60,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('password_min_strength')).
-			$a->td(
-				$a->{'input.form_element[type=range]'}(
+		h::tr(
+			h::td(h::info('password_min_strength')).
+			h::td(
+				h::{'input.form_element[type=range]'}(
 					array(
 						'name'			=> 'core[password_min_strength]',
 						'value'			=> $Config->core['password_min_strength'],
@@ -73,10 +73,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('allow_user_registration')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::tr(
+			h::td(h::info('allow_user_registration')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[allow_user_registration]',
 						'checked'		=> $Config->core['allow_user_registration'],
@@ -93,10 +93,10 @@ $a->content(
 				)
 			)
 		).
-		$a->{'tr.allow_user_registration'}(
-			$a->td($a->info('require_registration_confirmation')).
-			$a->{'td#require_registration_confirmation'}(
-				$a->{'input[type=radio]'}(
+		h::{'tr.allow_user_registration'}(
+			h::td(h::info('require_registration_confirmation')).
+			h::{'td#require_registration_confirmation'}(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[require_registration_confirmation]',
 						'checked'		=> $Config->core['require_registration_confirmation'],
@@ -113,10 +113,10 @@ $a->content(
 				 'style'	=> $Config->core['allow_user_registration'] == 0 ? 'display: none;' : ''
 			)
 		).
-		$a->{'tr.allow_user_registration.require_registration_confirmation'}(
-			$a->td($a->info('registration_confirmation_time')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::{'tr.allow_user_registration.require_registration_confirmation'}(
+			h::td(h::info('registration_confirmation_time')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						 'name'			=> 'core[registration_confirmation_time]',
 						 'value'		=> $Config->core['registration_confirmation_time'],
@@ -129,10 +129,10 @@ $a->content(
 					 				$Config->core['require_registration_confirmation'] == 1 ? '' : 'display: none;'
 			)
 		).
-		$a->{'tr.allow_user_registration.require_registration_confirmation'}(
-			$a->td($a->info('autologin_after_registration')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::{'tr.allow_user_registration.require_registration_confirmation'}(
+			h::td(h::info('autologin_after_registration')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[autologin_after_registration]',
 						'checked'		=> $Config->core['autologin_after_registration'],
@@ -146,10 +146,10 @@ $a->content(
 					 				$Config->core['require_registration_confirmation'] == 1 ? '' : 'display: none;'
 			)
 		).
-		$a->tr(
-			$a->td($L->site_rules).
-				$a->td(
-					$a->{'textarea#site_rules.EDITORH.form_element'}(
+		h::tr(
+			h::td($L->site_rules).
+				h::td(
+					h::{'textarea#site_rules.EDITORH.form_element'}(
 						$Config->core['rules'],
 						array('name' => 'core[rules]')
 					)

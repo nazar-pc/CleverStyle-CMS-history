@@ -902,7 +902,7 @@
 	function check_db () {
 		global $DB_TYPE, $db;
 		global $$DB_TYPE;
-		preg_match('/[\.0-9]+/', $db->core->server(), $db_version);
+		preg_match('/[\.0-9]+/', $db->server(), $db_version);
 		return (bool)version_compare($db_version[0], $$DB_TYPE, '>=');
 	}
 	//Проверка версии PHP
@@ -917,7 +917,7 @@
 			ob_start();
 			@phpinfo(INFO_MODULES);
 			$mcrypt_version = ob_get_clean();
-			preg_match('/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)</', $mcrypt_version, $mcrypt_version);
+			preg_match('/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)[\n]?<\/td><\/tr>/', $mcrypt_version, $mcrypt_version);
 			$mcrypt_data[0] = $mcrypt_version[1] == 'enabled' ? trim($mcrypt_version[3]) : false;
 			global $mcrypt;
 			$mcrypt_data[1] = $mcrypt_data[0] ? (bool)version_compare($mcrypt_data[0], $mcrypt, '>=') : false;
@@ -962,8 +962,8 @@
 		global $L, $db, $DB_TYPE;
 		global $$DB_TYPE;
 		$sql_encoding = '';
-		$sql = $db->core->q('SHOW VARIABLES');
-		while ($data = $db->core->f($sql, false, MYSQL_NUM)) {
+		$sql = $db->q('SHOW VARIABLES');
+		while ($data = $db->f($sql, false, MYSQL_NUM)) {
 			if ($data[0]=='character_set_client') {
 				$sql_encoding .= '
 		<tr>

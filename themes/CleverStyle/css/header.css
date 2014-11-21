@@ -23,12 +23,12 @@
 #user_header {
 	border-radius: 7px;
 	-moz-border-radius: 7px;
-	height: 92px;
+	height: 100px;
 	margin: 5px;
 	position: fixed;
 	right: 0;
 	top: 0;
-	width: 252px;
+	width: 280px;
 	z-index: 3;
 }
 #avatar_header {
@@ -38,27 +38,27 @@
 	font-size: 80px;
 	height: 80px;
 	line-height: 80px;
-	margin: 5px;
+	margin: 9px;
 	position: fixed;
 	width: 80px;
 	vertical-align: top;
 }
 #user_info_header {
 	float: right;
-	height: 82px;
-	margin: 5px 5px 5px 90px;
+	height: 90px;
+	margin: 12px 9px 9px 95px;
 	position: fixed;
-	width: 157px;
+	width: 180px;
 }
 #user_info_header input[type=text], #user_info_header input[type=password], #user_info_header select {
 	background: #ddd;
 	border: #fff solid 1px;
 	float: left;
 	margin: 0 0 5px 3px;
-	width: 150px;
+	width: 170px;
 }
 #user_info_header #register, #user_info_header #user_login {
-	width: 135px;
+	width: 155px;
 }
 #user_info_header select {
 	margin-left: -5px;

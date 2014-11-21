@@ -13,15 +13,15 @@ if ($User->is('system') && isset($rc[2], $rc[3])) {
 		if (flush_cache()) {
 			global $Cache;
 			$Cache->disable();
-			$Page->Content = $Page->div($L->done, array('class' =>'green'));
+			$Page->Content = h::div($L->done, array('class' =>'green'));
 		} else {
-			$Page->Content = $Page->div($L->error, array('class' =>'red'));
+			$Page->Content = h::div($L->error, array('class' =>'red'));
 		}
 	} elseif ($rc[2] == 'flush_pcache') {
 		if (flush_pcache()) {
-			$Page->Content = $Page->div($L->done, array('class' =>'green'));
+			$Page->Content = h::div($L->done, array('class' =>'green'));
 		} else {
-			$Page->Content = $Page->div($L->error, array('class' =>'red'));
+			$Page->Content = h::div($L->error, array('class' =>'red'));
 		}
 	}
 }

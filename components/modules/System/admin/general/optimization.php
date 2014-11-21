@@ -2,11 +2,11 @@
 global $L, $Config, $Index, $Cache;
 $a = &$Index;
 $a->content(
-	$a->table(
-		$a->tr(
-			$a->td($a->info('disk_cache')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+	h::table(
+		h::tr(
+			h::td(h::info('disk_cache')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[disk_cache]',
 						'checked'		=> $Config->core['disk_cache'],
@@ -16,10 +16,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('disk_cache_size')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::tr(
+			h::td(h::info('disk_cache_size')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[disk_cache_size]',
 						'value'			=> $Config->core['disk_cache_size'],
@@ -28,10 +28,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('memcache')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::tr(
+			h::td(h::info('memcache')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[memcache]',
 						'checked'		=> $Config->core['memcache'],
@@ -42,10 +42,10 @@ $a->content(
 				)
 			)
 		).
-/*		$a->tr(
-			$a->td($a->info('memcached')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+/*		h::tr(
+			h::td(h::info('memcached')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[memcached]',
 						'checked'		=> $Config->core['memcached'],
@@ -55,10 +55,10 @@ $a->content(
 				)
 			)
 		).
-*/		$a->tr(
-			$a->td($a->info('zlib_compression')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+*/		h::tr(
+			h::td(h::info('zlib_compression')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[zlib_compression]',
 						'checked'		=> $Config->core['zlib_compression'],
@@ -70,10 +70,10 @@ $a->content(
 				)
 			)
 		).
-		$a->{'tr#zlib_compression'}(
-			$a->td($L->zlib_compression_level).
-			$a->td(
-				$a->{'input.form_element[type=range]'}(
+		h::{'tr#zlib_compression'}(
+			h::td($L->zlib_compression_level).
+			h::td(
+				h::{'input.form_element[type=range]'}(
 					array(
 						'name'			=> 'core[zlib_compression_level]',
 						'value'			=> $Config->core['zlib_compression_level'],
@@ -86,10 +86,10 @@ $a->content(
 				'style'	=> ($Config->core['zlib_compression'] || zlib_autocompression() ? '' : 'display: none; ')
 			)
 		).
-		$a->tr(
-			$a->td($a->info('gzip_compression')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::tr(
+			h::td(h::info('gzip_compression')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[gzip_compression]',
 						'checked'		=> $Config->core['gzip_compression'],
@@ -101,10 +101,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('cache_compress_js_css')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::tr(
+			h::td(h::info('cache_compress_js_css')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[cache_compress_js_css]',
 						'checked'		=> $Config->core['cache_compress_js_css'],
@@ -114,10 +114,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('inserts_limit')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::tr(
+			h::td(h::info('inserts_limit')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[inserts_limit]',
 						'value'			=> $Config->core['inserts_limit'],
@@ -126,10 +126,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('update_ratio')).
-			$a->td(
-				$a->{'input.form_element[type=number]'}(
+		h::tr(
+			h::td(h::info('update_ratio')).
+			h::td(
+				h::{'input.form_element[type=number]'}(
 					array(
 						'name'			=> 'core[update_ratio]',
 						'value'			=> $Config->core['update_ratio'],
@@ -140,13 +140,13 @@ $a->content(
 				'%'
 			)
 		).
-		$a->tr(
-			$a->td($a->{'div#clean_cache'}()).
-			$a->td($a->{'div#clean_pcache'}())
+		h::tr(
+			h::td(h::{'div#clean_cache'}()).
+			h::td(h::{'div#clean_pcache'}())
 		).
-		$a->tr(
-			$a->td(
-				$a->button(
+		h::tr(
+			h::td(
+				h::button(
 					$L->clean_settings_cache,
 					array(
 						'onMouseDown'	=> $Cache->cache ? 'admin_cache('.
@@ -157,8 +157,8 @@ $a->content(
 					)
 				)
 			).
-			$a->td(
-				$a->button(
+			h::td(
+				h::button(
 					$L->clean_scripts_styles_cache,
 					array(
 						'onMouseDown'	=> $Config->core['cache_compress_js_css'] ? 'admin_cache('.

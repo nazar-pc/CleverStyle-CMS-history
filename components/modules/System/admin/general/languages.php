@@ -3,11 +3,11 @@ global $Config, $Index, $L;
 $Config->reload_languages();
 $a = &$Index;
 $a->content(
-	$a->{'table.admin_table.left_even.right_odd'}(
-		$a->tr(
-			$a->td($a->info('current_language')).
-			$a->td(
-				$a->{'select#change_language.form_element'}(
+	h::{'table.admin_table.left_even.right_odd'}(
+		h::tr(
+			h::td(h::info('current_language')).
+			h::td(
+				h::{'select#change_language.form_element'}(
 					$Config->core['active_languages'],
 					array(
 						'name'		=> 'core[language]',
@@ -17,10 +17,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('active_languages')).
-			$a->td(
-				$a->{'select#change_active_languages.form_element'}(
+		h::tr(
+			h::td(h::info('active_languages')).
+			h::td(
+				h::{'select#change_active_languages.form_element'}(
 					$Config->core['languages'],
 					array(
 						'name'		=> 'core[active_languages][]',
@@ -31,10 +31,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('multilanguage')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+		h::tr(
+			h::td(h::info('multilanguage')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[multilanguage]',
 						'checked'		=> $Config->core['multilanguage'],

@@ -19,6 +19,9 @@ class DB {
 	//Обработка запросов получения данных БД
 	//При соответствующей настройке срабатывает балансировка нагрузки на БД
 	function __get ($connection) {
+		if (!is_int($connection) && $connection != '0') {
+			return false;
+		}
 		global $Config;
 		//Ищем зеркало подключения
 		if (isset($this->mirrors[$connection])) {
@@ -49,10 +52,16 @@ class DB {
 	}
 	//Обработка запросов получения и изменения данных БД
 	function __call ($connection, $mode) {
-		return $this->connecting($connection, isset($mode[0]) ? (bool)$mode[0] : false);
+		if (is_int($connection) || $connection == '0') {
+			return $this->connecting($connection, isset($mode[0]) ? (bool)$mode[0] : false);
+		} elseif (method_exists('DatabaseAbstract', $connection)) {
+			return call_user_func_array(array($this->{0}, $connection), $mode);
+		} else {
+			return false;
+		}
 	}
 	//Обработка всех подключений к БД
-	private function connecting ($connection, $mirror = true) {
+	protected function connecting ($connection, $mirror = true) {
 		//Если соединение есть в списке неудачных - выходим
 		if (isset($this->false_connections[$connection])) {
 			return false;

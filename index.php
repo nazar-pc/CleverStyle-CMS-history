@@ -42,5 +42,6 @@ define('CACHE_ENCRYPT', false);							//Использовать шифрова�
 require_once __DIR__.DS.'core'.DS.'functions.php';		//Подключение библиотеки базовых функций
 define('DIR', path_to_str(__DIR__));					//Алиас корневой папки сайта
 chdir(DIR);
+define('CUSTOM_DIR', DIR.DS.'custom');					//Custom files directory
 _require(DIR.DS.'core'.DS.'loader.php', true, true);	//Передача управления загрузчику движка
 ?>

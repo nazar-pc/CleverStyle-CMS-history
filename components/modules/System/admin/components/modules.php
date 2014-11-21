@@ -13,13 +13,13 @@ if ($mode && $rc[2] == 'install') {
 	);
 	_include(MODULES.DS.$rc[3].DS.$ADMIN.DS.'install'.DS.'form.php', false, false);
 	$a->content(
-		$a->{'button[type=submit]'}(
+		h::{'button[type=submit]'}(
 			$L->install,
 			array(
 				'name'		=> 'install'
 			)
 		).
-		$a->{'input[type=hidden'}(
+		h::{'input[type=hidden'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -35,13 +35,13 @@ if ($mode && $rc[2] == 'install') {
 	);
 	_include(MODULES.DS.$rc[3].DS.$ADMIN.DS.'uninstall'.DS.'form.php', false, false);
 	$a->content(
-		$a->{'button[type=submit]'}(
+		h::{'button[type=submit]'}(
 			$L->uninstall,
 			array(
 				'name'		=> 'uninstall'
 			)
 		).
-		$a->{'input[type=hidden'}(
+		h::{'input[type=hidden'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -60,19 +60,19 @@ if ($mode && $rc[2] == 'install') {
 			$dbs_name[] = $db_data['name'].' ('.$db_data['host'].' / '.$db_data['type'].')';
 		}
 	}
-	$db_list[] = $a->{'td.ui-widget-header.ui-corner-all'}(
+	$db_list[] = h::{'td.ui-widget-header.ui-corner-all'}(
 		array(
-			$a->info('module_db'),
-			$a->info('system_db')
+			h::info('module_db'),
+			h::info('system_db')
 		)
 	);
 	$db_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'db.json'));
 	foreach ($db_json['db'] as $database) {
 		$db_translate = $rc[3].'_db_'.$database;
-		$db_list[] = $a->{'td.ui-state-default.ui-corner-all'}(
+		$db_list[] = h::{'td.ui-state-default.ui-corner-all'}(
 			array(
 				$L->$db_translate,
-				$a->{'select.form_element'}(
+				h::{'select.form_element'}(
 					array(
 						'in'		=> $dbs_name,
 						'value'		=> $dbs
@@ -87,10 +87,10 @@ if ($mode && $rc[2] == 'install') {
 		);
 	}
 	$a->content(
-		$a->{'table.admin_table'}(
-			$a->tr($db_list)
+		h::{'table.admin_table'}(
+			h::tr($db_list)
 		).
-		$a->{'input[type=hidden]'}(
+		h::{'input[type=hidden]'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -112,19 +112,19 @@ if ($mode && $rc[2] == 'install') {
 		}
 	}
 	unset($i, $storage_data);
-	$storage_list[] = $a->{'td.ui-widget-header.ui-corner-all'}(
+	$storage_list[] = h::{'td.ui-widget-header.ui-corner-all'}(
 		array(
-			$a->info('module_storage'),
-			$a->info('system_storage')
+			h::info('module_storage'),
+			h::info('system_storage')
 		)
 	);
 	$storage_json = _json_decode(_file_get_contents(MODULES.DS.$rc[3].DS.$ADMIN.DS.'storage.json'));
 	foreach ($storage_json as $storage) {
 		$storage_translate = $rc[3].'_storage_'.$storage;
-		$storage_list[] = $a->{'td.ui-state-default.ui-corner-all'}(
+		$storage_list[] = h::{'td.ui-state-default.ui-corner-all'}(
 			array(
 				$L->$storage_translate,
-				$a->{'select.form_element'}(
+				h::{'select.form_element'}(
 					array(
 						'in'		=> $storages_name,
 						'value'		=> $storages
@@ -139,10 +139,10 @@ if ($mode && $rc[2] == 'install') {
 		);
 	}
 	$a->content(
-		$a->{'table.admin_table'}(
-			$a->tr($storage_list)
+		h::{'table.admin_table'}(
+			h::tr($storage_list)
 		).
-		$a->{'input[type=hidden'}(
+		h::{'input[type=hidden'}(
 			array(
 				'name'		=> 'module',
 				'value'		=> $rc[3]
@@ -159,8 +159,8 @@ if ($mode && $rc[2] == 'install') {
 		$db_users_items[] = $column['Field'];
 	}
 	unset($db_users_data, $column);
-	$modules_list = $a->tr(
-		$a->{'td.ui-widget-header.ui-corner-all'}(
+	$modules_list = h::tr(
+		h::{'td.ui-widget-header.ui-corner-all'}(
 			array(
 				$L->module_name,
 				$L->state,
@@ -184,17 +184,17 @@ if ($mode && $rc[2] == 'install') {
 				}
 				unset($db_users_item, $db_json);
 				if (!empty($lost_columns)) {
-					$addition_state .= $a->{'a.nul.pointer'}(
-						$a->icon('alert'),
+					$addition_state .= h::{'a.nul.pointer'}(
+						h::icon('alert'),
 						array(
-							'data-title'	=> $L->missing_users_columns.':'.$a->br(2).implode(', ', $lost_columns).$a->br(2).$L->click_to_fix
+							'data-title'	=> $L->missing_users_columns.':'.h::br(2).implode(', ', $lost_columns).h::br(2).$L->click_to_fix
 						)
 					);
 				}
 				unset($lost_columns);
-				$action .= $a->{'a.nul'}(
-					$a->{'button.compact'}(
-						$a->icon('gear'),
+				$action .= h::{'a.nul'}(
+					h::{'button.compact'}(
+						h::icon('gear'),
 						array(
 							'data-title'	=> $L->databases
 						)
@@ -206,9 +206,9 @@ if ($mode && $rc[2] == 'install') {
 			}
 			//Настройки хранилищ
 			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1) {
-				$action .= $a->{'a.nul'}(
-					$a->{'button.compact'}(
-						$a->icon('disk'),
+				$action .= h::{'a.nul'}(
+					h::{'button.compact'}(
+						h::icon('disk'),
 						array(
 							'data-title'	=> $L->storages
 						)
@@ -226,7 +226,7 @@ if ($mode && $rc[2] == 'install') {
 					} else {
 						$tag = 'div';
 					}
-					$addition_state .= $a->$tag(
+					$addition_state .= h::$tag(
 						_file_get_contents($file),
 						array(
 							'id'			=> $module.'_api',
@@ -236,10 +236,10 @@ if ($mode && $rc[2] == 'install') {
 						)
 					);
 				}
-				$addition_state .= $a->{'icon.pointer'}(
+				$addition_state .= h::{'icon.pointer'}(
 					'link',
 					array(
-						'data-title'	=> $L->API_exists.$a->br().(_file_exists($file) ? $L->click_to_view_details : ''),
+						'data-title'	=> $L->API_exists.h::br().(_file_exists($file) ? $L->click_to_view_details : ''),
 						'onClick'		=> '$(\'#'.$module.'_api\').dialog(\'open\');'
 					)
 				);
@@ -252,7 +252,7 @@ if ($mode && $rc[2] == 'install') {
 				} else {
 					$tag = 'div';
 				}
-				$addition_state .= $a->$tag(
+				$addition_state .= h::$tag(
 					_file_get_contents($file),
 					array(
 						'id'			=> $module.'_readme',
@@ -261,10 +261,10 @@ if ($mode && $rc[2] == 'install') {
 						'title'			=> $module.' -> '.$L->information_about_module
 					)
 				).
-				$a->{'icon.pointer'}(
+				h::{'icon.pointer'}(
 					'note',
 					array(
-						'data-title'	=> $L->information_about_module.$a->br().$L->click_to_view_details,
+						'data-title'	=> $L->information_about_module.h::br().$L->click_to_view_details,
 						'onClick'		=> '$(\'#'.$module.'_readme\').dialog(\'open\');'
 					)
 				);
@@ -277,7 +277,7 @@ if ($mode && $rc[2] == 'install') {
 				} else {
 					$tag = 'div';
 				}
-				$addition_state .= $a->$tag(
+				$addition_state .= h::$tag(
 					_file_get_contents($file),
 					array(
 						'id'			=> $module.'_license',
@@ -286,10 +286,10 @@ if ($mode && $rc[2] == 'install') {
 						'title'			=> $module.' -> '.$L->license
 					)
 				).
-				$a->{'icon.pointer'}(
+				h::{'icon.pointer'}(
 					'info',
 					array(
-						'data-title'	=> $L->license.$a->br().$L->click_to_view_details,
+						'data-title'	=> $L->license.h::br().$L->click_to_view_details,
 						'onClick'		=> '$(\'#'.$module.'_license\').dialog(\'open\');'
 					)
 				);
@@ -303,9 +303,9 @@ if ($mode && $rc[2] == 'install') {
 						_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.json')
 					)
 				) {
-					$action .= $a->{'a.nul'}(
-						$a->{'button.compact'}(
-							$a->icon('wrench'),
+					$action .= h::{'a.nul'}(
+						h::{'button.compact'}(
+							h::icon('wrench'),
 							array(
 								'data-title'	=> $L->settings
 							)
@@ -315,9 +315,9 @@ if ($mode && $rc[2] == 'install') {
 						)
 					);
 				}
-				$action .= $a->{'a.nul'}(
-					$a->{'button.compact'}(
-						$a->icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
+				$action .= h::{'a.nul'}(
+					h::{'button.compact'}(
+						h::icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
 						array(
 							'data-title'	=> $mdata['active'] == 1 ? $L->disable : $L->enable
 						)
@@ -326,9 +326,9 @@ if ($mode && $rc[2] == 'install') {
 						'href'		=> $a->action.($mdata['active'] == 1 ? '/disable/' : '/enable/').$module
 					)
 				).
-				$a->{'a.nul'}(
-					$a->{'button.compact'}(
-						$a->icon('trash'),
+				h::{'a.nul'}(
+					h::{'button.compact'}(
+						h::icon('trash'),
 						array(
 							'data-title'	=> $L->uninstall
 						)
@@ -340,9 +340,9 @@ if ($mode && $rc[2] == 'install') {
 			}
 		//Когда модуль удален или не установлен
 		} else {
-			$action .= $a->{'a.nul'}(
-				$a->{'button.compact'}(
-					$a->icon('arrowthickstop-1-s'),
+			$action .= h::{'a.nul'}(
+				h::{'button.compact'}(
+					h::icon('arrowthickstop-1-s'),
 					array(
 						'data-title'	=> $L->install
 					)
@@ -352,10 +352,10 @@ if ($mode && $rc[2] == 'install') {
 				)
 			);
 		}
-		$modules_list .= $a->tr(
-			$a->{'td.ui-state-default.ui-corner-all'}($module).
-			$a->{'td.ui-state-default.ui-corner-all'}(
-				$a->icon(
+		$modules_list .= h::tr(
+			h::{'td.ui-state-default.ui-corner-all'}($module).
+			h::{'td.ui-state-default.ui-corner-all'}(
+				h::icon(
 					$mdata['active'] == 1 ? 'check' : ($mdata['active'] == 2 ? 'minusthick' : 'closethick'),
 					array(
 						'data-title'	=> $mdata['active'] == 1 ? $L->enabled : ($mdata['active'] == 2 ? $L->disabled : $L->uninstalled.' ('.$L->not_installed.')')
@@ -363,14 +363,14 @@ if ($mode && $rc[2] == 'install') {
 				).
 					$addition_state
 			).
-			$a->{'td.ui-state-default.ui-corner-all.modules_config_buttons'}($action)
+			h::{'td.ui-state-default.ui-corner-all.modules_config_buttons'}($action)
 		);
 	}
 	$a->content(
-		$a->{'table.admin_table.center_all'}(
+		h::{'table.admin_table.center_all'}(
 			$modules_list
 		).
-		$a->{'button[type=submit]'}(
+		h::{'button[type=submit]'}(
 			$L->update_modules_list,
 			array(
 				'data-title'	=> $L->update_modules_list_info,

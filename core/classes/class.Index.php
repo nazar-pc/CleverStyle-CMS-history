@@ -1,6 +1,7 @@
 <?php
-class Index extends HTML {
-	public	$structure		= array(),
+class Index {
+	public	$Content,
+			$structure		= array(),
 			$parts			= array(),
 			$subparts		= array(),
 
@@ -37,14 +38,20 @@ class Index extends HTML {
 		global $Config, $User;
 		if (
 			ADMIN && $User->is('admin') && _file_exists(MODULES.DS.MODULE.DS.'admin') &&
-			(_file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') || _file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json'))
+			(
+				_file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.php') ||
+				_file_exists(MODULES.DS.MODULE.DS.'admin'.DS.'index.json')
+			)
 		) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.'admin');
 			$this->form = true;
 			$this->admin = true;
 		} elseif (
 			API && _file_exists(MODULES.DS.MODULE.DS.'api') &&
-			(_file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.php') || _file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.json'))
+			(
+				_file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.php') ||
+				_file_exists(MODULES.DS.MODULE.DS.'api'.DS.'index.json')
+			)
 		) {
 			define('MFOLDER', MODULES.DS.MODULE.DS.'api');
 			$this->api = true;
@@ -54,6 +61,13 @@ class Index extends HTML {
 		}
 		foreach ($Config->components['plugins'] as $plugin) {
 			_include(PLUGINS.DS.$plugin.DS.'index.php', true, false);
+		}
+	}
+	function content ($add, $level = false) {
+		if ($level !== false) {
+			$this->Content .= h::level($add, $level);
+		} else {
+			$this->Content .= $add;
 		}
 	}
 	function init () {
@@ -94,7 +108,11 @@ class Index extends HTML {
 			}
 			_include(MFOLDER.DS.$rc[0].'.php', true, false);
 			if ($this->subparts) {
-				if (!isset($rc[1]) || ($this->subparts && !in_array($rc[1], $this->subparts)) || !_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
+				if (
+					!isset($rc[1]) ||
+					($this->subparts && !in_array($rc[1], $this->subparts)) ||
+					!_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')
+				) {
 					$rc[1] = $this->subparts[0];
 				}
 				if (!$this->api) {
@@ -116,7 +134,7 @@ class Index extends HTML {
 		$Page->mainmenu = '';
 		if ($User->is('admin')) {
 			if ($Config->core['debug']) {
-				$Page->mainmenu .= $this->a(
+				$Page->mainmenu .= h::a(
 					mb_substr($L->debug, 0, 1),
 					array(
 						 'onClick'	=> 'debug_window();',
@@ -124,7 +142,7 @@ class Index extends HTML {
 					)
 				);
 			}
-			$Page->mainmenu .= $this->a(
+			$Page->mainmenu .= h::a(
 				mb_substr($L->administration, 0, 1),
 				array(
 					 'href'		=> $ADMIN,
@@ -132,7 +150,7 @@ class Index extends HTML {
 				)
 			);
 		}
-		$Page->mainmenu .= $this->a(
+		$Page->mainmenu .= h::a(
 			$L->home,
 			array(
 				 'href'		=> '/',
@@ -146,7 +164,7 @@ class Index extends HTML {
 		}
 		global $Config, $L;
 		foreach ($this->parts as $part) {
-			$this->mainsubmenu .= $this->a(
+			$this->mainsubmenu .= h::a(
 				$L->$part,
 				array(
 					'id'		=> $part.'_a',
@@ -162,7 +180,7 @@ class Index extends HTML {
 		}
 		global $Config, $L;
 		foreach ($this->subparts as $subpart) {
-			$this->menumore .= $this->a(
+			$this->menumore .= h::a(
 				$L->$subpart,
 				array(
 					'id'		=> $subpart.'_a',
@@ -228,9 +246,9 @@ class Index extends HTML {
 		}
 		if ($this->form) {
 			$Page->content(
-				$this->form(
+				h::form(
 					$this->Content.
-					(isset($Config->routing['current'][1]) ? $this->input(
+					(isset($Config->routing['current'][1]) ? h::input(
 						array(
 							'type'	=> 'hidden',
 							'name'	=> 'subpart',
@@ -239,7 +257,7 @@ class Index extends HTML {
 					) : '').
 					//Кнопка применить
 					($this->apply && $this->buttons ?
-						$this->button(
+						h::button(
 							$L->apply,
 							array(
 								'name'			=> 'edit_settings',
@@ -253,7 +271,7 @@ class Index extends HTML {
 					: '').
 					//Кнопка сохранить
 					($this->buttons ?
-						$this->button(
+						h::button(
 							$L->save,
 							array(
 								'name'			=> 'edit_settings',
@@ -266,7 +284,7 @@ class Index extends HTML {
 					: '').
 					//Кнопка отмена (отменяет настройки или возвращает на предыдущую страницу)
 					(($this->apply && $this->buttons) || $this->cancel_back ?
-						$this->button(
+						h::button(
 							$L->cancel,
 							array(
 								'name'			=> 'edit_settings',
@@ -281,7 +299,7 @@ class Index extends HTML {
 					: '').
 					//Кнопка сбросить
 					($this->buttons && $this->reset ?
-						$this->button(
+						h::button(
 							$L->reset,
 							array(
 								'id'			=> 'reset_settings',

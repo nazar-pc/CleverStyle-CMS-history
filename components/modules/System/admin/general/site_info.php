@@ -4,11 +4,11 @@ $a = &$Index;
 $timezones = timezones_get_list();
 
 $a->content(
-	$a->{'table.admin_table.left_even.right_odd'}(
-		$a->tr(
-			$a->td($a->info('name2')).
-			$a->td(
-				$a->{'input.form_element'}(
+	h::{'table.admin_table.left_even.right_odd'}(
+		h::tr(
+			h::td(h::info('name2')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[name]',
 						'value' => $Config->core['name']
@@ -16,10 +16,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('url')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('url')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[url]',
 						'value' => $Config->core['url']
@@ -27,10 +27,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('cookie_domain')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('cookie_domain')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[cookie_domain]',
 						'value' => $Config->core['cookie_domain']
@@ -38,10 +38,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('cookie_path')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('cookie_path')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[cookie_path]',
 						'value' => $Config->core['cookie_path']
@@ -49,10 +49,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('cookie_prefix')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('cookie_prefix')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[cookie_prefix]',
 						'value' => $Config->core['cookie_prefix']
@@ -60,31 +60,31 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('mirrors')).
-			$a->td(
-				$a->table(
-					$a->tr(
-						$a->td(
+		h::tr(
+			h::td(h::info('mirrors')).
+			h::td(
+				h::table(
+					h::tr(
+						h::td(
 							array(
-								$a->info('mirrors_url'),
-								$a->info('mirrors_cookie_domain'),
-								$a->info('mirrors_cookie_path')
+								h::info('mirrors_url'),
+								h::info('mirrors_cookie_domain'),
+								h::info('mirrors_cookie_path')
 							)
 						)
 					).
-					$a->{'tr#site_info_config_mirrors'}(
-						$a->td(
+					h::{'tr#site_info_config_mirrors'}(
+						h::td(
 							array(
-								$a->{'textarea.form_element'}(
+								h::{'textarea.form_element'}(
 									$Config->core['mirrors_url'],
 									array('name' => 'core[mirrors_url]')
 								),
-								$a->{'textarea.form_element'}(
+								h::{'textarea.form_element'}(
 									$Config->core['mirrors_cookie_domain'],
 									array('name' => 'core[mirrors_cookie_domain]')
 								),
-								$a->{'textarea.form_element'}(
+								h::{'textarea.form_element'}(
 									$Config->core['mirrors_cookie_path'],
 									array('name' => 'core[mirrors_cookie_path]')
 								)
@@ -94,10 +94,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('keywords')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('keywords')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[keywords]',
 						'value' => $Config->core['keywords']
@@ -105,10 +105,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('description')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('description')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[description]',
 						'value' => $Config->core['description']
@@ -116,10 +116,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('timezone')).
-			$a->td(
-				$a->{'select.form_element'}(
+		h::tr(
+			h::td(h::info('timezone')).
+			h::td(
+				h::{'select.form_element'}(
 					array(
 						'in'		=> array_values($timezones),
 						'value'		=> array_keys($timezones)
@@ -132,10 +132,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('admin_mail')).
-			$a->td(
-				$a->{'input.form_element[type=email]'}(
+		h::tr(
+			h::td(h::info('admin_mail')).
+			h::td(
+				h::{'input.form_element[type=email]'}(
 					array(
 						'name'	=> 'core[admin_mail]',
 						'value' => $Config->core['admin_mail']
@@ -143,10 +143,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('admin_phone')).
-			$a->td(
-				$a->{'input.form_element[type=tel]'}(
+		h::tr(
+			h::td(h::info('admin_phone')).
+			h::td(
+				h::{'input.form_element[type=tel]'}(
 					array(
 						'name'	=> 'core[admin_phone]',
 						'value' => $Config->core['admin_phone']

@@ -8,7 +8,7 @@ class Core {
 	//Инициализация начальных параметров и функций шифрования
 	function __construct() {
 		if (!_require(CONFIG.DS.CDOMAIN.DS.'main.php', true, false)) {
-			header('HTTP/1.0 404 Not Found');
+			header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
 			__finish();
 		}
 		define('STORAGE',	STORAGES.DS.DOMAIN.DS.'public');	//Локальное публичное хранилище домена
@@ -22,7 +22,6 @@ class Core {
 				$DB_PASSWORD,
 				$DB_PREFIX,
 				$DB_CODEPAGE,
-				
 				$KEY;
 		if(!_is_dir(STORAGES.DS.DOMAIN)) {
 			@_mkdir(STORAGES.DS.DOMAIN, 0770);

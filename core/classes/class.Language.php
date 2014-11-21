@@ -10,10 +10,8 @@ class Language {
 		$L = $this;
 		$this->change($LANGUAGE);
 	}
-	function init ($Config = null) {
-		if (is_object($Config)) {
-			$this->change(_getcookie('language') && in_array(_getcookie('language'), $Config->core['active_languages']) ? _getcookie('language') : $Config->core['language']);
-		}
+	function init ($active_languages, $language) {
+		$this->change(_getcookie('language') && in_array(_getcookie('language'), $active_languages) ? _getcookie('language') : $language);
 		if ($this->need_to_rebuild_cache) {
 			global $Cache;
 			$Cache->{'language/'.$this->clanguage} = $this->translate;

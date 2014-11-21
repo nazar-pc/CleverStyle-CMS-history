@@ -33,12 +33,12 @@ class Config {
 	function __construct () {
 		global $Cache;
 		//Считывание настроек с кеша и определение недостающих данных
-		$Config = $Cache->config;
-		if (is_array($Config)) {
+		$config = $Cache->config;
+		if (is_array($config)) {
 			$query = false;
 			foreach ($this->admin_parts as $part) {
-				if (isset($Config[$part]) && !empty($Config[$part])) {
-					$this->$part = $Config[$part];
+				if (isset($config[$part]) && !empty($config[$part])) {
+					$this->$part = $config[$part];
 				} else {
 					$query = true;
 					break;
@@ -62,11 +62,11 @@ class Config {
 	function init() {
 		global $Cache, $L, $Error, $Page;
 		//Инициализация объекта кеша с использованием настроек движка
-		$Cache->init($this);
+		$Cache->init($this->core['disk_cache_size'], $this->core['memcache']);
 		//Инициализация объекта языков с использованием настроек движка
-		$L->init($this);
+		$L->init($this->core['active_languages'], $this->core['language']);
 		//Инициализация объекта страницы с использованием настроек движка
-		$Page->init($this);
+		$Page->init($this->core['name'], $this->core['keywords'], $this->core['description'], $this->core['theme'], $this->core['color_scheme']);
 		//Инициализация объекта обработки ошибок
 		$Error->init();
 		//Установка часового пояса по-умолчанию
@@ -219,7 +219,7 @@ class Config {
 			$query[] = '`'.$part.'`';
 		}
 		unset($part);
-		$result = $db->core->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = \''.DOMAIN.'\' LIMIT 1');
+		$result = $db->qf('SELECT '.implode(', ', $query).' FROM `[prefix]config` WHERE `domain` = \''.DOMAIN.'\' LIMIT 1');
 		if (isset($this->routing['current'])) {
 			$current_routing = $this->routing['current'];
 		}

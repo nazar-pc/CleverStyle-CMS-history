@@ -3,11 +3,11 @@ global $Config, $Index, $L;
 $a = &$Index;
 
 $a->content(
-	$a->{'table.admin_table.left_even.right_odd'}(
-		$a->tr(
-			$a->td($a->info('smtp')).
-			$a->td(
-				$a->{'input[type=radio]'}(
+	h::{'table.admin_table.left_even.right_odd'}(
+		h::tr(
+			h::td(h::info('smtp')).
+			h::td(
+				h::{'input[type=radio]'}(
 					array(
 						'name'			=> 'core[smtp]',
 						'checked'		=> $Config->core['smtp'],
@@ -18,14 +18,14 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td().
-			$a->td(
-				$a->{'table#smtp_form'}(
-					$a->tr(
-						$a->td($a->info('smtp_host')).
-						$a->td(
-							$a->{'input.form_element'}(
+		h::tr(
+			h::td().
+			h::td(
+				h::{'table#smtp_form'}(
+					h::tr(
+						h::td(h::info('smtp_host')).
+						h::td(
+							h::{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_host]',
 									'value' => $Config->core['smtp_host']
@@ -33,10 +33,10 @@ $a->content(
 							)
 						)
 					).
-					$a->tr(
-						$a->td($a->info('smtp_port')).
-						$a->td(
-							$a->{'input.form_element'}(
+					h::tr(
+						h::td(h::info('smtp_port')).
+						h::td(
+							h::{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_port]',
 									'value' => $Config->core['smtp_port']
@@ -44,10 +44,10 @@ $a->content(
 							)
 						)
 					).
-					$a->tr(
-						$a->td($a->info('smtp_secure')).
-						$a->td(
-							$a->{'input[type=radio]'}(
+					h::tr(
+						h::td(h::info('smtp_secure')).
+						h::td(
+							h::{'input[type=radio]'}(
 								array(
 									'name'			=> 'core[smtp_secure]',
 									'checked'		=> $Config->core['smtp_secure'],
@@ -57,10 +57,10 @@ $a->content(
 							)
 						)
 					).
-					$a->tr(
-						$a->td($L->smtp_auth).
-						$a->td(
-							$a->{'input[type=radio]'}(
+					h::tr(
+						h::td($L->smtp_auth).
+						h::td(
+							h::{'input[type=radio]'}(
 								array(
 									'name'			=> 'core[smtp_auth]',
 									'checked'		=> $Config->core['smtp_auth'],
@@ -71,10 +71,10 @@ $a->content(
 							)
 						)
 					).
-					$a->{'tr#smtp_user'}(
-						$a->td($L->smtp_user).
-						$a->td(
-							$a->{'input.form_element'}(
+					h::{'tr#smtp_user'}(
+						h::td($L->smtp_user).
+						h::td(
+							h::{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_user]',
 									'value' => $Config->core['smtp_user']
@@ -85,10 +85,10 @@ $a->content(
 							'style' => ($Config->core['smtp_auth'] == 0 ? 'display: none; ' : '').'padding-left: 20px;'
 						)
 					).
-					$a->{'tr#smtp_password'}(
-						$a->td($a->info('smtp_password')).
-						$a->td(
-							$a->{'input.form_element'}(
+					h::{'tr#smtp_password'}(
+						h::td(h::info('smtp_password')).
+						h::td(
+							h::{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_password]',
 									'value' => $Config->core['smtp_password']
@@ -103,10 +103,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($a->info('mail_from')).
-			$a->td(
-				$a->{'input.form_element'}(
+		h::tr(
+			h::td(h::info('mail_from')).
+			h::td(
+				h::{'input.form_element'}(
 					array(
 						'name'	=> 'core[mail_from]',
 						'value' => $Config->core['mail_from']
@@ -114,10 +114,10 @@ $a->content(
 				)
 			)
 		).
-		$a->tr(
-			$a->td($L->mail_from_name).
-				$a->td(
-					$a->{'input.form_element'}(
+		h::tr(
+			h::td($L->mail_from_name).
+				h::td(
+					h::{'input.form_element'}(
 						array(
 							 'name'	=> 'core[mail_from_name]',
 							 'value' => $Config->core['mail_from_name']
@@ -125,10 +125,10 @@ $a->content(
 					)
 				)
 		).
-		$a->tr(
-			$a->td($a->info('mail_signature')).
-				$a->td(
-					$a->{'textarea.EDITORH.form_element'}(
+		h::tr(
+			h::td(h::info('mail_signature')).
+				h::td(
+					h::{'textarea.EDITORH.form_element'}(
 						$Config->core['mail_signature'],
 						array('name' => 'core[mail_signature]')
 					)

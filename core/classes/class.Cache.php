@@ -7,14 +7,14 @@ class Cache {
 				$local_storage = array(),	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
 				$cache = true,				//Состояние кеша (вкл/выкл)
 				$size = false;				//Размер кеша
-	function init ($Config) {
+	function init ($disk_cache, $memcache) {
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
-		$this->disk			= $Config->core['disk_cache'];
+		$this->disk			= $disk_cache;
 		if (!$this->disk && $this->get('cache')) {
 			flush_cache();
 		}
-		$this->disk_size	= $Config->core['disk_cache_size']*1048576;
-		$this->memcache		= $Config->core['memcache'];
+		$this->disk_size	= $disk_cache*1048576;
+		$this->memcache		= $memcache;
 		if ($this->memcache) {
 			$this->memcache = new Memcache;
 			$result = $this->memcache->connect($MEMCACHE_HOST ?: 'localhost', $MEMCACHE_PORT ?: 11211);

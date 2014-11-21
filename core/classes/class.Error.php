@@ -89,9 +89,9 @@ class Error {
 	function num () {
         return $this->num;
     }
-	function __call ($func, $args) {
+	/*function __call ($func, $args) {//TODO Is it necessary?
 		$this->process($args);
-	}
+	}*/
 	/**
 	 * Cloning restriction
 	 */

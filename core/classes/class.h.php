@@ -1,22 +1,20 @@
 <?php
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
-class HTML {
-	public		$Content;
-	protected	$unit_atributes = array(	//Одиночные атрибуты, которые не имеют значения
-					'async',
-					'defer',
-					'formnovalidate',
-					'autofocus',
-					'checked',
-					'selected',
-					'readonly',
-					'required',
-					'disabled',
-					'multiple'
-				);
-
+class h {
+	protected static	$unit_atributes = array(	//Одиночные атрибуты, которые не имеют значения
+		'async',
+		'defer',
+		'formnovalidate',
+		'autofocus',
+		'checked',
+		'selected',
+		'readonly',
+		'required',
+		'disabled',
+		'multiple'
+	);
 	//Отступы строк для красивого исходного кода
-	function level ($in, $level = 1) {
+	static function level ($in, $level = 1) {
 		if ($level < 1) {
 			return $in;
 		}
@@ -24,15 +22,8 @@ class HTML {
 	}
 	//Добавление данных в основную часть страницы (для удобства и избежания случайной перезаписи всей страницы)
 	//Используется наследуемыми классами
-	function content ($add, $level = false) {
-		if ($level !== false) {
-			$this->Content .= $this->level($add, $level);
-		} else {
-			$this->Content .= $add;
-		}
-	}
 	//Метод для обертки контента парными тегами
-	function wrap ($data = array()) {
+	static function wrap ($data = array()) {
 		$data = (array)$data;
 		$in = $add = '';
 		$tag = 'div';
@@ -70,7 +61,7 @@ class HTML {
 			$add = ' '.$data['add'];
 			unset($data['add']);
 		}
-		foreach ($this->unit_atributes as $attr) {
+		foreach (self::$unit_atributes as $attr) {
 			if (isset($data[$attr])) {
 				$add .= ' '.$attr;
 				unset($data[$attr]);
@@ -106,7 +97,7 @@ class HTML {
 		}
 		return	'<'.$tag.$add.'>'.
 				($level ? "\n" : '').
-				$this->level(
+				self::level(
 					$in ?
 						$in.($level ? "\n" : '') : 
 						($in === false ? '' : ($level ? "&nbsp;\n" : '')),
@@ -115,11 +106,11 @@ class HTML {
 				($level ? "\n" : '');
 	}
 	//Метод для простой обертки контента парными тегами
-	function swrap ($in = '', $data = '', $tag = 'div') {
-		return $this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
+	static function swrap ($in = '', $data = '', $tag = 'div') {
+		return self::wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
 	}
 	//Метод для разворота массива навыворот для select и radio
-	function array_flip ($in, $num) {
+	protected static function array_flip ($in, $num) {
 		$options = array();
 		foreach ($in as $i => $v) {
 			for ($n = 0; $n < $num; ++$n) {
@@ -135,7 +126,7 @@ class HTML {
 		return $options;
 	}
 	//Метод для обертки контента непарными тегами
-	function iwrap ($data = array()) {
+	static function iwrap ($data = array()) {
 		$data = (array)$data;
 		$in = $add = '';
 		$tag = 'input';
@@ -165,7 +156,7 @@ class HTML {
 			$add = $data['add'];
 			unset($data['add']);
 		}
-		foreach ($this->unit_atributes as $attr) {
+		foreach (self::$unit_atributes as $attr) {
 			if (isset($data[$attr])) {
 				$add .= ' '.$attr;
 				unset($data[$attr]);
@@ -193,158 +184,161 @@ class HTML {
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
 		$return = '<'.$tag.$add.' />'.$in."\n";
-		return isset($data_title) ? $this->label($return, array('data-title' => $data_title)) : $return;
+		return isset($data_title) ? self::label($return, array('data-title' => $data_title)) : $return;
 	}
 
 	//HTML тэги
 		//Простая обработка
 			//Парные теги
-	function html		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function html		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function head		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function head		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function body		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function title		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function form		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function body		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function div		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function form		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function p			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function div		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function label		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function p			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function menu		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function label		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function a			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function menu		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function script		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function a			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function i			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function script		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function b			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function i			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function u			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function b			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function span		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function u			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function strong		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function span		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function em			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function strong		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function h1			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function em			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function h2			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function h1			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function h3			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function h2			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function h4			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function h3			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function h5			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function h4			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function h6			($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function h5			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function sup		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function h6			($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function sub		($in = '', $data = array()) {
-		return $this->swrap($in, $data, __FUNCTION__);
+	static function sup		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
+	}
+	static function sub		($in = '', $data = array()) {
+		return self::swrap($in, $data, __FUNCTION__);
 	}
 			//Непарные теги
-	function link		($in = array()) {
+	static function link		($in = array()) {
 		$in['tag'] = __FUNCTION__;
-		return $this->iwrap($in);
+		return self::iwrap($in);
 	}
-	function meta		($in = array()) {
+	static function meta		($in = array()) {
 		$in['tag'] = __FUNCTION__;
-		return $this->iwrap($in);
+		return self::iwrap($in);
 	}
-	function base		($in = array()) {
+	static function base		($in = array()) {
 		$data['href']	= $in;
 		$data['tag']	= __FUNCTION__;
-		return $this->iwrap($data);
+		return self::iwrap($data);
 	}
-	function hr			($in = array()) {
+	static function hr			($in = array()) {
 		$in['tag'] = __FUNCTION__;
-		return $this->iwrap($in);
+		return self::iwrap($in);
 	}
 		//Специфическая обработка (похожие в обработке теги групируются в шаблоны - template_#)
-	function table		($in = array(), $data = array(), $data2 = array()) {
+	static function table		($in = array(), $data = array(), $data2 = array()) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->tr($this->td($item, $data2));
+				$temp .= self::tr(self::td($item, $data2));
 			}
-			return $this->swrap($temp, $data, __FUNCTION__);
+			return self::swrap($temp, $data, __FUNCTION__);
 		} else {
-			return $this->swrap($in, $data, __FUNCTION__);
+			return self::swrap($in, $data, __FUNCTION__);
 		}
 	}
 	//template_1 {
-	function template_1	($in = '', $data = array(), $function) {
+	static function template_1	($in = '', $data = array(), $function) {
 		if (is_array($in)) {
 			$temp = '';
 			foreach ($in as $item) {
-				$temp .= $this->swrap($item, $data, $function);
+				$temp .= self::swrap($item, $data, $function);
 			}
 			return $temp;
 		} else {
-			return $this->swrap($in, $data, $function);
+			return self::swrap($in, $data, $function);
 		}
 	}
-	function tr			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function tr			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function th			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function th			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function td			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function td			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function ul			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function ul			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function ol			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function ol			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function li			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function li			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function dl			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function dl			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function dt			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function dt			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function dd			($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function dd			($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
-	function option		($in = '', $data = array()) {
-		return $this->template_1($in, $data, __FUNCTION__);
+	static function option		($in = '', $data = array()) {
+		return self::template_1($in, $data, __FUNCTION__);
 	}
 	//}
-	function input		($in = array(), $data = array()) {
+	static function input		($in = array(), $data = array()) {
 		if (!empty($data)) {
 			$in = array_merge(array('in' => $in), $data);
 		}
@@ -371,7 +365,7 @@ class HTML {
 					}
 					unset($in['checked'], $i, $v);
 				}
-				$items = $this->array_flip($in, count($in['in']));
+				$items = self::array_flip($in, count($in['in']));
 				unset($in, $v, $i);
 				$temp = '';
 				foreach ($items as $item) {
@@ -379,32 +373,32 @@ class HTML {
 						$item['id'] = uniqid('input_');
 					}
 					if (isset($item['in'])) {
-						$item['in'] = $this->label($item['in'], array('for' => $item['id']));
+						$item['in'] = self::label($item['in'], array('for' => $item['id']));
 					}
 					$item['tag'] = __FUNCTION__;
 					if (isset($item['value'])) {
 						$item['value'] = filter($item['value']);
 					}
-					$temp .= $this->iwrap($item);
+					$temp .= self::iwrap($item);
 				}
 				return $temp;
 			} else {
 				if (!isset($in['id'])) {
 					$in['id'] = uniqid('input_');
 				}
-				$in['in'] = $this->label($in['in'], array('for' => $in['id']));
+				$in['in'] = self::label($in['in'], array('for' => $in['id']));
 				$in['tag'] = __FUNCTION__;
 				if (isset($in['value'])) {
 					$in['value'] = filter($in['value']);
 				}
-				return $this->iwrap($in);
+				return self::iwrap($in);
 			}
 		} else {
 			if (
 				(isset($in['name'])	&& is_array($in['name'])	&& ($num = count($in['name'])) > 0) ||
 				(isset($in['id'])	&& is_array($in['id'])		&& ($num = count($in['id'])) > 0)
 			) {
-				$items = $this->array_flip($in, $num);
+				$items = self::array_flip($in, $num);
 				unset($num);
 				$temp = '';
 				foreach ($items as $item) {
@@ -421,7 +415,7 @@ class HTML {
 					if (isset($item['value'])) {
 						$item['value'] = filter($item['value']);
 					}
-					$temp .= $this->iwrap($item);
+					$temp .= self::iwrap($item);
 				}
 				return $temp;
 			} else {
@@ -438,14 +432,14 @@ class HTML {
 				if (isset($in['value'])) {
 					$in['value'] = filter($in['value']);
 				}
-				return $this->iwrap($in);
+				return self::iwrap($in);
 			}
 		}
 	}
 	//template_2 {
-	function template_2	($in = '', $data = array(), $function) {
+	static function template_2	($in = '', $data = array(), $function) {
 		if (!is_array($in)) {
-			return $this->swrap($in, $data, $function);
+			return self::swrap($in, $data, $function);
 		}
 		if (!isset($in['value']) && isset($in['in']) && is_array($in['in'])) {
 			$in['value'] = &$in['in'];
@@ -505,18 +499,18 @@ class HTML {
 			}
 			unset($selected);
 		}
-		$options = $this->array_flip($in, isset($i) ? $i+1 : count($in['in']));
+		$options = self::array_flip($in, isset($i) ? $i+1 : count($in['in']));
 		unset($in);
-		return $this->swrap($this->option($options), $data, $function);
+		return self::swrap(self::option($options), $data, $function);
 	}
-	function select		($in = '', $data = array()) {
-		return $this->template_2($in, $data, __FUNCTION__);
+	static function select		($in = '', $data = array()) {
+		return self::template_2($in, $data, __FUNCTION__);
 	}
-	function datalist	($in = '', $data = array()) {
-		return $this->template_2($in, $data, __FUNCTION__);
+	static function datalist	($in = '', $data = array()) {
+		return self::template_2($in, $data, __FUNCTION__);
 	}
 	//}
-	function button		($in = '', $data = array()) {
+	static function button		($in = '', $data = array()) {
 		if (is_array($in)) {
 			if (!isset($in['type'])) {
 				$in['type'] = 'button';
@@ -526,9 +520,9 @@ class HTML {
 				$data['type'] = 'button';
 			}
 		}
-		return $this->swrap($in, $data, __FUNCTION__);
+		return self::swrap($in, $data, __FUNCTION__);
 	}
-	function style		($in = '', $data = array()) {
+	static function style		($in = '', $data = array()) {
 		if (is_array($in)) {
 			if (!isset($in['type'])) {
 				$in['type'] = 'text/css';
@@ -538,10 +532,10 @@ class HTML {
 				$data['type'] = 'text/css';
 			}
 		}
-		return $this->swrap($in, $data, __FUNCTION__);
+		return self::swrap($in, $data, __FUNCTION__);
 	}
 	//template_3 {
-	function template_3	($in = '', $data = array(), $function) {
+	static function template_3	($in = '', $data = array(), $function) {
 		global $Page;
 		$uniqid = uniqid('html_replace_');
 		if (is_array($in)) {
@@ -554,28 +548,28 @@ class HTML {
 			$in = $uniqid;
 		}
 		$data['level'] = false;
-		return $this->swrap($in, $data, $function);
+		return self::swrap($in, $data, $function);
 	}
-	function textarea	($in = '', $data = array()) {
-		return $this->template_3($in, $data, __FUNCTION__);
+	static function textarea	($in = '', $data = array()) {
+		return self::template_3($in, $data, __FUNCTION__);
 	}
-	function pre		($in = '', $data = array()) {
-		return $this->template_3($in, $data, __FUNCTION__);
+	static function pre		($in = '', $data = array()) {
+		return self::template_3($in, $data, __FUNCTION__);
 	}
-	function code		($in = '', $data = array()) {
-		return $this->template_3($in, $data, __FUNCTION__);
+	static function code		($in = '', $data = array()) {
+		return self::template_3($in, $data, __FUNCTION__);
 	}
 	//}
-	function br			($repeat = 1) {
+	static function br			($repeat = 1) {
 		$in['tag'] = __FUNCTION__;
-		return str_repeat($this->iwrap($in), $repeat);
+		return str_repeat(self::iwrap($in), $repeat);
 	}
 	//Псевдо-элементы
-	function info		($in = '', $data = array()) {
+	static function info		($in = '', $data = array()) {
 		global $L;
-		return $this->label($L->$in, array_merge(array('data-title' => $L->{$in.'_info'}), $data));
+		return self::label($L->$in, array_merge(array('data-title' => $L->{$in.'_info'}), $data));
 	}
-	function icon		($class, $data = array()) {
+	static function icon		($class, $data = array()) {
 		if (!isset($data['style'])) {
 			$data['style'] = 'display: inline-block;';
 		} else {
@@ -586,9 +580,9 @@ class HTML {
 		} else {
 			$data['class'] .= ' ui-icon ui-icon-'.$class;
 		}
-		return $this->span($data);
+		return self::span($data);
 	}
-	function __call ($input, $data) {
+	static function __callStatic ($input, $data) {
 		if (is_array($data) && count($data) == 2) {
 			$data[1]['in'] = $data[0];
 			$data = $data[1];
@@ -644,7 +638,7 @@ class HTML {
 			} else {
 				$in = '';
 			}
-			$i		= $this->$tag($in, $attrs);
+			$i		= self::$tag($in, $attrs);
 		}
 		return implode("\n", $input);
 	}

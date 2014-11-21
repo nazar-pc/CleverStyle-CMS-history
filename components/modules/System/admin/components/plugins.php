@@ -23,8 +23,8 @@ if ($mode && $rc[2] == 'enable') {
 }
 unset($rc, $mode);
 $plugins = get_list(PLUGINS, false, 'd');
-$plugins_list = $a->tr(
-	$a->{'td.ui-widget-header.ui-corner-all'}(
+$plugins_list = h::tr(
+	h::{'td.ui-widget-header.ui-corner-all'}(
 		array(
 			$L->plugin_name,
 			$L->state,
@@ -41,7 +41,7 @@ foreach ($plugins as $plugin) {
 		} else {
 			$tag = 'div';
 		}
-		$addition_state .= $a->$tag(
+		$addition_state .= h::$tag(
 			_file_get_contents($file),
 			array(
 				'id'			=> $plugin.'_readme',
@@ -50,10 +50,10 @@ foreach ($plugins as $plugin) {
 				'title'			=> $plugin.' -> '.$L->information_about_plugin
 			)
 		).
-		$a->{'icon.pointer'}(
+		h::{'icon.pointer'}(
 			'note',
 			array(
-				'data-title'	=> $L->information_about_plugin.$a->br().$L->click_to_view_details,
+				'data-title'	=> $L->information_about_plugin.h::br().$L->click_to_view_details,
 				'onClick'		=> '$(\'#'.$plugin.'_readme\').dialog(\'open\');'
 			)
 		);
@@ -66,7 +66,7 @@ foreach ($plugins as $plugin) {
 		} else {
 			$tag = 'div';
 		}
-		$addition_state .= $a->$tag(
+		$addition_state .= h::$tag(
 			_file_get_contents($file),
 			array(
 				'id'			=> $plugin.'_license',
@@ -75,19 +75,19 @@ foreach ($plugins as $plugin) {
 				'title'			=> $plugin.' -> '.$L->license
 			)
 		).
-		$a->{'icon.pointer'}(
+		h::{'icon.pointer'}(
 			'info',
 			array(
-				'data-title'	=> $L->license.$a->br().$L->click_to_view_details,
+				'data-title'	=> $L->license.h::br().$L->click_to_view_details,
 				'onClick'		=> '$(\'#'.$plugin.'_license\').dialog(\'open\');'
 			)
 		);
 	}
 	unset($tag, $file);
 	$state = in_array($plugin, $Config->components['plugins']);
-	$action .= $a->{'a.nul'}(
-		$a->{'button.compact'}(
-			$a->icon($state ? 'minusthick' : 'check'),
+	$action .= h::{'a.nul'}(
+		h::{'button.compact'}(
+			h::icon($state ? 'minusthick' : 'check'),
 			array(
 				'data-title'	=> $state ? $L->disable : $L->enable
 			)
@@ -96,10 +96,10 @@ foreach ($plugins as $plugin) {
 			'href'		=> $a->action.($state ? '/disable/' : '/enable/').$plugin
 		)
 	);
-	$plugins_list .= $a->tr(
-		$a->{'td.ui-state-default.ui-corner-all'}($plugin).
-		$a->{'td.ui-state-default.ui-corner-all'}(
-			$a->icon(
+	$plugins_list .= h::tr(
+		h::{'td.ui-state-default.ui-corner-all'}($plugin).
+		h::{'td.ui-state-default.ui-corner-all'}(
+			h::icon(
 				$state ? 'check' : 'minusthick',
 				array(
 					'data-title'	=> $state ? $L->enabled : $L->disabled
@@ -107,12 +107,12 @@ foreach ($plugins as $plugin) {
 			).
 				$addition_state
 		).
-		$a->{'td.ui-state-default.ui-corner-all.plugins_config_buttons'}($action)
+		h::{'td.ui-state-default.ui-corner-all.plugins_config_buttons'}($action)
 	);
 }
 unset($plugins, $plugin, $state, $addition_state, $action);
 $a->content(
-	$a->{'table.admin_table.center_all'}($plugins_list)
+	h::{'table.admin_table.center_all'}($plugins_list)
 );
 unset($plugins_list, $a);
 ?>
