@@ -64,7 +64,7 @@ class Index extends HTML {
 		}
 		if ($this->parts !== false) {
 			$rc = &$Config->routing['current'];
-			if (!isset($rc[0]) || !in_array($rc[0], $this->parts) || (!_file_exists(MFOLDER.DS.$rc[0].'.json') && !_file_exists(MFOLDER.DS.$rc[0].'.php'))) {
+			if (!isset($rc[0]) || ($this->parts && !in_array($rc[0], $this->parts)) || (!_file_exists(MFOLDER.DS.$rc[0].'.json') && !_file_exists(MFOLDER.DS.$rc[0].'.php'))) {
 				$rc[0] = $this->parts[0];
 			}
 			!$this->api && $Page->title($L->$rc[0]);
@@ -76,7 +76,7 @@ class Index extends HTML {
 			}
 			_include(MFOLDER.DS.$rc[0].'.php', true, false);
 			if (is_array($this->subparts)) {
-				if (!isset($rc[1]) || !in_array($rc[1], $this->subparts) || !_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
+				if (!isset($rc[1]) || ($this->subparts && !in_array($rc[1], $this->subparts)) || !_file_exists(MFOLDER.DS.$rc[0].DS.$rc[1].'.php')) {
 					$rc[1] = $this->subparts[0];
 				}
 				if (!$this->api) {

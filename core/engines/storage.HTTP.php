@@ -79,7 +79,7 @@ class HTTP extends StorageAbstract {
 		$copy = true;
 		if ($source == _realpath($source)) {
 			$temp = md5(uniqid(microtime(true)));
-			while (file_exists(TEMP.DS.$temp)) {
+			while (_file_exists(TEMP.DS.$temp)) {
 				$temp = md5(uniqid(microtime(true)));
 			}
 			time_limit_pause();
@@ -94,7 +94,7 @@ class HTTP extends StorageAbstract {
 			return false;
 		}
 		if ($temp) {
-			unlink(TEMP.DS.$temp);
+			_unlink(TEMP.DS.$temp);
 		}
 		return (bool)$result[1];
 	}
@@ -108,7 +108,7 @@ class HTTP extends StorageAbstract {
 	}
 	function move_uploaded_file ($filename, $destination) {
 		$temp = md5(uniqid(microtime(true)));
-		while (file_exists(TEMP.DS.$temp)) {
+		while (_file_exists(TEMP.DS.$temp)) {
 			$temp = md5(uniqid(microtime(true)));
 		}
 		time_limit_pause();
@@ -120,7 +120,7 @@ class HTTP extends StorageAbstract {
 		} else {
 			return false;
 		}
-		unlink(TEMP.DS.$temp);
+		_unlink(TEMP.DS.$temp);
 		return (bool)$result[1];
 	}
 	function rename ($oldname, $newname) {
@@ -128,7 +128,7 @@ class HTTP extends StorageAbstract {
 		$copy = true;
 		if ($oldname == _realpath($oldname)) {
 			$temp = md5(uniqid(microtime(true)));
-			while (file_exists(TEMP.DS.$temp)) {
+			while (_file_exists(TEMP.DS.$temp)) {
 				$temp = md5(uniqid(microtime(true)));
 			}
 			time_limit_pause();
@@ -144,7 +144,7 @@ class HTTP extends StorageAbstract {
 			return false;
 		}
 		if ($temp) {
-			unlink(TEMP.DS.$temp);
+			_unlink(TEMP.DS.$temp);
 			if ((bool)$result[1]) {
 				_unlink($oldname_x);
 			}

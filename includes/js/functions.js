@@ -168,11 +168,11 @@ var cache_interval;
 		}
 	}
 	//Для удобства и простоты - обертки для функций JavaScript с названиями аналогичных функций в PHP
-	function json_encode (input) {
-		return $.toJSON(input);
+	function json_encode (obj) {
+		return $.toJSON(obj);
 	}
-	function json_decode (input) {
-		return $.evalJSON(input);
+	function json_decode (str) {
+		return $.secureEvalJSON(str);
 	}
 	//Поддерживает алгоритмы sha224, sha256, sha384, sha512
 	function hash (algo, data) {

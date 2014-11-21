@@ -301,7 +301,7 @@ class Page extends HTML {
 			unset($file);
 			$this->js($js_list, 'file', true);
 		} else {
-			$this->get_list();
+			$this->get_js_css_list();
 			//Подключение CSS стилей
 			foreach ($this->get_list['css'] as $file) {
 				$this->css($file, 'file', true);
@@ -313,7 +313,7 @@ class Page extends HTML {
 		}
 	}
 	//Загрузка списка JavaScript и CSS файлов
-	protected function get_list ($for_cache = false) {
+	protected function get_js_css_list ($for_cache = false) {
 		$theme_folder	= THEMES.DS.$this->theme;
 		$scheme_folder	= $theme_folder.DS.'schemes'.DS.$this->color_scheme;
 		$theme_pfolder	= 'themes/'.$this->theme;
@@ -339,7 +339,7 @@ class Page extends HTML {
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {
-		$this->get_list(true);
+		$this->get_js_css_list(true);
 		$key = '';
 		foreach ($this->get_list as $extension => &$files) {
 			$temp_cache = '';
@@ -349,15 +349,9 @@ class Page extends HTML {
 					if ($extension == 'css') {
 						$this->images_substitution($current_cache, $file);
 					}
-					$temp_cache[] = $current_cache;
+					$temp_cache .= $current_cache."\n";
 					unset($current_cache);
 				}
-			}
-			$temp_cache = implode("\n", $temp_cache);
-			if ($extension == 'js') {
-				$temp_cache = JsMin::minify($temp_cache);
-			} elseif ($extension == 'css') {
-				$temp_cache = CssMin::minify($temp_cache, $this->CssMin);
 			}
 			_file_put_contents(PCACHE.DS.$this->cache_list.$extension, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
 			$key .= md5($temp_cache);
@@ -371,8 +365,8 @@ class Page extends HTML {
 			'/url\((.*?)\)/',
 			function ($link) use (&$data) {
 				$link[0] = trim($link[1], '\'" ');	//array(0 - фильтрованный адрес, 1 - исходные данные)
-				$format = mb_substr($link[0], -3);
-				if (mb_substr($link[0], -4) == 'jpeg') {
+				$format = substr($link[0], -3);
+				if ($format == 'peg' && substr($link[0], -4) == 'jpeg') {
 					$format = 'jpg';
 				}
 				if (($format == 'jpg' || $format == 'png' || $format == 'gif') && _file_exists(_realpath($link[0]))) {

@@ -195,7 +195,12 @@ class Config {
 	}
 	//Обновление списка текущих языков
 	function reload_languages () {
-		$this->core['languages'] = _mb_substr(get_list(LANGUAGES, '/^lang\..*?\.php$/i', 'f'), 5, -4);
+		$this->core['languages'] = array_unique(
+			array_merge(
+				_mb_substr(get_list(LANGUAGES, '/^lang\..*?\.php$/i', 'f'), 5, -4) ?: array(),
+				_mb_substr(get_list(LANGUAGES, '/^lang\..*?\.json$/i', 'f'), 5, -5) ?: array()
+			)
+		);
 		asort($this->core['languages']);
 	}
 	//Перестройка кеша настроек

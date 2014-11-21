@@ -42,34 +42,43 @@ class Language {
 		if (empty($language)) {
 			return false;
 		}
-		global $Config;
 		if ($language === $this->clanguage) {
 			return true;
 		}
+		global $Config, $Cache, $Text;
 		if (!is_object($Config) || ($Config->core['multilanguage'] && in_array($language, $Config->core['active_languages']))) {
-			global $Cache, $Text;
 			$this->clanguage = $language;
 			if ($translate = $Cache->get('language/'.$this->clanguage)) {
 				$this->set($translate);
 				$Text->language($this->clang);
 				return true;
-			} elseif (_include(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
-				if (_file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
-					$lang_data = _json_decode(_file_get_contents(LANGUAGES.'/lang.'.$this->clanguage.'.json'));
-					$this->clang = $lang_data['short_format'];
-					$this->clanguage_en = $lang_data['language_en'];
-					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $lang_data['locale']) : setlocale(LC_TIME, $lang_data['locale']);
-					unset($lang_data);
-				} else {
-					$this->clang = strtolower(mb_substr($this->clanguage, 0, 2));
-					$this->clanguage_en = $this->clanguage;
-					defined('LC_MESSAGES') ? setlocale(LC_TIME|LC_MESSAGES, $this->clang.'_'.strtoupper($this->clang)) : setlocale(LC_TIME, $this->clang.'_'.strtoupper($this->clang));
+			} elseif (_file_exists(LANGUAGES.'/lang.'.$this->clanguage.'.json')) {
+				$data = _file(LANGUAGES.'/lang.'.$this->clanguage.'.json', FILE_SKIP_EMPTY_LINES);
+				foreach ($data as $i => $line) {
+					if (substr(ltrim($line), 0, 2) == '//') {
+						unset($data[$i]);
+					}
 				}
+				unset($i, $line);
+				$this->translate = _json_decode(implode('', $data));
+				$this->translate['clanguage'] = $this->clanguage;
+				if(!isset($this->translate['clang'])) {
+					$this->translate['clang'] = mb_strtolower(mb_substr($this->clanguage, 0, 2));
+				}
+				if(!isset($this->translate['clanguage_en'])) {
+					$this->translate['clanguage_en'] = $this->clanguage;
+				}
+				if(!isset($this->translate['clocale'])) {
+					$this->translate['clocale'] = $this->clang.'_'.mb_strtoupper($this->clang);
+				}
+				setlocale(LC_TIME | (defined('LC_MESSAGES') ? LC_MESSAGES : 0), $this->clocale);
 				$Text->language($this->clang);
 				$this->need_to_rebuild_cache = true;
 				if ($this->initialized) {
 					$this->init();
 				}
+				return true;
+			} elseif (_include(LANGUAGES.'/lang.'.$this->clanguage.'.json', false, false)) {
 				return true;
 			}
 		}

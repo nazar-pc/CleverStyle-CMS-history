@@ -40,13 +40,11 @@ if ($Config->core['cache_compress_js_css']) {
 	_file_put_contents(
 		PCACHE.DS.'plugin.'.$plugin.'.js',
 		gzencode(
-			JsMin::minify(
-				'var tinyMCEPreInit={base:\'/components/plugins/'.$plugin.'\',suffix:\'\'};'.
-				$content.
-				'tinymce.each("' . implode(',', $files) . '".split(","),function(f){tinymce.ScriptLoader.markDone(tinyMCE.baseURL+"/"+f+".js");});'.
-				file_get_contents(PLUGINS.DS.$plugin.DS.'jquery.tinymce.js').
-				file_get_contents(PLUGINS.DS.$plugin.DS.'TinyMCE.js')
-			),
+			'var tinyMCEPreInit={base:\'/components/plugins/'.$plugin.'\',suffix:\'\'};'.
+			$content.
+			'tinymce.each("' . implode(',', $files) . '".split(","),function(f){tinymce.ScriptLoader.markDone(tinyMCE.baseURL+"/"+f+".js");});'.
+			file_get_contents(PLUGINS.DS.$plugin.DS.'jquery.tinymce.js').
+			file_get_contents(PLUGINS.DS.$plugin.DS.'TinyMCE.js'),
 			9
 		),
 		LOCK_EX|FILE_BINARY

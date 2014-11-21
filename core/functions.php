@@ -503,11 +503,11 @@
 				return str_replace($data, $data2, $text);
 			} elseif ($mode == 'stripslashes' || $mode == 'addslashes') {
 				return $mode($text);
-			} elseif ($mode == 'trim') {
+			} elseif ($mode == 'trim' || $mode == 'ltrim' || $mode == 'rtrim') {
 				if ($data !== false) {
-					return trim($text, $data);
+					return $mode($text, $data);
 				} else {
-					return trim($text);
+					return $mode($text);
 				}
 			} elseif ($mode == 'substr') {
 				if ($data2 !== NULL) {
@@ -548,6 +548,12 @@
 		}
 		function _trim ($str, $charlist = false) {
 			return filter($str, 'trim', $charlist);
+		}
+		function _ltrim ($str, $charlist = false) {
+			return filter($str, 'ltrim', $charlist);
+		}
+		function _rtrim ($str, $charlist = false) {
+			return filter($str, 'rtrim', $charlist);
 		}
 		function _substr ($string, $start, $length) {
 			return filter($string, 'substr', $start, $length);
