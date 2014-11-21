@@ -396,8 +396,8 @@ class HTML {
 			}
 		} else {
 			if (
-				(isset($in['name'])	&& is_array($in['name'])	&& ($num = count($in['name'])) > 1) ||
-				(isset($in['id'])	&& is_array($in['id'])		&& ($num = count($in['id'])) > 1)
+				(isset($in['name'])	&& is_array($in['name'])	&& ($num = count($in['name'])) > 0) ||
+				(isset($in['id'])	&& is_array($in['id'])		&& ($num = count($in['id'])) > 0)
 			) {
 				$items = $this->array_flip($in, $num);
 				unset($num);
@@ -406,10 +406,10 @@ class HTML {
 					if (!isset($item['type'])) {
 						$item['type'] = 'text';
 					}
-					if (isset($item['min']) && isset($item['value']) && $item['min'] < $item['value']) {
+					if (isset($item['min']) && isset($item['value']) && $item['min'] > $item['value']) {
 						$item['value'] = $item['min'];
 					}
-					if (isset($item['max']) && isset($item['value']) && $item['max'] > $item['value']) {
+					if (isset($item['max']) && isset($item['value']) && $item['max'] < $item['value']) {
 						$item['value'] = $item['max'];
 					}
 					$item['tag'] = __FUNCTION__;
@@ -423,10 +423,10 @@ class HTML {
 				if (!isset($in['type'])) {
 					$in['type'] = 'text';
 				}
-				if (isset($in['min']) && isset($in['value']) && $in['min'] < $in['value']) {
+				if (isset($in['min']) && isset($in['value']) && $in['min'] > $in['value']) {
 					$in['value'] = $in['min'];
 				}
-				if (isset($in['max']) && isset($in['value']) && $in['max'] > $in['value']) {
+				if (isset($in['max']) && isset($in['value']) && $in['max'] < $in['value']) {
 					$in['value'] = $in['max'];
 				}
 				$in['tag'] = __FUNCTION__;

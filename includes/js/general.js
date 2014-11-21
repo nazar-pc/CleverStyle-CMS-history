@@ -40,7 +40,11 @@ $(function() {
 		save = false;
 	});
 	$('textarea').each(function (index, element) {
-		if (!$(element).hasClass('EDITOR') && !$(element).hasClass('EDITORH') && !$(element).hasClass('SEDITOR') && !$(element).hasClass('noresize')) {
+		if (!$(element).hasClass('EDITOR') &&
+			!$(element).hasClass('EDITORH') &&
+			!$(element).hasClass('SEDITOR') &&
+			!$(element).hasClass('noresize')
+		) {
 			$(element).autoResize();
 		}
 	});
@@ -90,10 +94,10 @@ $(function() {
 		}
 	});
 	$('#register_process').click(function() {
-		//TODO
+		registration($('#register').val());
 	});
 	$('.restore_password').click(function() {
-		//TODO
+		//TODO Restore password processing
 	});
 	$('.header_back').click(function() {
 		$('#anonym_header_form').slideDown();

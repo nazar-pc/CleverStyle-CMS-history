@@ -12,10 +12,13 @@ if (!$Config->server['referer']['local'] || !$Config->server['ajax'] || !isset($
 	$Page->content($L->please_type_your_email);
 	sleep(1);
 	return;
-} elseif (!filter_var($_POST['login'], FILTER_VALIDATE_EMAIL)) {
+} elseif (file_exists(MFOLDER.DS.'registration'.DS.str_replace('/', '', $_POST['email']).'.php')) {
+	//TODO foreign login systems processing
+	return;
+} elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
 	$Page->content($L->please_type_correct_email);
 	sleep(1);
 	return;
 }
-$Page->content($User->registration($_POST['login']));
+$User->registration($_POST['email']);
 ?>

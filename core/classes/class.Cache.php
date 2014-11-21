@@ -71,7 +71,7 @@ class Cache {
 			if (strpos($item, '/') !== false) {
 				$subitems = explode('/', $item);
 				$subitems[count($subitems) - 1] = trim($subitems[count($subitems) - 1]);
-				if (empty($subitems[count($subitems) - 1])) {
+				if (!strlen($subitems[count($subitems) - 1])) {
 					global $Error, $L;
 					$Error->process($L->file.' '.CACHE.DS.$item.' '.$L->not_exists);
 					return false;

@@ -157,8 +157,11 @@ function setcookie (name, value, expires, path, domain, secure) {
 function getcookie (name) {
 	return $.cookie(name);
 }
-
-//Функция входа в систему
+/**
+ * Login into system
+ * @param login
+ * @param password
+ */
 function login (login, password) {
 	$.ajax(
 		base_url+"/"+api+"/user/login",
@@ -178,6 +181,54 @@ function login (login, password) {
 							data: {
 								auth_hash: hash('sha512', hash('sha224', login)+hash('sha512', password)+navigator.userAgent+random_hash),
 								login: hash('sha224', login)
+							},
+							success: function(result) {
+								if (result == 'reload') {
+									location.reload();
+								} else {
+									alert(result);
+								}
+							},
+							error: function() {
+								alert(auth_error_connection);
+							}
+						}
+					);
+				} else if (random_hash == 'reload') {
+					location.reload();
+				} else {
+					alert(random_hash);
+				}
+			},
+			error: function() {
+				alert(auth_error_connection);
+			}
+		}
+	);
+}
+/**
+ * Registration in the system
+ * @param email
+ */
+function registration (email) {
+	$.ajax(
+		base_url+"/"+api+"/user/registration",
+		{
+			type: 'post',
+			cache: false,
+			data: {
+				email: email
+			},
+			success: function(random_hash) {//TODO Registration continuation (popup)
+				if (random_hash.length == 56) {
+					$.ajax(
+						base_url+"/"+api+"/user/login",
+						{
+							type: 'post',
+							cache: false,
+							data: {
+								auth_hash: hash('sha512', hash('sha224', login)+hash('sha512', password)+navigator.userAgent+random_hash),
+								email: hash('sha224', login)
 							},
 							success: function(result) {
 								if (result == 'reload') {

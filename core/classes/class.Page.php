@@ -129,7 +129,7 @@ class Page extends HTML {
 		if ($this->js[1]) {
 			$this->js[1] = $this->script($this->js[1]);
 		}
-		$this->Head =	$this->swrap($this->Title, array('id' => 'page_title'), 'title').
+		$this->Head =	$this->swrap($this->Title, '', 'title').
 						$this->meta(array('name'		=> 'keywords',			'content'	=> $this->Keywords)).
 						$this->meta(array('name'		=> 'description',		'content'	=> $this->Description)).
 						$this->meta(array('name'		=> 'generator',			'content'	=> $copyright[0])).

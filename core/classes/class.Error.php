@@ -5,7 +5,7 @@ class Error {
 	function init () {
 		global $Error;
 		$Error = $this;
-		set_error_handler(array($Error, 'process'));
+		//set_error_handler(array($Error, 'process'));
 	}
 	function process ($errno, $errstr='', $errfile=true, $errline='') {
 		if (!$this->error) {

@@ -15,7 +15,7 @@ if (!$Config->server['referer']['local'] || !$Config->server['ajax']) {
 	return;
 }
 //Первый шаг - поиск пользователя по логину, создание случайного хеша для второго шага, и создание временного ключа
-if (isset($_POST['login']) && !isset($_POST['auth_hash']) && $id = $User->get_id($_POST['login'])) {
+if (isset($_POST['login']) && !isset($_POST['auth_hash']) && ($id = $User->get_id($_POST['login']))) {
 	if ($User->get('status', $id) == -1) {
 		$Page->content($L->your_account_is_not_active);
 		sleep(1);

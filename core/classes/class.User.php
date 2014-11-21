@@ -117,12 +117,12 @@ class User {
 		getting_user_data:
 		if (!($data = $Cache->{'users/'.$this->id})) {
 			$data = $this->db()->qf(
-				'SELECT `id`, `login`, `username`, `groups`, `permissions`, `language`, `timezone`, `status`, `block_until` FROM `[prefix]users` '.
+				'SELECT `id`, `login`, `username`, `groups`, `permissions`, `language`, `timezone`, `status`, `block_until`, `avatar` FROM `[prefix]users` '.
 					'WHERE `id` = '.$this->id.' LIMIT 1'
 			);
 			if (is_array($data)) {
 				$Cache->{'users/'.$this->id} = $data;
-				if ($this['status'] != 1) {
+				if ($data['status'] != 1) {
 					if ($data['status'] == 0) {
 						$Page->warning($L->your_account_disabled);
 						//Отмечаем как гостя, и получаем данные заново
@@ -641,6 +641,13 @@ class User {
 				)
 			);
 		}
+	}
+	/**
+	 * Processing of user registration
+	 * @param string $email
+	 */
+	function registration ($email) {
+		//TODO Registration processing
 	}
 	/**
 	 * Saving cache changing, and users data

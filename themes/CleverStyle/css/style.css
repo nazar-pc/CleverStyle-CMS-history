@@ -1,6 +1,6 @@
 body {
-	font-family: "Sergoe UI", Tahoma, Verdana, Arial;
-	font-size: 11px;
+	font-family: "Sergoe UI", Tahoma, Verdana, Arial, sans-serif;
+	font-size: 12px;
 	margin: 0;
 	padding: 0;
 	width: 100%;
@@ -20,8 +20,7 @@ body {
 	width: 100%;
 }
 .admin_table {
-	margin: auto;
-	margin-bottom: 15px;
+	margin: auto auto 15px;
 	width: 100%;
 }
 .admin_table > tbody > tr > td:nth-child(1) {
@@ -116,8 +115,7 @@ div.ui-state-default.green,
 #debug > p.ui-state-default,
 div.ui-state-error.red {
 	font-size: 14px;
-	margin: 10px;
-	margin-bottom: 20px;
+	margin: 10px 10px 20px;
 	padding: 5px;
 	text-align: center;
 }
