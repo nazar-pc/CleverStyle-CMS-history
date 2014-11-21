@@ -1,5 +1,5 @@
 <?php
-global $Config, $Page, $L, $ADMIN, $Admin;
+global $Config, $Page, $L, $ADMIN, $Index;
 $modules = &$Config->components['modules'];
 $rc = &$Config->routing['current'];
 $update = false;
@@ -41,7 +41,7 @@ if (isset($_POST['update_modules_list'])) {
 }
 
 if ($update) {
-	$Admin->save('components');
+	$Index->save('components');
 }
 unset($update, $modules, $rc);
 ?>

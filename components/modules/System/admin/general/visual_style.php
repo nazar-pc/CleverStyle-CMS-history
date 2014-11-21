@@ -1,7 +1,7 @@
 <?php
-global $Config, $Admin, $L;
+global $Config, $Index, $L;
 $Config->reload_themes();
-$a = &$Admin;
+$a = &$Index;
 $a->content(
 	$a->table(
 		$a->tr(

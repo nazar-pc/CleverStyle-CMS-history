@@ -49,7 +49,7 @@ class MySQL extends DatabaseAbstract {
 		++$db->queries;
 		$db->time += $this->query['time'];
 		$this->queries['time'][] = $this->query['time'];
-		$this->queries['text'][] = xap($this->query['text']);
+		$this->queries['text'][] = $this->query['text'];
 		if ($this->query['resource']) {
 			return $this->query['resource'];
 		} else {

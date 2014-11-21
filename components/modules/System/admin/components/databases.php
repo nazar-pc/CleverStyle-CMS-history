@@ -1,6 +1,6 @@
 <?php
-global $Config, $Admin, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE, $ADMIN;
-$a = &$Admin;
+global $Config, $Index, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE, $ADMIN;
+$a = &$Index;
 $rc = &$Config->routing['current'];
 $test_dialog = true;
 if (isset($rc[2])) {

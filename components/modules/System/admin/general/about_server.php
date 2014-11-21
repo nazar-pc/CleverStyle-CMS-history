@@ -1,8 +1,8 @@
 <?php
 
 global $L, $DB_TYPE, $DB_HOST, $DB_NAME, $DB_PREFIX, $db, $Cache;
-global $$DB_TYPE, $Admin, $PHP, $mcrypt;
-$a = &$Admin;
+global $$DB_TYPE, $Index, $PHP, $mcrypt;
+$a = &$Index;
 $a->form = false;
 
 $a->content(
@@ -35,7 +35,7 @@ $a->content(
 					$a->tr(
 						array(
 							$a->td($L->memcache_lib.':').
-							$a->td($L->__get(memcache()), array('class' => memcache() ? 'green' : 'red')),
+							$a->td($L->get(memcache()), array('class' => memcache() ? 'green' : 'red')),
 
 							memcache() && $Cache->memcache ?
 								$a->td($L->version.' memcache:', array('style' => 'padding-left: 20px;')).
@@ -43,7 +43,7 @@ $a->content(
 							: false,
 /*
 							$a->td($L->memcached_lib.':').
-							$a->td($L->__get(memcached()), array('class' => memcached() ? 'green' : 'red')),
+							$a->td($L->get(memcached()), array('class' => memcached() ? 'green' : 'red')),
 
 */							$a->td($L->mcrypt.':').
 							$a->td(
@@ -60,11 +60,11 @@ $a->content(
 							: false,
 
 							$a->td($L->zlib.':').
-							$a->td($L->__get(zlib())),
+							$a->td($L->get(zlib())),
 
 							zlib() ?
 								$a->td($L->zlib_autocompression.':', array('style' => 'padding-left: 20px;')).
-								$a->td($L->__get(zlib_autocompression()))
+								$a->td($L->get(zlib_autocompression()))
 							: false
 						)
 					),
@@ -114,7 +114,7 @@ $a->content(
 				$a->table(
 					$a->tr(
 						array(
-							$a->td($L->allow_file_upload.':').$a->td($L->__get(ini_get('file_uploads')), array('class' => ini_get('file_uploads') ? 'green' : 'red')),
+							$a->td($L->allow_file_upload.':').$a->td($L->get(ini_get('file_uploads')), array('class' => ini_get('file_uploads') ? 'green' : 'red')),
 
 							$a->td($L->max_file_uploads.':').$a->td(ini_get('max_file_uploads')),
 
@@ -130,17 +130,17 @@ $a->content(
 
 							$a->td($L->module.' mod_rewrite:').
 							$a->td(
-								$L->__get(function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules())),
+								$L->get(function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules())),
 								array('class' => function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules()) ? 'green' : 'red')
 							),
 	
-							$a->td($L->directive.' magic_quotes_gpc:').$a->td($L->__get(get_magic_quotes_gpc()), array('class' => !get_magic_quotes_gpc() ? 'green' : 'red')),
+							$a->td($L->directive.' magic_quotes_gpc:').$a->td($L->get(get_magic_quotes_gpc()), array('class' => !get_magic_quotes_gpc() ? 'green' : 'red')),
 
-							$a->td($L->allow_url_fopen.':').$a->td($L->__get(ini_get('allow_url_fopen')), array('class' => ini_get('allow_url_fopen') ? 'green' : 'red')),
+							$a->td($L->allow_url_fopen.':').$a->td($L->get(ini_get('allow_url_fopen')), array('class' => ini_get('allow_url_fopen') ? 'green' : 'red')),
 
-							$a->td($L->display_errors.':').$a->td($L->__get(display_errors()), array('class' => display_errors() ? 'green' : 'red')),
+							$a->td($L->display_errors.':').$a->td($L->get(display_errors()), array('class' => display_errors() ? 'green' : 'red')),
 
-							$a->td($L->directive.' register_globals:').$a->td($L->__get(register_globals()), array('class' => !register_globals() ? 'green' : 'red'))
+							$a->td($L->directive.' register_globals:').$a->td($L->get(register_globals()), array('class' => !register_globals() ? 'green' : 'red'))
 						)
 					),
 					array('class' => 'left_odd', 'style' => 'width: 100%;')

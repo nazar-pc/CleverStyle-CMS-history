@@ -9,7 +9,7 @@ class Page extends HTML {
 			$core_css				= array(0 => '', 1 => ''),
 			$js						= array(0 => '', 1 => ''),
 			$css					= array(0 => '', 1 => ''),
-			
+
 			$user_avatar_image, $user_avatar_text, $user_info,
 			$debug_info,
 
@@ -260,8 +260,8 @@ class Page extends HTML {
 		$this->get_list = array(
 				'css' => array (
 					0 => get_list(INCLUDES.DS.'css', '/(.*)\.css$/i', 'f', 'includes/css', true),
-					1 => get_list(THEMES.DS.$this->theme.DS.'style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/style', true),
-					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'style', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/style', true)
+					1 => get_list(THEMES.DS.$this->theme.DS.'css', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/css', true),
+					2 => get_list(THEMES.DS.$this->theme.DS.'schemes'.DS.$this->color_scheme.DS.'css', '/(.*)\.css$/i', 'f', 'themes/'.$this->theme.'/schemes/'.$this->color_scheme.'/css', true)
 				),
 				'js' => array (
 					0 => get_list(INCLUDES.DS.'js', '/(.*)\.js$/i', 'f', 'includes/js', true),

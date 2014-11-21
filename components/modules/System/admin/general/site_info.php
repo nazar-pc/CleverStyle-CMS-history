@@ -1,6 +1,6 @@
 <?php
-global $Config, $Admin, $L;
-$a = &$Admin;
+global $Config, $Index, $L;
+$a = &$Index;
 
 $a->content(
 	$a->table(

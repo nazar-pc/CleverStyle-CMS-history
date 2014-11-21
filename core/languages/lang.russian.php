@@ -1,8 +1,8 @@
 <?php
 global $L;
 //Файл перевода Русского языка
-$L->__set(true,		$L->on = 'Вкл.');
-$L->__set(false,	$L->off = 'Выкл.');
+$L->set(true,		$L->on = 'Вкл.');
+$L->set(false,	$L->off = 'Выкл.');
 $L->translate = array(
 	'home'				=> 'Главная',
 	'page_generated'	=> 'Страница сгенерирована за',

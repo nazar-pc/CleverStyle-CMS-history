@@ -96,42 +96,45 @@ class Config {
 		$this->server['url'] = str_replace('//', '/', trim(str_replace($url_replace, '', $this->server['url']), ' /\\'));
 		unset($url_replace);
 		$r = &$this->routing;
+		$rc = &$r['current'];
 		//Получаем путь к странице в виде массива
-		$r['current'] = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
+		$rc = explode('/', str_replace($r['in'], $r['out'], trim($this->server['url'], '/')));
 		//Если адрес похож на адрес админки
-		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($ADMIN)) {
+		if (isset($rc[0]) && mb_strtolower($rc[0]) == mb_strtolower($ADMIN)) {
 			if (!defined('ADMIN')) {
 				define('ADMIN', true);
 			}
-			array_shift($r['current']);
+			array_shift($rc);
+		//Если адрес похож на запрос к API
+		} elseif (isset($rc[0]) && mb_strtolower($rc[0]) == mb_strtolower($API)) {
+			if (!defined('API')) {
+				define('API', true);
+			}
+			array_shift($rc);
 		}
 		//Определение модуля модуля
-		if (isset($r['current'][0]) && in_array($r['current'][0], array_keys($this->components['modules']))) {
+		if (isset($rc[0]) && in_array($rc[0], array_keys($this->components['modules']))) {
 			if (!defined('MODULE')) {
-				define('MODULE', array_shift($r['current']));
+				define('MODULE', array_shift($rc));
 			}
 		} else {
 			if (!defined('MODULE')) {
 				define('MODULE', 'System');
 			}
 		}
-		//Если адрес похож на запрос к API
-		if (isset($r['current'][0]) && mb_strtolower($r['current'][0]) == mb_strtolower($API)) {
-			if (!defined('API')) {
-				define('API', true);
-			}
-			array_shift($r['current']);
+		if (!defined('ADMIN') && !defined('API') && !defined('HOME') && empty($rc[0])) {
+			define('HOME', true);
 		}
 		//Скорректированный путь страницы (рекомендуемый к использованию)
-		$this->server['current_url'] = (defined('ADMIN') ? $ADMIN.'/' : '').MODULE.'/'.implode('/', $r['current']);
+		$this->server['current_url'] = (defined('ADMIN') ? $ADMIN.'/' : '').MODULE.(defined('API') ? $API.'/' : '').'/'.implode('/', $rc);
 		//Определение необходимости отключить интерфейс
 		if (isset($_POST['nonterface']) || defined('API')) {
 			interface_off();
-		} elseif (isset($r['current'][count($r['current']) - 1]) && mb_strtolower($r['current'][count($r['current']) - 1]) == 'nointerface') {
+		} elseif (isset($rc[count($rc) - 1]) && mb_strtolower($rc[count($rc) - 1]) == 'nointerface') {
 			interface_off();
-			array_pop($r['current']);
+			array_pop($rc);
 		}
-		unset($r);
+		unset($rc, $r);
 	}
 	//Обновление информации о текущем наборе тем оформления
 	function reload_themes () {
@@ -223,7 +226,7 @@ class Config {
 		if ($parts === false || empty($parts)) {
 			$parts = $this->admin_parts;
 		} elseif (!is_array($parts)) {
-			$parts = array($parts);
+			$parts = (array)$parts;
 		}
 		$query = '';
 		foreach ($parts as $part) {
@@ -231,24 +234,23 @@ class Config {
 				if ($part == 'routing') {
 					$temp = $this->routing;
 					unset($temp['current']);
-					$query .= '`'.$part.'` = '.sip(json_encode_x($temp));
-					unset($temp);
+					$query[] = '`'.$part.'` = '.sip(json_encode_x($temp));
 					continue;
 				}
-				$query .= '`'.$part.'` = '.sip(json_encode_x($this->$part));
+				$query[] = '`'.$part.'` = '.sip(json_encode_x($this->$part));
 			}
-			unset($part);
 		}
-		unset($parts);
+		unset($parts, $part, $temp);
 		global $db;
-		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.$query.' WHERE `domain` = '.sip(DOMAIN).' LIMIT 1')) {
+		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $query).' WHERE `domain` = '.sip(DOMAIN).' LIMIT 1')) {
 			$this->apply();
 			return true;
 		}
 		return false;
 	}
 	function cancel () {
-		flush_cache();
+		global $Cache;
+		unset($Cache->config);
 		$this->load();
 		$this->apply();
 	}

@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['mode'])) {
-	global $Config, $Page, $L, $Admin;
+	global $Config, $Page, $L, $Index;
 	$update = false;
 	if ($_POST['mode'] == 'add') {
 		foreach ($_POST['db'] as $item => $value) {
@@ -34,10 +34,10 @@ if (isset($_POST['mode'])) {
 			$update = true;
 		}
 	} elseif ($_POST['mode'] == 'config') {
-		include_x(MFOLDER.'/'.$Admin->savefile.'.php', true, false);
+		include_x(MFOLDER.'/'.$Index->savefile.'.php', true, false);
 	}
 	if ($update) {
-		$Admin->save('db');
+		$Index->save('db');
 	}
 	unset($update);
 }

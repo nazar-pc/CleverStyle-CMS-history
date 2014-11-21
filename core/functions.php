@@ -288,6 +288,15 @@ function flush_pcache () {
 	unset($list);
 	return $ok;
 }
+//Обработка замыканий
+function closure_process (&$functions) {
+	$functions = (array)$functions;
+	foreach ($functions as $function) {
+		if ($function instanceof Closure) {
+			$function();
+		}
+	}
+}
 //Функция форматирования размера файла из байтов в удобночитаемый вид
 function formatfilesize ($size, $round = false) {
 	global $L;

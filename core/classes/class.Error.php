@@ -3,7 +3,9 @@ class Error {
 	public	$error	= true;
 	private	$num	= 0;
 	function __construct () {
-		set_error_handler(array($this, 'process'));
+		global $Error;
+		$Error = $this;
+		set_error_handler(array($Error, 'process'));
 	}
 	function process ($errno, $errstr='', $errfile=true, $errline='') {
 		if (!$this->error) {

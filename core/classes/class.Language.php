@@ -22,17 +22,23 @@ class Language {
 			$this->initialized = true;
 		}
 	}
-	function __get ($item) {
+	function get ($item) {
 		return isset($this->translate[$item]) ? $this->translate[$item] : ucfirst(str_replace('_', ' ', $item));
 	}
-	function __set ($item, $value = '') {
+	function set ($item, $value = '') {
 		if ($item == 'translate' && is_array($value)) {
 			foreach ($value as $i => $v) {
-				$this->__set($i, $v);
+				$this->set($i, $v);
 			}
 		} else {
 			$this->translate[$item] = &$value;
 		}
+	}
+	function __get ($item) {
+		return $this->get($item);
+	}
+	function __set ($item, $value = '') {
+		$this->set($item, $value);
 	}
 	function change ($language) {
 		global $Config;
@@ -43,7 +49,7 @@ class Language {
 			global $Cache, $Text;
 			$this->clanguage = $language;
 			if ($translate = $Cache->get('lang.'.$this->clanguage)) {
-				$this->__set('translate', $translate);
+				$this->set('translate', $translate);
 				$Text->language($this->clanguage);
 				return true;
 			} elseif (include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {

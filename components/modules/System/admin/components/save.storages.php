@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['mode'])) {
-	global $Config, $Page, $L, $Admin;
+	global $Config, $Page, $L, $Index;
 	$update = false;
 	if ($_POST['mode'] == 'add') {
 		foreach ($_POST['storage'] as $item => $value) {
@@ -21,7 +21,7 @@ if (isset($_POST['mode'])) {
 		$update = true;
 	}
 	if ($update) {
-		$Admin->save('storage');
+		$Index->save('storage');
 	}
 	unset($update);
 }

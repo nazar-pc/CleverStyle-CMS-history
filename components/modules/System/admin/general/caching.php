@@ -1,8 +1,8 @@
 <?php
-global $L, $Config, $Admin;
+global $L, $Config, $Index;
 if (isset($Config->routing['current'][2])) {
 	global $Page;
-	$Admin->form = false;
+	$Index->form = false;
 	if ($Config->routing['current'][2] == 'cache') {
 		if (flush_cache()) {
 			$Page->Content = '<div class="green">'.$L->done.'</div>';
@@ -17,7 +17,7 @@ if (isset($Config->routing['current'][2])) {
 		}
 	}
 } else {
-	$a = &$Admin;
+	$a = &$Index;
 	$a->content(
 		$a->table(
 			$a->tr(

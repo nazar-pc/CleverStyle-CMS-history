@@ -36,6 +36,7 @@ class Classes {
 								$$class[2] = new $class[0]();
 							}
 							$this->ObjectsList[$class[2]] = array(time_x(true), memory_get_usage());
+							return $$class[2];
 						} else {
 							global $$class[0];
 							if (!is_object($$class[0])) {
@@ -43,15 +44,17 @@ class Classes {
 								$$class[0] = new $class[0]();
 							}
 							$this->ObjectsList[$class[0]] = array(time_x(true), memory_get_usage());
+							return $$class[0];
 						}
 					}
 				} else {
 					global $Error, $L, $Page;
 					$Error->process($L->class.' '.$Page->b($class[0]).' '.$L->not_exists);
+					return false;
 				}
 			}
 		} else {
-			$this->load(array($class, $create, $custom));
+			return $this->load(array($class, $create, $custom));
 		}
 	}
 	//Метод уничтожения объектов
@@ -71,34 +74,15 @@ class Classes {
 	function __clone () {}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
 	function __finish () {
+		$unload_priority = array('Page', 'Text', 'db', 'Config', 'User', 'Error', 'L', 'Cache', 'Core');
+		$this->unload('Index');
 		foreach ($this->LoadedObjects as $class) {
-			if ($class != 'db' && $class != 'Cache' && $class != 'Core' && $class != 'Config' && $class != 'Error' && $class != 'L' && $class != 'User' && $class != 'Page') {
+			if (!in_array($class, $unload_priority)) {
 				$this->unload($class);
 			}
 		}
-		if (isset($this->LoadedObjects['Page'])) {
-			$this->unload('Page');
-		}
-		if (isset($this->LoadedObjects['db'])) {
-			$this->unload('db');
-		}
-		if (isset($this->LoadedObjects['Config'])) {
-			$this->unload('Config');
-		}
-		if (isset($this->LoadedObjects['User'])) {
-			$this->unload('User');
-		}
-		if (isset($this->LoadedObjects['Error'])) {
-			$this->unload('Error');
-		}
-		if (isset($this->LoadedObjects['L'])) {
-			$this->unload('L');
-		}
-		if (isset($this->LoadedObjects['Cache'])) {
-			$this->unload('Cache');
-		}
-		if (isset($this->LoadedObjects['Core'])) {
-			$this->unload('Core');
+		foreach ($unload_priority as $class) {
+			$this->unload($class);
 		}
 		exit;
 	}

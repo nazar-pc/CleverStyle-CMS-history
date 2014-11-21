@@ -1,6 +1,6 @@
 <?php
-global $Config, $Admin, $L, $db, $ADMIN, $API;
-$a = &$Admin;
+global $Config, $Index, $L, $db, $ADMIN, $API;
+$a = &$Index;
 $rc = &$Config->routing['current'];
 $a->buttons = false;
 $mode = isset($rc[2], $rc[3]) && !empty($rc[2]) && !empty($rc[3]);

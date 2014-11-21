@@ -1,5 +1,5 @@
 <?php
-global $Config, $Admin, $L;
+global $Config, $Index, $L;
 $Config->reload_languages();
 $active_languages = $active_languages_name = array();
 foreach ($Config->core['languages'] as $lang => $name) {
@@ -9,7 +9,7 @@ foreach ($Config->core['languages'] as $lang => $name) {
 	}
 }
 unset($lang, $name);
-$a = &$Admin;
+$a = &$Index;
 $a->content(
 	$a->table(
 		$a->tr(

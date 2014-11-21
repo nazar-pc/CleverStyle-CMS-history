@@ -1,6 +1,6 @@
 <?php
-global $Config, $Admin, $L, $ADMIN;
-$a = &$Admin;
+global $Config, $Index, $L, $ADMIN;
+$a = &$Index;
 $rc = &$Config->routing['current'];
 $test_dialog = true;
 if (isset($rc[2])) {
