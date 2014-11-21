@@ -16,8 +16,8 @@ class DB {
 		$this->DB_PASSWORD = $DB_PASSWORD;
 		unset($DB_USER, $DB_PASSWORD);
 		//Подключаем абстрактную модель БД
-		if (!class_exists('DataBase')) {
-			include_x(DB.DS.'DataBase.php', 1);
+		if (!class_exists('DatabaseAbstract')) {
+			include_x(DB.DS.'DatabaseAbstract.php', 1);
 		}
 	}
 	//Обработка запросов получения данных БД
@@ -58,17 +58,18 @@ class DB {
 	//Обработка всех подключений к БД
 	protected function connecting($connection, $mirror = true) {
 		//Если соединение есть в списке неудачных - выходим
-		if (in_array($connection, $this->false_connections)) {
+		if (isset($this->false_connections[$connection])) {
 			return false;
 		}
-		//Если зеркало подключения существует - устанавливаем текущую БД и возвращаем ссылку на подключение
+		//Если зеркало подключения существует - возвращаем ссылку на подключение
 		if (isset($this->mirrors[$connection]) && $mirror === true) {
 			return $this->mirrors[$connection];
 		}
-		//Если подключение существует - устанавливаем текущую БД и возвращаем ссылку на подключение
+		//Если подключение существует - возвращаем ссылку на подключение
 		if (isset($this->connections[$connection])) {
 			return $this->connections[$connection];
 		}
+		global $Config;
 		//Если создается подключение ядра
 		if ($connection == 'core' && !is_array($mirror)) {
 			global $DB_HOST, $DB_TYPE, $DB_NAME, $DB_PREFIX, $DB_CODEPAGE;
@@ -79,12 +80,12 @@ class DB {
 			$db['host']		= $DB_HOST;
 			$db['codepage']	= $DB_CODEPAGE;
 			$db['prefix']	= $DB_PREFIX;
-			unset($this->DB_USER, $this->DB_PASSWORD);
 		} else {
 			//Если подключается зеркало БД
 			if (is_array($mirror)) {
 				$db = &$mirror;
-			} else {//Иначе ищем настройки подключения
+			} else {
+				//Иначе ищем настройки подключения
 				if (!isset($Config->db[$connection]) || !is_array($Config->db[$connection])) {
 					return false;
 				}
@@ -106,21 +107,23 @@ class DB {
 			unset($db);
 			//Ускоряем повторную операцию доступа к этой БД
 			$this->$connection = $this->connections[$connection];
-			//Возвращаем ссылку на подключение
 			return $this->connections[$connection];
 		//Если подключение не удалось - разрушаем соединение и пытаемся подключится к зеркалу
 		} else {
 			unset($this->$connection, $db);
 			//Добавляем подключение в список неудачных
-			$this->false_connections[md5($db['host'].$db['name'].$db['type'])] = $connection.'/'.$db['host'].'/'.$db['type'];
+			$this->false_connections[$connection] = $connection.'/'.$db['host'].'/'.$db['type'];
 			//Если допускается подключение к зеркалу БД, и зеркала доступны
-			if ($mirror === true && (($connection == 'core' && isset($Config->db[0]['mirrors']) && !is_array($Config->db[0]['mirrors'])) || (isset($Config->db[$connection]['mirrors']) && !is_array($Config->db[$connection]['mirrors'])))) {
-				$dbx = $connection == 'core' ? $Config->db[0]['mirrors'] : $Config->db[$connection]['mirrors'];
-				foreach ($dbx as $mirror) {
-					if (in_array(md5($mirror['host'].$mirror['name'].$mirror['type']), $this->false_connections)) {
-						continue;
-					}
-					$mirror_connection = $this->connecting($mirror['name'], $mirror);
+			if (
+				$mirror === true && 
+				(
+					($connection == 'core' && isset($Config->db[0]['mirrors']) && is_array($Config->db[0]['mirrors']) && count($Config->db[0]['mirrors'])) ||
+					(isset($Config->db[$connection]['mirrors']) && is_array($Config->db[$connection]['mirrors']) && count($Config->db[$connection]['mirrors']))
+				)
+			) {
+				$dbx = ($connection == 'core' ? $Config->db[0]['mirrors'] : $Config->db[$connection]['mirrors']);
+				foreach ($dbx as $i => $mirror) {
+					$mirror_connection = $this->connecting($connection.' ('.$mirror['name'].')', $mirror);
 					if (is_object($mirror_connection) && $mirror_connection->connected) {
 						$this->mirrors[$connection] = $mirror_connection;
 						//Ускоряем повторную операцию доступа к этой БД
@@ -137,7 +140,7 @@ class DB {
 				if ($connection == 'core') {
 					$Error->process($L->error_core_db, 'stop');
 				} else {
-					$Error->process($L->error_db.' '.$connection);
+					$Error->process($L->error_db.' '.$this->false_connections[$connection]);
 				}
 				return false;
 			}
@@ -174,7 +177,10 @@ class DB {
 		}
 		unset($data);
 		if (is_array($db)) {
+			global $Error;
+			$Error->error = false;
 			$test = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'] ?: $DB_HOST, $db['codepage'] ?: $DB_CODEPAGE);
+			$Error->error = true;
 			return $test->connected;
 		} else {
 			return false;

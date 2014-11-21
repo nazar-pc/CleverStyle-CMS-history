@@ -1,7 +1,6 @@
 <?php
 class Admin extends Module {
-	public		$Content,
-				$parts,
+	public		$parts,
 				$subparts,
 				$mainsubmenu = '',
 				$menumore = '',
@@ -89,13 +88,13 @@ class Admin extends Module {
 					).
 					($this->buttons ?
 						($this->apply_button ?
-							$this->button($L->apply,	array('name' => 'edit_settings', 'id' => 'apply_settings', 'type' => 'submit', 'value' => 'apply'))
+							$this->button($L->apply,	array('name' => 'edit_settings', 'data-title'	=> $L->apply_info, 'id' => 'apply_settings', 'type' => 'submit', 'value' => 'apply'))
 						: '')
-							.$this->button($L->save,	array('name' => 'edit_settings', 'id' => 'save_settings', 'type' => 'submit', 'value' => 'save'))
+							.$this->button($L->save,	array('name' => 'edit_settings', 'data-title'	=> $L->save_info, 'id' => 'save_settings', 'type' => 'submit', 'value' => 'save'))
 						.($this->apply_button ?
-							$this->button($L->cancel,	array('name' => 'edit_settings', 'id' => 'cancel_settings', 'type' => 'submit', 'value' => 'cancel',	'add'	=> $this->cancel))
+							$this->button($L->cancel,	array('name' => 'edit_settings', 'data-title'	=> $L->cancel_info, 'id' => 'cancel_settings', 'type' => 'submit', 'value' => 'cancel',	'add'	=> $this->cancel))
 						: '')
-							.$this->button($L->reset,	array('id'	=> 'reset_settings', 'type'	=> 'reset'))
+							.$this->button($L->reset,	array('id'	=> 'reset_settings', 'data-title'	=> $L->reset_info, 'type'	=> 'reset'))
 					: ''),
 					array(
 						'method'	=> 'post',

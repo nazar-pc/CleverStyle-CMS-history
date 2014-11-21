@@ -1,7 +1,8 @@
 <?php
 class Language {
 	public		$clanguage;
-	protected	$translate = array();
+	protected	$translate = array(),
+				$_need_to_rebuild_cache = false;
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
@@ -12,6 +13,13 @@ class Language {
 			$this->change(strval($_COOKIE['language']));
 		} else {
 			$this->change($Config->core['language']);
+		}
+		if ($this->_need_to_rebuild_cache) {
+			global $Cache;
+			if ($Cache->cache) {
+				$Cache->set('lang.'.$this->clanguage, $this->translate);
+			}
+			$this->_need_to_rebuild_cache = false;
 		}
 	}
 	function __get ($item) {
@@ -41,7 +49,7 @@ class Language {
 				if (!include_x(LANGUAGES.DS.'lang.'.$this->clanguage.'.php')) {
 					return false;
 				} else {
-					$Cache->set('lang.'.$this->clanguage, $this->translate);
+					$this->_need_to_rebuild_cache = true;
 					return true;
 				}
 			}

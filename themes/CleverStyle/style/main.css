@@ -39,9 +39,11 @@ body[id=textarea] {
 }
 .admin_table> tbody > tr > td:nth-child(even) {
 	text-align: left;
+	vertical-align: top;
 }
 .left_table> tbody > tr > td:nth-child(odd) {
 	text-align: left;
+	vertical-align: top;
 }
 .r-table td {
 	border-radius: 5px;

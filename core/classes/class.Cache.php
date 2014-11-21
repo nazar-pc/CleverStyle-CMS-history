@@ -1,5 +1,6 @@
 <?php
 class Cache {
+	public		$cache;
 	protected	$disk = true,
 				$size,
 				$memcache = false,
@@ -18,14 +19,15 @@ class Cache {
 				$this->memcache = false;
 			}
 		}
-		unset($MEMCACHE_HOST, $MEMCACHE_PORT);
 		//$this->memcached = $Config->core['memcached'];
+		$this->cache = $this->disk || (bool)$this->memcache/* || (bool)$this->memcached*/;
+		unset($MEMCACHE_HOST, $MEMCACHE_PORT);
 	}
 	function get ($label) {
-		global $Core, $L;
 		if (isset($this->local_storage[$label])) {
 			return $this->local_storage[$label];
 		}
+		global $Core;
 		if (is_object($this->memcache) && $cache = $this->memcache->get(CDOMAIN.$label)) {
 			if ($cache = @unserialize($Core->decrypt($result))) {
 				$this->local_storage[$label] = $cache;
@@ -37,11 +39,11 @@ class Cache {
 				$this->local_storage[$label] = $cache;
 				return $cache;
 			} else {
-				return $this->del($label);
+				$this->del($label);
+				return false;
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 	function set ($label, $data, $time = 0) {
 		global $Core, $L;
@@ -49,14 +51,17 @@ class Cache {
 		if (is_object($this->memcache) && $this->memcache->set(CDOMAIN.$label, $Core->encrypt(serialize($data)), zlib() ? MEMCACHE_COMPRESSED : false, $time)) {
 			return true;
 		}
-		if (!file_exists(CACHE.DS.$label) || (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label))) {
-			file_put_contents(CACHE.DS.$label, $Core->encrypt(serialize($data)), LOCK_EX);
-			return true;
-		} else {
-			global $Error;
-			$Error->process($L->file.' '.CACHE.DS.$label.' '.$L->not_writable);
-			return false;
+		if ($this->disk) {
+			if (!file_exists(CACHE.DS.$label) || (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label))) {
+				file_put_contents(CACHE.DS.$label, $Core->encrypt(serialize($data)), LOCK_EX);
+				return true;
+			} else {
+				global $Error;
+				$Error->process($L->file.' '.CACHE.DS.$label.' '.$L->not_writable);
+				return false;
+			}
 		}
+		return true;
 	}
 	function del ($label, $time = 0) {
 		unset($this->local_storage[$label]);
@@ -77,6 +82,9 @@ class Cache {
 		if (is_object($this->memcache)) {
 			$this->memcache->flush();
 		}
+	}
+	function disable () {
+		$this->disk = $this->memcache/* = $this->memcached*/ = false;
 	}
 	function __get ($item) {
 		if ($item == 'memcache') {

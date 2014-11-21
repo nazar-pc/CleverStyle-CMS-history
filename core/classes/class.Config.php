@@ -2,7 +2,7 @@
 class Config {
 	public	$cache_file,
 			$admin_parts,
-			$mirror_index = -1;
+			$mirror_index = -1;	//Индекс текущего адреса сайта в списке зеркал
 	//Инициализация параметров системы
 	function __construct () {
 		global $Cache;
@@ -26,19 +26,20 @@ class Config {
 		//Перестройка кеша при необходимости
 		if (isset($query) && is_array($query) && !empty($query)) {
 			$this->rebuild_cache($query);
+		} else {
+			//Инициализация движка
+			$this->init();
 		}
-		//Инициализация движка
-		$this->init();
 		//Запуск роутинга адреса
 		$this->routing();
 	}
 	//Инициализация движка (или реинициалицазия при необходимости)
 	function init() {
 		global $Page, $Cache, $L;
-		//Инициализация объекта языков с использованием настроек движка
-		$L->init($this);
 		//Инициализация объекта кеша с использованием настроек движка
 		$Cache->init($this);
+		//Инициализация объекта языков с использованием настроек движка
+		$L->init($this);
 		//Инициализация объекта страницы с использованием настроек движка
 		$Page->init($this);
 	}
@@ -166,8 +167,9 @@ class Config {
 		}
 		$this->reload_themes();
 		$this->reload_languages();
+		$this->init();
 		//Перезапись кеша
-		if ((is_object($Error) && !$Error->num()) || !is_object($Error)) {
+		if ((is_object($Error) && !$Error->num()) || !is_object($Error) && $Cache->cache) {
 			if (file_exists($this->cache_file)) {
 				unlink($this->cache_file);
 			}

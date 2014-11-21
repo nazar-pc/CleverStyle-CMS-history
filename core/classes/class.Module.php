@@ -1,6 +1,5 @@
 <?php
 class Module extends HTML {
-	public		$Content;
 	function __construct () {
 		global $Config, $L, $Page, $User;
 		$Page->js(

@@ -12,7 +12,8 @@ define('DOMAIN', $_SERVER['HTTP_HOST']);			//Доменное имя текущ�
 define('CORE', DIR.DS.'core');						//Папка ядра
 	define('CLASSES', CORE.DS.'classes');			//Папка с классами
 	define('CONFIG', CORE.DS.'config');				//Папка конфигурации
-	define('DB', CORE.DS.'db_engines');				//Папка движками БД
+	define('DB', CORE.DS.'db_engines');				//Папка с движками БД
+	define('STORAGE', CORE.DS.'storage_engines');	//Папка с движками хранилищ
 	define('LANGUAGES', CORE.DS.'languages');		//Папка с языковыми файлами
 define('INCLUDES', DIR.DS.'includes');				//Папка с включениями
 	define('PCACHE', INCLUDES.DS.'cache');			//Папка с публичным кешем (доступным пользователю извне)

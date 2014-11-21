@@ -1,10 +1,14 @@
 <?php
 class Error {
-	protected	$num = 0;
+	public		$error	= true;
+	protected	$num	= 0;
 	function __construct () {
 		set_error_handler(array($this, 'process'));
 	}
 	function process ($errno, $errstr='', $errfile=true, $errline='') {
+		if (!$this->error) {
+			return;
+		}
 		global $L, $Page, $Config;
 		if (is_array($errno)) {
 			$args = $errno;

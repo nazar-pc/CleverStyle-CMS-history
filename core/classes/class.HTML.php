@@ -1,7 +1,7 @@
 <?php
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
 abstract class HTML {
-	public	$return = true;
+	public $Content;
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
 		if ($level < 1) {
@@ -74,7 +74,15 @@ abstract class HTML {
 	}
 	//Функция для простой обертки контента парными тегами
 	function swrap ($in = '', $data = '', $tag = 'div') {
-		return $this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
+		if ($tag != 'label' && isset($data['data-title'])) {
+			$data_title = $data['data-title'];
+			unset($data['data-title']);
+			return $this->label(
+				$this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag))),
+				array('data-title' => $data_title, 'class' => 'info')
+			);
+		}
+		return	$this->wrap(array_merge(is_array($in) ? $in : array('in' => $in), is_array($data) ? $data : array(), array('tag' => $tag)));
 	}
 	//Функция для разворота массива навыворот для select и radio
 	function array_flip ($in, $num) {
@@ -103,6 +111,10 @@ abstract class HTML {
 			}
 			$in = $data['in'];
 			unset($data['in']);
+		}
+		if (isset($data['data-title'])) {
+			$data_title = $data['data-title'];
+			unset($data['data-title']);
 		}
 		if (isset($data['tag'])) {
 			$tag = $data['tag'];
@@ -136,7 +148,15 @@ abstract class HTML {
 			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
-		return '<'.$tag.$add.'>'.$in."\n";
+		if (isset($data_title)) {
+			return $this->label(
+				'<'.$tag.$add.'>'.$in."\n",
+				array('data-title' => $data_title, 'class' => 'info')
+			);
+
+		} else {
+			return '<'.$tag.$add.'>'.$in."\n";
+		}
 	}
 	
 	function html ($in = '', $data = array()) {

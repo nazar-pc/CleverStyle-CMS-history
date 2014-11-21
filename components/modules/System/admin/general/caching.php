@@ -100,7 +100,7 @@ if (isset($Config->routing['current'][2])) {
 				$a->td(
 					$a->input(
 						array(
-							'type'			=> 'number',
+							'type'			=> 'range',
 							'name'			=> 'core[zlib_compression_level]',
 							'value'			=> intval($Config->core['zlib_compression_level']),
 							'min'			=> 1,

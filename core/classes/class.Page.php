@@ -1,15 +1,8 @@
 <?php
 class Page extends HTML {
-	public	$theme,
-			$color_scheme,
-			$get_list,
-			$cache_list,
-			$interface				= true,
+	public	$theme, $color_scheme, $get_list, $cache_list, $interface = true,
 
-			$Html,
-			$Keywords,
-			$Description,
-			$Title					= array(),
+			$Html, $Keywords, $Description, $Title = array(),
 
 			$Head,
 			$core_js				= array(0 => '', 1 => ''),
@@ -17,23 +10,10 @@ class Page extends HTML {
 			$js						= array(0 => '', 1 => ''),
 			$css					= array(0 => '', 1 => ''),
 			
-			$user_avatar_image,
-			$user_avatar_text,
-			$user_info,
+			$user_avatar_image, $user_avatar_text, $user_info,
 			$debug_info,
 
-			$pre_Body,
-			$Header,
-			$mainmenu,
-			$mainsubmenu,
-			$menumore,
-			$Left,
-			$Top,
-			$Content,
-			$Bottom,
-			$Right,
-			$Footer,
-			$post_Body,
+			$pre_Body, $Header, $mainmenu, $mainsubmenu, $menumore, $Left, $Top, $Bottom, $Right, $Footer, $post_Body,
 
 			$level					= array (
 										'Head'				=> 2,
@@ -54,8 +34,7 @@ class Page extends HTML {
 										'post_Body'			=> 2
 									);
 
-	protected	$Search				= array(),
-				$Replace			= array();
+	protected	$Search = array(), $Replace = array();
 	
 	function init ($Config) {
 		$this->Title[0] = $Config->core['name'];
@@ -140,7 +119,7 @@ class Page extends HTML {
 		if ($this->js[1]) {
 			$this->js[1] = $this->script($Config->core['cache_compress_js_css'] ? $this->filter($this->js[1], 'js') : "\n".$this->js[1]);
 		}
-		$this->Head =	$this->swrap($this->Title[0], '', 'title').
+		$this->Head =	$this->swrap($this->Title[0], array('id' => 'page_title'), 'title').
 						$this->meta(array('http-equiv'	=> 'Content-Type',	'content'	=> 'text/html; charset=utf-8')).
 						$this->meta(array('name'		=> 'author',		'content'	=> 'Mokrynskyi Nazar')).
 						$this->meta(array('name'		=> 'copyright',		'content'	=> $copyright[0])).
@@ -614,10 +593,9 @@ class Page extends HTML {
 		}
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
-		if (is_object($Config) && mb_strtolower($Config->routing['current'][count($Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
+		if (is_object($Config) && mb_strtolower($Config->routing['current'][count($Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface')) {
 			//Обработка замены контента
-			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
-			echo $this->Content;
+			echo preg_replace($this->Search, $this->Replace, $this->Content);
 		} else {
 			global $stop, $Error, $L, $timeload;
 			//Обработка шаблона, наполнение его содержимым

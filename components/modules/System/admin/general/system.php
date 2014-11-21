@@ -24,6 +24,7 @@ $a->content(
 				$a->input(
 					array(
 						'name'			=> 'core[closed_title]',
+						'size'			=> 40,
 						'value'			=> $Config->core['closed_title'],
 						'class'			=> 'form_element'
 					)
@@ -49,6 +50,7 @@ $a->content(
 				$a->input(
 					array(
 						'name'			=> 'core[title_delimiter]',
+						'size'			=> 40,
 						'value'			=> $Config->core['title_delimiter'],
 						'class'			=> 'form_element'
 					)

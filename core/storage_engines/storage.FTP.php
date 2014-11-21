@@ -1,7 +1,7 @@
 <?php
-class MySQL extends DatabaseAbstract {
+class MySQL extends DataBase {
 	//Создание подключения
-	//(название_бд, пользователь, пароль [, хост [, кодовая страница]]
+	//(название_бд, пользователь, пароль [, хост [, кодовая страница [, постоянное_соединение]]]
 	function __construct ($database, $user = '', $password = '', $host = 'localhost', $codepage = false) {
 		$this->connecting_time = microtime(true);
 		$this->id = mysql_connect($host, $user, $password);
@@ -73,9 +73,9 @@ class MySQL extends DatabaseAbstract {
 		}
 	}
 	//Получение результатов
-	//([id_запроса [, в_виде_массива_результатов [, тип_возвращаемого_массива]]])
+	//([id_запроса [, тип_возвращаемого_массива [, в_виде_массива_результатов]]])
 	function f ($query_resource = false, $array = false, $result_type = MYSQL_BOTH) {	//MYSQL_BOTH==3, MYSQL_ASSOC==1, MYSQL_NUM==2
-		if ($query_resource === false) {
+		if (!$query_resource) {
 			$query_resource = $this->query['resource'];
 		}
 		if (is_resource($query_resource)) {

@@ -21,7 +21,7 @@ $a->content(
 		) : '').
 		$a->tr(
 			$a->td($L->allow_ram.':').
-			$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->Kb, ' '.$L->Mb, ' '.$L->Gb, ), ini_get('memory_limit')))
+			$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('memory_limit')))
 		).
 		$a->tr(
 			$a->td($L->free_disk_space.':').
@@ -118,11 +118,11 @@ $a->content(
 					).
 					$a->tr(
 						$a->td($L->upload_limit.':').
-						$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->Kb, ' '.$L->Mb, ' '.$L->Gb, ), ini_get('upload_max_filesize')))
+						$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('upload_max_filesize')))
 					).
 					$a->tr(
 						$a->td($L->post_max_size.':').
-						$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->Kb, ' '.$L->Mb, ' '.$L->Gb, ), ini_get('post_max_size')))
+						$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('post_max_size')))
 					).
 					$a->tr(
 						$a->td($L->max_execution_time.':').

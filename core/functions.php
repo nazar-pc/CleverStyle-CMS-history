@@ -83,7 +83,7 @@ if (USE_CUSTOM) {
 }
 //Автозагрузка необходимых классов
 function __autoload ($class) {
-	require_x(CLASSES.DS.'class.'.$class.'.php', 1, false) || require_x(DB.DS.'db.'.$class.'.php', 1, false);
+	require_x(CLASSES.DS.'class.'.$class.'.php', 1, false) || require_x(DB.DS.'db.'.$class.'.php', 1, false) || require_x(STORAGE.DS.'storage.'.$class.'.php', 1, false);
 }
 function __finish () {
 	global $Classes;
@@ -155,7 +155,7 @@ function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolde
 	}
 	closedir($dirc[$l]);
 	if (empty($list)) {
-		return false;
+		return array();
 	} else {
 		return $list;
 	}
@@ -173,8 +173,11 @@ function flush_cache () {
 	}
 	unset($list);
 	global $Cache;
-	if (is_object($Cache) && $Cache->memcache) {
-		$ok = $Cache->flush() && $ok;
+	if (is_object($Cache)) {
+		if ($Cache->memcache) {
+			$ok = $Cache->flush() && $ok;
+		}
+		$Cache->disable();
 	}
 	return $ok;
 }
@@ -189,6 +192,9 @@ function flush_pcache () {
 			$ok = false;
 		}
 	}
+	if (file_exists(CACHE.DS.'pcache_key')) {
+		unlink(CACHE.DS.'pcache_key');
+	}
 	unset($list);
 	return $ok;
 }
@@ -197,15 +203,15 @@ function formatfilesize($size, $round = false) {
 	global $L;
 	if($size >= 1073741824) {
 		$size = $size/1073741824;
-		$unit = " ".$L->Gb;
+		$unit = " ".$L->GB;
 	} elseif ($size >= 1048576) {
 		$size = $size/1048576;
-		$unit = " ".$L->Mb;
+		$unit = " ".$L->MB;
 	} elseif ($size >= 1024) {
 		$size = $size/1024;
-		$unit = " ".$L->Kb;
+		$unit = " ".$L->KB;
 	} else {
-		$size = $size." b";
+		$size = $size." ".$L->Bytes;
 	}
 	if ($round) {
 		return round($size, $round).$unit;
@@ -213,7 +219,7 @@ function formatfilesize($size, $round = false) {
 		return $size;
 	}
 }
-//Фильтрация с функцией рекурсивной обработки массивов
+//Фильтрация и функции для рекурсивной обработки массивов
 function filter($text, $mode = '', $data = false, $data2 = NULL) {
 	if (is_array($text)) {
 		foreach ($text as $item => $val) {
