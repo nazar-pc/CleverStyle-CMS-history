@@ -35,7 +35,7 @@ if ($confirm) {
 		substr($_POST['email'], 0, strpos($_POST['email'], '@')),
 		$Config->core['name'],
 		$Config->core['url'].'/profile/confirmation/'.$result['reg_key'],
-		TIME
+		$L->time($Config->core['registration_confirmation_time'], 'd')
 	);
 } else {
 	$body = $L->reg_success_mail_body(

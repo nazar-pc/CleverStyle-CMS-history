@@ -17,8 +17,7 @@ class HTML {
 
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
-		global $Config;
-		if ($level < 1 || !is_object($Config) || !$Config->core['debug']) {
+		if ($level < 1) {
 			return $in;
 		}
 		return preg_replace('/^(.*)$/m', str_repeat("\t", $level).'$1', $in);
@@ -97,8 +96,11 @@ class HTML {
 		}
 		ksort($data);
 		foreach ($data as $key => $value) {
-			if (empty($key)) {
+			if (empty($key) && $key !== 0) {
 				continue;
+			}
+			if (is_int($key)) {
+				$add .= ' '.$value;
 			}
 			$add .= ' '.$key.'='.$quote.$value.$quote;
 		}
@@ -299,7 +301,7 @@ class HTML {
 			return $this->swrap($in, $data, __FUNCTION__);
 		}
 	}
-	//{template_1
+	//template_1 {
 	function template_1	($in = '', $data = array(), $function) {
 		if (is_array($in)) {
 			$temp = '';
@@ -342,7 +344,10 @@ class HTML {
 		return $this->template_1($in, $data, __FUNCTION__);
 	}
 	//}
-	function input		($in = array()) {
+	function input		($in = array(), $data = array()) {
+		if (!empty($data)) {
+			$in = array_merge(array('in' => $in), $data);
+		}
 		if (isset($in['type']) && $in['type'] == 'radio') {
 			if (is_array($in)) {
 				if (isset($in['checked'])) {
@@ -437,7 +442,7 @@ class HTML {
 			}
 		}
 	}
-	//{template_2
+	//template_2 {
 	function template_2	($in = '', $data = array(), $function) {
 		if (!is_array($in)) {
 			return $this->swrap($in, $data, $function);
@@ -535,7 +540,7 @@ class HTML {
 		}
 		return $this->swrap($in, $data, __FUNCTION__);
 	}
-	//{template_3
+	//template_3 {
 	function template_3	($in = '', $data = array(), $function) {
 		global $Page;
 		$uniqid = uniqid('html_replace_');
@@ -582,6 +587,66 @@ class HTML {
 			$data['class'] .= ' ui-icon ui-icon-'.$class;
 		}
 		return $this->span($data);
+	}
+	function __call ($input, $data) {
+		if (is_array($data) && count($data) == 2) {
+			$data[1]['in'] = $data[0];
+			$data = $data[1];
+		} elseif(is_array($data) && !empty($data)) {
+			if (is_array($data[0])) {
+				$int = true;
+				foreach ($data[0] as $i => $v) {
+					if (!is_int($i)) {
+						$int = false;
+						break;
+					}
+				}
+				if ($int) {
+					$data = array('in' => $data[0]);
+				} else {
+					$data = $data[0];
+				}
+				unset($int, $i, $v);
+			} else {
+				$data = array('in' => $data[0]);
+			}
+		} else {
+			$data = array();
+		}
+		$input		= explode(' ', $input);
+		foreach ($input as &$i) {
+			$attrs = array();
+			if (($pos = strpos($i, '[')) !== false) {
+				$attrs_ = explode('][', substr($i, $pos+1, -1));
+				foreach ($attrs_ as &$attr) {
+					$attr = explode('=', $attr);
+					$attrs[$attr[0]] = isset($attr[1]) ? $attr[1] : '';
+				}
+				unset($attrs_);
+				$i = substr($i, 0, $pos);
+			}
+			if (($pos = strpos($i, '.')) !== false) {
+				if (!isset($attrs['class'])) {
+					$attrs['class'] = '';
+				}
+				$attrs['class']	= trim($attrs['class'].' '.str_replace('.', ' ', substr($i, $pos)));
+				$i = substr($i, 0, $pos);
+			}
+			$i		= explode('#', $i);
+			$tag	= $i[0];
+			if (isset($i[1])) {
+				$attrs['id'] = $i[1];
+			}
+			$attrs = array_merge((array)$data, $attrs);
+			if (isset($attrs['in'])) {
+				$in = $attrs['in'];
+				unset($attrs['in']);
+			} else {
+				$in = '';
+			}
+			$i		= $this->$tag($in, $attrs);
+		}
+		return implode("\n", $input);
 	}
 }
 ?>

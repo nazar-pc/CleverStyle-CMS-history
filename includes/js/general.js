@@ -63,9 +63,14 @@ $(function() {
 			$('#user_password, #show_password').show();
 		}
 	});
-	$('#user_login, #user_password').keypress(function (event) {
+	$('#user_login, #user_password').keyup(function (event) {
 		if (event.which == 13) {
 			$('#login_process').click();
+		}
+	});
+	$('#register').keyup(function (event) {
+		if (event.which == 13) {
+			$('#register_process').click();
 		}
 	});
 	$('#register_list').change(function() {
@@ -85,7 +90,27 @@ $(function() {
 		}
 	});
 	$('#register_process').click(function() {
-		registration($('#register').val());
+		$('<div title="'+rules_agree+'">'+rules_text+'</div>')
+			.appendTo('body')
+			.dialog({
+				autoOpen	: true,
+				modal		: true,
+				buttons		: [
+					{
+						text	: yes,
+						click	: function () {
+							$(this).dialog('close');
+							registration($('#register').val());
+						}
+					},
+					{
+						text	: no,
+						click	: function () {
+							$(this).dialog('close');
+						}
+					}
+				]
+			});
 	});
 	$('.restore_password').click(function() {
 		//TODO Restore password processing
@@ -115,5 +140,49 @@ $(function() {
 	});
 	$('#system_license_open').click(function () {
 		$('#system_license').dialog('open');
+	});
+	$('#debug_objects_toggle').click(function () {
+		$('#debug_objects').toggle(500);
+		if($(this).hasClass('open')){
+			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+			$(this).removeClass('open');
+		}else{
+			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+			$(this).addClass('open');
+		}
+		$(this).html(add+objects);
+	});
+	$('#debug_user_toggle').click(function () {
+		$('#debug_user').toggle(500);
+		if($(this).hasClass('open')){
+			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+			$(this).removeClass('open');
+		}else{
+			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+			$(this).addClass('open');
+		}
+		$(this).html(add+user_data);
+	});
+	$('#debug_queries_toggle').click(function () {
+		$('#debug_queries').toggle(500);
+		if($(this).hasClass('open')){
+			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+			$(this).removeClass('open');
+		}else{
+			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+			$(this).addClass('open');
+		}
+		$(this).html(add+queries);
+	});
+	$('#debug_cookies_toggle').click(function () {
+		$('#debug_cookies').toggle(500);
+		if($(this).hasClass('open')){
+			add = '<span class="ui-icon ui-icon-triangle-1-e" style="display: inline-block;"></span>';
+			$(this).removeClass('open');
+		}else{
+			add = '<span class="ui-icon ui-icon-triangle-1-se" style="display: inline-block;"></span>';
+			$(this).addClass('open');
+		}
+		$(this).html(add+cookies);
 	});
 });

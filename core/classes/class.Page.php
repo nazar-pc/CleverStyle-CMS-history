@@ -276,7 +276,7 @@ class Page extends HTML {
 			//Подключение CSS стилей
 			$css_list = get_list(PCACHE, '/^[^_](.*)\.css$/i', 'f', 'storages/pcache');
 			if (DS != '/') {
-				$css_list = _str_replace(DS, '/', $css_list);
+				$css_list = str_replace(DS, '/', $css_list);
 			}
 			$css_list = array_merge(array('storages/pcache/'.$this->cache_list.'css'), $css_list);
 			foreach ($css_list as &$file) {
@@ -287,7 +287,7 @@ class Page extends HTML {
 			//Подключение JavaScript
 			$js_list = get_list(PCACHE, '/^[^_](.*)\.js$/i', 'f', 'storages/pcache');
 			if (DS != '/') {
-				$js_list = _str_replace(DS, '/', $js_list);
+				$js_list = str_replace(DS, '/', $js_list);
 			}
 			$js_list = array_merge(array('storages/pcache/'.$this->cache_list.'js'), $js_list);
 			foreach ($js_list as &$file) {
@@ -327,7 +327,7 @@ class Page extends HTML {
 		);
 		unset($theme_folder, $scheme_folder, $theme_pfolder, $scheme_pfolder);
 		if (!$for_cache && DS != '/') {
-			$this->get_list = _str_replace(DS, '/', $this->get_list);
+			$this->get_list = str_replace(DS, '/', $this->get_list);
 		}
 		sort($this->get_list['css']);
 		sort($this->get_list['js']);
@@ -395,69 +395,60 @@ class Page extends HTML {
 	//Сбор и отображение отладочных данных
 	protected function debug () {
 		global $Config, $L, $db;
-		$span = array(
-			0	=> $this->span(array('class'	=> 'ui-icon ui-icon-triangle-1-e',	'style'	=> 'display: inline-block;',	'level'	=> 0)),
-			1	=> $this->span(array('class'	=> 'ui-icon ui-icon-triangle-1-se',	'style'	=> 'display: inline-block;',	'level'	=> 0))
+		$span = $this->{'span.ui-icon.ui-icon-triangle-1-e'}(
+			array(
+				 'style'	=> 'display: inline-block;',
+				 'level'	=> 0
+			)
 		);
 		//Объекты
 		if ($Config->core['show_objects_data']) {
 			global $Objects, $timeload, $loader_init_memory;
-			$this->debug_info .= $this->p(
-				$span[0].$L->objects,
-				array(
-					'class' => 'ui-state-highlight',
-					'onClick' => '$(\'#debug_objects\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->objects.'\');'
-				)
+			$this->debug_info .= $this->{'p#debug_objects_toggle.ui-state-highlight'}(
+				$span.$L->objects
 			);
 			$debug_info =	$this->p(
 								$L->total_list.': '.implode(', ', array_keys($Objects->Loaded))
 							).$this->p(
-								$L->loader,
-								array('style' => 'font-weight: bold;')
-							).$this->p(
-								$L->creation_duration.': '.format_time(round($timeload['loader_init'] - $timeload['start'], 5)),
-								array('style' => 'padding-left: 20px;')
-							).$this->p(
-								$L->memory_usage.': '.format_filesize($loader_init_memory, 5),
-								array('style' => 'padding-left: 20px;')
+								$L->loader
+							).$this->{'p.padding_left'}(
+								$L->creation_duration.': '.
+									format_time(round($timeload['loader_init'] - $timeload['start'], 5))
+							).$this->{'p.padding_left'}(
+								$L->memory_usage.': '.
+									format_filesize($loader_init_memory, 5)
 							);
 			$last = $timeload['loader_init'];
 			foreach ($Objects->Loaded as $object => &$data) {
 				$debug_info .=	$this->p(
-									$object,
-									array('style' => 'font-weight: bold;')
-								).$this->p(
-									$L->creation_duration.': '.format_time(round($data[0] - $last, 5)),
-									array('style' => 'padding-left: 20px;')
-								).$this->p(
-									$L->time_from_start_execution.': '.format_time(round($data[0] - $timeload['start'], 5)),
-									array('style' => 'padding-left: 20px;')
-								).$this->p(
-									$L->memory_usage.': '.format_filesize($data[1], 5),
-									array('style' => 'padding-left: 20px;')
+									$object
+								).$this->{'p.padding_left'}(
+									$L->creation_duration.': '.
+										format_time(round($data[0] - $last, 5))
+								).$this->{'p.padding_left'}(
+									$L->time_from_start_execution.': '.
+										format_time(round($data[0] - $timeload['start'], 5))
+								).$this->{'p.padding_left'}(
+									$L->memory_usage.': '.
+										format_filesize($data[1], 5)
 								);
 				$last = $data[0];
 			}
-			$this->debug_info .= $this->div(
-									$debug_info,
-									array('id' => 'debug_objects', 'style' => 'display: none; padding-left: 20px;')
-								);
+			$this->debug_info .= $this->{'div#debug_objects.padding_left'}(
+				$debug_info,
+				array('style' => 'display: none;')
+			);
 			unset($loader_init_memory, $last, $object, $data, $debug_info);
 		}
 		//Данные пользователя
 		if ($Config->core['show_user_data']) {
-			$this->debug_info .= $this->p(
-				$span[0].$L->user_data,
-				array(
-					'class' => 'ui-state-highlight',
-					'onClick' => '$(\'#debug_user\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->user_data.'\');'
-				)
+			$this->debug_info .= $this->{'p#debug_user_toggle.ui-state-highlight'}(
+				$span.$L->user_data
 			);
 			global $loader_init_memory;
-			$this->debug_info .= $this->div(
-				'',
+			$this->debug_info .= $this->{'div#debug_user'}(
+				'',//TODO Show user information
 				array(
-					'id' => 'debug_user',
 					'style' => 'display: none;'
 				)
 			);
@@ -465,12 +456,8 @@ class Page extends HTML {
 		}
 		//Запросы в БД
 		if ($Config->core['show_queries']) {
-			$this->debug_info .= $this->p(
-				$span[0].$L->queries,
-				array(
-					'class' => 'ui-state-highlight',
-					'onClick' => '$(\'#debug_queries\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->queries.'\');'
-				)
+			$this->debug_info .= $this->{'p#debug_queries_toggle.ui-state-highlight'}(
+				$span.$L->queries
 			);
 			$queries =	$this->p(
 				$L->false_connections.': '.$this->b(implode(', ', $db->false_connections) ?: $L->no)
@@ -486,11 +473,10 @@ class Page extends HTML {
 			);
 			foreach ($db->connections as $name => &$database) {
 				$name = $name != 'core' ? $L->db.' '.$database->database : $L->core_db.' ('.$database->database.')';
-				$queries .= $this->p(
+				$queries .= $this->{'p.padding_left'}(
 					$name.
 					', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).
-					', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.format_time(round($database->time, 5)).':',
-					array('style' => 'padding-left: 20px;')
+					', '.$database->queries['num'].' '.$L->queries_to_db.' '.$L->during.' '.format_time(round($database->time, 5)).':'
 				);
 				foreach ($database->queries['text'] as $i => &$text) {
 					$queries .= $this->code(
@@ -499,22 +485,20 @@ class Page extends HTML {
 						'#'.$this->i(format_time(round($database->queries['time'][$i], 5))).
 						($error = (strtolower(substr($text, 0, 6)) == 'select' && !$database->queries['resource'][$i]) ? '('.$L->error.')' : ''),
 						array(
-							'style' => 'border-left: 1px solid; display: block; margin: 10px 5px 10px 20px; padding-left: 10px; text-align: left;',
-							'class' => ($database->queries['time'][$i] > 0.1 ? 'red' : '').($error ? ' ui-state-error' : '')
+							'class' => ($database->queries['time'][$i] > 0.1 ? 'red ' : '').($error ? 'ui-state-error ' : '').'code_debug'
 						)
 					);
 				}
 				unset($error);
 			}
 			unset($name, $database, $i, $text);
-			$debug_info =	$this->div(
+			$debug_info =	$this->{'div#debug_queries.padding_left'}(
 				$this->p(
 					$L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.format_time(round($db->time, 5)).($db->queries ? ':' : '')
 				).
 				$queries,
 				array(
-					'id' => 'debug_queries',
-					'style' => 'display: none; padding-left: 20px; word-wrap: break-word;'
+					'style' => 'display: none; '
 				)
 			);
 			unset($queries);
@@ -523,32 +507,29 @@ class Page extends HTML {
 		}
 		//Cookies
 		if ($Config->core['show_cookies']) {
-			$this->debug_info .= $this->p(
-				$span[0].$L->cookies,
-				array(
-					'class' => 'ui-state-highlight',
-					'onClick' => '$(\'#debug_cookies\').toggle(500); if($(this).hasClass(\'open\')){add = \''.htmlentities($span[0]).'\'; $(this).removeClass(\'open\');}else{add = \''.htmlentities($span[1]).'\'; $(this).addClass(\'open\');} $(this).html(add+\''.$L->cookies.'\');'
-				)
+			$this->debug_info .= $this->{'p#debug_cookies_toggle.ui-state-highlight'}(
+				$span.$L->cookies
 			);
 			$debug_info = $this->tr(
-				$this->td($L->key.':', array('style' => 'font-weight: bold; width: 20%;')).
+				$this->td($L->key.':', array('style' => 'width: 20%;')).
 				$this->td($L->value, array('style' => 'width: 80%;'))
 			);
 			foreach ($_COOKIE as $i => $v) {
 				$debug_info .= $this->tr(
-					$this->td($i.':', array('style' => 'font-weight: bold; width: 20%;')).
+					$this->td($i.':', array('style' => 'width: 20%;')).
 					$this->td(xap($v), array('style' => 'width: 80%;')), true
 				);
 			}
-			$this->debug_info .= $this->div(
+			$this->debug_info .= $this->{'div#debug_cookies'}(
 				$this->level(
-					$this->table(
+					$this->{'table.padding_left'}(
 						$debug_info,
-						array('style' => 'padding-left: 20px; width: 100%;')
+						array(
+							 'style' => 'width: 100%'
+						)
 					)
 				),
 				array(
-					'id'	=> 'debug_cookies',
 					'style'	=> 'display: none;'
 				)
 			);
@@ -558,20 +539,14 @@ class Page extends HTML {
 	}
 	//Отображение уведомления
 	function notice ($text) {
-		$this->Top .= $this->div(
-			$text,
-			array(
-				'class'	=> 'green ui-state-highlight'
-			)
+		$this->Top .= $this->{'div.green.ui-state-highlight'}(
+			$text
 		);
 	}
 	//Отображение предупреждения
 	function warning ($text) {
-		$this->Top .= $this->div(
-			$text,
-			array(
-				'class'	=> 'red ui-state-error'
-			)
+		$this->Top .= $this->{'div.red.ui-state-error'}(
+			$text
 		);
 	}
 	/**
@@ -617,10 +592,9 @@ class Page extends HTML {
 					),
 					array(
 						$this->debug_info ? $this->level(
-							$this->div(
+							$this->{'div#debug'}(
 								$this->level($this->debug_info),
 								array(
-									'id'			=> 'debug',
 									'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 									'title'			=> $L->debug
 								)

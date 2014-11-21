@@ -12,83 +12,69 @@ if (isset($rc[2])) {
 		}
 		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
-			$a->table(
+			$a->{'table.admin_table.center_all'}(
 				$a->tr(
-					$a->td(
+					$a->{'td.ui-widget-header.ui-corner-all'}(
 						array(
 							$a->info('storageurl'),
 							$a->info('storagehost'),
 							$a->info('storageconnection'),
 							$a->info('storageuser'),
 							$a->info('storagepass')
-						),
-						array(
-							'class'	=> 'ui-widget-header ui-corner-all'
 						)
 					)
 				).
 				$a->tr(
-					$a->td(
+					$a->{'td.ui-state-default.ui-corner-all.storage_add'}(
 						array(
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'storage[url]',
-									'value'		=> $rc[2] == 'edit' ? $storage['url'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $storage['url'] : ''
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'storage[host]',
-									'value'		=> $rc[2] == 'edit' ? $storage['host'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $storage['host'] : ''
 								)
 							),
-							$a->select(
+							$a->{'select.form_element'}(
 								array(
 									'in'		=> _mb_substr(get_list(ENGINES, '/^storage\..*?\.php$/i', 'f'), 8, -4)
 								),
 								array(
 									'name'		=> 'storage[connection]',
 									'selected'	=> $rc[2] == 'edit' ? $storage['connection'] : '',
-									'size'		=> 5,
-									'class'		=> 'form_element'
+									'size'		=> 5
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'storage[user]',
-									'value'		=> $rc[2] == 'edit' ? $storage['user'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $storage['user'] : ''
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'storage[password]',
-									'value'		=> $rc[2] == 'edit' ? $storage['password'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $storage['password'] : ''
 								)
 							).
-							$a->input(
+							$a->{'input[type=hidden]'}(
 								array(
-									'type'		=> 'hidden',
 									'name'		=> 'mode',
 									'value'		=> $rc[2] == 'edit' ? 'edit' : 'add'
 								)
 							).
-							(isset($rc[3]) ? $a->input(array('type' => 'hidden', 'name' => 'storage_id', 'value' => $rc[3])) : '')
-						),
-						array(
-							'class'	=> 'ui-state-default ui-corner-all storage_add'
+							(isset($rc[3]) ? $a->{'input[type=hidden]'}(array('name' => 'storage_id', 'value' => $rc[3])) : '')
 						)
 					)
-				),
-				array('class'	=> 'admin_table center_all')
+				)
 			).
 			$a->button(
 				$L->test_connection,
 				array(
-					'type'			=> 'button',
 					'onMouseDown'	=> 'storage_test(\''.$a->action.'/test\');'
 				)
 			)
@@ -116,14 +102,13 @@ if (isset($rc[2])) {
 		} else {
 			$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 			$a->content(
-				$a->p(
+				$a->{'p.center_all'}(
 					$L->sure_to_delete.' '.$L->storage.' '.
 					$a->b($Config->storage[$rc[3]]['host'].'/'.$Config->storage[$rc[3]]['connection']).'?'.
-					$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-					$a->input(array('type'	=> 'hidden',	'name'	=> 'storage',	'value'		=> $rc[3])),
-					array('class'	=> 'center_all')
+					$a->{'input[type=hidden]'}(array('name'	=> 'mode',		'value'		=> 'delete')).
+					$a->{'input[type=hidden]'}(array('name'	=> 'storage',	'value'		=> $rc[3]))
 				).
-				$a->button(array('in'	=> $L->yes,		'type'	=> 'submit'))
+				$a->{'button[type=submet]'}($L->yes)
 			);
 		}
 	} elseif ($rc[2] == 'test') {
@@ -132,23 +117,20 @@ if (isset($rc[2])) {
 		$a->form = false;
 		global $Page, $Storage;
 		if (isset($rc[3])) {
-			$Page->Content = $Page->p($Storage->test(array($rc[3])) ? $L->success : $L->fail, array('class'	=> 'test_result'));
+			$Page->Content = $Page->{'p.test_result'}($Storage->test(array($rc[3])) ? $L->success : $L->fail);
 		} else {
-			$Page->Content = $Page->p($Storage->test($_POST['storage']) ? $L->success : $L->fail, array('class'	=> 'test_result'));
+			$Page->Content = $Page->{'p.test_result'}($Storage->test($_POST['storage']) ? $L->success : $L->fail);
 		}
 	}
 } else {
 	$storage_list = $a->tr(
-		$a->td(
+		$a->{'td.ui-widget-header.ui-corner-all'}(
 			array(
 				$L->action,
 				$L->storageurl,
 				$L->storagehost,
 				$L->storageconnection,
 				$L->storageuser
-			),
-			array(
-				'class'	=> 'ui-widget-header ui-corner-all'
 			)
 		)
 	);
@@ -156,43 +138,37 @@ if (isset($rc[2])) {
 		$storage_list .=	$a->tr(
 			$a->td(
 				($i ? 
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('wrench'),
 						array(
-							'data-title'	=> $L->edit.' '.$L->storage,
-							'class'			=> 'compact'
+							'data-title'	=> $L->edit.' '.$L->storage
 						)
 					),
 					array(
-						'href'		=> $a->action.'/edit/'.$i,
-						'class'		=> 'black'
+						'href'		=> $a->action.'/edit/'.$i
 					)
 				).
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('close'),
 						array(
-							'data-title'	=> $L->delete.' '.$L->storage,
-							'class'			=> 'compact'
+							'data-title'	=> $L->delete.' '.$L->storage
 						)
 					),
 					array(
-						'href'		=> $a->action.'/delete/'.$i,
-						'class'		=> 'black'
+						'href'		=> $a->action.'/delete/'.$i
 					)
 				).
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('signal-diag'),
 						array(
-							'data-title'	=> $L->test_connection,
-							'class'			=> 'compact'
+							'data-title'	=> $L->test_connection
 						)
 					),
 					array(
-						'onMouseDown'	=> 'storage_test(\''.$a->action.'/test/'.$i.'\', true);',
-						'class'			=> 'black'
+						'onMouseDown'	=> 'storage_test(\''.$a->action.'/test/'.$i.'\', true);'
 					)
 				) : '-'),
 				array(
@@ -214,32 +190,25 @@ if (isset($rc[2])) {
 	}
 	unset($i, $storage_data);
 	$a->content(
-		$a->table(
+		$a->{'table.admin_table.center_all'}(
 			$storage_list.
 			$a->tr(
-				$a->td (
+				$a->{'td.left_all[colspan=4]'}(
 					$a->button(
 						$L->add_storage,
 						array(
 							'onMouseDown' => 'javasript: location.href= \''.$ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/add\';'
 						)
-					).$a->br(),
-					array(
-						'colspan'	=> 4,
-						'class'		=> 'left_all'
-					)
+					).$a->br()
 				)
-			),
-			array('class'	=> 'admin_table center_all')
+			)
 		)
 	);
 	unset($storage_list);
 }
 $test_dialog && $a->content(
-	$a->div(
+	$a->{'div#test_storage.dialog'}(
 		array(
-			'id'			=> 'test_storage',
-			'class'			=> 'dialog',
 			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"show":"scale","width":"250"}',
 			'title'			=> $L->test_connection
 		)

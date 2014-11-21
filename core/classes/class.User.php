@@ -58,7 +58,7 @@ class User {
 			unset($test);
 			//Получаем список известных ботов
 			if (!($bots = $Cache->{'users/bots'})) {
-				$bots = $this->db()->qfa('SELECT `id`, `login`, `email` FROM [prefix]users WHERE 3 IN (`groups`)');
+				$bots = $this->db()->qfa('SELECT `id`, `login`, `email` FROM `[prefix]users` WHERE 3 IN (`groups`)');
 				if (is_array($bots) && !empty($bots)) {
 					foreach ($bots as &$bot) {
 						$bot['login'] = _json_decode($bot['login']);
@@ -315,9 +315,7 @@ class User {
 			return $this->db = $this->db_prime;
 		}
 		global $Config, $db;
-		/**
-		 * Save link for faster access
-		 */
+		//Save link for faster access
 		$this->db = $db->{$Config->components['modules']['System']['db']['users']}();
 		return $this->db;
 	}
@@ -330,9 +328,7 @@ class User {
 			return $this->db_prime;
 		}
 		global $Config, $db;
-		/**
-		 * Save link for faster access
-		 */
+		//Save link for faster access
 		$this->db_prime = $db->{$Config->components['modules']['System']['db']['users']}();
 		return $this->db_prime;
 	}
@@ -369,6 +365,7 @@ class User {
 	function get_session ($session_id = '') {
 		$this->current['session'] = _getcookie('session');
 		$session_id = $session_id ?: $this->current['session'];
+
 		global $Cache, $Config;
 		$result = false;
 		if ($session_id && !($result = $Cache->{'sessions/'.$session_id})) {
@@ -387,7 +384,7 @@ class User {
 		}
 		if (!$session_id || !is_array($result)) {
 			$this->add_session(1);
-			return $this->get_session();
+			return 1;
 		}
 		if ($result['expire'] - TIME < $Config->core['session_expire'] * $Config->core['update_ratio'] / 100) {
 			$this->db_prime()->q(
@@ -404,38 +401,43 @@ class User {
 	 * @return bool
 	 */
 	function add_session ($id) {
+		if (preg_match('/^[0-9a-z]{32}$/', $this->current['session'])) {
+			$this->del_session();
+		}
 		global $Config;
-		/**
-		 * Generate hash in cycle, to obtain unique value
-		 */
+		//Generate hash in cycle, to obtain unique value
 		for ($i = 0; $hash = md5(MICROTIME + $i); ++$i) {
-			if (!$this->db_prime()->qf('SELECT `id` FROM `[prefix]sessions` WHERE `id` = \''.$hash.'\' LIMIT 1')) {
-				$this->db_prime()->q(
-					'INSERT INTO `[prefix]sessions` '.
-						'(`id`, `user`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`) '.
-							'VALUES '.
-						'('.
-							'\''.$hash.'\', '.
-							$id.', '.
-							(TIME + $Config->core['session_expire']).', '.
-							$this->db_prime()->sip($this->user_agent).', '.
-							'\''.($ip = ip2hex($this->ip)).'\', '.
-							'\''.($forwarded_for = ip2hex($this->forwarded_for)).'\', '.
-							'\''.($client_ip = ip2hex($this->client_ip)).'\''.
-						')'
-				);
-				global $Cache;
-				$Cache->{'sessions/'.$hash} = $this->current['session'] = array(
-					'user'			=> $id,
-					'expire'		=> TIME + $Config->core['session_expire'],
-					'user_agent'	=> $this->user_agent,
-					'ip'			=> $ip,
-					'forwarded_for'	=> $forwarded_for,
-					'client_ip'		=> $client_ip
-				);
-				_setcookie('session', $hash, TIME + $Config->core['session_expire'], false, true);
-				return true;
+			if ($this->db_prime()->qf('SELECT `id` FROM `[prefix]sessions` WHERE `id` = \''.$hash.'\' LIMIT 1')) {
+				continue;
 			}
+			$this->db_prime()->q(
+				'INSERT INTO `[prefix]sessions`
+					(`id`, `user`, `created`, `expire`, `user_agent`, `ip`, `forwarded_for`, `client_ip`)
+						VALUES
+					(
+						\''.$hash.'\',
+						'.$id.',
+						'.TIME.',
+						'.(TIME + $Config->core['session_expire']).',
+						'.$this->db_prime()->sip($this->user_agent).',
+						\''.($ip = ip2hex($this->ip)).'\',
+						\''.($forwarded_for = ip2hex($this->forwarded_for)).'\',
+						\''.($client_ip = ip2hex($this->client_ip)).'\'
+					)'
+			);
+			$this->db_prime()->q('UPDATE `[prefix]users` SET `lastlogin` = '.TIME.', `lastip` = \''.$ip.'\' WHERE `id` ='.$id);
+			global $Cache;
+			$Cache->{'sessions/'.$hash} = $this->current['session'] = array(
+				'user'			=> $id,
+				'expire'		=> TIME + $Config->core['session_expire'],
+				'user_agent'	=> $this->user_agent,
+				'ip'			=> $ip,
+				'forwarded_for'	=> $forwarded_for,
+				'client_ip'		=> $client_ip
+			);
+			_setcookie('session', $hash, TIME + $Config->core['session_expire'], false, true);
+			$this->get_session();
+			return true;
 		}
 		return false;
 	}
@@ -447,8 +449,12 @@ class User {
 	function del_session ($session_id = '') {
 		global $Cache;
 		$session_id = $session_id ?: $this->current['session'];
-		_setcookie('session', '');
-		$Cache->del('sessions/'.$session_id);
+		$this->current['session'] = false;
+		$this->add_session(1);
+		if (!preg_match('/^[0-9a-z]{32}$/', $session_id)) {
+			return false;
+		}
+		unset($Cache->{'sessions/'.$session_id});
 		return $session_id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `id` = \''.$session_id.'\'') : false;
 	}
 	/**
@@ -457,8 +463,14 @@ class User {
 	 * @return bool
 	 */
 	function del_all_sessions ($id = false) {
+		global $Cache;
 		$id = $id ?: $this->id;
 		_setcookie('session', '');
+		$data = $this->db_prime()->qfa('SELECT `id` FROM `[prefix]sessions` WHERE `user` = '.$this->id);
+		foreach ($data as $session) {
+			unset($Cache->{'sessions/'.$session['id']});
+		}
+		$this->add_session(1);
 		return $id ? $this->db_prime()->q('UPDATE `[prefix]sessions` SET `expire` = 0 WHERE `user` = '.$this->id) : false;
 	}
 	/**
@@ -528,129 +540,94 @@ class User {
 		} else {
 			$Page->user_avatar_text = '?';
 			$Page->user_avatar_image = 'none';
-			$Page->user_info = $Page->div(
+			$Page->user_info = $Page->{'div#anonym_header_form'}(
 				$Page->b($L->hello.', '.$L->guest.'!').$Page->br().
-				$Page->button(
-					$Page->icon('check').$L->log_in,
-					array(
-						'id'			=> 'login_slide',
-						'class'			=> 'compact'
-					)
+				$Page->{'button#login_slide.compact'}(
+					$Page->icon('check').$L->log_in
 				).
-				$Page->button(
+				$Page->{'button#registration_slide.compact'}(
 					$Page->icon('pencil').$L->register,
 					array(
-						'id'			=> 'registration_slide',
-						'data-title'	=> $L->quick_registration_form,
-						'class'			=> 'compact'
+						'data-title'	=> $L->quick_registration_form
 					)
-				),
-				array(
-					'id'		=> 'anonym_header_form'
 				)
 			).
-			$Page->div(
-				$Page->input(
+			$Page->{'div#register_header_form'}(
+				$Page->{'input#register'}(
 					array(
-						'id'			=> 'register',
 						'placeholder'	=> $L->email_or,
 						'tabindex'		=> 1
 					)
 				).
-				$Page->select(
+				$Page->{'select#register_list'}(
 					array(
 						'in'			=> array_merge(array(''), (array)_mb_substr(get_list(MODULES.DS.'System'.DS.'registration', '/^.*?\.php$/i', 'f'), 0, -4))
-					),
-					array(
-						'id'			=> 'register_list'
 					)
 				).
-				$Page->button(
+				$Page->{'button#register_process.compact'}(
 					$Page->icon('pencil').$L->register,
 					array(
-						'id'			=> 'register_process',
-						'class'			=> 'compact',
 						'tabindex'		=> 2
 					)
 				).
-				$Page->button(
+				$Page->{'button.compact.header_back'}(
 					$Page->icon('carat-1-s'),
 					array(
 						'data-title'	=> $L->back,
-						'class'			=> 'compact header_back',
 						'tabindex'		=> 3
 					)
 				).
-				$Page->button(
+				$Page->{'button.compact.restore_password'}(
 					$Page->icon('help'),
 					array(
 						'data-title'	=> $L->restore_password,
-						'class'			=> 'compact restore_password',
 						'tabindex'		=> 4
 					)
 				),
 				array(
-					'id'	=> 'register_header_form',
 					'style'	=> 'display: none;'
 				)
 			).
-			$Page->div(
-				$Page->input(
+			$Page->{'div#login_header_form'}(
+				$Page->{'input#user_login'}(
 					array(
-						'id'			=> 'user_login',
 						'placeholder'	=> $L->login_or_email_or,
 						'tabindex'		=> 1
 					)
 				).
-				$Page->select(
+				$Page->{'select#login_list'}(
 					array(
 						'in'			=> array_merge(array(''), (array)_mb_substr(get_list(MODULES.DS.'System'.DS.'registration', '/^.*?\.php$/i', 'f'), 0, -4))
-					),
-					array(
-						'id'			=> 'login_list'
 					)
 				).
-				$Page->input(
+				$Page->{'input#user_password[type=password]'}(
 					array(
-						'type'			=> 'password',
-						'id'			=> 'user_password',
 						'placeholder'	=> $L->password,
 						'tabindex'		=> 2
 					)
 				).
-				$Page->icon(
-					'locked',
-					array(
-						'id'			=> 'show_password',
-						'class'			=> 'pointer'
-					)
-				).
-				$Page->button(
+				$Page->{'icon#show_password.pointer'}('locked').
+				$Page->{'button#login_process.compact'}(
 					$Page->icon('check').$L->log_in,
 					array(
-						'id'			=> 'login_process',
-						'class'			=> 'compact',
 						'tabindex'		=> 3
 					)
 				).
-				$Page->button(
+				$Page->{'button.compact.header_back'}(
 					$Page->icon('carat-1-s'),
 					array(
 						'data-title'	=> $L->back,
-						'class'			=> 'compact header_back',
 						'tabindex'		=> 5
 					)
 				).
-				$Page->button(
+				$Page->{'button.compact.restore_password'}(
 					$Page->icon('help'),
 					array(
 						'data-title'	=> $L->restore_password,
-						'class'			=> 'compact restore_password',
 						'tabindex'		=> 4
 					)
 				),
 				array(
-					'id'	=> 'login_header_form',
 					'style'	=> 'display: none;'
 				)
 			);
@@ -662,17 +639,34 @@ class User {
 	 * @return array|bool|string
 	 */
 	function registration ($email) {
+		global $Config;
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 			return false;
 		}
+		$this->db_prime()->q('UPDATE `[prefix]users` SET
+				`login` = null,
+				`login_hash` = null,
+				`username` = \'deleted\',
+				`password_hash` = null,
+				`email` = null,
+				`email_hash` = null,
+				`groups` = null,
+				`regdate` = 0,
+				`regip` = null,
+				`regkey` = null
+			WHERE
+				`lastlogin` = 0 AND
+				`status` = -1 AND
+				`regdate` != 0 AND
+				`regdate` < '.(TIME - $Config->core['registration_confirmation_time']*86400)
+		);
 		$email_ = hash('sha224', $email);
-		if (!$this->db_prime()->q('SELECT `id` FROM [prefix]users WHERE `email_hash` = \''.$email_.'\'')) {
+		if (!$this->db_prime()->q('SELECT `id` FROM `[prefix]users` WHERE `email_hash` = \''.$email_.'\' LIMIT 1')) {
 			return 'exists';
 		}
-		global $Config;
 		$password	= password_generate($Config->core['password_min_length'], $Config->core['password_min_strength']);
 		$reg_key	= md5($password.$this->ip);
-		if ($this->db_prime()->q('INSERT INTO [prefix]users (
+		if ($this->db_prime()->q('INSERT INTO `[prefix]users` (
 				`login`,
 				`login_hash`,
 				`password_hash`,
@@ -686,7 +680,7 @@ class User {
 			) VALUES (
 				'.$this->db_prime()->sip($email).',
 				\''.$email_.'\',
-				\''.hash('sha224', $password).'\',
+				\''.hash('sha512', $password).'\',
 				'.$this->db_prime()->sip($email).',
 				\''.$email_.'\',
 				2,
@@ -701,7 +695,13 @@ class User {
 				$this->add_session($this->reg_id);
 			}
 			if ($this->reg_id % $Config->core['inserts_limit'] == 0) {
-				$this->db_prime()->q('DELETE FROM `[prefix]users` WHERE `login_hash` = null AND `email_hash` = null AND `password_hash` = null');
+				$this->db_prime()->q('DELETE FROM `[prefix]users` WHERE
+					`login_hash` = null AND
+					`email_hash` = null AND
+					`password_hash` = null AND
+					`id` != 1 AND
+					`id` != 2'
+				);
 			}
 			return array(
 				'reg_key'	=> $Config->core['require_registration_confirmation'] ? $reg_key : true,
@@ -711,8 +711,55 @@ class User {
 			return 'error';
 		}
 	}
+	/**
+	 * Confirmation of registration process
+	 * @param $reg_key
+	 * @return array|bool
+	 */
+	function confirmation ($reg_key) {
+		global $Config;
+		if (!preg_match('/^[0-9a-z]{32}$/', $reg_key)) {
+			return false;
+		}
+		$this->db_prime()->q('UPDATE `[prefix]users` SET
+				`login` = null,
+				`login_hash` = null,
+				`username` = \'deleted\',
+				`password_hash` = null,
+				`email` = null,
+				`email_hash` = null,
+				`groups` = null,
+				`regdate` = 0,
+				`regip` = null,
+				`regkey` = null
+			WHERE
+				`lastlogin` = 0 AND
+				`status` = -1 AND
+				`regdate` != 0 AND
+				`regdate` < '.(TIME - $Config->core['registration_confirmation_time']*86400)
+		);
+		$data = $this->db_prime()->qf('SELECT `id`, `email` FROM `[prefix]users` WHERE `regkey` = \''.$reg_key.'\' AND `status` = -1 LIMIT 1');
+		if (!isset($data['email'])) {
+			return false;
+		}
+		$this->reg_id = $data['id'];
+		$password	= password_generate($Config->core['password_min_length'], $Config->core['password_min_strength']);
+		!$this->db_prime()->q('UPDATE `[prefix]users` SET `password_hash` = \''.hash('sha512', $password).'\', `status` = 1 WHERE `id` = '.$this->reg_id);
+		$this->add_session($this->reg_id);
+		return array(
+			'email'		=> $data['email'],
+			'password'	=> $password
+		);
+	}
+	/**
+	 * Canceling of bad registration
+	 */
 	function registration_cancel () {
-		$this->db_prime()->q('UPDATE [prefix]users SET
+		if ($this->reg_id == 0) {
+			return;
+		}
+		$this->add_session(1);
+		$this->db_prime()->q('UPDATE `[prefix]users` SET
 				`login` = null,
 				`login_hash` = null,
 				`username` = \'deleted\',
@@ -726,6 +773,7 @@ class User {
 				`status` = -1
 			WHERE `id` = '.$this->reg_id
 		);
+		$this->reg_id = 0;
 	}
 	/**
 	 * Saving cache changing, and users data

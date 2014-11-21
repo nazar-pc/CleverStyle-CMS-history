@@ -7,12 +7,12 @@ if ($mode && $rc[2] == 'settings') {
 	$a->apply = false;
 	$a->cancel_back = true;
 	$a->action .= '/edit/'.$rc[3];
-	$a->form_atributes += array('formnovalidate' => '');
+	$a->form_atributes += array('formnovalidate');
 	$block = &$Config->components['blocks'][$rc[3]];
 	$a->content(
-		$a->table(
+		$a->{'table.admin_table.center_all'}(
 			$a->tr(
-				$a->td(
+				$a->{'td.ui-widget-header.ui-corner-all'}(
 					array(
 						$a->info('block_title'),
 						$a->info('block_active'),
@@ -20,96 +20,73 @@ if ($mode && $rc[2] == 'settings') {
 						$a->info('block_start'),
 						$a->info('block_expire'),
 						$a->info('block_update')
-					),
-					array(
-						'class'	=> 'ui-widget-header ui-corner-all'
 					)
 				)
 			).
 			$a->tr(
-				$a->td(
+				$a->{'td.ui-state-default.ui-corner-all.block_add'}(
 					array(
-						$a->input(
+						$a->{'input.form_element'}(
 							array(
 								'name'		=> 'block[title]',
-								'value'		=> $block['title'],
-								'class'		=> 'form_element'
+								'value'		=> $block['title']
 							)
 						),
-						$a->input(
+						$a->{'input[type=radio]'}(
 							array(
-								'type'		=> 'radio',
 								'name'		=> 'block[active]',
 								'checked'	=> $block['active'],
 								'value'		=> array(1, 0),
-								'class'		=> array('form_element'),
 								'in'		=> array($L->yes, $L->no)
 							)
 						),
-						$a->select(
+						$a->{'select.form_element'}(
 							array(
 								'in'		=> _mb_substr(get_list(TEMPLATES.DS.'blocks', '/^block\..*?\.(php|html)$/i', 'f'), 6)
 							),
 							array(
 								'name'		=> 'block[template]',
 								'selected'	=> $block['template'],
-								'size'		=> 5,
-								'class'		=> 'form_element'
+								'size'		=> 5
 							)
 						),
-						$a->input(
+						$a->{'input.form_element[type=datetime-local]'}(
 							array(
-								'type'		=> 'datetime-local',
 								'name'		=> 'block[start]',
-								'value'		=> date('Y-m-d\TH:i', $block['start'] ?: TIME),
-								'class'		=> 'form_element'
+								'value'		=> date('Y-m-d\TH:i', $block['start'] ?: TIME)
 							)
 						),
-						$a->input(
+						$a->{'input[type=radio]'}(
 							array(
-								'type'		=> 'radio',
 								'name'		=> 'block[expire][state]',
 								'checked'	=> ($block['expire'] != 0),
 								'value'		=> array(1, 0),
-								'class'		=> array('form_element'),
 								'in'		=> array($L->as_specified, $L->never)
 							)
-						).$a->br().$a->br().
-						$a->input(
+						).$a->br(2).
+						$a->{'input.form_element[type=datetime-local]'}(
 							array(
-								'type'		=> 'datetime-local',
 								'name'		=> 'block[expire][date]',
-								'value'		=> date('Y-m-d\TH:i', $block['expire'] ?: TIME),
-								'class'		=> 'form_element'
+								'value'		=> date('Y-m-d\TH:i', $block['expire'] ?: TIME)
 							)
 						),
-						$a->input(
+						$a->{'input.form_element[type=time]'}(
 							array(
-								'type'		=> 'time',
 								'name'		=> 'block[update]',
-								'value'		=> str_pad(round($block['update'] / 60), 2, 0, STR_PAD_LEFT).':'.str_pad(round($block['update'] % 60), 2, 0, STR_PAD_LEFT),
-								'class'		=> 'form_element'
+								'value'		=> str_pad(round($block['update'] / 60), 2, 0, STR_PAD_LEFT).':'.
+												str_pad(round($block['update'] % 60), 2, 0, STR_PAD_LEFT)
 							)
 						)
-					),
-					array(
-						'class'	=> 'ui-state-default ui-corner-all block_add'
 					)
 				)
-			),
-			array(
-				'class'	=> 'admin_table center_all'
 			)
 		)
 	);
 } else {
 	$a->savecross = true;
 	$a->reset = false;
-	$a->post_buttons .= $a->button(
-		$L->reset,
-		array(
-			'class'		=> 'reload_button'
-		)
+	$a->post_buttons .= $a->{'button.reload_button'}(
+		$L->reset
 	);
 	$blocks_array = array(
 		'top'		=> array(),
@@ -147,28 +124,23 @@ if ($mode && $rc[2] == 'settings') {
 		}
 		$block_data = &$Config->components['blocks'][$block];
 		$blocks_array[$block_data['position']][$block_data['position_id']] = $a->li(
-			$a->div(
-				$block_data['title'],
-				array('class'		=> 'blocks_items_title')
-			).
-			$a->a(
+			$a->{'div.blocks_items_title'}($block_data['title']).
+			$a->{'a.nul'}(
 				$a->div(
 					$a->icon($block_data['active'] ? 'minusthick' : 'check')
 				),
 				array(
 					'href'			=> $a->action.'/'.($block_data['active'] ? 'disable' : 'enable').'/'.$block,
-					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'},
-					'class'			=> 'nul'
+					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'}
 				)
 			).
-			$a->a(
+			$a->{'a.nul'}(
 				$a->div(
 					$a->icon('wrench')
 				),
 				array(
 					'href'			=> $a->action.'/settings/'.$block,
-					'data-title'	=> $L->edit.' '.$L->block,
-					'class'			=> 'nul'
+					'data-title'	=> $L->edit.' '.$L->block
 				)
 			),
 			array(
@@ -182,28 +154,25 @@ if ($mode && $rc[2] == 'settings') {
 	unset($blocks, $block, $save, $num);
 	foreach ($blocks_array as $position => &$content) {
 		ksort($content);
-		$content = $a->td(
-			$a->ul(
-				$a->li(
+		$content = $a->{'td.blocks_items_groups'}(
+			$a->{'ul.blocks_items'}(
+				$a->{'li.ui-state-disabled.ui-state-highlight.ui-corner-all.pointer'}(
 					$L->{$position.'_blocks'},
 					array(
-						'class'		=> 'ui-state-disabled ui-state-highlight ui-corner-all pointer',
 						'onClick'	=> 'blocks_toggle(\''.$position.'\');'
 					)
 				).
 				implode('', $content),
 				array(
 					'data-mode'		=> 'open',
-					'id'			=> $position.'_blocks_items',
-					'class'			=> 'blocks_items'
+					'id'			=> $position.'_blocks_items'
 				)
-			),
-			array('class'	=> 'blocks_items_groups')
+			)
 		);
 	}
 	unset($position, $content);
 	$a->content(
-		$a->table(
+		$a->{'table.admin_table'}(
 			$a->tr(
 				$a->td().
 				$blocks_array['top'].
@@ -218,16 +187,14 @@ if ($mode && $rc[2] == 'settings') {
 				$a->td().
 				$blocks_array['bottom'].
 				$a->td()
-			),
-			array('class'	=> 'admin_table')
+			)
 		).
-		$a->input(
+		$a->{'input#position[type=hidden]'}(
 			array(
-				'type'	=> 'hidden',
-				'id'	=> 'position',
 				'name'	=> 'position'
 			)
 		)
 	);
 }
+unset($a);
 ?>

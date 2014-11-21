@@ -186,6 +186,8 @@ class Index extends HTML {
 					'base_url = "'.$Config->server['base_url'].'",'.
 					'current_base_url = "'.$Config->server['base_url'].'/'.($this->admin ? ADMIN.'/' : '').MODULE.
 						(isset($Config->routing['current'][0]) ? '/'.$Config->routing['current'][0] : '').'",'.
+					'yes = "'.$L->yes.'",'.
+					'no = "'.$L->no.'",'.
 					($User->is('guest') ?
 						'auth_error_connection = "'.$L->auth_error_connection.'",'.
 						'reg_connection_error = "'.$L->reg_error_connection.'",'.
@@ -193,9 +195,17 @@ class Index extends HTML {
 						'please_type_correct_email = "'.$L->please_type_correct_email.'",'.
 						'reg_success = "'.$L->reg_success.'",'.
 						'reg_confirmation = "'.$L->reg_confirmation.'",'.
-						'reg_agreement = "'.$L->reg_agreement.'",'.
+						'reg_error_connection = "'.$L->reg_error_connection.'",'.
+						'rules_agree = "'.$L->rules_agree.'",'.
+						'rules_text = "'.$Config->core['rules'].'",'.
 						'reg_success = "'.$L->reg_success.'",'.
 						'reg_success_confirmation = "'.$L->reg_success_confirmation.'",'
+					: '').
+					($Config->core['debug'] ?
+						'objects = "'.$L->objects.'",'.
+						'user_data = "'.$L->user_data.'",'.
+						'queries = "'.$L->queries.'",'.
+						'cookies = "'.$L->cookies.'",'
 					: '').
 					'language = "'.$L->clanguage.'",'.
 					'language_en = "'.$L->clanguage_en.'",'.

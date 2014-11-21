@@ -561,9 +561,7 @@
 			}
 			return $text;
 		} else {
-			if ($mode == 'str_replace') {
-				return str_replace($data, $data2, $text);
-			} elseif ($mode == 'stripslashes' || $mode == 'addslashes') {
+			if ($mode == 'stripslashes' || $mode == 'addslashes') {
 				return $mode($text);
 			} elseif ($mode == 'trim' || $mode == 'ltrim' || $mode == 'rtrim') {
 				if ($data !== false) {
@@ -597,9 +595,6 @@
 		}
 	}
 	//Функции работы со строками аналоги системных, но вместо входящей строки могут принимать массив для его рекурсивной обработки
-		function _str_replace ($search, $replace, $subject) {
-			return filter($subject, 'str_replace', $search, $replace);
-		}
 		function _stripslashes ($str) {
 			return filter($str, 'stripslashes');
 		}
@@ -708,6 +703,21 @@
 		} else {
 			//Приводим всё в вид для чтения
 			return htmlentities($in);
+		}
+	}
+	if (!function_exists('hex2bin')) {
+		/**
+		 * Function, reverse to bin2hex()
+		 * @param $str
+		 * @return string
+		 */
+		function hex2bin ($str){
+			$len	= strlen($str);
+			$res	= '';
+			for ($i = 0; $i < $len; $i += 2) {
+				$res .= pack("H", $str[$i]) | pack("h", $str[$i + 1]);
+			}
+			return $res;
 		}
 	}
 	//Функция для конвертации IPv4 и IPv6 адресов в hex значение для помещения в БД

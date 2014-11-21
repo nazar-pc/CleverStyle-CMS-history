@@ -27,9 +27,9 @@ if (isset($rc[2])) {
 		}
 		$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 		$a->content(
-			$a->table(
+			$a->{'table.admin_table.center_all'}(
 				$a->tr(
-					$a->td(
+					$a->{'td.ui-widget-header.ui-corner-all'}(
 						array(
 							$rc[2] == 'add' ? $a->info('db_mirror') : false,
 							$a->info('db_host'),
@@ -39,17 +39,14 @@ if (isset($rc[2])) {
 							$a->info('db_user'),
 							$a->info('db_password'),
 							$a->info('db_codepage')
-						),
-						array(
-							'class'	=> 'ui-widget-header ui-corner-all'
 						)
 					)
 				).
 				$a->tr(
-					$a->td(
+					$a->{'td.ui-state-default.ui-corner-all.db_add'}(
 						array(
 							($rc[2] == 'add' ? 
-							$a->select(
+							$a->{'select.form_element'}(
 								array(
 									'in'		=> $dbsname,
 									'value'		=> $dbs
@@ -57,85 +54,71 @@ if (isset($rc[2])) {
 								array(
 									'name'		=> 'db[mirror]',
 									'selected'	=> isset($rc[3]) ? $rc[3] : -1,
-									'size'		=> 5,
-									'class'		=> 'form_element'
+									'size'		=> 5
 								)
 							)
 							: false),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'db[host]',
-									'value'		=> $rc[2] == 'edit' ? $database['host'] : $DB_HOST,
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $database['host'] : $DB_HOST
 								)
 							),
-							$a->select(
+							$a->{'select.form_element'}(
 								array(
 									'in'		=> _mb_substr(get_list(ENGINES, '/^db\..*?\.php$/i', 'f'), 3, -4)
 								),
 								array(
 									'name'		=> 'db[type]',
 									'selected'	=> $rc[2] == 'edit' ? $database['type'] : $DB_TYPE,
-									'size'		=> 5,
-									'class'		=> 'form_element'
+									'size'		=> 5
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'db[prefix]',
-									'value'		=> $rc[2] == 'edit' ? $database['prefix'] : $DB_PREFIX,
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $database['prefix'] : $DB_PREFIX
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'db[name]',
-									'value'		=> $rc[2] == 'edit' ? $database['name'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $database['name'] : ''
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'db[user]',
-									'value'		=> $rc[2] == 'edit' ? $database['user'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $database['user'] : ''
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'db[password]',
-									'value'		=> $rc[2] == 'edit' ? $database['password'] : '',
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $database['password'] : ''
 								)
 							),
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'		=> 'db[codepage]',
-									'value'		=> $rc[2] == 'edit' ? $database['codepage'] : $DB_CODEPAGE,
-									'class'		=> 'form_element'
+									'value'		=> $rc[2] == 'edit' ? $database['codepage'] : $DB_CODEPAGE
 								)
 							).
-							$a->input(
+							$a->{'input[type=hidden]'}(
 								array(
-									'type'		=> 'hidden',
 									'name'		=> 'mode',
 									'value'		=> $rc[2] == 'edit' ? 'edit' : 'add'
 								)
 							).
-							(isset($rc[3]) ? $a->input(array('type' => 'hidden', 'name' => 'database', 'value' => $rc[3])) : '').
-							(isset($rc[4]) ? $a->input(array('type' => 'hidden', 'name' => 'mirror', 'value' => $rc[4])) : '')
-						),
-						array(
-							'class'	=> 'ui-state-default ui-corner-all db_add'
+							(isset($rc[3]) ? $a->{'input[type=hidden]'}(array('name' => 'database', 'value' => $rc[3])) : '').
+							(isset($rc[4]) ? $a->{'input[type=hidden]'}(array('name' => 'mirror', 'value' => $rc[4])) : '')
 						)
 					)
-				),
-				array('class'	=> 'admin_table center_all')
+				)
 			).
 			$a->button(
 				$L->test_connection,
 				array(
-					'type'			=> 'button',
 					'onMouseDown'	=> 'db_test(\''.$a->action.'/test\');'
 				)
 			)
@@ -162,7 +145,7 @@ if (isset($rc[2])) {
 		} else {
 			$a->action = $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1];
 			$a->content(
-				$a->p(
+				$a->{'p.center_all'}(
 					$L->sure_to_delete.' '.(isset($rc[4]) ? $L->mirror.' '.$a->b($rc[3] ? $L->db.' '.$Config->db[$rc[3]]['name'] : $L->core_db).', ' : $L->db).' '.
 					$a->b(
 						isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['name'] : $Config->db[$rc[3]]['name']
@@ -172,14 +155,13 @@ if (isset($rc[2])) {
 					'/'.
 					(isset($rc[4]) ? $Config->db[$rc[3]]['mirrors'][$rc[4]]['type'] : $Config->db[$rc[3]]['type']).
 					')?'.
-					$a->input(array('type'	=> 'hidden',	'name'	=> 'mode',		'value'		=> 'delete')).
-					$a->input(array('type'	=> 'hidden',	'name'	=> 'database',	'value'		=> $rc[3])).
+					$a->{'input[type=hidden]'}(array('name'	=> 'mode',		'value'		=> 'delete')).
+					$a->{'input[type=hidden]'}(array('name'	=> 'database',	'value'		=> $rc[3])).
 					(isset($rc[4]) ?
-						$a->input(array('type'	=> 'hidden',	'name'	=> 'mirror',	'value'		=> $rc[4]))
-					: ''),
-					array('class'	=> 'center_all')
+						$a->{'input[type=hidden]'}(array('name'	=> 'mirror',	'value'		=> $rc[4]))
+					: '')
 				).
-				$a->button(array('in' => $L->yes, 'type' => 'submit'))
+				$a->{'button[type=submit]'}($L->yes)
 			);
 		}
 	} elseif ($rc[2] == 'test') {
@@ -187,17 +169,29 @@ if (isset($rc[2])) {
 		$a->form = false;
 		global $Page, $db;
 		if (isset($rc[4])) {
-			$Page->content($Page->p($db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail, array('class'	=> 'test_result')));
+			$Page->content(
+				$Page->{'p.test_result'}(
+					$db->test(array($rc[3], $rc[4])) ? $L->success : $L->fail
+				)
+			);
 		} elseif (isset($rc[3])) {
-			$Page->content($Page->p($db->test(array($rc[3])) ? $L->success : $L->fail, array('class'	=> 'test_result')));
+			$Page->content(
+				$Page->{'p.test_result'}(
+					$db->test(array($rc[3])) ? $L->success : $L->fail
+				)
+			);
 		} else {
-			$Page->content($Page->p($db->test($_POST['db']) ? $L->success : $L->fail, array('class'	=> 'test_result')));
+			$Page->content(
+				$Page->{'p.test_result'}(
+					$db->test($_POST['db']) ? $L->success : $L->fail
+				)
+			);
 		}
 	}
 } else {
 	$test_dialog = true;
 	$db_list = $a->tr(
-		$a->td(
+		$a->{'td.ui-widget-header.ui-corner-all'}(
 			array(
 				$L->action,
 				$L->db_host,
@@ -206,65 +200,54 @@ if (isset($rc[2])) {
 				$L->db_name,
 				$L->db_user,
 				$L->db_codepage
-			),
-			array(
-				'class'	=> 'ui-widget-header ui-corner-all'
 			)
 		)
 	);
 	foreach ($Config->db as $i => &$db_data) {
 		$db_list .=	$a->tr(
 			$a->td(
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('plus'),
 						array(
-							'data-title'	=> $L->add.' '.$L->mirror.' '.$L->of_db,
-							'class'			=> 'compact'
+							'data-title'	=> $L->add.' '.$L->mirror.' '.$L->of_db
 						)
 					),
 					array(
-						'href'		=> $a->action.'/add/'.$i,
-						'class'		=> 'nul'
+						'href'		=> $a->action.'/add/'.$i
 					)
 				).($i ? 
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('wrench'),
 						array(
-							'data-title'	=> $L->edit.' '.$L->db,
-							'class'			=> 'compact'
+							'data-title'	=> $L->edit.' '.$L->db
 						)
 					),
 					array(
-						'href'		=> $a->action.'/edit/'.$i,
-						'class'		=> 'nul'
+						'href'		=> $a->action.'/edit/'.$i
 					)
 				).
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('close'),
 						array(
-							'data-title'	=> $L->delete.' '.$L->db,
-							'class'			=> 'compact'
+							'data-title'	=> $L->delete.' '.$L->db
 						)
 					),
 					array(
-						'href'		=> $a->action.'/delete/'.$i,
-						'class'		=> 'nul'
+						'href'		=> $a->action.'/delete/'.$i
 					)
 				) : '').
-				$a->a(
-					$a->button(
+				$a->{'a.nul'}(
+					$a->{'button.compact'}(
 						$a->icon('signal-diag'),
 						array(
-							'data-title'	=> $L->test_connection,
-							'class'			=> 'compact'
+							'data-title'	=> $L->test_connection
 						)
 					),
 					array(
-						'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'\', true);',
-						'class'			=> 'nul'
+						'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'\', true);'
 					)
 				),
 				array(
@@ -289,50 +272,44 @@ if (isset($rc[2])) {
 			if (is_array($mirror) && !empty($mirror)) {
 				$db_list .=	$a->tr(
 					$a->td(
-						$a->a(
-							$a->button(
+						$a->{'a.nul'}(
+							$a->{'button.compact'}(
 								$a->icon('wrench'),
 								array(
-									'data-title'	=> $L->edit.' '.$L->mirror.' '.$L->of_db,
-									'class'			=> 'compact'
+									'data-title'	=> $L->edit.' '.$L->mirror.' '.$L->of_db
 								)
 							),
 							array(
-								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/edit/'.$i.'/'.$m,
-								'class'		=> 'nul'
+								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/edit/'.$i.'/'.$m
 							)
 						).
-						$a->a(
-							$a->button(
+						$a->{'a.nul'}(
+							$a->{'button.compact'}(
 								$a->icon('close'),
 								array(
-									'data-title'	=> $L->delete.' '.$L->mirror.' '.$L->of_db,
-									'class'			=> 'compact'
+									'data-title'	=> $L->delete.' '.$L->mirror.' '.$L->of_db
 								)
 							),
 							array(
-								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/delete/'.$i.'/'.$m,
-								'class'		=> 'nul'
+								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/delete/'.$i.'/'.$m
 							)
 						).
-						$a->a(
-							$a->button(
+						$a->{'a.nul'}(
+							$a->{'button.compact'}(
 								$a->icon('signal-diag'),
 								array(
-									'data-title'	=> $L->test_connection,
-									'class'			=> 'compact'
+									'data-title'	=> $L->test_connection
 								)
 							),
 							array(
-								'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'/'.$m.'\', true);',
-								'class'			=> 'nul'
+								'onMouseDown'	=> 'db_test(\''.$a->action.'/test/'.$i.'/'.$m.'\', true);'
 							)
 						),
 						array(
 							'class'	=> 'ui-state-highlight ui-corner-all db_config_buttons_ db_config_even_lines'
 						)
 					).
-					$a->td(
+					$a->{'td.ui-state-highlight.ui-corner-all.db_config_even_lines'}(
 						array(
 							$mirror['host'],
 							$mirror['type'],
@@ -340,9 +317,6 @@ if (isset($rc[2])) {
 							$mirror['name'],
 							$mirror['user'],
 							$mirror['codepage']
-						),
-						array(
-							'class'	=> 'ui-state-highlight ui-corner-all db_config_even_lines'
 						)
 					)
 				);
@@ -352,77 +326,61 @@ if (isset($rc[2])) {
 	}
 	unset($i, $db_data);
 	$a->content(
-		$a->table(
+		$a->{'table.admin_table'}(
 			$db_list.
 			$a->tr(
-				$a->td (
+				$a->{'td.left_all[colspan=7]'}(
 					$a->button(
 						$L->add_database,
 						array(
 							'onMouseDown' => 'javasript: location.href= \''.$ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/add\';'
 						)
-					).$a->br(),
-					array(
-						'colspan'	=> 7,
-						'class'		=> 'left_all'
+					).$a->br()
+				)
+			).
+			$a->tr(
+				$a->{'td.right_all[colspan=4]'}(
+					$a->info('db_balance')
+				).
+				$a->{'td.left_all[colspan=3]'}(
+					$a->{'input[type=radio]'}(
+						array(
+							'name'			=> 'core[db_balance]',
+							'checked'		=> $Config->core['db_balance'],
+							'value'			=> array(0, 1),
+							'in'			=> array($L->off, $L->on)
+						)
 					)
 				)
 			).
 			$a->tr(
-				$a->td($a->info('db_balance'), array('colspan' => 4, 'class'	=> 'right_all')).
-				$a->td(
-					$a->input(
+				$a->{'td.right_all[colspan=4]'}(
+					$a->info('maindb_for_write')
+				).
+				$a->{'td.left_all[colspan=3]'}(
+					$a->{'input[type=radio]'}(
 						array(
-							'type'			=> 'radio',
-							'name'			=> 'core[db_balance]',
-							'checked'		=> $Config->core['db_balance'],
-							'value'			=> array(0, 1),
-							'class'			=> array('form_element'),
-							'in'			=> array($L->off, $L->on)
-						)
-					).
-					$a->input(
-						array(
-							'type'			=> 'hidden',
-							'name'			=> 'mode',
-							'value'			=> 'config'
-						)
-					),
-					array('colspan' => 3, 'class'	=> 'left_all')
-				)
-			).
-			$a->tr(
-				$a->td($a->info('maindb_for_write'), array('colspan' => 4, 'class'	=> 'right_all')).
-				$a->td(
-					$a->input(
-						array(
-							'type'			=> 'radio',
 							'name'			=> 'core[maindb_for_write]',
 							'checked'		=> $Config->core['maindb_for_write'],
 							'value'			=> array(0, 1),
 							'class'			=> array('form_element'),
 							'in'			=> array($L->off, $L->on)
 						)
-					).
-					$a->input(
-						array(
-							'type'			=> 'hidden',
-							'name'			=> 'mode',
-							'value'			=> 'config'
-						)
-					),
-					array('colspan' => 3, 'class'	=> 'left_all')
+					)
 				)
-			),
-			array('class'	=> 'admin_table')
+			)
+		).
+		$a->{'input[type=hidden]'}(
+			array(
+				 'name'			=> 'mode',
+				 'value'		=> 'config'
+			)
 		)
 	);
 }
 $test_dialog && $a->content(
-	$a->div(
+	$a->{'div#test_db.dialog'}(
 		array(
-			'id'			=> 'test_db',
-			'class'			=> 'dialog',
 			'data-dialog'	=> '{"autoOpen":false,"height":"75","hide":"puff","modal":true,"show":"scale","width":"250"}',
 			'title'			=> $L->test_connection
 		)

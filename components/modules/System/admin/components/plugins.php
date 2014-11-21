@@ -24,14 +24,11 @@ if ($mode && $rc[2] == 'enable') {
 unset($rc, $mode);
 $plugins = get_list(PLUGINS, false, 'd');
 $plugins_list = $a->tr(
-	$a->td(
+	$a->{'td.ui-widget-header.ui-corner-all'}(
 		array(
 			$L->plugin_name,
 			$L->state,
 			$L->action
-		),
-		array(
-			'class'	=> 'ui-widget-header ui-corner-all'
 		)
 	)
 );
@@ -53,11 +50,10 @@ foreach ($plugins as $plugin) {
 				'title'			=> $plugin.' -> '.$L->information_about_plugin
 			)
 		).
-		$a->icon(
+		$a->{'icon.pointer'}(
 			'note',
 			array(
 				'data-title'	=> $L->information_about_plugin.$a->br().$L->click_to_view_details,
-				'class'			=> 'pointer',
 				'onClick'		=> '$(\'#'.$plugin.'_readme\').dialog(\'open\');'
 			)
 		);
@@ -79,62 +75,44 @@ foreach ($plugins as $plugin) {
 				'title'			=> $plugin.' -> '.$L->license
 			)
 		).
-		$a->icon(
+		$a->{'icon.pointer'}(
 			'info',
 			array(
 				'data-title'	=> $L->license.$a->br().$L->click_to_view_details,
-				'class'			=> 'pointer',
 				'onClick'		=> '$(\'#'.$plugin.'_license\').dialog(\'open\');'
 			)
 		);
 	}
 	unset($tag, $file);
 	$state = in_array($plugin, $Config->components['plugins']);
-	$action .= $a->a(
-		$a->button(
+	$action .= $a->{'a.nul'}(
+		$a->{'button.compact'}(
 			$a->icon($state ? 'minusthick' : 'check'),
 			array(
-				'data-title'	=> $state ? $L->disable : $L->enable,
-				'class'			=> 'compact'
+				'data-title'	=> $state ? $L->disable : $L->enable
 			)
 		),
 		array(
-			'href'		=> $a->action.($state ? '/disable/' : '/enable/').$plugin,
-			'class'		=> 'nul'
+			'href'		=> $a->action.($state ? '/disable/' : '/enable/').$plugin
 		)
 	);
 	$plugins_list .= $a->tr(
-		$a->td(
-			$plugin,
-			array(
-				'class'	=> 'ui-state-default ui-corner-all'
-			)
-		).
-		$a->td(
+		$a->{'td.ui-state-default.ui-corner-all'}($plugin).
+		$a->{'td.ui-state-default.ui-corner-all'}(
 			$a->icon(
 				$state ? 'check' : 'minusthick',
 				array(
 					'data-title'	=> $state ? $L->enabled : $L->disabled
 				)
-			).$addition_state,
-			array(
-				'class'	=> 'ui-state-default ui-corner-all'
-			)
+			).
+				$addition_state
 		).
-		$a->td(
-			$action,
-			array(
-				'class'	=> 'ui-state-default ui-corner-all plugins_config_buttons'
-			)
-		)
+		$a->{'td.ui-state-default.ui-corner-all.plugins_config_buttons'}($action)
 	);
 }
 unset($plugins, $plugin, $state, $addition_state, $action);
 $a->content(
-	$a->table(
-		$plugins_list,
-		array('class'	=> 'admin_table center_all')
-	)
+	$a->{'table.admin_table.center_all'}($plugins_list)
 );
 unset($plugins_list, $a);
 ?>

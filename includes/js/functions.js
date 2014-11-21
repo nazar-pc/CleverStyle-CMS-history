@@ -211,7 +211,8 @@ function login (login, password) {
  * @param email
  */
 function registration (email) {
-	if (!confirm(reg_agreement)) {
+	if (!email) {
+		alert(please_type_your_email);
 		return;
 	}
 	$.ajax(
@@ -227,28 +228,28 @@ function registration (email) {
 					$('<div>'+reg_confirmation+'</div>')
 						.appendTo('body')
 						.dialog({
-							autoOpen    : true,
-							modal       : true,
-							draggable   : false,
-							resizable   : false,
-							close       : function () { $(this).remove(); }
+							autoOpen	: true,
+							modal		: true,
+							draggable	: false,
+							resizable	: false,
+							close		: function () { $(this).remove(); }
 						});
 				} else if (result == 'reg_success') {
 					$('<div>'+reg_success+'</div>')
 						.appendTo('body')
 						.dialog({
-							autoOpen    : true,
-							modal       : true,
-							draggable   : false,
-							resizable   : false,
-							close       : function () { location.reload(); }
+							autoOpen	: true,
+							modal		: true,
+							draggable	: false,
+							resizable	: false,
+							close		: function () { location.reload(); }
 						});
 				} else {
 					alert(result);
 				}
 			},
 			error: function() {
-				alert(auth_error_connection);
+				alert(reg_error_connection);
 			}
 		}
 	);

@@ -9,59 +9,60 @@ $a->content(
 	$a->table(
 		$a->tr(
 			array(
-				$a->td(
-					$a->div(
+				$a->{'td.right_all[colspan=2]'}(
+					$a->{'div#system_readme.dialog'}(
 						_file_get_contents(DIR.DS.'readme.html'),
 						array(
-							'id'			=> 'system_readme',
-							'class'			=> 'dialog',
 							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 							'title'			=> $L->system.' -> '.$L->information_about_system
 						)
 					).
-					$a->button(
+					$a->{'button#system_readme_open'}(
 						$L->information_about_system,
 						array(
-							'id'			=> 'system_readme_open',
 							'data-title'	=> $L->click_to_view_details
 						)
 					).
-					$a->pre(
+					$a->{'pre#system_license.dialog'}(
 						_file_get_contents(DIR.DS.'license.txt'),
 						array(
-							'id'			=> 'system_license',
-							'class'			=> 'dialog',
 							'data-dialog'	=> '{"autoOpen": false, "height": "400", "hide": "puff", "show": "scale", "width": "700"}',
 							'title'			=> $L->system.' -> '.$L->license
 						)
 					).
-					$a->button(
+					$a->{'button#system_license_open'}(
 						$L->license,
 						array(
-							'id'			=> 'system_license_open',
 							'data-title'	=> $L->click_to_view_details
 						)
-					),
-					array(
-						'colspan'	=> 2,
-						'class'		=> 'right_all'
 					)
 				),
-				$a->td($L->operation_system.':').$a->td(php_uname('s').' '.php_uname('r').' '.php_uname('v')),
+				$a->td($L->operation_system.':').
+				$a->td(php_uname('s').' '.php_uname('r').' '.php_uname('v')),
 
-				$a->td($L->server_type.':').$a->td(server_api()),
+				$a->td($L->server_type.':').
+				$a->td(server_api()),
 
 				function_exists('apache_get_version') ?
-					$a->td($L->version.' Apache:').$a->td(apache_get_version())
+					$a->td($L->version.' Apache:').
+					$a->td(apache_get_version())
 				: false,
 
-				$a->td($L->allow_ram.':').$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('memory_limit'))),
+				$a->td($L->allow_ram.':').
+				$a->td(
+					str_replace(
+						array('K', 'M', 'G'),
+						array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB),
+						ini_get('memory_limit')
+					)
+				),
 
-				$a->td($L->free_disk_space.':').$a->td(format_filesize(disk_free_space('./'), 2)),
+				$a->td($L->free_disk_space.':').
+					$a->td(format_filesize(disk_free_space('./'), 2)),
 
 				$a->td($L->version.' PHP:').
 				$a->td(
-					PHP_VERSION.(!check_php() ? ' ('.$L->required.' '.$PHP.' '.$L->or_higher.')' : ''), 
+					PHP_VERSION.(!check_php() ? ' ('.$L->required.' '.$PHP.' '.$L->or_higher.')' : ''),
 					array('class' => check_php() ? 'green' : 'red')
 				)
 			)
@@ -69,7 +70,7 @@ $a->content(
 		$a->tr(
 			$a->td($L->components.' PHP:').
 			$a->td(
-				$a->table(
+				$a->{'table.left_odd.php_components'}(
 					$a->tr(
 						array(
 							$a->td($L->memcache_lib.':').
@@ -92,7 +93,9 @@ $a->content(
 							check_mcrypt() ?
 								$a->td($L->version.' mcrypt:').
 								$a->td(
-									check_mcrypt().(!check_mcrypt(1) ? ' ('.$L->required.' '.$mcrypt.' '.$L->or_higher.')' : ''),
+									check_mcrypt().(
+										!check_mcrypt(1) ? ' ('.$L->required.' '.$mcrypt.' '.$L->or_higher.')' : ''
+									),
 									array('class' => check_mcrypt(1) ? 'green' : 'red')
 								)
 							: false,
@@ -102,11 +105,13 @@ $a->content(
 
 							zlib() ?
 								$a->td($L->zlib_autocompression.':').
-								$a->td($L->get(zlib_autocompression()), array('class' => zlib_autocompression() ? 'red' : 'green'))
+								$a->td(
+									$L->get(zlib_autocompression()),
+									array('class' => zlib_autocompression() ? 'red' : 'green')
+								)
 							: false
 						)
-					),
-					array('class' => 'left_odd php_components')
+					)
 				)
 			)
 		).
@@ -117,7 +122,7 @@ $a->content(
 		$a->tr(
 			$a->td($L->properties.' '.$DB_TYPE.':').
 			$a->td(
-				$a->table(
+				$a->{'table.left_odd.sql_properties'}(
 					$a->tr(
 						array(
 							$a->td($L->host.':').$a->td($DB_HOST),
@@ -136,12 +141,11 @@ $a->content(
 					$a->tr(
 						$a->td($L->encodings.':').
 						$a->td(
-							$a->table(
-								get_sql_info(), array('class' => 'left_odd')
+							$a->{'table.left_odd'}(
+								get_sql_info()
 							)
 						)
-					),
-					array('class' => 'left_odd sql_properties')
+					)
 				)
 			)
 		).(function_exists('apache_get_version') ?
@@ -151,28 +155,62 @@ $a->content(
 				$a->table(
 					$a->tr(
 						array(
-							$a->td($L->allow_file_upload.':').$a->td($L->get(ini_get('file_uploads')), array('class' => ini_get('file_uploads') ? 'green' : 'red')),
+							$a->td($L->allow_file_upload.':').
+							$a->td(
+								$L->get(ini_get('file_uploads')),
+								array('class' => ini_get('file_uploads') ? 'green' : 'red')
+							),
 
-							$a->td($L->max_file_uploads.':').$a->td(ini_get('max_file_uploads')),
+							$a->td($L->max_file_uploads.':').
+							$a->td(ini_get('max_file_uploads')),
 
-							$a->td($L->upload_limit.':').$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('upload_max_filesize'))),
+							$a->td($L->upload_limit.':').
+							$a->td(
+								str_replace(
+									array('K', 'M', 'G'),
+									array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB),
+									ini_get('upload_max_filesize')
+								)
+							),
 
-							$a->td($L->post_max_size.':').$a->td(str_replace(array('K', 'M', 'G'), array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB, ), ini_get('post_max_size'))),
+							$a->td($L->post_max_size.':').
+							$a->td(
+								str_replace(
+									array('K', 'M', 'G'),
+									array(' '.$L->KB, ' '.$L->MB, ' '.$L->GB),
+									ini_get('post_max_size')
+								)
+							),
 
-							$a->td($L->max_execution_time.':').$a->td(format_time(ini_get('max_execution_time'))),
+							$a->td($L->max_execution_time.':').
+							$a->td(format_time(ini_get('max_execution_time'))),
 
-							$a->td($L->max_input_time.':').$a->td(format_time(ini_get('max_input_time'))),
+							$a->td($L->max_input_time.':').
+							$a->td(format_time(ini_get('max_input_time'))),
 
-							$a->td($L->default_socket_timeout.':').$a->td(format_time(ini_get('default_socket_timeout'))),
+							$a->td($L->default_socket_timeout.':').
+							$a->td(format_time(ini_get('default_socket_timeout'))),
 
 							$a->td($L->module.' mod_rewrite:').
 							$a->td(
-								$L->get(function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules())),
-								array('class' => function_exists('apache_get_modules') && in_array('mod_rewrite',apache_get_modules()) ? 'green' : 'red')
+								$L->get(
+									function_exists('apache_get_modules') &&
+									in_array('mod_rewrite',apache_get_modules())
+								),
+								array(
+									 'class' => function_exists('apache_get_modules') &&
+										 		in_array('mod_rewrite',apache_get_modules()) ?
+										 			'green' : 'red'
+								)
 							),
-							$a->td($L->allow_url_fopen.':').$a->td($L->get(ini_get('allow_url_fopen')), array('class' => ini_get('allow_url_fopen') ? 'green' : 'red')),
+							$a->td($L->allow_url_fopen.':').
+							$a->td(
+								$L->get(ini_get('allow_url_fopen')),
+								array('class' => ini_get('allow_url_fopen') ? 'green' : 'red')
+							),
 
-							$a->td($L->display_errors.':').$a->td($L->get(display_errors()), array('class' => display_errors() ? 'red' : 'green')),
+							$a->td($L->display_errors.':').
+							$a->td($L->get(display_errors()), array('class' => display_errors() ? 'red' : 'green')),
 						)
 					),
 					array('class' => 'left_odd php_ini_settings')

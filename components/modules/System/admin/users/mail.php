@@ -3,13 +3,12 @@ global $Config, $Index, $L;
 $a = &$Index;
 
 $a->content(
-	$a->table(
+	$a->{'table.admin_table.left_even.right_odd'}(
 		$a->tr(
 			$a->td($a->info('smtp')).
 			$a->td(
-				$a->input(
+				$a->{'input[type=radio]'}(
 					array(
-						'type'			=> 'radio',
 						'name'			=> 'core[smtp]',
 						'checked'		=> $Config->core['smtp'],
 						'value'			=> array(0, 1),
@@ -22,15 +21,14 @@ $a->content(
 		$a->tr(
 			$a->td().
 			$a->td(
-				$a->table(
+				$a->{'table#smtp_form'}(
 					$a->tr(
 						$a->td($a->info('smtp_host')).
 						$a->td(
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_host]',
-									'value' => $Config->core['smtp_host'],
-									'class'	=> 'form_element'
+									'value' => $Config->core['smtp_host']
 								)
 							)
 						)
@@ -38,11 +36,10 @@ $a->content(
 					$a->tr(
 						$a->td($a->info('smtp_port')).
 						$a->td(
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_port]',
-									'value' => $Config->core['smtp_port'],
-									'class'	=> 'form_element'
+									'value' => $Config->core['smtp_port']
 								)
 							)
 						)
@@ -50,9 +47,8 @@ $a->content(
 					$a->tr(
 						$a->td($a->info('smtp_secure')).
 						$a->td(
-							$a->input(
+							$a->{'input[type=radio]'}(
 								array(
-									'type'			=> 'radio',
 									'name'			=> 'core[smtp_secure]',
 									'checked'		=> $Config->core['smtp_secure'],
 									'value'			=> array('', 'ssl', 'tls'),
@@ -64,9 +60,8 @@ $a->content(
 					$a->tr(
 						$a->td($L->smtp_auth).
 						$a->td(
-							$a->input(
+							$a->{'input[type=radio]'}(
 								array(
-									'type'			=> 'radio',
 									'name'			=> 'core[smtp_auth]',
 									'checked'		=> $Config->core['smtp_auth'],
 									'value'			=> array(0, 1),
@@ -76,41 +71,34 @@ $a->content(
 							)
 						)
 					).
-					$a->tr(
+					$a->{'tr#smtp_user'}(
 						$a->td($L->smtp_user).
 						$a->td(
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_user]',
-									'value' => $Config->core['smtp_user'],
-									'class'	=> 'form_element'
+									'value' => $Config->core['smtp_user']
 								)
 							)
 						),
 						array(
-							'id'	=> 'smtp_user',
 							'style' => ($Config->core['smtp_auth'] == 0 ? 'display: none; ' : '').'padding-left: 20px;'
 						)
 					).
-					$a->tr(
+					$a->{'tr#smtp_password'}(
 						$a->td($a->info('smtp_password')).
 						$a->td(
-							$a->input(
+							$a->{'input.form_element'}(
 								array(
 									'name'	=> 'core[smtp_password]',
-									'value' => $Config->core['smtp_password'],
-									'class'	=> 'form_element'
+									'value' => $Config->core['smtp_password']
 								)
 							)
 						),
-						array(
-							'id'	=> 'smtp_password',
-							'style' => $Config->core['smtp_auth'] == 0 ? 'display: none; ' : ''
-						)
+						array('style' => $Config->core['smtp_auth'] == 0 ? 'display: none; ' : '')
 					)
 				),
 				array(
-					'id'	=> 'smtp_form',
 					'style' => ($Config->core['smtp'] == 0 ? 'display: none; ' : '')
 				)
 			)
@@ -118,11 +106,10 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('mail_from')).
 			$a->td(
-				$a->input(
+				$a->{'input.form_element'}(
 					array(
 						'name'	=> 'core[mail_from]',
-						'value' => $Config->core['mail_from'],
-						'class'	=> 'form_element'
+						'value' => $Config->core['mail_from']
 					)
 				)
 			)
@@ -130,11 +117,10 @@ $a->content(
 		$a->tr(
 			$a->td($L->mail_from_name).
 				$a->td(
-					$a->input(
+					$a->{'input.form_element'}(
 						array(
 							 'name'	=> 'core[mail_from_name]',
-							 'value' => $Config->core['mail_from_name'],
-							 'class'	=> 'form_element'
+							 'value' => $Config->core['mail_from_name']
 						)
 					)
 				)
@@ -142,18 +128,12 @@ $a->content(
 		$a->tr(
 			$a->td($a->info('mail_signature')).
 				$a->td(
-					$a->textarea(
+					$a->{'textarea.EDITORH.form_element'}(
 						$Config->core['mail_signature'],
-						array(
-							 'id'		=> 'mail_signature',
-							 'name'		=> 'core[mail_signature]',
-							 'class'	=> 'EDITORH form_element'
-						)
+						array('name' => 'core[mail_signature]')
 					)
 				)
 		)
-		,
-		array('class' => 'admin_table left_even right_odd')
 	)
 );
 unset($a);
