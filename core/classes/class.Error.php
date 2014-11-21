@@ -2,10 +2,19 @@
 class Error {
 	protected	$num = 0;
 	function __construct () {
-		//set_error_handler(array(&$this, 'show'));
+		set_error_handler(array($this, 'process'));
 	}
-	function show ($errno, $errstr='', $errfile=true, $errline='', $log=0) {
+	function process ($errno, $errstr='', $errfile=true, $errline='') {
 		global $L, $Page, $Config;
+		if (is_array($errno)) {
+			$args = $errno;
+			unset($errno);
+			$errno = isset($args[0]) ? $args[0] : '';
+			$errstr = isset($args[1]) ? $args[1] : $errstr;
+			$errfile = isset($errfile[2]) ? $errfile[2] : $errfile;
+			$errline = isset($args[3]) ? $args[3] : $errline;
+			unset($args);
+		}
 		if ($errfile && $errline) {
 			switch ($errno) {
 				case E_USER_ERROR:
@@ -13,17 +22,16 @@ class Error {
 					++$this->num;
 					$Page->title($L->fatal.' #'.$errno.': '.$errstr.' '.$L->page_generation_aborted.'...');
 					$Page->content(
-						'<p><span style="text-transform: uppercase; font-weight: bold;">'.$L->fatal.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
+						'<p><span style="text-transform: uppercase; font-weight: bold;">'.$L->fatal.' #'.$errno.':</span> '.$errstr.' '.$L->on_line.' '.$errline.' '.$L->of_file.' '
 						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>\n"
 						.$L->page_generation_aborted."...<br>\n"
 						.$L->report_to_admin."<br>\n"
 						.(is_object($Config) ?
 							($Config->core['admin_mail'] ? $L->admin_mail.': <a href="mailto:'.$Config->core['admin_mail']."\">".$Config->core['admin_mail']."</a><br>\n" : '')
 							.($Config->core['admin_phone'] ? $L->admin_phone.': '.$Config->core['admin_phone']."<br>\n" : '')
-						: '')
+						: '').'<br>'
 					);
-					global $Classes;
-					$Classes->finish();
+					__finish();
 				break;
 				
 				case E_USER_WARNING:
@@ -32,13 +40,13 @@ class Error {
 						$Page->title($L->error.' #'.$errno.': '.$errstr);
 					}
 					$Page->content(
-						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
+						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.' #'.$errno.':</span> '.$errstr.' '.$L->on_line.' '.$errline.' '.$L->of_file.' '
 						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>"
 						.$L->report_to_admin."<br>\n"
 						.(is_object($Config) ?
 							($Config->core['admin_mail'] ? $L->admin_mail.': <a href="mailto:'.$Config->core['admin_mail']."\">".$Config->core['admin_mail']."</a><br>\n" : '')
 							.($Config->core['admin_phone'] ? $L->admin_phone.': '.$Config->core['admin_phone']."<br>\n" : '')
-						: '')
+						: '').'<br>'
 					);
 				break;
 				
@@ -48,8 +56,8 @@ class Error {
 						$Page->title($L->warning.' #'.$errno.': '.$errstr);
 					}
 					$Page->content(
-						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->warning.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
-						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>"
+						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->warning.' #'.$errno.':</span> '.$errstr.' '.$L->on_line.' '.$errline.' '.$L->of_file.' '
+						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br><br>\n"
 					);
 				break;
 				
@@ -58,8 +66,8 @@ class Error {
 						$Page->title($L->error.' #'.$errno.': '.$errstr);
 					}
 					$Page->content(
-						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.' #'.$errno.':</span> '.$errstr.' '.$L->in_line.' '.$errline.' '.$L->of_file.' '
-						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br>\n");
+						'<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errstr.' '.$L->on_line.' '.$errline.' '.$L->of_file.' '
+						.$errfile.', PHP '.PHP_VERSION.' ('.PHP_OS.")<br><br>\n");
 				break;
 			}
 		} else {
@@ -68,23 +76,24 @@ class Error {
 				$Page->content('<span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br>\n");
 			} else {
 				$Page->Title = array($L->error.': '.$errno);
-				$Page->Content = '<h2 align="center"><span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br></h2>\n";
+				//$Page->Content = '<h2 align="center"><span style="text-transform: uppercase; font-weight: bold;">'.$L->error.':</span> '.$errno."<br></h2>\n";
 			}
 			if ($errstr == 'stop') {
-				global $Classes, $stop;
+				global $stop;
 				$stop = 2;
-				$Classes->finish();
+				__finish();
 			}
 		}
 	}
 	private function log ($text) {
-		
 	}
 	private function mail ($text) {
-		
 	}
 	function num () {
         return $this->num;
     }
+	function __call ($func, $args) {
+		$this->process($args);
+	}
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-class Module extends XForm {
+class Module extends HTML {
 	public		$Content;
 	function __construct () {
 		global $Config, $L, $Page, $User;

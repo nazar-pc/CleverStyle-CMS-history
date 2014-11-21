@@ -1,6 +1,7 @@
 <?php
 global $Config, $Admin, $L, $DB_HOST, $DB_TYPE, $DB_PREFIX, $DB_NAME, $DB_CODEPAGE;
 $a = &$Admin;
+$test_dialog = true;
 if (isset($Config->routing['current'][2])) {
 	$a->apply_button = false;
 	if ($Config->routing['current'][2] == 'add' || ($Config->routing['current'][2] == 'edit' && isset($Config->routing['current'][3]))) {
@@ -136,6 +137,13 @@ if (isset($Config->routing['current'][2])) {
 				'style'	=> 'width: 100%;',
 				'class'	=> 'admin_table r-table'
 			)
+		).
+		$a->button(
+			$L->test_connection,
+			array(
+				'type'		=> 'button',
+				'onClick'	=> 'javascript: db_test(\''.$a->action.'/test\');'
+			)
 		);
 		if (isset($database)) {
 			unset($database);
@@ -168,6 +176,18 @@ if (isset($Config->routing['current'][2])) {
 				'class'	=> 'admin_table'
 			)
 		);
+	} elseif ($Config->routing['current'][2] == 'test') {
+		define('nointerface', true);
+		$test_dialog = false;
+		$a->form = false;
+		global $Page, $db;
+		if (isset($Config->routing['current'][4])) {
+			$Page->Content = $Page->p($db->test(array($Config->routing['current'][3], $Config->routing['current'][4])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+		} elseif (isset($Config->routing['current'][3])) {
+			$Page->Content = $Page->p($db->test(array($Config->routing['current'][3])) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+		} else {
+			$Page->Content = $Page->p($db->test($_POST['db']) ? $L->success : $L->fail, array('style'	=> 'text-align: center; text-transform: capitalize;'));
+		}
 	}
 } else {
 	$db_list = $a->tr(
@@ -186,70 +206,52 @@ if (isset($Config->routing['current'][2])) {
 				'class'	=> 'greybg1 white'
 			)
 		)
-	).
-	$a->tr(
-		$a->td(
-			array(
-				$a->a(
-					$L->add.' '.$L->mirror,
-					array(
-						'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/0',
-						'class'		=> 'black'
-					)
-				),
-				$DB_HOST,
-				$DB_TYPE,
-				$DB_PREFIX,
-				$DB_NAME,
-				'*****',
-				$DB_CODEPAGE
-			),
-			array(
-				'style'	=> 'text-align: center; vertical-align: middle;',
-				'class'	=> 'greybg2 green'
-			)
-		)
 	);
 	foreach ($Config->db as $i => $db) {
-		if (is_array($db) && !empty($db) && $i) {
-			$db_list .=	$a->tr(
-				$a->td(
-					array(
-						$a->a(
-							$L->add.' '.$L->mirror,
-							array(
-								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/add/'.$i,
-								'class'		=> 'black'
-							)
-						).'<br>'.
-						$a->a(
-							$L->edit.' '.$L->db,
-							array(
-								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/edit/'.$i,
-								'class'		=> 'black'
-							)
-						).'<br>'.
-						$a->a(
-							$L->delete.' '.$L->db,
-							array(
-								'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i,
-								'class'		=> 'black'
-							)
-						),
-						$db['host'],
-						$db['type'],
-						$db['prefix'],
-						$db['name'],
-						$db['user'],
-						$db['codepage']
+		$db_list .=	$a->tr(
+			$a->td(
+				array(
+					$a->a(
+						$L->add.' '.$L->mirror,
+						array(
+							'href'		=> $a->action.'/add/'.$i,
+							'class'		=> 'black'
+						)
+					).'<br>'.($i ? 
+					$a->a(
+						$L->edit.' '.$L->db,
+						array(
+							'href'		=> $a->action.'/edit/'.$i,
+							'class'		=> 'black'
+						)
+					).'<br>'.
+					$a->a(
+						$L->delete.' '.$L->db,
+						array(
+							'href'		=> $a->action.'/delete/'.$i,
+							'class'		=> 'black'
+						)
+					).'<br>' : '').
+					$a->a(
+						$L->test_connection,
+						array(
+							'href'		=> 'javascript: db_test(\''.$a->action.'/test/'.$i.'\', true);',
+							'class'		=> 'black'
+						)
 					),
-					array(
-						'style'	=> 'text-align: center; vertical-align: middle;',
-						'class'	=> 'greybg2'
-					)
+					$i	? $db['host']		: $DB_HOST,
+					$i	? $db['type']		: $DB_TYPE,
+					$i	? $db['prefix']		: $DB_PREFIX,
+					$i	? $db['name']		: $DB_NAME,
+					$i	? $db['user']		: '*****',
+					$i	? $db['codepage']	: $DB_CODEPAGE
+				),
+				array(
+					'style'	=> 'text-align: center; vertical-align: middle;',
+					'class'	=> 'greybg2'.($i ? '' : ' green')
 				)
-			);
-		}
+			)
+		);
 		foreach ($Config->db[$i]['mirrors'] as $m => $mirror) {
 			if (is_array($mirror) && !empty($mirror)) {
 				$db_list .=	$a->tr(
@@ -266,6 +268,13 @@ if (isset($Config->routing['current'][2])) {
 								$L->delete.' '.$L->mirror,
 								array(
 									'href'		=> 'admin/'.MODULE.'/'.$Config->routing['current'][0].'/'.$Config->routing['current'][1].'/delete/'.$i.'/'.$m,
+									'class'		=> 'black'
+								)
+							).'<br>'.
+							$a->a(
+								$L->test_connection,
+								array(
+									'href'	=> 'javascript: db_test(\''.$a->action.'/test/'.$i.'/'.$m.'\', true);',
 									'class'		=> 'black'
 								)
 							),
@@ -353,5 +362,6 @@ if (isset($Config->routing['current'][2])) {
 		)
 	);
 }
+$test_dialog && $a->Content .= $a->div(array('id'	=> 'test_db', 'style'	=> 'display: none;', 'title'	=> $L->test_connection));
 unset($a);
 ?>

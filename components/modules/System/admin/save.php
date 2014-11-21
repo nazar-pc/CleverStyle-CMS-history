@@ -7,7 +7,7 @@ if (isset($_POST['edit_settings'])) {
 			if (isset($_POST[$part])) {
 				$temp = &$Config->$part;
 				foreach ($_POST[$part] as $var => $val) {
-					$temp[$var] = function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($val, 'stripslashes') : $val;
+					$temp[$var] = filter($val, 'form');
 				}
 				if ($part == 'routing' || $part == 'replace') {
 					$temp['in'] = explode("\n", $temp['in']);

@@ -5,7 +5,7 @@ error_reporting(PHP_INT_MAX);
 //error_reporting(0);
 ini_set('display_errors', 1);
 //ini_set('display_errors', 0);
-header('Content-Type: text/html; charset=utf-8');
+//header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding("UTF-8");
 
 //Задание базовых констант с путями системных папок
@@ -45,7 +45,7 @@ $Classes->load(
 		array('Core', true),					//Создание объекта ядра CMS
 		array('Cache', true),					//Создание объекта системного кеша
 		array('Language', true, 'L'),			//Создание объекта музьтиязычности
-		array('XForm'),							//Подгружение класса компонентов HTML страницы для наследования другими классами
+		array('HTML'),							//Подгружение класса компонентов HTML страницы для наследования другими классами
 		array('Page', true),					//Создание объекта генерирования страницы
 		array('Error', true),					//Создание объекта обработки ошибок
 		array('DB', true, 'db'),				//Создание объекта БД
@@ -54,5 +54,5 @@ $Classes->load(
 		array('Component', true)				//Создание объекта, который управляет обработкой компонентов
 	)
 );
-$Classes->finish();
+$Classes->__finish();
 ?>

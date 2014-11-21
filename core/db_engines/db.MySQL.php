@@ -101,6 +101,7 @@ class MySQL extends DataBase {
 				$this->query['resource'] = '';
 			}
 			mysql_close($this->id);
+			$this->connected = false;
 		}
 	}
 }

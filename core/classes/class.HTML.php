@@ -1,6 +1,6 @@
 <?php
 //Класс для отрисовки различных елементов HTML страницы в соответствии со стандартами HTML5, и с более понятным и функциональным синтаксисом
-abstract class XForm {
+abstract class HTML {
 	public	$return = true;
 	//Отступы строк для красивого исходного кода
 	function level ($in, $level = 1) {
@@ -24,6 +24,9 @@ abstract class XForm {
 		$quote = '"';
 		$level = 1;
 		if (isset($data['in'])) {
+			if ($data['in'] === false) {
+				return false;
+			}
 			$in = $data['in'];
 			unset($data['in']);
 		}
@@ -95,6 +98,9 @@ abstract class XForm {
 		$tag = 'input';
 		$quote = '"';
 		if (isset($data['in'])) {
+			if ($data['in'] === false) {
+				return false;
+			}
 			$in = $data['in'];
 			unset($data['in']);
 		}
@@ -116,13 +122,13 @@ abstract class XForm {
 		}
 		if (isset($data['class']) && empty($data['class'])) {
 			unset($data['class']);
-		}		
+		}
 		if (isset($data['style']) && empty($data['style'])) {
 			unset($data['style']);
-		}		
+		}
 		if (isset($data['onClick']) && empty($data['onClick'])) {
 			unset($data['onClick']);
-		}		
+		}
 		asort($data);
 		foreach ($data as $key => $value) {
 			if (empty($key)) {

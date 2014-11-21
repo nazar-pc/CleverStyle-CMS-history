@@ -12,7 +12,7 @@ class Classes {
 	function load ($class, $create = false, $custom = false) {
 		global $stop;
 		if (empty($class)) {
-			continue;
+			return false;
 		} elseif (!$stop && is_array($class)) {
 			if (is_array($class[0])) {
 				foreach ($class as $c) {
@@ -25,11 +25,8 @@ class Classes {
 					$this->load($c);
 				}
 			} else {
-				global $timeload;
+				global $timeload, $Config;
 				if (file_exists(CLASSES.DS.'class.'.$class[0].'.php')) {
-					if (!class_exists($class[0])) {
-						require_x(CLASSES.DS.'class.'.$class[0].'.php', 1);
-					}
 					//Если второй параметр true - создаем глобальный объект
 					if ($class[1]) {
 						if (isset($class[2]) && $class[2]) {
@@ -67,12 +64,12 @@ class Classes {
 		} else {
 			global $$class;
 			unset($this->LoadedObjects[$class]);
-			method_exists($$class, 'finish') && $$class->finish();
+			method_exists($$class, '__finish') && $$class->__finish();
 			$$class = NULL;
 		}
 	}
 	//При уничтожении этого объекта уничтожаются все зарегистрированные объекты и проводится зачистка работы
-	function finish () {
+	function __finish () {
 		foreach ($this->LoadedObjects as $class) {
 			if ($class != 'Page' && $class != 'db' && $class != 'Core' && $class != 'Config' && $class != 'User' && $class != 'Error' && $class != 'L') {
 				$this->unload($class);

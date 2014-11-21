@@ -16,9 +16,10 @@ if (USE_CUSTOM) {
 				return require $file;
 			}
 		} else {
-			global $L;
-			if ($show_errors) {
-				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
+			global $L, $Error;
+			if ($show_errors && is_object($Error)) {
+				$data = debug_backtrace();
+				$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 			}
 			return false;
 		}
@@ -37,9 +38,10 @@ if (USE_CUSTOM) {
 				return include $file;
 			}
 		} else {
-			global $L;
-			if ($show_errors) {
-				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
+			global $L, $Error;
+			if ($show_errors && is_object($Error)) {
+				$data = debug_backtrace();
+				$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 			}
 			return false;
 		}
@@ -53,9 +55,10 @@ if (USE_CUSTOM) {
 				return require $file;
 			}
 		} else {
-			global $L;
-			if ($show_errors) {
-				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
+			global $L, $Error;
+			if ($show_errors && is_object($Error)) {
+				$data = debug_backtrace();
+				$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 			}
 			return false;
 		}
@@ -68,13 +71,26 @@ if (USE_CUSTOM) {
 				return include $file;
 			}
 		} else {
-			global $L;
-			if ($show_errors) {
-				@trigger_error($L->file.' '.$file.' '.$L->not_exists);
+			global $L, $Error;
+			global $L, $Error;
+			if ($show_errors && is_object($Error)) {
+				$data = debug_backtrace();
+				$Error->process(NULL, $L->file.' '.$file.' '.$L->not_exists, $data[0]['file'], $data[0]['line']);
 			}
 			return false;
 		}
 	}
+}
+//Автозагрузка необходимых классов
+function __autoload ($class) {
+	require_x(CLASSES.DS.'class.'.$class.'.php', 1, false) || require_x(DB.DS.'db.'.$class.'.php', 1, false);
+}
+function __finish () {
+	global $Classes;
+	if (is_object($Classes)) {
+		$Classes->__finish();
+	}
+	exit;
 }
 //Функция для получения списка содержимого директории (и поддиректорий при необходимости)
 function get_list ($dir, $mask = false, $mode='f', $with_path = false, $subfolders = false, $DS = false) {
@@ -223,6 +239,8 @@ function filter($text, $mode = '', $data = false, $data2 = NULL) {
 			} else {
 				return mb_substr($text, $data);
 			}
+		} elseif ($mode == 'form') {
+			return function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc() ? filter($text, 'stripslashes') : $text;
 		} else {
 			return str_replace('"', '&quot;', trim($text));
 		}
@@ -230,14 +248,12 @@ function filter($text, $mode = '', $data = false, $data2 = NULL) {
 }
 //Идеальная функция для 100% защиты от SQL-инъекций
 //Название sip - сокращено от SQL Injection Protection
-//Copyright © CleverStyle, 2011
 //Copyright © by Мокринський Назар aka nazar-pc, 2011
 function sip ($in) {
 	return "unhex('".bin2hex($in)."')";
 }
 //Идеальная функция для 100% защиты от XSS-атак
 //Название xap - сокращено от XSS Attack Protection
-//Copyright © CleverStyle, 2011
 //Copyright © by Мокринський Назар aka nazar-pc, 2011
 function xap ($in, $format=false) {
 	if ($format == 'html') {

@@ -29,11 +29,20 @@ $(document).ready(
 			}
 		);		
 		$('#debug').dialog({
-				autoOpen: false,
-				height: '400',
-				hide: 'puff',
-				show: 'scale',
-				width: '700'
+				autoOpen:	false,
+				height:		'400',
+				hide:		'puff',
+				show:		'scale',
+				width:		'700'
+		});
+		$('#test_db').dialog({
+				autoOpen:	false,
+				height:		'75',
+				hide:		'puff',
+				modal:		true,
+				resizable:	false,
+				show:		'scale',
+				width:		'250'
 		});
 		$('#admin_form *').change(
 			function(){
@@ -95,8 +104,8 @@ function debug_window () {
 }
 function admin_cache (element, action) {
 	if (stop_cache) {
-		stop_cache = false;
-		cache_interval = setInterval(function () {cache_increase(element)}, 100);
+		stop_cache		= false;
+		cache_interval	= setInterval(function () {progress(element)}, 100);
 		$(element).html('').progressbar(
 			{value: 1}
 		).load(
@@ -113,7 +122,7 @@ function admin_cache (element, action) {
 		);
 	}
 }
-function cache_increase (element) {
+function progress (element) {
 	if (!stop_cache) {
 		$(element).progressbar('value', $(element).progressbar('value')+1);
 		if ($(element).progressbar('value') == 100) {
@@ -121,3 +130,37 @@ function cache_increase (element) {
 		}
 	}
 };
+function db_test (url, added) {
+	$('#test_db').html('<div id="test_progress" style="width: 100%"></div>');
+	$($('#test_progress')).progressbar({value: 1});
+	$('#test_db').dialog('open');
+	test_interval = setInterval(function () {progress(element)}, 100);
+	if (added == true) {
+		$.ajax({
+			url:		url,
+			type:		'POST',
+			success:	function(result) {
+				clearInterval(test_interval);
+				$('#test_db').html(result);
+			}
+		});
+	} else {
+		var db = {
+			type:		document.getElementsByName('db[type]').item(0).value,
+			name:		document.getElementsByName('db[name]').item(0).value,
+			user:		document.getElementsByName('db[user]').item(0).value,
+			password:	document.getElementsByName('db[password]').item(0).value,
+			host:		document.getElementsByName('db[host]').item(0).value,
+			codepage:	document.getElementsByName('db[codepage]').item(0).value
+		};
+		$.ajax({
+			url:		url,
+			type:		'POST',
+			data:		'db=' + $.toJSON(db),
+			success:	function(result) {
+				clearInterval(test_interval);
+				$('#test_db').html(result);
+			}
+		});
+	}
+}

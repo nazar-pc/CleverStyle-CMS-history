@@ -23,7 +23,7 @@ class Language {
 				$this->__set($i, $v);
 			}
 		} else {
-			$this->translate[$item] = $value;
+			$this->translate[$item] = &$value;
 		}
 	}
 	function change ($language) {

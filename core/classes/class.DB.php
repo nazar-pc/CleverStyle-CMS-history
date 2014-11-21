@@ -11,10 +11,14 @@ class DB {
 	//Для безопасности глобальные переменные с именем пользователя и паролем главной БД забираются во внутренние переменные объекта,
 	//глобальные переменные уничтожаются
 	function __construct () {
-			global $DB_USER, $DB_PASSWORD;
-			$this->DB_USER = $DB_USER;
-			$this->DB_PASSWORD = $DB_PASSWORD;
-			unset($DB_USER, $DB_PASSWORD);
+		global $DB_USER, $DB_PASSWORD;
+		$this->DB_USER = $DB_USER;
+		$this->DB_PASSWORD = $DB_PASSWORD;
+		unset($DB_USER, $DB_PASSWORD);
+		//Подключаем абстрактную модель БД
+		if (!class_exists('DataBase')) {
+			include_x(DB.DS.'DataBase.php', 1);
+		}
 	}
 	//Обработка запросов получения данных БД
 	//При соответствующей настройке срабатывает балансировка нагрузки на БД
@@ -88,14 +92,6 @@ class DB {
 				$db = &$Config->db[$connection];
 			}
 		}
-		//Подключаем абстрактную модель БД
-		if (!class_exists('DataBase')) {
-			include_x(DB.DS.'DataBase.php', 1);
-		}
-		//Подключаем драйвер текущего типа БД
-		if (!class_exists($db['type'])) {
-			include_x(DB.DS.'db.'.$db['type'].'.php', 1);
-		}
 		//Создаем новое подключение к БД
 		$this->connections[$connection] = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'], $db['codepage']);
 		//В случае успешного подключения - заносим в общий список подключений, и возвращаем ссылку на подключение
@@ -145,6 +141,43 @@ class DB {
 				}
 				return false;
 			}
+		}
+	}
+	//Тестовое подключение к БД
+	function test ($data = false) {
+		global $DB_HOST, $DB_CODEPAGE;
+		if (empty($data)) {
+			return false;
+		} elseif (is_array($data)) {
+			global $Config;
+			if (isset($data[1])) {
+				$db = $Config->db[$data[0]]['mirrors'][$data[1]];
+			} elseif (isset($data[0])) {
+				if ($data[0] == 0) {
+					global $DB_TYPE, $DB_PREFIX, $DB_NAME;
+					$db = array(
+								'type'		=> $DB_TYPE,
+								'host'		=> $DB_HOST,
+								'name'		=> $DB_NAME,
+								'user'		=> $this->DB_USER,
+								'password'	=> $this->DB_PASSWORD,
+								'codepage'	=> $DB_CODEPAGE
+					);
+				} else {
+					$db = $Config->db[$data[0]];
+				}
+			} else {
+				return false;
+			}
+		} else {
+			$db = json_decode(filter($data, 'form'), true);
+		}
+		unset($data);
+		if (is_array($db)) {
+			$test = new $db['type']($db['name'], $db['user'], $db['password'], $db['host'] ?: $DB_HOST, $db['codepage'] ?: $DB_CODEPAGE);
+			return $test->connected;
+		} else {
+			return false;
 		}
 	}
 }

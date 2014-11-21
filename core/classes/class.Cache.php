@@ -50,9 +50,7 @@ class Cache {
 			return true;
 		}
 		if (!file_exists(CACHE.DS.$label) || (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label))) {
-			$cache = fopen(CACHE.DS.$label, 'wb');
-			@fwrite($cache, $Core->encrypt(serialize($data)));
-			fclose($cache);
+			file_put_contents(CACHE.DS.$label, $Core->encrypt(serialize($data)), LOCK_EX);
 			return true;
 		} else {
 			trigger_error($L->file.' '.CACHE.DS.$label.' '.$L->not_writable);
@@ -65,7 +63,7 @@ class Cache {
 			$this->memcache->delete(CDOMAIN.$label, $time);
 		}
 		if (file_exists(CACHE.DS.$label) && is_writable(CACHE.DS.$label)) {
-			@unlink(CACHE.DS.$label);
+			unlink(CACHE.DS.$label);
 		}
 		return true;
 	}

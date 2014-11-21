@@ -12,9 +12,9 @@ class Core {
 			if(!is_dir(CACHE)) {
 				if (!mkdir(CACHE, 0600)) {
 					@trigger_error('{%CREATE_CACHE_DIR_ERROR%}', 'stop');
-					global $Classes, $stop;
+					global $stop;
 					$stop = 2;
-					$Classes->finish();
+					__finish();
 				}
 			}
 			$check_mcrypt = check_mcrypt();
@@ -77,7 +77,7 @@ class Core {
 		}
 	}
 	//Отключений функций шифрования
-	function finish () {
+	function __finish () {
 		if ($this->support) {
 			foreach ($this->td as $td) {
 				mcrypt_module_close($td);

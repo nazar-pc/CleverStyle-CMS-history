@@ -1,5 +1,5 @@
 <?php
-class Page extends XForm {
+class Page extends HTML {
 	public	$theme,
 			$color_scheme,
 			$get_list,
@@ -68,10 +68,10 @@ class Page extends XForm {
 	protected function load($stop) {
 		global $Config;
 		//Определение темы оформления
-		if ($Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $Config->core['active_themes'])) {
+		if (is_object($Config) && $Config->core['allow_change_theme'] && isset($_COOKIE['theme']) && in_array(strval($_COOKIE['theme']), $Config->core['active_themes'])) {
 			$this->theme = strval($_COOKIE['theme']);
 		}
-		if ($Config->core['site_mode']) {
+		if (is_object($Config) && $Config->core['site_mode']) {
 			if ($Config->core['allow_change_theme'] && isset($_COOKIE['color_scheme']) && in_array(strval($_COOKIE['color_scheme']), $Config->core['color_schemes'])) {
 				$this->color_scheme = strval($_COOKIE['color_scheme']);
 			}
@@ -81,7 +81,7 @@ class Page extends XForm {
 		//Загрузка шаблона
 		if ($this->interface) {
 			ob_start();
-			if (!$stop && $Config->core['site_mode'] && (file_exists(THEMES.DS.$this->theme.DS.'index.html') || file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
+			if (is_object($Config) && !$stop && $Config->core['site_mode'] && (file_exists(THEMES.DS.$this->theme.DS.'index.html') || file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
 				require_x(THEMES.DS.$this->theme.DS.'prepare.php', true, false);
 				if (!include_x(THEMES.DS.$this->theme.DS.'index.php', true, false)) {
 					include_x(THEMES.DS.$this->theme.DS.'index.html', true);
@@ -124,8 +124,8 @@ class Page extends XForm {
 					$this->Title[$i] = trim($v);
 				}
 			}
-			$this->Title = $Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
-			$this->Title[0] = implode(' '.trim($Config->core['title_delimiter']).' ', $this->Title);
+			is_object($Config) && $this->Title = $Config->core['title_reverse'] ? array_reverse($this->Title) : $this->Title;
+			is_object($Config) && $this->Title[0] = implode(' '.trim($Config->core['title_delimiter']).' ', $this->Title);
 		}
 		//Формирование содержимого <head>
 		if ($this->core_css[1]) {
@@ -227,13 +227,13 @@ class Page extends XForm {
 		} elseif ($add) {
 			if ($core) {
 				if ($mode == 'file') {
-					$this->core_js[0] .= $this->script(false, array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
+					$this->core_js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
 				} elseif ($mode == 'code') {
 					$this->core_js[1] .= $this->level($add);
 				}
 			} else {
 				if ($mode == 'file') {
-					$this->js[0] .= $this->script(false, array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
+					$this->js[0] .= $this->script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false, 'defer'	=> ''))."\n";
 				} elseif ($mode == 'code') {
 					$this->js[1] .= $this->level($add);
 				}
@@ -444,7 +444,7 @@ class Page extends XForm {
 				$last = $data[0];
 			}
 			$this->debug_info .= $this->div(
-									$this->level($debug_info),
+									$debug_info,
 									array('id' => 'debug_objects', 'style' => 'display: none; padding-left: 20px;')
 								);
 			unset($loader_init_memory, $last, $object, $data, $debug_info);
@@ -575,7 +575,7 @@ class Page extends XForm {
 		}
 	}
 	//Генерирование страницы
-	function finish () {
+	function __finish () {
 		global $Config, $Page;
 		//Очистка вывода для избежания вывода нежелательных данных
 		if (OUT_CLEAN) {
@@ -583,7 +583,7 @@ class Page extends XForm {
 		}
 		//Генерирование страницы в зависимости от ситуации
 		//Для AJAX запроса не выводится весь интерфейс страницы, только основное содержание
-		if (mb_strtolower($Config->routing['current'][count($Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
+		if (is_object($Config) && mb_strtolower($Config->routing['current'][count($Config->routing['current']) - 1]) == 'nointerface' || isset($_POST['nointerface']) || defined('nointerface') && nointerface) {
 			//Обработка замены контента
 			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			echo $this->Content;
@@ -594,18 +594,18 @@ class Page extends XForm {
 			//Обработка замены контента
 			$this->Html = preg_replace($this->Search, $this->Replace, $this->Html);
 			//Вывод сгенерированной страницы
-			if (!zlib_autocompression() && $Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
+			if (is_object($Config) && !zlib_autocompression() && $Config->core['gzip_compression'] && (is_object($Error) && !$Error->num())) {
 				ob_start('ob_gzhandler');
 				$ob = true;
 			} else {
-				if ($Config->core['zlib_compression'] && $Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
+				if (is_object($Config) && $Config->core['zlib_compression'] && $Config->core['zlib_compression_level'] && zlib() && (is_object($Error) && !$Error->num())) {
 					ini_set('zlib.output_compression', 'On');
 					ini_set('zlib.output_compression_level', $Config->core['zlib_compression_level']);
 				}
 				$ob = false;
 			}
 			$timeload['end'] = microtime(true);
-			if ($Config->core['debug']) {
+			if (is_object($Config) && $Config->core['debug']) {
 				$this->debug();
 			}
 			echo str_replace(
