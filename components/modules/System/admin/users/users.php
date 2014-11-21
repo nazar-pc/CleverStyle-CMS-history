@@ -4,52 +4,214 @@ $a				= &$Index;
 $rc				= &$Config->routing['current'];
 $search_columns	= $Cache->users_columns;
 if (isset($rc[2], $rc[3])) {
-	if ($rc[2] == 'edit_raw') {
-		$a->apply		= false;
-		$a->cancel_back	= true;
-		$content		= $content_ = '';
-		$user_data		= $User->get($search_columns, $rc[3]);
-		$last			= count($search_columns)-1;
-		foreach ($search_columns as $i => $column) {
-			$content_ .= h::{'th.ui-widget-header.ui-corner-all'}(
-				$column
-			).
-			h::{'td.ui-state-default.ui-corner-all'}(
-				h::{($column == 'data' ? 'textarea' : 'input').'.form_element'}(
+	switch ($rc[2]) {
+		case 'edit_raw':
+			$a->apply		= false;
+			$a->cancel_back	= true;
+			$content		= $content_ = '';
+			$user_data		= $User->get($search_columns, $rc[3]);
+			$last			= count($search_columns)-1;
+			foreach ($search_columns as $i => $column) {
+				$content_ .= h::{'th.ui-widget-header.ui-corner-all'}(
+					$column
+				).
+				h::{'td.ui-state-default.ui-corner-all'}(
+					h::{($column == 'data' ? 'textarea' : 'input').'.form_element'}(
+						array(
+							'name'		=> 'user['.$column.']',
+							'value'		=> $user_data[$column],
+							$column == 'id' ? 'readonly' : false
+						)
+					),
 					array(
-						'name'		=> 'user['.$column.']',
-						'value'		=> $user_data[$column],
-						$column == 'id' ? 'readonly' : false
+						'colspan'	=> $i == $last ? 3 : false
 					)
-				),
-				array(
-					'colspan'	=> $i == $last ? 3 : false
-				)
-			);
-			if  ($i % 2) {
+				);
+				if  ($i % 2) {
+					$content .= h::tr(
+						$content_
+					);
+					$content_ = '';
+				}
+			}
+			if ($content_ != '') {
 				$content .= h::tr(
 					$content_
 				);
-				$content_ = '';
 			}
-		}
-		if ($content_ != '') {
-			$content .= h::tr(
-				$content_
-			);
-		}
-		unset($i, $column, $content_);
-		$a->content(
-			h::{'table.admin_table.center_all.user_edit'}(
-				$content.
+			unset($i, $column, $content_);
+			$a->content(
+				h::{'table.admin_table.center_all'}(
+					$content
+				).
 				h::{'input[type=hidden]'}(
 					array(
 						'name'		=> 'mode',
-						'value'		=> 'edit_raw'
+						'value'	=> 'edit_raw'
 					)
 				)
-			)
-		);
+			);
+
+		break;
+		case 'edit':
+			$a->apply		= false;
+			$a->cancel_back	= true;
+			$user_data		= $User->get(
+				array(
+					'login',
+					'username',
+					'email',
+					'language',
+					'timezone',
+					'regdate',
+					'regip',
+					'status',
+					'block_until',
+					'rating',
+					'lastlogin',
+					'lastip',
+					'sex',
+					'country',
+					'region',
+					'district',
+					'city',
+					'birthday',
+					'avatar',
+					'website',
+					'icq',
+					'skype',
+					'about',
+					'data'
+				),
+				$rc[3]
+			);
+			$timezones = get_timezones_list();
+			$a->content(
+				h::{'table.admin_table.center_all'}(
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->login
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
+							array(
+								'name'		=> 'user[login]',
+								'value'	=> $user_data['login']
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->username
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
+							array(
+								'name'		=> 'user[username]',
+								'value'	=> $user_data['username']
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->email
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
+							array(
+								'name'		=> 'user[email]',
+								'value'	=> $user_data['email']
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->password_only_for_changing.
+							h::{'icon#show_password'}(
+								'locked'
+							)
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element[type=password]'}(
+							array(
+								'id'		=> 'user_password',
+								'name'		=> 'user[password]',
+								'value'	=> ''
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->language
+						).
+						h::{'td.ui-state-default.ui-corner-all select.form_element'}(
+							array(
+								'in'		=> array_merge(array($L->system_default), $Config->core['active_languages']),
+								'value'		=> array_merge(array(''), $Config->core['active_languages'])
+							),
+							array(
+								'name'		=> 'user[language]',
+								'selected'	=> $user_data['language'],
+								'size'		=> 5
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->timezone
+						).
+						h::{'td.ui-state-default.ui-corner-all select.form_element'}(
+							array(
+								'in'		=> array_merge(array($L->system_default), array_values($timezones)),
+								'value'		=> array_merge(array(''), array_keys($timezones))
+							),
+							array(
+								'name'		=> 'user[timezone]',
+								'selected'	=> $user_data['timezone'],
+								'size'		=> 5
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->status
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element[type=radio]'}(
+							array(
+								'name'			=> 'user[status]',
+								'checked'		=> $user_data['status'],
+								'value'			=> array(-1, 0, 1),
+								'in'			=> array($L->is_not_activated, $L->inactive, $L->active)
+							)
+						)
+					).
+					h::tr(//TODO block_until and next things
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->login
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
+							array(
+								'name'		=> 'user[login]',
+								'value'	=> $user_data['login']
+							)
+						)
+					).
+					h::tr(
+						h::{'th.ui-widget-header.ui-corner-all'}(
+							$L->login
+						).
+						h::{'td.ui-state-default.ui-corner-all input.form_element'}(
+							array(
+								'name'		=> 'user[login]',
+								'value'	=> $user_data['login']
+							)
+						)
+					)
+				).
+				h::{'input[type=hidden]'}(
+					array(
+						'name'		=> 'mode',
+						'value'		=> 'edit'
+					)
+				)
+			);
+		break;
 	}
 } else {
 	$u_db			= $User->db();
@@ -67,8 +229,8 @@ if (isset($rc[2], $rc[3])) {
 		$columns_list .= h::li(
 			$column,
 			array(
-				 'style'	=> 'display: inline-block;',
-				 'class'	=> in_array($column, $columns) ? 'ui-selected' : ''
+				'style'	=> 'display: inline-block;',
+				'class'	=> in_array($column, $columns) ? 'ui-selected' : ''
 			)
 		);
 	}
@@ -169,10 +331,27 @@ if (isset($rc[2], $rc[3])) {
 					)
 				) : ''
 			);
-			$users_list[] = vsprintf($users_list_template, array($action)+$User->get($columns, $item['id']));
+			$user_data		= $User->get($columns, $item['id']);
+			if (isset($user_data['regip'])) {
+				$user_data['regip'] = hex2ip($user_data['regip'], 10);
+				if ($user_data['regip'][1]) {
+					$user_data['regip'] = $user_data['regip'][0].h::br().$user_data['regip'][1];
+				} else {
+					$user_data['regip'] = $user_data['regip'][0];
+				}
+			}
+			if (isset($user_data['lastip'])) {
+				$user_data['lastip'] = hex2ip($user_data['lastip'], 10);
+				if ($user_data['lastip'][1]) {
+					$user_data['lastip'] = $user_data['lastip'][0].h::br().$user_data['lastip'][1];
+				} else {
+					$user_data['lastip'] = $user_data['lastip'][0];
+				}
+			}
+			$users_list[]	= vsprintf($users_list_template, array($action)+$user_data);
 		}
 	}
-	unset($users_list_template, $item, $action);
+	unset($users_list_template, $item, $action, $user_data);
 	$a->content(
 		h::{'div#search_users_tabs'}(
 			h::ul(
@@ -180,7 +359,7 @@ if (isset($rc[2], $rc[3])) {
 					h::a(
 						$L->search,
 						array(
-							 'href' => '#search_settings'
+							'href' => '#search_settings'
 						)
 					)
 				).
@@ -188,7 +367,7 @@ if (isset($rc[2], $rc[3])) {
 					h::a(
 						h::info('show_columns'),
 						array(
-							 'href' => '#columns_settings'
+							'href' => '#columns_settings'
 						)
 					)
 				)
@@ -255,7 +434,7 @@ if (isset($rc[2], $rc[3])) {
 		h::{'button[type=submit'}(
 			$L->search,
 			array(
-				 'style'	=> 'margin: 5px 100% 5px 0;'
+				'style'	=> 'margin: 5px 100% 5px 0;'
 			)
 		).
 		h::{'p.left'}(

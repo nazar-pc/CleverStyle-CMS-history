@@ -1,7 +1,7 @@
 <?php
 global $Config, $Index, $L;
 $a = &$Index;
-$timezones = timezones_get_list();
+$timezones = get_timezones_list();
 
 $a->content(
 	h::{'table.admin_table.left_even.right_odd'}(

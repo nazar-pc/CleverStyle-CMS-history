@@ -93,6 +93,7 @@ select {
 }
 
 .admin_table input[type=text],
+.admin_table input[type=password],
 .admin_table input[type=email],
 .admin_table input[type=tel] {
 	width : 250px;
@@ -298,9 +299,6 @@ td.left_all {
 .block_add input[type=text],
 .storage_add input {
 	width : auto !important;
-}
-.user_edit {
-	width: 250px;
 }
 
 .php_components,

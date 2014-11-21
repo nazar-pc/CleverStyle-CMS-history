@@ -82,10 +82,10 @@ $(function() {
 		$('#register').val(this.value);
 		$('#register').focus();
 	});
-	$('#login_process').click(function() {
+	$('#login_process').mousedown(function() {
 		login($('#user_login').val(), $('#user_password').val());
 	});
-	$('#show_password').click(function() {
+	$('#show_password').mousedown(function() {
 		if ($('#user_password').prop('type') == 'password') {
 			$('#user_password').prop('type', 'text');
 			$(this).addClass('ui-icon-unlocked').removeClass('ui-icon-locked');
@@ -94,7 +94,7 @@ $(function() {
 			$(this).addClass('ui-icon-locked').removeClass('ui-icon-unlocked');
 		}
 	});
-	$('#register_process').click(function() {
+	$('#register_process').mousedown(function() {
 		$('<div title="'+rules_agree+'">'+rules_text+'</div>')
 			.appendTo('body')
 			.dialog({
@@ -117,7 +117,7 @@ $(function() {
 				]
 			});
 	});
-	$('.restore_password').click(function() {
+	$('.restore_password').mousedown(function() {
 		//TODO Restore password processing
 	});
 	$('.header_back').click(function() {
@@ -140,10 +140,10 @@ $(function() {
 	$('#change_active_languages').change(function () {
 		$(this).find('option[value=\''+$('#change_language').val()+'\']').prop('selected', true);
 	});
-	$('#system_readme_open').click(function () {
+	$('#system_readme_open').mousedown(function () {
 		$('#system_readme').dialog('open');
 	});
-	$('#system_license_open').click(function () {
+	$('#system_license_open').mousedown(function () {
 		$('#system_license').dialog('open');
 	});
 	$('#debug_objects_toggle').click(function () {

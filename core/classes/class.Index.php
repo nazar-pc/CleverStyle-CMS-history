@@ -10,6 +10,7 @@ class Index {
 
 				$savefile		= 'save',
 				$form			= false,
+				$file_upload	= false,
 				$form_atributes	= array(),
 				$action,
 				$buttons		= true,
@@ -302,6 +303,7 @@ class Index {
 					$this->post_buttons,
 					array(
 						'method'	=> 'post',
+						'enctype'	=> $this->file_upload ? 'multipart/form-data' : false,
 						'action'	=> $this->action,
 						'id'		=> 'admin_form',
 						'onReset'	=> 'save = 0;',

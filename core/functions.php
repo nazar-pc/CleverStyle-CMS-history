@@ -674,8 +674,14 @@
 		}
 		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
 			if (!isset($domains)) {
-				$domains	= array_merge((array)$Config->core['cookie_domain'], explode("\n", $Config->core['mirrors_cookie_domain']));
-				$paths		= array_merge((array)$Config->core['cookie_path'], explode("\n", $Config->core['mirrors_cookie_path']));
+				$domains	= array_merge(
+					(array)$Config->core['cookie_domain'],
+					explode("\n", $Config->core['mirrors_cookie_domain'])
+				);
+				$paths		= array_merge(
+					(array)$Config->core['cookie_path'],
+					explode("\n", $Config->core['mirrors_cookie_path'])
+				);
 				foreach ($domains as $i => $domain) {
 					if (empty($domain)) {
 						unset($domains[$i], $paths[$i]);
@@ -686,12 +692,28 @@
 			$return = true;
 			foreach ($domains as $i => $domain) {
 				$_COOKIE[$prefix.$name] = $value;
-				$return = $return && setcookie($prefix.$name, $value, $expire, isset($paths[$i]) ? $paths[$i] : '/', $domain, $secure, $httponly);
+				$return = $return && setcookie(
+					$prefix.$name,
+					$value,
+					$expire,
+					isset($paths[$i]) ? $paths[$i] : '/',
+					$domain,
+					$secure,
+					$httponly
+				);
 			}
 			return $return;
 		} else {
 			$_COOKIE[$prefix.$name] = $value;
-			return setcookie($prefix.$name, $value, $expire, '/', $_SERVER['HTTP_HOST'], $secure, $httponly);
+			return setcookie(
+				$prefix.$name,
+				$value,
+				$expire,
+				'/',
+				$_SERVER['HTTP_HOST'],
+				$secure,
+				$httponly
+			);
 		}
 	}
 	function _getcookie ($name) {
@@ -707,10 +729,27 @@
 	function xap ($in, $html = false) {
 		if ($html) {
 			//Делаем безопасный html
-			$in = preg_replace('/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i', '', $in); //Удаляем скрипты, фреймы и flash
-			$in = preg_replace('/(script:)|(expression\()/i', '\\1&nbsp;', $in); //Обезвреживаем скрипты, что остались
-			$in = preg_replace('/(onblur|onchange|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onload|onmousedown|onmousemove|onmouseout|onmouseover|onmouseup|onreset|onselect|onsubmit|onunload)=?/i', '', $in); //Удаляем события
-			$in = preg_replace('/((src|href).*?=.*?)(http:\/\/)/i', '\\1redirect/\\2', $in); //Обезвреживаем внешние ссылки
+			$in = preg_replace(
+				'/(<(link|script|iframe|object|applet|embed).*?>[^<]*(<\/(link|script|iframe).*?>)?)/i',
+				'',
+				$in
+			);
+			$in = preg_replace(
+				'/(script:)|(expression\()/i',
+				'\\1&nbsp;',
+				$in
+			);
+			$in = preg_replace(
+				'/(onblur|onchange|onclick|ondblclick|onfocus|onkeydown|onkeypress|onkeyup|onload|onmousedown|'.
+					'onmousemove|onmouseout|onmouseover|onmouseup|onreset|onselect|onsubmit|onunload)=?/i',
+				'',
+				$in
+			);
+			$in = preg_replace(//TODO page redirection processing
+				'/((src|href).*?=.*?)(http:\/\/)/i',
+				'\\1redirect/\\2',
+				$in
+			); //Обезвреживаем внешние ссылки
 			return $in;
 		} else {
 			//Приводим всё в вид для чтения
@@ -733,6 +772,11 @@
 		}
 	}
 	//Функция для конвертации IPv4 и IPv6 адресов в hex значение для помещения в БД
+	/**
+	 * Function for convertion of Ipv4 and Ipv6 into hex values to store in db
+	 * @param string $ip
+	 * @return bool|string
+	 */
 	function ip2hex ($ip) {
 		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
 			$isIPv4 = true;
@@ -741,7 +785,7 @@
 		} else {
 			return false;
 		}
-		//Формат IPv4
+		//IPv4 format
 		if($isIPv4) {
 			$parts = explode('.', $ip);
 			foreach ($parts as &$part) {
@@ -750,11 +794,11 @@
 			unset($part);
 			$ip			= '::'.$parts[0].$parts[1].':'.$parts[2].$parts[3];
 			$hex		= implode('', $parts);
-		//Формат IPv6
+		//IPv6 format
 		} else {
 			$parts		= explode(':', $ip);
 			$last_part	= count($parts) - 1;
-			//Если смешанный IPv6/IPv4, конвертируем окончание в IPv6
+			//If mixed IPv6/IPv4, convert ending to IPv6
 			if(filter_var($parts[$last_part], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
 				$parts[$last_part] = explode('.', $parts[$last_part]);
 				foreach ($parts[$last_part] as &$part) {
@@ -783,14 +827,70 @@
 			$ip = implode(':', $expandedParts);
 			$hex = implode('', $expandedParts);
 		}
-		//Проверяем окончательный IP
+		//Check final IP
 		if(filter_var($ip, FILTER_VALIDATE_IP) === false) {
 			return false;
 		}
 		return strtolower(str_pad($hex, 32, '0', STR_PAD_LEFT));
 	}
-	//Получения списка часовых зон
-	function timezones_get_list () {
+	/**
+	 * Returns IP for given hex representation
+	 * @param string $hex
+	 * @param int $mode	6	- result IP will be in form of Ipv6<br>
+	 * 					4	- if possible, result will be in form of Ipv4, otherwise in form of IPv6<br>
+	 * 					10	- result will be array(IPv6, IPv4)
+	 * @return array|bool|string
+	 */
+	function hex2ip ($hex, $mode = 6) {
+		if (!$hex || strlen($hex) != 32) {
+			return false;
+		}
+		$IPv4_range = false;
+		if (preg_match('/^0{24}[0-9a-f]{8}$/', $hex)) {
+			$IPv4_range = true;
+		}
+		if ($IPv4_range) {
+			$hex = substr($hex, 24, 8);
+			switch ($mode) {
+				case 4:
+					return	hexdec(substr($hex, 0, 2)).'.'.
+							hexdec(substr($hex, 2, 2)).'.'.
+							hexdec(substr($hex, 4, 2)).'.'.
+							hexdec(substr($hex, 6, 2));
+				case 10:
+					$result = array();
+					//IPv6
+					$result[] = '0000:0000:0000:0000:0000:0000:'.substr($hex, 0, 4).':'.substr($hex, 4, 4);
+					//IPv4
+					$result[] =	hexdec(substr($hex, 0, 2)).'.'.
+								hexdec(substr($hex, 2, 2)).'.'.
+								hexdec(substr($hex, 4, 2)).'.'.
+								hexdec(substr($hex, 6, 2));
+					return $result;
+				default:
+					return '0000:0000:0000:0000:0000:0000:'.substr($hex, 0, 4).':'.substr($hex, 4, 4);
+			}
+		} else {
+			$result =	substr($hex, 0, 4).':'.
+						substr($hex, 4, 4).':'.
+						substr($hex, 8, 4).':'.
+						substr($hex, 12, 4).':'.
+						substr($hex, 16, 4).':'.
+						substr($hex, 20, 4).':'.
+						substr($hex, 24, 4).':'.
+						substr($hex, 28, 4);
+			if ($mode == 10) {
+				return array($result, false);
+			} else {
+				return $result;
+			}
+		}
+	}
+	/**
+	 * Get list of timezones
+	 * @return array
+	 */
+	function get_timezones_list () {
 		global $Cache;
 		if (!($timezones = $Cache->timezones)) {
 			$tzs = timezone_abbreviations_list();
@@ -806,11 +906,11 @@
 						$id		= explode('/', $v['timezone_id']);
 						$timezones_[$id[0].$v['offset']]['id'] = &$v['timezone_id'];
 						$timezones_[$id[0].$v['offset']]['value'] = strtr($v['timezone_id'], '_', ' ').
-															' ('.$sign.
-																$hour.':'.
-																str_pad($min, 2, 0, STR_PAD_LEFT).':'.
-																str_pad($sec, 2, 0, STR_PAD_LEFT).
-															')';
+							' ('.$sign.
+								$hour.':'.
+								str_pad($min, 2, 0, STR_PAD_LEFT).':'.
+								str_pad($sec, 2, 0, STR_PAD_LEFT).
+							')';
 					}
 				}
 			}
@@ -926,7 +1026,11 @@
 			ob_start();
 			@phpinfo(INFO_MODULES);
 			$mcrypt_version = ob_get_clean();
-			preg_match('/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)[\n]?<\/td><\/tr>/', $mcrypt_version, $mcrypt_version);
+			preg_match(
+				'/mcrypt support.*?(enabled|disabled)(.|\n)*?Version.?<\/td><td class=\"v\">(.*?)[\n]?<\/td><\/tr>/',
+				$mcrypt_version,
+				$mcrypt_version
+			);
 			$mcrypt_data[0] = $mcrypt_version[1] == 'enabled' ? trim($mcrypt_version[3]) : false;
 			global $mcrypt;
 			$mcrypt_data[1] = $mcrypt_data[0] ? (bool)version_compare($mcrypt_data[0], $mcrypt, '>=') : false;
@@ -1075,4 +1179,3 @@ $$temp = array(
 	2 => base64_decode('PGEgdGFyZ2V0PSJfYmxhbmsiIGhyZWY9Imh0dHA6Ly9jc2Ntcy5vcmciIHRpdGxlPSJDbGV2ZXJTdHlsZSBDTVMiPkNsZXZlclN0eWxlIENNUzwvYT4=')	//Ссылка
 );
 unset($temp);
-?>

@@ -292,7 +292,7 @@ class h {
 	 *
 	 * @return	bool|string
 	 */
-		protected static function template_2	($in, $data, $function) {
+		protected static function template_2 ($in, $data, $function) {
 			if (is_array($in)) {
 				$temp = '';
 				foreach ($in as $item) {
@@ -431,7 +431,7 @@ class h {
 	 *
 	 * @return	bool|string
 	 */
-		protected static function template_3	($in = '', $data = array(), $function) {
+		protected static function template_3 ($in = '', $data = array(), $function) {
 			if (!is_array($in)) {
 				return self::swrap($in, $data, $function);
 			}
@@ -536,7 +536,7 @@ class h {
 	 * @param string       $function
 	 * @return bool|string
 	 */
-		protected static function template_4	($in = '', $data = array(), $function) {
+		protected static function template_4 ($in = '', $data = array(), $function) {
 			global $Page;
 			$uniqid = uniqid('html_replace_');
 			if (is_array($in)) {
@@ -585,8 +585,8 @@ class h {
 	}
 	static function __callStatic ($input, $data) {
 		if (is_array($data) && count($data) == 2) {
-			$data[1]['in'] = $data[0];
-			$data = $data[1];
+			$data[1]['in']	= $data[0];
+			$data			= $data[1];
 		} elseif(is_array($data) && !empty($data)) {
 			if (is_array($data[0])) {
 				$int = true;
@@ -608,39 +608,49 @@ class h {
 		} else {
 			$data = array();
 		}
-		$input		= explode(' ', $input);
-		foreach ($input as &$i) {
+		$input		= array_reverse(explode(' ', $input));
+		$merge		= true;
+		foreach ($input as &$item) {
 			$attrs = array();
-			if (($pos = strpos($i, '[')) !== false) {
-				$attrs_ = explode('][', substr($i, $pos+1, -1));
+			if (($pos = strpos($item, '[')) !== false) {
+				$attrs_ = explode('][', substr($item, $pos+1, -1));
 				foreach ($attrs_ as &$attr) {
-					$attr = explode('=', $attr);
-					$attrs[$attr[0]] = isset($attr[1]) ? $attr[1] : '';
+					$attr				= explode('=', $attr);
+					$attrs[$attr[0]]	= isset($attr[1]) ? $attr[1] : '';
 				}
 				unset($attrs_);
-				$i = substr($i, 0, $pos);
+				$item = substr($item, 0, $pos);
 			}
-			if (($pos = strpos($i, '.')) !== false) {
+			if (($pos = strpos($item, '.')) !== false) {
 				if (!isset($attrs['class'])) {
 					$attrs['class'] = '';
 				}
-				$attrs['class']	= trim($attrs['class'].' '.str_replace('.', ' ', substr($i, $pos)));
-				$i = substr($i, 0, $pos);
+				$attrs['class']	= trim($attrs['class'].' '.str_replace('.', ' ', substr($item, $pos)));
+				$item			= substr($item, 0, $pos);
 			}
-			$i		= explode('#', $i);
-			$tag	= $i[0];
-			if (isset($i[1])) {
-				$attrs['id'] = $i[1];
+			$item	= explode('#', $item);
+			$tag	= $item[0];
+			if (isset($item[1])) {
+				$attrs['id'] = $item[1];
 			}
-			$attrs = array_merge((array)$data, $attrs);
-			if (isset($attrs['in'])) {
-				$in = $attrs['in'];
-				unset($attrs['in']);
-			} else {
-				$in = '';
+			if ($merge) {
+				$attrs = array_merge((array)$data, $attrs);
+				$merge = false;
 			}
-			$i		= self::$tag($in, $attrs);
+			if (!isset($in)) {
+				if (isset($attrs['in'])) {
+					$in = $attrs['in'];
+					unset($attrs['in']);
+				} else {
+					$in = '';
+				}
+			}
+			$in		= self::$tag($in, $attrs);
 		}
-		return implode("\n", $input);
+		if (isset($in)) {
+			return $in;
+		} else {
+			return false;
+		}
 	}
 }
