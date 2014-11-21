@@ -72,6 +72,11 @@ class User {
 		
 	}
 	function get ($item, $user = false) {
+		if ($item == 'user_agent') {
+			return $_SERVER['HTTP_USER_AGENT'];
+		} elseif ($item == 'ip') {
+			return $_SERVER['REMOTE_ADDR'];
+		}
 		if ($user === false) {
 			return isset($this->data[$item]) ? $this->data[$item] : NULL;
 		} else {
@@ -133,12 +138,6 @@ class User {
 				'LIMIT 1'
 		);
 		return is_array($data['id']) ? $data['id'] : false;
-	}
-	function user_agent () {
-		return $_SERVER['HTTP_USER_AGENT'];
-	}
-	function ip () {
-		return $_SERVER['REMOTE_ADDR'];
 	}
 	function get_header_info () {
 		global $Config, $Page, $L;

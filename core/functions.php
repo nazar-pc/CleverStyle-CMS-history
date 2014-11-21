@@ -501,6 +501,28 @@
 	function _json_decode ($in, $depth = 512) {
 		return @json_decode($in, true, $depth);
 	}
+	//
+	function _setcookie ($name, $value, $expire = 0) {
+		static $domains = false, $paths = false;
+		global $Config;
+		if (is_object($Config) && $Config->server['mirrors']['count'] > 1) {
+			if (!$domains) {
+				$domains	= array_merge($Config->core['cookie_domain'], explode("\n", $Config->core['mirrors_cookie_domain']));
+				$paths		= array_merge($Config->core['cookie_path'], explode("\n", $Config->core['mirrors_cookie_path']));
+				foreach ($domains as $i => $domain) {
+					if (empty($domain)) {
+						unset($domains[$i], $paths[$i]);
+					}
+				}
+				unset($i, $domain);
+			}
+			foreach ($domains as $i => $domain) {
+				setcookie($name, $value, $expire, $paths[$i], $domain);
+			}
+		} else {
+			setcookie($name, $value, $expire);
+		}
+	}
 	//Почти идеальная функция для защиты от XSS-атак
 	//Название xap - сокращено от XSS Attack Protection
 	function xap ($in, $format = false) {
