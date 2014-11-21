@@ -1,23 +1,20 @@
 <?php
 class Page {
-	public		$Content,
-				$theme, $color_scheme, $get_list, $cache_list, $interface = true,
-
-				$Html, $Keywords, $Description, $Title = array(),
-
-				$Head,
-				$core_js	= array(0 => '', 1 => ''),
-				$core_css	= array(0 => '', 1 => ''),
-				$js			= array(0 => '', 1 => ''),
-				$css		= array(0 => '', 1 => ''),
-
-				$user_avatar_image, $user_avatar_text, $user_info,
-				$debug_info,
-
-				$pre_Body, $Header, $mainmenu, $mainsubmenu, $menumore, $Left, $Top, $Bottom, $Right, $Footer, $post_Body,
-
-				$level		= array (			//Количество табуляций для отступов при подстановке значений в шаблон по-умолчанию
-					'Head'				=> 2,
+	public		$Content, $interface = true,
+				$Html = '', $Keywords = '', $Description = '', $Title = array(),
+				$debug_info = '',
+				$Head		= '',
+				$pre_Body	= '',
+					$Header	= '',
+						$mainmenu = '', $mainsubmenu = '', $menumore = '',
+					$Left	= '',
+					$Top	= '',
+					$Right	= '',
+					$Bottom	= '',
+					$Footer	= '',
+				$post_Body	= '',
+				$level		= array (			//Number of tabs by default for margins the substitution
+					'Head'				=> 2,	//of values into template
 					'pre_Body'			=> 2,
 					'Header'			=> 4,
 					'mainmenu'			=> 3,
@@ -35,13 +32,34 @@ class Page {
 					'post_Body'			=> 2
 				);
 
-	protected	$Search		= array(),
+	protected	$init = false,										//For single initialization
+				$secret,											//Secret phrase for separating internal
+																	//function calling from external one
+				$theme, $color_scheme, $pcache_basename, $includes,
+				$user_avatar_image, $user_avatar_text, $user_info,
+				$core_js	= array(0 => '', 1 => ''),
+				$core_css	= array(0 => '', 1 => ''),
+				$js			= array(0 => '', 1 => ''),
+				$css		= array(0 => '', 1 => ''),
+				$Search		= array(),
 				$Replace	= array();
 
 	function __construct () {
 		global $interface;
 		$this->interface = (bool)$interface;
 		unset($GLOBALS['interface']);
+		$this->secret = uniqid();
+	}
+	function init ($name, $keywords, $description, $theme, $color_scheme) {
+		if ($this->init) {
+			return;
+		}
+		$this->init = true;
+		$this->Title[0] = htmlentities($name, ENT_COMPAT, CHARSET);
+		$this->Keywords = $keywords;
+		$this->Description = $description;
+		$this->theme = $theme;
+		$this->color_scheme = $color_scheme;
 	}
 	function content ($add, $level = false) {
 		if ($level !== false) {
@@ -50,31 +68,33 @@ class Page {
 			$this->Content .= $add;
 		}
 	}
-	function init ($name, $keywords, $description, $theme, $color_scheme) {
-		$this->Title[0] = htmlentities($name, ENT_COMPAT, CHARSET);
-		$this->Keywords = $keywords;
-		$this->Description = $description;
-		$this->theme = $theme;
-		$this->color_scheme = $color_scheme;
-	}
 	//Загрузка и обработка темы оформления, подготовка шаблона
 	protected function load($stop) {
-		global $Config;
+		global $Config, $L;
 		//Определение темы оформления
-		if (is_object($Config) && $Config->core['allow_change_theme'] && _getcookie('theme') && in_array(_getcookie('theme'), $Config->core['active_themes'])) {
+		if (
+			is_object($Config) && $Config->core['allow_change_theme'] &&
+			_getcookie('theme') && in_array(_getcookie('theme'), $Config->core['active_themes'])
+		) {
 			$this->theme = _getcookie('theme');
 		}
 		if (is_object($Config) && $Config->core['site_mode']) {
-			if ($Config->core['allow_change_theme'] && _getcookie('color_scheme') && in_array(_getcookie('color_scheme'), $Config->core['color_schemes'])) {
+			if (
+				$Config->core['allow_change_theme'] && _getcookie('color_scheme') &&
+				in_array(_getcookie('color_scheme'), $Config->core['color_schemes'])
+			) {
 				$this->color_scheme = _getcookie('color_scheme');
 			}
 		}
 		//Задание названия файлов кеша
-		$this->cache_list = '_'.$this->theme.' '.$this->color_scheme.'.';
+		$this->pcache_basename = '_'.$this->theme.' '.$this->color_scheme.'_'.$L->clang.'.';
 		//Загрузка шаблона
 		if ($this->interface) {
 			ob_start();
-			if (is_object($Config) && !$stop && $Config->core['site_mode'] && (_file_exists(THEMES.DS.$this->theme.DS.'index.html') || _file_exists(THEMES.DS.$this->theme.DS.'index.php'))) {
+			if (
+				is_object($Config) && !$stop && $Config->core['site_mode'] &&
+				(_file_exists(THEMES.DS.$this->theme.DS.'index.html') || _file_exists(THEMES.DS.$this->theme.DS.'index.php'))
+			) {
 				_require(THEMES.DS.$this->theme.DS.'prepare.php', true, false);
 				if (!_include(THEMES.DS.$this->theme.DS.'index.php', true, false)) {
 					_include(THEMES.DS.$this->theme.DS.'index.html', true);
@@ -103,7 +123,7 @@ class Page {
 		//Загрузка настроек оформления и шаблона темы
 		$this->load($stop);
 		//Загрузка стилей и скриптов
-		$this->get_js_css();
+		$this->load_includes();
 		//Загрузка данных о пользователе
 		$this->get_header_info();
 		//Формирование заголовка
@@ -197,6 +217,10 @@ class Page {
 		$this->Html = str_replace($construct['in'], $construct['out'], $this->Html);
 	}
 	//Задание елементов замены в исходном коде
+	/**
+	 * @param array|string $search
+	 * @param array|string $replace
+	 */
 	function replace ($search, $replace = '') {
 		if (is_array($search)) {
 			foreach ($search as $i => $val) {
@@ -212,15 +236,15 @@ class Page {
 		}
 	}
 	//Добавление ссылок на подключаемые JavaScript файлы
-	function js ($add, $mode = 'file', $core = false) {
+	function js ($add, $mode = 'file', $secret = false) {
 		if (is_array($add)) {
 			foreach ($add as $script) {
 				if ($script) {
-					$this->js($script, $mode, $core);
+					$this->js($script, $mode, $secret);
 				}
 			}
 		} elseif ($add) {
-			if ($core) {
+			if ($secret == $this->secret) {
 				if ($mode == 'file') {
 					$this->core_js[0] .= h::script(array('type'	=> 'text/javascript', 'src'	=> $add, 'level'	=> false))."\n";
 				} elseif ($mode == 'code') {
@@ -236,15 +260,15 @@ class Page {
 		}
 	}
 	//Добавление ссылок на подключаемые CSS стили
-	function css ($add, $mode = 'file', $core = false) {
+	function css ($add, $mode = 'file', $secret = false) {
 		if (is_array($add)) {
 			foreach ($add as $style) {
 				if ($style) {
-					$this->css($style, $mode, $core);
+					$this->css($style, $mode, $secret);
 				}
 			}
 		} elseif ($add) {
-			if ($core) {
+			if ($secret == $this->secret) {
 				if ($mode == 'file') {
 					$this->core_css[0] .= h::link(array('type'	=> 'text/css', 'href'	=> $add, 'rel'	=> 'StyleSheet'));
 				} elseif ($mode == 'code') {
@@ -264,7 +288,7 @@ class Page {
 		$this->Title[] = htmlentities($add, ENT_COMPAT, CHARSET);
 	}
 	//Подключение JavaScript и CSS файлов
-	protected function get_js_css () {
+	protected function load_includes () {
 		global $Config;
 		if (!is_object($Config)) {
 			return;
@@ -272,8 +296,8 @@ class Page {
 		if ($Config->core['cache_compress_js_css']) {
 			//Проверка текущего кеша
 			if (
-				!_file_exists(PCACHE.DS.$this->cache_list.'css') ||
-				!_file_exists(PCACHE.DS.$this->cache_list.'js') ||
+				!_file_exists(PCACHE.DS.$this->pcache_basename.'css') ||
+				!_file_exists(PCACHE.DS.$this->pcache_basename.'js') ||
 				!_file_exists(PCACHE.DS.'pcache_key')
 			) {
 				$this->rebuild_cache();
@@ -284,42 +308,42 @@ class Page {
 			if (DS != '/') {
 				$css_list = str_replace(DS, '/', $css_list);
 			}
-			$css_list = array_merge(array('storages/pcache/'.$this->cache_list.'css'), $css_list);
+			$css_list = array_merge(array('storages/pcache/'.$this->pcache_basename.'css'), $css_list);
 			foreach ($css_list as &$file) {
 				$file .= '?'.$key;
 			}
 			unset($file);
-			$this->css($css_list, 'file', true);
+			$this->css($css_list, 'file', $this->secret);
 			//Подключение JavaScript
 			$js_list = get_list(PCACHE, '/^[^_](.*)\.js$/i', 'f', 'storages/pcache');
 			if (DS != '/') {
 				$js_list = str_replace(DS, '/', $js_list);
 			}
-			$js_list = array_merge(array('storages/pcache/'.$this->cache_list.'js'), $js_list);
+			$js_list = array_merge(array('storages/pcache/'.$this->pcache_basename.'js'), $js_list);
 			foreach ($js_list as &$file) {
 				$file .= '?'.$key;
 			}
 			unset($file);
-			$this->js($js_list, 'file', true);
+			$this->js($js_list, 'file', $this->secret);
 		} else {
-			$this->get_js_css_list();
+			$this->get_includes_list();
 			//Подключение CSS стилей
-			foreach ($this->get_list['css'] as $file) {
-				$this->css($file, 'file', true);
+			foreach ($this->includes['css'] as $file) {
+				$this->css($file, 'file', $this->secret);
 			}
 			//Подключение JavaScript
-			foreach ($this->get_list['js'] as $file) {
-				$this->js($file, 'file', true);
+			foreach ($this->includes['js'] as $file) {
+				$this->js($file, 'file', $this->secret);
 			}
 		}
 	}
 	//Загрузка списка JavaScript и CSS файлов
-	protected function get_js_css_list ($for_cache = false) {
+	protected function get_includes_list ($for_cache = false) {
 		$theme_folder	= THEMES.DS.$this->theme;
 		$scheme_folder	= $theme_folder.DS.'schemes'.DS.$this->color_scheme;
 		$theme_pfolder	= 'themes/'.$this->theme;
 		$scheme_pfolder	= $theme_pfolder.'/schemes/'.$this->color_scheme;
-		$this->get_list = array(
+		$this->includes = array(
 			'css' => array_merge(
 				(array)get_list(INCLUDES.DS.'css',			'/(.*)\.css$/i',	'f', $for_cache ? true : 'includes/css',			true, false, '!include'),
 				(array)get_list($theme_folder.DS.'css',		'/(.*)\.css$/i',	'f', $for_cache ? true : $theme_pfolder.'/css',		true, false, '!include'),
@@ -333,16 +357,16 @@ class Page {
 		);
 		unset($theme_folder, $scheme_folder, $theme_pfolder, $scheme_pfolder);
 		if (!$for_cache && DS != '/') {
-			$this->get_list = str_replace(DS, '/', $this->get_list);
+			$this->includes = str_replace(DS, '/', $this->includes);
 		}
-		sort($this->get_list['css']);
-		sort($this->get_list['js']);
+		sort($this->includes['css']);
+		sort($this->includes['js']);
 	}
 	//Перестройка кеша JavaScript и CSS
 	function rebuild_cache () {
-		$this->get_js_css_list(true);
+		$this->get_includes_list(true);
 		$key = '';
-		foreach ($this->get_list as $extension => &$files) {
+		foreach ($this->includes as $extension => &$files) {
 			$temp_cache = '';
 			foreach ($files as $file) {
 				if (_file_exists($file)) {
@@ -354,13 +378,13 @@ class Page {
 					unset($current_cache);
 				}
 			}
-			_file_put_contents(PCACHE.DS.$this->cache_list.$extension, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
+			_file_put_contents(PCACHE.DS.$this->pcache_basename.$extension, gzencode($temp_cache, 9), LOCK_EX|FILE_BINARY);
 			$key .= md5($temp_cache);
 		}
 		_file_put_contents(PCACHE.DS.'pcache_key', mb_substr(md5($key), 0, 5), LOCK_EX|FILE_BINARY);
 	}
 	//Подстановка изображений при сжатии CSS
-	function images_substitution (&$data, $file) {
+	protected function images_substitution (&$data, $file) {
 		_chdir(_dirname($file));
 		preg_replace_callback(
 			'/url\((.*?)\)/',
@@ -466,19 +490,20 @@ class Page {
 				$span.$L->queries
 			);
 			$queries =	h::p(
-				$L->false_connections.': '.h::b(implode(', ', $db->false_connections) ?: $L->no)
+				$L->false_connections.': '.h::b(implode(', ', $db->get_connections_list(false)) ?: $L->no)
 			).
 			h::p(
-				$L->successful_connections.': '.h::b(implode(', ', $db->successful_connections) ?: $L->no)
+				$L->successful_connections.': '.h::b(implode(', ', $db->get_connections_list(true)) ?: $L->no)
 			).
 			h::p(
-				$L->mirrors_connections.': '.h::b(implode(', ', $db->mirrors) ?: $L->no)
+				$L->mirrors_connections.': '.h::b(implode(', ', $db->get_connections_list('mirror')) ?: $L->no)
 			).
 			h::p(
-				$L->active_connections.': '.(count($db->connections) ? '' : h::b($L->no))
+				$L->active_connections.': '.(count($db->get_connections_list()) ? '' : h::b($L->no))
 			);
-			foreach ($db->connections as $name => &$database) {
-				$name = $name != 'core' ? $L->db.' '.$database->database : $L->core_db.' ('.$database->database.')';
+			$connections = $db->get_connections_list();
+			foreach ($connections as $name => $database) {
+				$name = $name != 0 ? $L->db.' '.$database->database : $L->core_db.' ('.$database->database.')';
 				$queries .= h::{'p.padding_left'}(
 					$name.
 					', '.$L->duration_of_connecting_with_db.' '.$L->during.' '.round($database->connecting_time, 5).
@@ -497,8 +522,8 @@ class Page {
 				}
 				unset($error);
 			}
-			unset($name, $database, $i, $text);
-			$debug_info =	h::{'div#debug_queries.padding_left'}(
+			unset($connections, $name, $database, $i, $text);
+			$this->debug_info .= h::{'div#debug_queries.padding_left'}(
 				h::p(
 					$L->total.' '.$db->queries.' '.$L->queries_to_db.' '.$L->during.' '.format_time(round($db->time, 5)).($db->queries ? ':' : '')
 				).
@@ -508,8 +533,6 @@ class Page {
 				)
 			);
 			unset($queries);
-			$this->debug_info .= $debug_info;
-			unset($i, $v, $debug_info);
 		}
 		//Cookies
 		if ($Config->core['show_cookies']) {
@@ -526,6 +549,7 @@ class Page {
 					h::td(xap($v), array('style' => 'width: 80%;')), true
 				);
 			}
+			unset($i, $v);
 			$this->debug_info .= h::{'div#debug_cookies'}(
 				h::level(
 					h::{'table.padding_left'}(
@@ -539,7 +563,7 @@ class Page {
 					'style'	=> 'display: none;'
 				)
 			);
-			unset($i, $v, $debug_info);
+			unset($debug_info);
 		}
 		$this->debug_info = preg_replace($this->Search, $this->Replace, $this->debug_info);
 	}
@@ -558,7 +582,7 @@ class Page {
 	/**
 	 * Substitutes header information about user, login/registration forms, etc.
 	 */
-	function get_header_info () {
+	protected function get_header_info () {
 		global $User, $L;
 		if ($User->is('user')) {
 			if ($User->avatar) {

@@ -73,7 +73,7 @@ class Config {
 		date_default_timezone_set($this->core['timezone']);
 	}
 	//Анализ и обработка текущего адреса страницы
-	private function routing () {
+	protected function routing () {
 		global $ADMIN, $API;
 		$this->server['url']		= urldecode($_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 		null_byte_filter($this->server['url']);
@@ -274,14 +274,14 @@ class Config {
 				if ($part == 'routing') {
 					$temp = $this->routing;
 					unset($temp['current']);
-					$query[] = '`'.$part.'` = '.$db->core()->sip(_json_encode($temp));
+					$query[] = '`'.$part.'` = '.$db->{0}->sip(_json_encode($temp));
 					continue;
 				}
-				$query[] = '`'.$part.'` = '.$db->core()->sip(_json_encode($this->$part));
+				$query[] = '`'.$part.'` = '.$db->{0}->sip(_json_encode($this->$part));
 			}
 		}
 		unset($parts, $part, $temp);
-		if (!empty($query) && $db->core()->q('UPDATE `[prefix]config` SET '.implode(', ', $query).' WHERE `domain` = \''.DOMAIN.'\' LIMIT 1')) {
+		if (!empty($query) && $db->{0}->q('UPDATE `[prefix]config` SET '.implode(', ', $query).' WHERE `domain` = \''.DOMAIN.'\' LIMIT 1')) {
 			$this->apply();
 			return true;
 		}

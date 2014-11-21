@@ -10,7 +10,7 @@ td#main_content, #body > table {
 }
 a {
 	color: #000;
-	border-bottom: 1px dashed #000;
+	/*border-bottom: 1px dashed #000;*/
 }
 .form_element, .form_element:hover, .form_element:focus {
 	background: #fff;

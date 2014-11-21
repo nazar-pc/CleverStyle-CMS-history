@@ -85,7 +85,7 @@ foreach ($plugins as $plugin) {
 	}
 	unset($tag, $file);
 	$state = in_array($plugin, $Config->components['plugins']);
-	$action .= h::{'a.nul'}(
+	$action .= h::a(
 		h::{'button.compact'}(
 			h::icon($state ? 'minusthick' : 'check'),
 			array(

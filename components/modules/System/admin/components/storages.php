@@ -138,7 +138,7 @@ if (isset($rc[2])) {
 		$storage_list .=	h::tr(
 			h::td(
 				($i ? 
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('wrench'),
 						array(
@@ -149,7 +149,7 @@ if (isset($rc[2])) {
 						'href'		=> $a->action.'/edit/'.$i
 					)
 				).
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('close'),
 						array(
@@ -160,7 +160,7 @@ if (isset($rc[2])) {
 						'href'		=> $a->action.'/delete/'.$i
 					)
 				).
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('signal-diag'),
 						array(

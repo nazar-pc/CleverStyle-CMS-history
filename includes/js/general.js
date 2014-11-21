@@ -13,6 +13,11 @@ $(function() {
 			}
 		}
 	});
+	$("select").each(function (index, element) {
+		if (!$(element).hasClass('noui')) {
+			//$(element).chosen(); //TODO Find some good replacement (or wait for jQuery UI 1.9)
+		}
+	});
 	$(":button").each(function (index, element) {
 		if (!$(element).hasClass('noui')) {
 			$(element).button();
@@ -185,4 +190,16 @@ $(function() {
 		}
 		$(this).html(add+cookies);
 	});
+	$('#search_users_tabs').tabs({
+		cookie: {}
+	});
+	$('#show_columns ol').css({
+		'list-style-type'	: 'none',
+		'margin'			: 0,
+		'padding'			: 0
+	}).selectable().children('li').css({//TODO Serialization of selected items and accounting last search
+		'margin'			: '3px',
+		'padding'			: '5px',
+		'width'				: 'auto'
+	}).addClass('ui-widget-content');
 });

@@ -1,22 +1,27 @@
 <?php
 class Language {
-	public		$clanguage,								//Текущий язык
-				$time = '';
-	protected	$translate = array(),					//Локальный кеш переводов
-				$need_to_rebuild_cache = false,			//Требуется пересобрать кеш
-				$initialized = false;					//Состояние инициализации
+	public		$clanguage,								//Current language
+				$clang,									//Current language (short form)
+				$time = '';//TODO WTF?
+	protected	$init = false,							//For single initialization
+				$translate = array(),					//Локальный кеш переводов
+				$need_to_rebuild_cache = false;			//Требуется пересобрать кеш
 	function __construct () {
 		global $LANGUAGE, $L;
 		$L = $this;
 		$this->change($LANGUAGE);
 	}
 	function init ($active_languages, $language) {
+		if ($this->init) {
+			return;
+		}
+		$this->init = true;
 		$this->change(_getcookie('language') && in_array(_getcookie('language'), $active_languages) ? _getcookie('language') : $language);
 		if ($this->need_to_rebuild_cache) {
 			global $Cache;
 			$Cache->{'language/'.$this->clanguage} = $this->translate;
 			$this->need_to_rebuild_cache = false;
-			$this->initialized = true;
+			$this->init = true;
 		}
 	}
 	/**
@@ -102,8 +107,8 @@ class Language {
 				setlocale(LC_TIME | (defined('LC_MESSAGES') ? LC_MESSAGES : 0), $this->clocale);
 				$Text->language($this->clang);
 				$this->need_to_rebuild_cache = true;
-				if ($this->initialized) {
-					$this->init();
+				if ($this->init) {
+					$this->init($Config->core['active_languages'], $language);
 				}
 				return true;
 			} elseif (_include(LANGUAGES.'/lang.'.$this->clanguage.'.json', false, false)) {

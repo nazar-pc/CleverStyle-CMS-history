@@ -125,7 +125,7 @@ if ($mode && $rc[2] == 'settings') {
 		$block_data = &$Config->components['blocks'][$block];
 		$blocks_array[$block_data['position']][$block_data['position_id']] = h::li(
 			h::{'div.blocks_items_title'}($block_data['title']).
-			h::{'a.nul'}(
+			h::a(
 				h::div(
 					h::icon($block_data['active'] ? 'minusthick' : 'check')
 				),
@@ -134,7 +134,7 @@ if ($mode && $rc[2] == 'settings') {
 					'data-title'	=> $L->{$block_data['active'] ? 'disable' : 'enable'}
 				)
 			).
-			h::{'a.nul'}(
+			h::a(
 				h::div(
 					h::icon('wrench')
 				),

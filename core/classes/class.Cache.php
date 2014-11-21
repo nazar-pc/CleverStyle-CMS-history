@@ -1,13 +1,17 @@
 <?php
 class Cache {
-	protected	$disk = false,
+	protected	$init = false,				//For single initialization
+				$disk = false,
 				$disk_size = -1,
 				$memcache = false,
 				/*$memcached = false,*/
-				$local_storage = array(),	//Локальное хранилище кеша, позволяет оптимизировать повторные запросы в кеш
 				$cache = true,				//Состояние кеша (вкл/выкл)
 				$size = false;				//Размер кеша
 	function init ($disk_cache, $memcache) {
+		if ($this->init) {
+			return;
+		}
+		$this->init = true;
 		global $MEMCACHE_HOST, $MEMCACHE_PORT;
 		$this->disk			= $disk_cache;
 		if (!$this->disk && $this->get('cache')) {
@@ -35,14 +39,8 @@ class Cache {
 		} elseif ($item == 'cache') {
 			return $this->cache;
 		}
-		if (!MEMORY_SAVE && isset($this->local_storage[$item])) {
-			return $this->local_storage[$item];
-		}
 		if (is_object($this->memcache) && $cache = $this->memcache->get(DOMAIN.$item)) {
 			if ($cache = @_json_decode($cache)) {
-				if (!MEMORY_SAVE) {
-					$this->local_storage[$item] = &$cache;
-				}
 				return $cache;
 			}
 		}
@@ -51,9 +49,6 @@ class Cache {
 		}
 		if (_is_file(CACHE.DS.$item) && _is_readable(CACHE.DS.$item) && $cache = _file_get_contents(CACHE.DS.$item, FILE_BINARY)) {
 			if ($cache = @_json_decode($cache)) {
-				if (!MEMORY_SAVE) {
-					$this->local_storage[$item] = &$cache;
-				}
 				return $cache;
 			} else {
 				_unlink(CACHE.DS.$item);
@@ -63,9 +58,6 @@ class Cache {
 		return false;
 	}
 	function set ($item, $data, $time = 0) {
-		if (!MEMORY_SAVE) {
-			$this->local_storage[$item] = $data;
-		}
 		$data = @_json_encode($data);
 		if (is_object($this->memcache)) {
 			global $Config;
@@ -149,9 +141,6 @@ class Cache {
 		return true;
 	}
 	function del ($item) {
-		if (!MEMORY_SAVE) {
-			unset($this->local_storage[$item]);
-		}
 		if (is_object($this->memcache) && $this->memcache->get(DOMAIN.$item)) {
 			$this->memcache->delete(DOMAIN.$item);
 		}

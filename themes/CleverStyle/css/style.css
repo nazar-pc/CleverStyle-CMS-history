@@ -1,6 +1,6 @@
 body {
 	font-family : Tahoma, Verdana, sans-serif;
-	font-size   : 12px;
+	font-size   : 11px;
 	margin      : 0;
 	padding     : 0;
 	width       : 100%;
@@ -49,7 +49,7 @@ td#main_content > section > article > div {
 a {
 	text-decoration : none;
 }
-
+/*
 a:hover {
 	border-bottom-style : solid;
 }
@@ -69,7 +69,7 @@ a[target="_new"]::after {
 
 a[href^="http://"]::after {
 	content : "↗";
-}
+}*/
 
 .form_element,
 .form_element:hover,
@@ -144,12 +144,12 @@ div.ui-state-error.red {
 	z-index  : -100;
 }
 
-a.nul,
+/*a.nul,
 a.nul:hover,
 a.nul:active,
 a.nul:visited {
 	border-bottom-style : none;
-}
+}*/
 
 .dialog {
 	display : none;

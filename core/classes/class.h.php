@@ -284,60 +284,96 @@ class h {
 		return self::iwrap($in);
 	}
 		//Специфическая обработка (похожие в обработке теги групируются в шаблоны - template_#)
-	static function table		($in = array(), $data = array(), $data2 = array()) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= self::tr(self::td($item, $data2));
+	/**
+	 * Template 2
+	 *
+	 * @static
+	 *
+	 * @param	array|string    $in
+	 * @param	array           $data
+	 * @param	array			$data2
+	 * @param	string			$function
+	 * @param	string			$add_tag
+	 *
+	 * @return	bool|string
+	 */
+		protected static function template_1 ($in, $data, $data2, $function, $add_tag = 'td') {
+			if (is_array($in)) {
+				$temp = '';
+				foreach ($in as $item) {
+					$temp .= self::tr(self::$add_tag($item, $data2));
+				}
+				return self::swrap($temp, $data, $function);
+			} else {
+				return self::swrap($in, $data, $function);
 			}
-			return self::swrap($temp, $data, __FUNCTION__);
-		} else {
-			return self::swrap($in, $data, __FUNCTION__);
 		}
-	}
-	//template_1 {
-	static function template_1	($in = '', $data = array(), $function) {
-		if (is_array($in)) {
-			$temp = '';
-			foreach ($in as $item) {
-				$temp .= self::swrap($item, $data, $function);
+		static function table		($in = array(), $data = array(), $data2 = array()) {
+			return self::template_1($in, $data, $data2, __FUNCTION__);
+		}
+		static function thead		($in = array(), $data = array(), $data2 = array()) {
+			return self::template_1($in, $data, $data2, __FUNCTION__, 'th');
+		}
+		static function tbody		($in = array(), $data = array(), $data2 = array()) {
+			return self::template_1($in, $data, $data2, __FUNCTION__);
+		}
+		static function tfoot		($in = array(), $data = array(), $data2 = array()) {
+			return self::template_1($in, $data, $data2, __FUNCTION__, 'th');
+		}
+
+	/**
+	 * Template 2
+	 *
+	 * @static
+	 *
+	 * @param	array|string    $in
+	 * @param	array           $data
+	 * @param	string			$function
+	 *
+	 * @return	bool|string
+	 */
+		protected static function template_2	($in, $data, $function) {
+			if (is_array($in)) {
+				$temp = '';
+				foreach ($in as $item) {
+					$temp .= self::swrap($item, $data, $function);
+				}
+				return $temp;
+			} else {
+				return self::swrap($in, $data, $function);
 			}
-			return $temp;
-		} else {
-			return self::swrap($in, $data, $function);
 		}
-	}
-	static function tr			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function th			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function td			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function ul			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function ol			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function li			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function dl			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function dt			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function dd			($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	static function option		($in = '', $data = array()) {
-		return self::template_1($in, $data, __FUNCTION__);
-	}
-	//}
+		static function tr			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function th			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function td			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function ul			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function ol			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function li			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function dl			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function dt			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function dd			($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+		static function option		($in = '', $data = array()) {
+			return self::template_2($in, $data, __FUNCTION__);
+		}
+
 	static function input		($in = array(), $data = array()) {
 		if (!empty($data)) {
 			$in = array_merge(array('in' => $in), $data);
@@ -436,80 +472,91 @@ class h {
 			}
 		}
 	}
-	//template_2 {
-	static function template_2	($in = '', $data = array(), $function) {
-		if (!is_array($in)) {
-			return self::swrap($in, $data, $function);
-		}
-		if (!isset($in['value']) && isset($in['in']) && is_array($in['in'])) {
-			$in['value'] = &$in['in'];
-		} elseif (!isset($in['in']) && isset($in['value']) && is_array($in['value'])) {
-			$in['in'] = &$in['value'];
-		} elseif (
-			(!isset($in['in']) || !is_array($in['in'])) &&
-			(!isset($in['value']) || !is_array($in['value'])) &&
-			is_array($in)
-		) {
-			$temp = $in;
-			$in = array();
-			$in['value'] = &$temp;
-			$in['in'] = &$temp;
-			unset($temp);
-		}
-		if (!isset($in['value']) && !isset($in['in'])) {
-			return false;
-		}
-		$selected = false;
-		if (isset($data['selected']) && is_array($in['value'])) {
-			if (!is_array($data['selected'])) {
-				$data['selected'] = array($data['selected']);
+
+	/**
+	 * Template 3
+	 *
+	 * @static
+	 *
+	 * @param	array|string $in
+	 * @param	array        $data
+	 * @param	string       $function
+	 *
+	 * @return	bool|string
+	 */
+		protected static function template_3	($in = '', $data = array(), $function) {
+			if (!is_array($in)) {
+				return self::swrap($in, $data, $function);
 			}
-			foreach ($in['value'] as $i => $v) {
-				if (in_array($v, $data['selected'])) {
-					if (!isset($in['add'][$i])) {
-						$in['add'][$i] = ' selected';
-						$selected = true;
-					} else {
-						$in['add'][$i] .= ' selected';
-						$selected = true;
+			if (!isset($in['value']) && isset($in['in']) && is_array($in['in'])) {
+				$in['value'] = &$in['in'];
+			} elseif (!isset($in['in']) && isset($in['value']) && is_array($in['value'])) {
+				$in['in'] = &$in['value'];
+			} elseif (
+				(!isset($in['in']) || !is_array($in['in'])) &&
+				(!isset($in['value']) || !is_array($in['value'])) &&
+				is_array($in)
+			) {
+				$temp = $in;
+				$in = array();
+				$in['value'] = &$temp;
+				$in['in'] = &$temp;
+				unset($temp);
+			}
+			if (!isset($in['value']) && !isset($in['in'])) {
+				return false;
+			}
+			$selected = false;
+			if (isset($data['selected']) && is_array($in['value'])) {
+				if (!is_array($data['selected'])) {
+					$data['selected'] = array($data['selected']);
+				}
+				foreach ($in['value'] as $i => $v) {
+					if (in_array($v, $data['selected'])) {
+						if (!isset($in['add'][$i])) {
+							$in['add'][$i] = ' selected';
+							$selected = true;
+						} else {
+							$in['add'][$i] .= ' selected';
+							$selected = true;
+						}
 					}
 				}
+				unset($data['selected'], $i, $v);
 			}
-			unset($data['selected'], $i, $v);
-		}
-		if (isset($in['selected'])) {
-			if (is_array($in['selected'])) {
-				foreach ($in['selected'] as $i => $v) {
-					if (!isset($in['add'][$i])) {
-						$in['add'][$i] = $v ? ' selected' : '';
-						$selected = true;
-					} else {
-						$in['add'][$i] .= $v ? ' selected' : '';
-						$selected = true;
+			if (isset($in['selected'])) {
+				if (is_array($in['selected'])) {
+					foreach ($in['selected'] as $i => $v) {
+						if (!isset($in['add'][$i])) {
+							$in['add'][$i] = $v ? ' selected' : '';
+							$selected = true;
+						} else {
+							$in['add'][$i] .= $v ? ' selected' : '';
+							$selected = true;
+						}
 					}
 				}
+				unset($in['selected'], $i, $v);
 			}
-			unset($in['selected'], $i, $v);
-		}
-		if (!$selected && $function == 'select') {
-			if (!isset($in['add'][0])) {
-				$in['add'][0] = ' selected';
-			} else {
-				$in['add'][0] .= ' selected';
+			if (!$selected && $function == 'select') {
+				if (!isset($in['add'][0])) {
+					$in['add'][0] = ' selected';
+				} else {
+					$in['add'][0] .= ' selected';
+				}
+				unset($selected);
 			}
-			unset($selected);
+			$options = self::array_flip($in, isset($i) ? $i+1 : count($in['in']));
+			unset($in);
+			return self::swrap(self::option($options), $data, $function);
 		}
-		$options = self::array_flip($in, isset($i) ? $i+1 : count($in['in']));
-		unset($in);
-		return self::swrap(self::option($options), $data, $function);
-	}
-	static function select		($in = '', $data = array()) {
-		return self::template_2($in, $data, __FUNCTION__);
-	}
-	static function datalist	($in = '', $data = array()) {
-		return self::template_2($in, $data, __FUNCTION__);
-	}
-	//}
+		static function select		($in = '', $data = array()) {
+			return self::template_3($in, $data, __FUNCTION__);
+		}
+		static function datalist	($in = '', $data = array()) {
+			return self::template_3($in, $data, __FUNCTION__);
+		}
+
 	static function button		($in = '', $data = array()) {
 		if (is_array($in)) {
 			if (!isset($in['type'])) {
@@ -534,32 +581,39 @@ class h {
 		}
 		return self::swrap($in, $data, __FUNCTION__);
 	}
-	//template_3 {
-	static function template_3	($in = '', $data = array(), $function) {
-		global $Page;
-		$uniqid = uniqid('html_replace_');
-		if (is_array($in)) {
-			if (isset($in['in'])) {
-				$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
-				$in['in'] = $uniqid;
+	/**
+	 * Template 4
+	 * @static
+	 * @param array|string $in
+	 * @param array        $data
+	 * @param string       $function
+	 * @return bool|string
+	 */
+		protected static function template_4	($in = '', $data = array(), $function) {
+			global $Page;
+			$uniqid = uniqid('html_replace_');
+			if (is_array($in)) {
+				if (isset($in['in'])) {
+					$Page->replace($uniqid, is_array($in['in']) ? implode("\n", $in['in']) : $in['in']);
+					$in['in'] = $uniqid;
+				}
+			} else {
+				$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
+				$in = $uniqid;
 			}
-		} else {
-			$Page->replace($uniqid, is_array($in) ? implode("\n", $in) : $in);
-			$in = $uniqid;
+			$data['level'] = false;
+			return self::swrap($in, $data, $function);
 		}
-		$data['level'] = false;
-		return self::swrap($in, $data, $function);
-	}
-	static function textarea	($in = '', $data = array()) {
-		return self::template_3($in, $data, __FUNCTION__);
-	}
-	static function pre		($in = '', $data = array()) {
-		return self::template_3($in, $data, __FUNCTION__);
-	}
-	static function code		($in = '', $data = array()) {
-		return self::template_3($in, $data, __FUNCTION__);
-	}
-	//}
+		static function textarea	($in = '', $data = array()) {
+			return self::template_4($in, $data, __FUNCTION__);
+		}
+		static function pre		($in = '', $data = array()) {
+			return self::template_4($in, $data, __FUNCTION__);
+		}
+		static function code		($in = '', $data = array()) {
+			return self::template_4($in, $data, __FUNCTION__);
+		}
+
 	static function br			($repeat = 1) {
 		$in['tag'] = __FUNCTION__;
 		return str_repeat(self::iwrap($in), $repeat);

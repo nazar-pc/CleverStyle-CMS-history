@@ -153,7 +153,7 @@ if ($mode && $rc[2] == 'install') {
 	$Page->warning($L->changing_settings_warning);
 } else {
 	unset($mode, $rc);
-	$db_users_data = $db->core()->columns('[prefix]users');
+	$db_users_data = $db->{0}->columns('[prefix]users');
 	$db_users_items = array();
 	foreach ($db_users_data as $column) {
 		$db_users_items[] = $column['Field'];
@@ -192,7 +192,7 @@ if ($mode && $rc[2] == 'install') {
 					);
 				}
 				unset($lost_columns);
-				$action .= h::{'a.nul'}(
+				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('gear'),
 						array(
@@ -206,7 +206,7 @@ if ($mode && $rc[2] == 'install') {
 			}
 			//Настройки хранилищ
 			if (_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'storage.json') && count($Config->storage) > 1) {
-				$action .= h::{'a.nul'}(
+				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon('disk'),
 						array(
@@ -303,7 +303,7 @@ if ($mode && $rc[2] == 'install') {
 						_file_exists(MODULES.DS.$module.DS.$ADMIN.DS.'index.json')
 					)
 				) {
-					$action .= h::{'a.nul'}(
+					$action .= h::a(
 						h::{'button.compact'}(
 							h::icon('wrench'),
 							array(
@@ -315,7 +315,7 @@ if ($mode && $rc[2] == 'install') {
 						)
 					);
 				}
-				$action .= h::{'a.nul'}(
+				$action .= h::a(
 					h::{'button.compact'}(
 						h::icon($mdata['active'] == 1 ? 'minusthick' : 'check'),
 						array(
@@ -326,7 +326,7 @@ if ($mode && $rc[2] == 'install') {
 						'href'		=> $a->action.($mdata['active'] == 1 ? '/disable/' : '/enable/').$module
 					)
 				).
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('trash'),
 						array(
@@ -340,7 +340,7 @@ if ($mode && $rc[2] == 'install') {
 			}
 		//Когда модуль удален или не установлен
 		} else {
-			$action .= h::{'a.nul'}(
+			$action .= h::a(
 				h::{'button.compact'}(
 					h::icon('arrowthickstop-1-s'),
 					array(

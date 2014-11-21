@@ -206,7 +206,7 @@ if (isset($rc[2])) {
 	foreach ($Config->db as $i => &$db_data) {
 		$db_list .=	h::tr(
 			h::td(
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('plus'),
 						array(
@@ -217,7 +217,7 @@ if (isset($rc[2])) {
 						'href'		=> $a->action.'/add/'.$i
 					)
 				).($i ? 
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('wrench'),
 						array(
@@ -228,7 +228,7 @@ if (isset($rc[2])) {
 						'href'		=> $a->action.'/edit/'.$i
 					)
 				).
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('close'),
 						array(
@@ -239,7 +239,7 @@ if (isset($rc[2])) {
 						'href'		=> $a->action.'/delete/'.$i
 					)
 				) : '').
-				h::{'a.nul'}(
+				h::a(
 					h::{'button.compact'}(
 						h::icon('signal-diag'),
 						array(
@@ -272,7 +272,7 @@ if (isset($rc[2])) {
 			if (is_array($mirror) && !empty($mirror)) {
 				$db_list .=	h::tr(
 					h::td(
-						h::{'a.nul'}(
+						h::a(
 							h::{'button.compact'}(
 								h::icon('wrench'),
 								array(
@@ -283,7 +283,7 @@ if (isset($rc[2])) {
 								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/edit/'.$i.'/'.$m
 							)
 						).
-						h::{'a.nul'}(
+						h::a(
 							h::{'button.compact'}(
 								h::icon('close'),
 								array(
@@ -294,7 +294,7 @@ if (isset($rc[2])) {
 								'href'		=> $ADMIN.'/'.MODULE.'/'.$rc[0].'/'.$rc[1].'/delete/'.$i.'/'.$m
 							)
 						).
-						h::{'a.nul'}(
+						h::a(
 							h::{'button.compact'}(
 								h::icon('signal-diag'),
 								array(

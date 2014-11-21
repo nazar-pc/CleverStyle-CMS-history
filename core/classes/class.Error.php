@@ -1,8 +1,13 @@
 <?php
 class Error {
-	public	$error	= true;
-	private	$num	= 0;
+	public		$error	= true;
+	protected	$init = false,	//For single initialization
+				$num	= 0;
 	function init () {
+		if ($this->init) {
+			return;
+		}
+		$this->init = true;
 		global $Error;
 		$Error = $this;
 		//set_error_handler(array($Error, 'process'));

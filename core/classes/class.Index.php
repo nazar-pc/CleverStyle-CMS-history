@@ -1,38 +1,37 @@
 <?php
 class Index {
-	public	$Content,
-			$structure		= array(),
-			$parts			= array(),
-			$subparts		= array(),
+	public		$Content,
 
-			$mainmenu		= '',
-			$mainsubmenu	= '',
-			$menumore		= '',
-			$savecross		= false,
+				$savecross		= false,
 
-			$menu_auto		= true,
-			$submenu_auto	= false,
-			$menumore_auto	= false,
+				$menu_auto		= true,
+				$submenu_auto	= false,
+				$menumore_auto	= false,
 
-			$savefile		= 'save',
-			$form			= false,
-			$form_atributes	= array(),
-			$action,
-			$buttons		= true,
-			$apply			= true,
-			$cancel			= ' disabled',
-			$cancel_back	= false,
-			$reset			= true,
-			$post_buttons	= '',
+				$savefile		= 'save',
+				$form			= false,
+				$form_atributes	= array(),
+				$action,
+				$buttons		= true,
+				$apply			= true,
+				$cancel			= ' disabled',
+				$cancel_back	= false,
+				$reset			= true,
+				$post_buttons	= '',
 
-			$custom_methods	= array(),
+				$init_auto		= true,
+				$generate_auto	= true,
 
-			$preload		= array(),
-			$postload		= array(),
-			
-			$admin			= false,
-			$module			= false,
-			$api			= false;
+				$admin			= false,
+				$module			= false,
+				$api			= false;
+
+	protected	$preload		= array(),
+				$postload		= array(),
+
+				$structure		= array(),
+				$parts			= array(),
+				$subparts		= array();
 
 	function __construct () {
 		global $Config, $User;
@@ -62,15 +61,9 @@ class Index {
 		foreach ($Config->components['plugins'] as $plugin) {
 			_include(PLUGINS.DS.$plugin.DS.'index.php', true, false);
 		}
+		_include(MFOLDER.DS.'prepare.php', true, false);
 	}
-	function content ($add, $level = false) {
-		if ($level !== false) {
-			$this->Content .= h::level($add, $level);
-		} else {
-			$this->Content .= $add;
-		}
-	}
-	function init () {
+	protected function init () {
 		global $Config, $L, $Page;
 		$rc = &$Config->routing['current'];
 		if (_file_exists(MFOLDER.DS.'index.json')) {
@@ -129,9 +122,15 @@ class Index {
 			_include(MFOLDER.DS.$this->savefile.'.php', true, false);
 		}
 	}
-	function mainmenu () {
+	function content ($add, $level = false) {
+		if ($level !== false) {
+			$this->Content .= h::level($add, $level);
+		} else {
+			$this->Content .= $add;
+		}
+	}
+	protected function mainmenu () {
 		global $Config, $L, $Page, $User, $ADMIN;
-		$Page->mainmenu = '';
 		if ($User->is('admin')) {
 			if ($Config->core['debug']) {
 				$Page->mainmenu .= h::a(
@@ -158,13 +157,13 @@ class Index {
 			)
 		);
 	}
-	function mainsubmenu () {
-		if (!is_array($this->parts) || !$this->parts || !$this->submenu_auto) {
+	protected function mainsubmenu () {
+		if (!is_array($this->parts) || !$this->parts) {
 			return;
 		}
-		global $Config, $L;
+		global $Config, $L, $Page;
 		foreach ($this->parts as $part) {
-			$this->mainsubmenu .= h::a(
+			$Page->mainsubmenu .= h::a(
 				$L->$part,
 				array(
 					'id'		=> $part.'_a',
@@ -174,13 +173,13 @@ class Index {
 			);
 		}
 	}
-	function menumore () {
-		if (!is_array($this->subparts) || !$this->subparts || !$this->menumore_auto) {
+	protected function menumore () {
+		if (!is_array($this->subparts) || !$this->subparts) {
 			return;
 		}
-		global $Config, $L;
+		global $Config, $L, $Page;
 		foreach ($this->subparts as $subpart) {
-			$this->menumore .= h::a(
+			$Page->menumore .= h::a(
 				$L->$subpart,
 				array(
 					'id'		=> $subpart.'_a',
@@ -191,11 +190,11 @@ class Index {
 			);
 		}
 	}
-	function generate () {
+	protected function generate () {
 		global $Config, $L, $Page, $Cache;
-		$this->method('mainmenu');
-		$this->method('mainsubmenu');
-		$this->method('menumore');
+		$this->menu_auto		&& $this->mainmenu();
+		$this->submenu_auto		&& $this->mainsubmenu();
+		$this->menumore_auto	&& $this->menumore();
 		if (!$this->api) {
 			global $API, $ADMIN, $User;
 			$Page->js(
@@ -232,17 +231,9 @@ class Index {
 					($User->is('admin') ? 'admin = "'.$ADMIN.'",' : '').
 					'in_admin = '.(int)$this->admin.','.
 					'api = "'.$API.'",'.
-					'routing = '._json_encode($Config->routing['current']).';',//.
-					//'cache = '.$Config->core['disk_cache'].','. //TODO check necessity
-					//'pcache = '.$Config->core['cache_compress_js_css'].';', //TODO check necessity
+					'routing = '._json_encode($Config->routing['current']).';',
 				'code'
 			);
-		}
-		if ($this->parts !== false) {
-			$Page->mainsubmenu	= $this->mainsubmenu;
-			if ($this->subparts !== false) {
-				$Page->menumore		= $this->menumore;
-			}
 		}
 		if ($this->form) {
 			$Page->content(
@@ -361,17 +352,34 @@ class Index {
 		$Page->title($L->settings_canceled);
 		$Page->notice($L->settings_canceled);
 	}
-	function method ($method) {
-		if (isset($this->custom_methods[$method])) {
-			closure_process($this->custom_methods[__FUNCTION__]);
-		} else {
-			$this->$method();
+	/**
+	 * Adding functions for executing before initialization processing of modules
+	 *
+	 * @param Closure[] $closure
+	 * @param bool $remove_others
+	 */
+	function preload ($closure, $remove_others = false) {
+		if ($remove_others) {
+			$this->preload = array();
 		}
+		$this->preload[] = $closure;
+	}
+	/**
+	 * Adding functions for executing after generating processing of modules
+	 *
+	 * @param Closure[] $closure
+	 * @param bool $remove_others
+	 */
+	function postload ($closure, $remove_others = false) {
+		if ($remove_others) {
+			$this->postload = array();
+		}
+		$this->postload[] = $closure;
 	}
 	/**
 	 * Cloning restriction
 	 */
-	final function __clone () {}
+	function __clone () {}
 	function __finish () {
 		closure_process($this->preload);
 		if (!$this->admin && !$this->api && _file_exists(MFOLDER.DS.'index.html')) {
@@ -379,8 +387,8 @@ class Index {
 			$Page->content(_file_get_contents(MFOLDER.DS.'index.html'));
 			return;
 		}
-		$this->method('init');
-		$this->method('generate');
+		$this->init_auto		&& $this->init();
+		$this->generate_auto	&& $this->generate();
 		closure_process($this->postload);
 	}
 }
